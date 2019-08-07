@@ -12,7 +12,7 @@ $id = $_SESSION['id'];
 require "lib/database.php";
 $con = connectToDatabase();
  $student_classes =array();
- $stmt = $con->prepare('SELECT course FROM cse442 WHERE email=?');
+ $stmt = $con->prepare('SELECT course FROM roster WHERE email=?');
  $stmt->bind_param('s', $email);
  $stmt->execute();
  $stmt->bind_result($student_class);

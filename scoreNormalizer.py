@@ -44,7 +44,7 @@ def process(classSelect):
     mycursor=mydb.cursor()
 
 
-    mycursor.execute("Select Name, email, course , group_number, submitted_scores FROM cse442 WHERE course= %s",[classSelect])
+    mycursor.execute("Select Name, email, course , group_number, submitted_scores FROM roster WHERE course= %s",[classSelect])
 
     myresult = mycursor.fetchall()
 

@@ -5,7 +5,6 @@
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
-ini_set("error_log", "~/php-error.log");
 session_start();
  if(!isset($_SESSION['id'])) {
     header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2019-Summer/cse-442e/index.php");
@@ -18,7 +17,7 @@ $course = $_SESSION['course'];
 require "lib/database.php";
 $con = connectToDatabase();
  //fetch group number for current student
-	$stmt = $con->prepare('SELECT group_number,submitted_scores FROM cse442 WHERE email=? AND course =?');
+	$stmt = $con->prepare('SELECT group_number,submitted_scores FROM roster WHERE email=? AND course =?');
     $stmt->bind_param('ss', $email, $course);
     $stmt->execute();
 	$stmt->bind_result($group_number, $old_scores_string);
@@ -35,7 +34,7 @@ $con = connectToDatabase();
   }
 	//get group members
 	$group_members=array();
-	$stmt = $con->prepare('SELECT email FROM cse442 WHERE group_number=? AND course =?');
+	$stmt = $con->prepare('SELECT email FROM roster WHERE group_number=? AND course =?');
     $stmt->bind_param('is', $group_number,$course);
     $stmt->execute();
 	$stmt->bind_result($group_member);
@@ -49,7 +48,7 @@ $con = connectToDatabase();
 	}
 	$current_group_member =  $group_members[$_SESSION['group_member_number']];
   //fetch name for student to be evaluated
-   $stmt = $con->prepare('SELECT Name FROM cse442 WHERE email=?');
+   $stmt = $con->prepare('SELECT Name FROM roster WHERE email=?');
      $stmt->bind_param('s', $current_group_member);
      $stmt->execute();
    $stmt->bind_result($Name);
@@ -83,54 +82,16 @@ $con = connectToDatabase();
 				 exit();
 		}
 		else{//evaluated all students
-			$stmt = $con->prepare('UPDATE cse442 SET submitted_scores = ? WHERE email=? AND course=?');
+			$stmt = $con->prepare('UPDATE roster SET submitted_scores = ? WHERE email=? AND course=?');
 			$stmt->bind_param('sss',$_SESSION['feedback_string'], $email,$course);
 			$stmt->execute();
-			$indiviual_eval = explode(":",$_SESSION['feedback_string']);
-			foreach($indiviual_eval as $indiv){//indiv is each student in the group that recieved feedback
-				$indiv_explode = explode(",",$indiv);
-				$recievers_email = $indiv_explode[0];
-				$indiv_explode[0] = $email;
-				$reciever_implode = implode(",",$indiv_explode);//reciever implode now has the evaluaters email.
-				//access the recieved scores.
-				$stmt = $con->prepare('SELECT recieved_scores FROM cse442 WHERE email=? AND course=?');
-				$stmt->bind_param('ss', $recievers_email,$course);
-				$stmt->execute();
-				$stmt->bind_result($reciever_scores);
-				$stmt->store_result();
-				$stmt->fetch();
-				if(strpos($reciever_scores,$email) !== false){ //if the student has already recieved a score from this student.
-					$reciever_explode = explode(":",$reciever_scores);
-					$reciever_scores_array = array();
-					foreach($reciever_explode as $exploded){
-						if(strpos($exploded, $email) !== false){
-							array_push($reciever_scores_array ,$reciever_implode);
-						}
-						else{
-							array_push($reciever_scores_array , $exploded);
-						}
-					}
-					//var_dump($reciever_scores_array);
-					$reciever_scores = implode(":",$reciever_scores_array);
-					//echo $reciever_scores;
-				}
-				else{
-					if($reciever_scores == ""){
-						$reciever_scores = $reciever_implode;
-					}
-					else{
-					$reciever_scores = $reciever_scores . ":" . $reciever_implode;
-					}
-				}
-				$stmt = $con->prepare('UPDATE cse442 SET recieved_scores=? WHERE email=? AND course=?');
-				$stmt->bind_param('sss',$reciever_scores, $recievers_email,$course);
-				$stmt->execute();
+			
 			}
 			$_SESSION = array();
 			 header("Location: evalConfirm.php");
 			exit();
 		}
-	}
+	
 ?>
 <html>
 <title>UB CSE Peer Evaluation</title>

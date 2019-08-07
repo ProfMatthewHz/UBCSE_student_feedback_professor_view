@@ -3,7 +3,6 @@
 function connectToDatabase()
 {
 //login to sql
-session_start();
 //Change this to your connection info.
 $DATABASE_HOST = 'tethys.cse.buffalo.edu';
 $DATABASE_USER = 'jeh24';
