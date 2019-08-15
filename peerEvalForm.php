@@ -17,10 +17,10 @@ $course = $_SESSION['course'];
 require "lib/database.php";
 $con = connectToDatabase();
  //fetch group number for current student
-	$stmt = $con->prepare('SELECT group_number,submitted_scores FROM roster WHERE email=? AND course =?');
+	$stmt = $con->prepare('SELECT group_number,submitted_scores,survey_number FROM roster WHERE email=? AND course =?');
     $stmt->bind_param('ss', $email, $course);
     $stmt->execute();
-	$stmt->bind_result($group_number, $old_scores_string);
+	$stmt->bind_result($group_number, $old_scores_string,$survey_number);
 	$stmt->store_result();
 	$stmt->fetch();
 	
@@ -82,11 +82,27 @@ $con = connectToDatabase();
 				 exit();
 		}
 		else{//evaluated all students
-			$stmt = $con->prepare('UPDATE roster SET submitted_scores = ? WHERE email=? AND course=?');
-			$stmt->bind_param('sss',$_SESSION['feedback_string'], $email,$course);
-			$stmt->execute();
 			
+			$stmt = $con->prepare('SELECT email FROM submitted_scores WHERE email=? AND course=? AND survey_number=?' );
+			$stmt->bind_param('ssi',$email,$course,$survey_number);
+			$stmt->bind_result($group_number);
+			$stmt->execute();
+			$stmt->store_result();
+			$stmt->fetch();
+			
+			if($stmt->num_rows == 0){
+			$stmt = $con->prepare('INSERT INTO submitted_scores (email,course,survey_number,scores,number_of_members) VALUES(?,?,?,?,?)');
+			$stmt->bind_param('ssisi', $email,$course,$survey_number,$_SESSION['feedback_string'],$a =0);
+			$stmt->execute();
 			}
+			else{
+			
+			$stmt = $con->prepare('UPDATE submitted_scores SET scores = ? WHERE email=? AND course=? AND survey_number=?');
+			$stmt->bind_param('ssi',$_SESSION['feedback_string'], $email,$course,$survey_number);
+			$stmt->execute();
+			}
+			}
+		
 			$_SESSION = array();
 			 header("Location: evalConfirm.php");
 			exit();
