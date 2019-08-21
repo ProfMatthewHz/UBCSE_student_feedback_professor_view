@@ -9,23 +9,32 @@ if(!isset($_SESSION['id'])) {
  }
 $email = $_SESSION['email'];
 $id = $_SESSION['id'];
+$Student_ID = $_SESSION['Student_ID'];
 require "lib/database.php";
 $con = connectToDatabase();
+
+
  $student_classes =array();
- $stmt = $con->prepare('SELECT course FROM roster WHERE email=?');
- $stmt->bind_param('s', $email);
+ $class_IDs = array();
+ $stmt = $con->prepare('SELECT DISTINCT course.Name, course.Course_ID FROM `Teammates`  INNER JOIN course 
+ON Teammates.Course_ID = course.Course_ID WHERE Teammates.Student_ID=?');
+ $stmt->bind_param('i', $Student_ID);
  $stmt->execute();
- $stmt->bind_result($student_class);
+ $stmt->bind_result($class_name,$class_ID);
  $stmt->store_result();
  while ($stmt->fetch()){
-   array_push($student_classes,$student_class);
+   $student_classes[$class_name] = $class_ID;
  }
  $_SESSION['student_classes'] = $student_classes;
 
  if(isset($_POST['courseSelect'])){
+	 
    $_SESSION['course'] = $_POST['courseSelect'];
+   $_SESSION['course_ID'] = $_SESSION['student_classes'][$_SESSION['course']];
+
 
    header("Location: peerEvalForm.php");
+   exit();
  }
  
  ?>
@@ -103,8 +112,8 @@ hr {
     <select name ="courseSelect">
       <?php
       if(isset($_SESSION['student_classes'])){
-       foreach ($student_classes as $value) {
-      echo ('<option value="' . $value .'">' . $value .'</option>');
+       foreach ($student_classes as $key => $value) {
+      echo ('<option value="' . $key .'">' . $key .'</option>');
       }
     }
 ?>
