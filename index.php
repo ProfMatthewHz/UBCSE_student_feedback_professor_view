@@ -61,7 +61,23 @@ require "lib/database.php";
 $con = connectToDatabase();
 
 if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText']) ){
-    $email = $_POST['loginEmailEntryText'];
+	$email = $_POST['loginEmailEntryText'];
+	
+	//check if student is enrolled
+	$stmt = $con->prepare('SELECT Email from Students WHERE Email=?');
+    $stmt->bind_param('s',$email);
+    $stmt->execute();
+	$stmt->bind_result($flag);
+	$stmt->store_result();
+	$stmt->fetch();
+	if($stmt->num_rows == 0){
+		echo '<script language="javascript">';
+    echo 'alert("Email was not found in the list of students. Please contact your professor.")';
+    echo '</script>';
+		$stmt->close();
+		exit();
+	}
+	
     $expiration_time = time()+ 60 * 15;
     //update passcode and timestamp
     $stmt = $con->prepare('UPDATE student_login SET expiration_time =? WHERE email=?');
