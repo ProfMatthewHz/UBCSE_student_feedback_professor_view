@@ -3,8 +3,9 @@ error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 session_start();
+require "lib/constants.php"
 if(!isset($_SESSION['id'])) {
-   header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2019-Summer/cse-442e/index.php");
+   header("Location: ".SITE_HOME."index.php");
    exit();
  }
 $email = $_SESSION['email'];
@@ -16,7 +17,7 @@ $con = connectToDatabase();
 
  $student_classes =array();
  $class_IDs = array();
- $stmt = $con->prepare('SELECT DISTINCT course.Name, course.Course_ID FROM `Teammates`  INNER JOIN course 
+ $stmt = $con->prepare('SELECT DISTINCT course.Name, course.Course_ID FROM `Teammates`  INNER JOIN course
 ON Teammates.Course_ID = course.Course_ID WHERE Teammates.Student_ID=?');
  $stmt->bind_param('i', $Student_ID);
  $stmt->execute();
@@ -28,7 +29,7 @@ ON Teammates.Course_ID = course.Course_ID WHERE Teammates.Student_ID=?');
  $_SESSION['student_classes'] = $student_classes;
 
  if(isset($_POST['courseSelect'])){
-	 
+
    $_SESSION['course'] = $_POST['courseSelect'];
    $_SESSION['course_ID'] = $_SESSION['student_classes'][$_SESSION['course']];
 
@@ -36,7 +37,7 @@ ON Teammates.Course_ID = course.Course_ID WHERE Teammates.Student_ID=?');
    header("Location: peerEvalForm.php");
    exit();
  }
- 
+
  ?>
 <!DOCTYPE HTML>
 <html>

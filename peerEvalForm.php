@@ -5,10 +5,6 @@ error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 session_start();
- //if(!isset($_SESSION['id']){
-   // header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2019-Summer/cse-442e/index.php");
-    //exit();
-  //}
   
 $email = $_SESSION['email'];
 $id = $_SESSION['id'];
@@ -26,7 +22,7 @@ $con = connectToDatabase();
 	$stmt->bind_result($Teammate_key);
 	$stmt->store_result();
 	$stmt->fetch();
-	
+
 	if($stmt->num_rows == 0){ //student has not submitted yet.
 	//TODO: make an error here
 		//exit();
@@ -35,7 +31,7 @@ $con = connectToDatabase();
   //if(!empty($old_scores_string){
     //$old_scores = explode(":", $old_scores_string);
   //}
-  
+
 	//get group members
 	$group_members=array();
 	$group_IDs=array();
@@ -50,15 +46,15 @@ $con = connectToDatabase();
 		array_push($group_members,$group_member);
 		array_push($group_IDs,$group_ID);
 	}
-	
+
 	$num_of_group_members =  count($group_members);
 	if(!isset($_SESSION['group_member_number'])){
 		$_SESSION['group_member_number'] = 0;
 	}
-	
+
 	$Name =  $group_members[$_SESSION['group_member_number']];
 	$Name_ID = $group_IDs[$_SESSION['group_member_number']];
-	
+
 	//fetch eval id, if it exists
 	$stmt = $con->prepare('SELECT id FROM Eval WHERE Teammate_key=? AND Course_ID =? AND Submitter_ID=? AND Teammate_ID=?');
     $stmt->bind_param('iiii', $Teammate_key, $course_ID,$Student_ID,$Name_ID);
@@ -70,7 +66,7 @@ $con = connectToDatabase();
 		$stmt = $con->prepare('INSERT INTO Eval (Teammate_key, Course_ID, Submitter_ID, Teammate_ID) VALUES(?, ?, ?, ?)');
 		$stmt->bind_param('iiii', $Teammate_key, $course_ID,$Student_ID,$Name_ID);
 		$stmt->execute();
-		
+
 		$stmt = $con->prepare('SELECT id FROM Eval WHERE Teammate_key=? AND Course_ID =? AND Submitter_ID=? AND Teammate_ID=?');
 		$stmt->bind_param('iiii', $Teammate_key, $course_ID,$Student_ID,$Name_ID);
 		$stmt->execute();
@@ -78,7 +74,7 @@ $con = connectToDatabase();
 		$stmt->store_result();
 		$stmt->fetch();
 	}
-	
+
 	$current_student_scores=array(-1,-1,-1,-1,-1);
 	//grab scores if they exist
 	$stmt = $con->prepare('SELECT Score1, Score2, Score3, Score4, Score5 FROM Scores WHERE Eval_key=?');
@@ -96,24 +92,24 @@ $con = connectToDatabase();
 		$stmt->bind_param('i', $Eval_ID);
 		$stmt->execute();
 	}
-	
+
 	//When submit button is pressed
 	if ( !empty($_POST) && isset($_POST)){
 		//save results
 		$a=intval($_POST['Q1']); $b=intval($_POST['Q2']); $c=intval($_POST['Q3']); $d=intval($_POST['Q4']); $e=intval($_POST['Q5']);
 		$stmt = $con->prepare('UPDATE Scores set Score1=?, Score2=?, Score3=?, Score4=?, Score5=? WHERE Eval_key=?');
-		
+
 		$stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $Eval_ID);
 		$stmt->execute();
-		
+
 		$stmt = $con->prepare('SELECT Score1, Score2, Score3, Score4, Score5 FROM Scores WHERE Eval_key=?');
 		$stmt->bind_param('i', $Eval_ID);
 		$stmt->execute();
 		$stmt->bind_result($Score1, $Score2, $Score3, $Score4, $Score5);
 		$stmt->store_result();
 		var_dump($Score1, $Score2, $Score3, $Score4, $Score5);
-		
-		
+
+
 		//move to next student in group
 		if($_SESSION['group_member_number'] < ($num_of_group_members - 1)){
 			$_SESSION['group_member_number'] +=1;

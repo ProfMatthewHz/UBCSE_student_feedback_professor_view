@@ -58,11 +58,12 @@ ini_set("error_log", "~/php-error.log");
 
 require "lib/random.php";
 require "lib/database.php";
+require "lib/constants.php";
 $con = connectToDatabase();
 
 if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText']) ){
 	$email = $_POST['loginEmailEntryText'];
-	
+
 	//check if student is enrolled
 	$stmt = $con->prepare('SELECT Email from Students WHERE Email=?');
     $stmt->bind_param('s',$email);
@@ -77,7 +78,7 @@ if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText'])
 		$stmt->close();
 		exit();
 	}
-	
+
     $expiration_time = time()+ 60 * 15;
     //update passcode and timestamp
     $stmt = $con->prepare('UPDATE student_login SET expiration_time =? WHERE email=?');
@@ -103,7 +104,7 @@ if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText'])
   mail($email,"Access Code", "<h1>Your code is: ".$code."</h1>
         <p>It will expire at ".$humanExpTime." EST</p>
         </hr>
-        Use it here: https://www-student.cse.buffalo.edu/CSE442-542/2019-Summer/cse-442f/accessCodePage.php",
+        Use it here: ".SITE_HOME."accessCodePage.php",
         'Content-type: text/html; charset=utf-8');
       header("Location: emailConfirmation.php"); /* Redirect browser to a test link*/
   exit();
