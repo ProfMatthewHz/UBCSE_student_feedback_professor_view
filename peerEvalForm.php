@@ -1,113 +1,131 @@
 <!DOCTYPE HTML>
-
 <?php
 //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 session_start();
- if(!isset($_SESSION['id'])) {
-    header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2019-Summer/cse-442e/index.php");
-    exit();
-  }
+ //if(!isset($_SESSION['id']){
+   // header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2019-Summer/cse-442e/index.php");
+    //exit();
+  //}
+  
 $email = $_SESSION['email'];
 $id = $_SESSION['id'];
+$Student_ID= $_SESSION['Student_ID'];
+$course_ID=$_SESSION['course_ID'];
 $course = $_SESSION['course'];
-//Change this to your connection info.
+
 require "lib/database.php";
 $con = connectToDatabase();
- //fetch group number for current student
-	$stmt = $con->prepare('SELECT group_number,submitted_scores,survey_number FROM roster WHERE email=? AND course =?');
-    $stmt->bind_param('ss', $email, $course);
+
+ //fetch teammate key for current student
+ 	$stmt = $con->prepare('SELECT Teammate_key FROM Teammates WHERE Student_ID=? AND Course_ID =?');
+    $stmt->bind_param('ss', $Student_ID, $course_ID);
     $stmt->execute();
-	$stmt->bind_result($group_number, $old_scores_string,$survey_number);
+	$stmt->bind_result($Teammate_key);
 	$stmt->store_result();
 	$stmt->fetch();
 	
-	if($stmt->num_rows == 0){ //If student is not in selected class display an error.
+	if($stmt->num_rows == 0){ //student has not submitted yet.
 	//TODO: make an error here
-		exit();
+		//exit();
 	}
   //check if grades are already submitted
-  if(!empty($old_scores_string)) {
-    $old_scores = explode(":", $old_scores_string);
-  }
+  //if(!empty($old_scores_string){
+    //$old_scores = explode(":", $old_scores_string);
+  //}
+  
 	//get group members
 	$group_members=array();
-	$stmt = $con->prepare('SELECT email FROM roster WHERE group_number=? AND course =?');
-    $stmt->bind_param('is', $group_number,$course);
+	$group_IDs=array();
+	$stmt = $con->prepare('SELECT Students.Name, Students.Student_ID FROM Teammates
+	INNER JOIN Students ON Teammates.Teammate_ID = Students.Student_ID WHERE
+	Teammates.Teammate_key=? AND Teammates.Course_ID =? AND Teammates.Student_ID=?;');
+    $stmt->bind_param('iii',$Teammate_key, $course_ID,$Student_ID);
     $stmt->execute();
-	$stmt->bind_result($group_member);
+	$stmt->bind_result($group_member,$group_ID);
 	$stmt->store_result();
 	while ($stmt->fetch()){
 		array_push($group_members,$group_member);
+		array_push($group_IDs,$group_ID);
 	}
+	
 	$num_of_group_members =  count($group_members);
 	if(!isset($_SESSION['group_member_number'])){
 		$_SESSION['group_member_number'] = 0;
 	}
-	$current_group_member =  $group_members[$_SESSION['group_member_number']];
-  //fetch name for student to be evaluated
-   $stmt = $con->prepare('SELECT Name FROM roster WHERE email=?');
-     $stmt->bind_param('s', $current_group_member);
-     $stmt->execute();
-   $stmt->bind_result($Name);
-   $stmt->store_result();
-   $stmt->fetch();
-  if(isset($old_scores)) {
-    foreach($old_scores as $old) {
-      if(strpos($old, $current_group_member) !== false){
-        $old_score = explode(",", $old);
-      }
-    }
-  }
+	
+	$Name =  $group_members[$_SESSION['group_member_number']];
+	$Name_ID = $group_IDs[$_SESSION['group_member_number']];
+	
+	//fetch eval id, if it exists
+	$stmt = $con->prepare('SELECT id FROM Eval WHERE Teammate_key=? AND Course_ID =? AND Submitter_ID=? AND Teammate_ID=?');
+    $stmt->bind_param('iiii', $Teammate_key, $course_ID,$Student_ID,$Name_ID);
+    $stmt->execute();
+	$stmt->bind_result($Eval_ID);
+	$stmt->store_result();
+	$stmt->fetch();
+	if($stmt->num_rows == 0){//create eval id if does not exist and get get the Eval_ID
+		$stmt = $con->prepare('INSERT INTO Eval (Teammate_key, Course_ID, Submitter_ID, Teammate_ID) VALUES(?, ?, ?, ?)');
+		$stmt->bind_param('iiii', $Teammate_key, $course_ID,$Student_ID,$Name_ID);
+		$stmt->execute();
+		
+		$stmt = $con->prepare('SELECT id FROM Eval WHERE Teammate_key=? AND Course_ID =? AND Submitter_ID=? AND Teammate_ID=?');
+		$stmt->bind_param('iiii', $Teammate_key, $course_ID,$Student_ID,$Name_ID);
+		$stmt->execute();
+		$stmt->bind_result($Eval_ID);
+		$stmt->store_result();
+		$stmt->fetch();
+	}
+	
+	$current_student_scores=array(-1,-1,-1,-1,-1);
+	//grab scores if they exist
+	$stmt = $con->prepare('SELECT Score1, Score2, Score3, Score4, Score5 FROM Scores WHERE Eval_key=?');
+	$stmt->bind_param('i', $Eval_ID);
+	$stmt->execute();
+	$stmt->bind_result($Score1, $Score2, $Score3, $Score4, $Score5);
+	$stmt->store_result();
+	while($stmt->fetch()){
+		$current_student_scores=array($Score1, $Score2, $Score3, $Score4, $Score5);
+	}
+	//if scores don't exist
+	if($current_student_scores[1] ==-1){
+		$stmt = $con->prepare('INSERT INTO Scores (Eval_key) VALUES(?)');
+		$a=0;$b=0;$c=0;$d=0;$e=0;
+		$stmt->bind_param('i', $Eval_ID);
+		$stmt->execute();
+	}
+	
 	//When submit button is pressed
-	if ( !empty($_POST) ) {
-		$current_student_feedback_string = "";
-		if($_SESSION['group_member_number'] != 0){
-			$current_student_feedback_string = ":";
-		}
-		$current_student_feedback_string = $current_student_feedback_string . $current_group_member . "," . strval($_POST['Q1']) . "," . strval($_POST['Q2']) . "," . strval($_POST['Q3'])
-		 . "," . strval($_POST['Q4']) . "," . strval($_POST['Q5']);
-		if(!isset($_SESSION['feedback_string'])){
-			$_SESSION['feedback_string'] = $current_student_feedback_string;
-		}
-		else{
-			$_SESSION['feedback_string'] = $_SESSION['feedback_string'] . $current_student_feedback_string;
-		}
+	if ( !empty($_POST) && isset($_POST)){
+		//save results
+		$a=intval($_POST['Q1']); $b=intval($_POST['Q2']); $c=intval($_POST['Q3']); $d=intval($_POST['Q4']); $e=intval($_POST['Q5']);
+		$stmt = $con->prepare('UPDATE Scores set Score1=?, Score2=?, Score3=?, Score4=?, Score5=? WHERE Eval_key=?');
+		
+		$stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $Eval_ID);
+		$stmt->execute();
+		
+		$stmt = $con->prepare('SELECT Score1, Score2, Score3, Score4, Score5 FROM Scores WHERE Eval_key=?');
+		$stmt->bind_param('i', $Eval_ID);
+		$stmt->execute();
+		$stmt->bind_result($Score1, $Score2, $Score3, $Score4, $Score5);
+		$stmt->store_result();
+		var_dump($Score1, $Score2, $Score3, $Score4, $Score5);
+		
+		
 		//move to next student in group
 		if($_SESSION['group_member_number'] < ($num_of_group_members - 1)){
 			$_SESSION['group_member_number'] +=1;
-			     header("Location: peerEvalForm.php"); //refresh page with next group member
-				 exit();
+			    header("Location: peerEvalForm.php"); //refresh page with next group member
+				exit();
 		}
 		else{//evaluated all students
-			
-			$stmt = $con->prepare('SELECT email FROM submitted_scores WHERE email=? AND course=? AND survey_number=?' );
-			$stmt->bind_param('ssi',$email,$course,$survey_number);
-			$stmt->bind_result($group_number);
-			$stmt->execute();
-			$stmt->store_result();
-			$stmt->fetch();
-			
-			if($stmt->num_rows == 0){
-			$stmt = $con->prepare('INSERT INTO submitted_scores (email,course,survey_number,scores,number_of_members) VALUES(?,?,?,?,?)');
-			$stmt->bind_param('ssisi', $email,$course,$survey_number,$_SESSION['feedback_string'],$a =0);
-			$stmt->execute();
-			}
-			else{
-			
-			$stmt = $con->prepare('UPDATE submitted_scores SET scores = ? WHERE email=? AND course=? AND survey_number=?');
-			$stmt->bind_param('ssi',$_SESSION['feedback_string'], $email,$course,$survey_number);
-			$stmt->execute();
-			}
-			}
-		
 			$_SESSION = array();
-			 header("Location: evalConfirm.php");
+			header("Location: evalConfirm.php");
 			exit();
 		}
-	
+	}
 ?>
 <html>
 <title>UB CSE Peer Evaluation</title>
@@ -163,46 +181,46 @@ input[type=radio]
     <hr>
     <h3>Question 1: Role</h3>
     <fieldset id="Question1" >
-      <input type="radio"  name="Q1" value="0" <?php if(isset($old_score) && $old_score[1]==0){echo("checked");}?> required><big>' Does not willingly assume team roles, rarely completes assigned work.</big><br>
-      <input type="radio"  name="Q1" value="1" <?php if(isset($old_score) && $old_score[1]==1){echo("checked");}?> required><big>' Usually accepts assigned team roles, occasionally completes assigned work.</big><br>
-      <input type="radio"  name="Q1" value="2" <?php if(isset($old_score) && $old_score[1]==2){echo("checked");}?> required><big>' Accepts assigned team roles, mostly completes assigned work.</big><br>
-      <input type="radio"  name="Q1" value="3" <?php if(isset($old_score) && $old_score[1]==3){echo("checked");}?> required><big>' Accepts all assigned team roles, always completes assigned work.</big><br>
+      <input type="radio"  name="Q1" value="1" <?php if($current_student_scores[0]==1){echo("checked");}?> required><big>' Does not willingly assume team roles, rarely completes assigned work.</big><br>
+      <input type="radio"  name="Q1" value="2" <?php if($current_student_scores[0]==2){echo("checked");}?> required><big>' Usually accepts assigned team roles, occasionally completes assigned work.</big><br>
+      <input type="radio"  name="Q1" value="3" <?php if($current_student_scores[0]==3){echo("checked");}?> required><big>' Accepts assigned team roles, mostly completes assigned work.</big><br>
+      <input type="radio"  name="Q1" value="4" <?php if($current_student_scores[0]==4){echo("checked");}?> required><big>' Accepts all assigned team roles, always completes assigned work.</big><br>
     </fieldset>
 
     <hr>
     <h3>Question 2: Leadership</h3>
     <fieldset id="Question2" >
-      <input type="radio"  name="Q2" value="0" <?php if(isset($old_score) && $old_score[2]==0){echo("checked");}?> required><big>' Rarely takes leadership role, does not collaborate, sometimes willing to assist teammates.</big><br>
-      <input type="radio"  name="Q2" value="1" <?php if(isset($old_score) && $old_score[2]==1){echo("checked");}?> required><big>' Occasionally shows leadership, mostly collaborates, generally willin to assist teammates.</big><br>
-      <input type="radio"  name="Q2" value="2" <?php if(isset($old_score) && $old_score[2]==2){echo("checked");}?> required><big>' Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates.</big><br>
-      <input type="radio"  name="Q2" value="3" <?php if(isset($old_score) && $old_score[2]==3){echo("checked");}?> required><big>' Takes leadership role, is a good collaborator, always willing to assist teammates.</big><br>
+      <input type="radio"  name="Q2" value="1" <?php if($current_student_scores[1]==1){echo("checked");}?> required><big>' Rarely takes leadership role, does not collaborate, sometimes willing to assist teammates.</big><br>
+      <input type="radio"  name="Q2" value="2" <?php if($current_student_scores[1]==2){echo("checked");}?> required><big>' Occasionally shows leadership, mostly collaborates, generally willin to assist teammates.</big><br>
+      <input type="radio"  name="Q2" value="3" <?php if($current_student_scores[1]==3){echo("checked");}?> required><big>' Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates.</big><br>
+      <input type="radio"  name="Q2" value="4" <?php if($current_student_scores[1]==4){echo("checked");}?> required><big>' Takes leadership role, is a good collaborator, always willing to assist teammates.</big><br>
     </fieldset>
 
     <hr>
     <h3>Question 3: Participation</h3>
     <fieldset id="Question3" >
-      <input type="radio"  name="Q3" value="0" <?php if(isset($old_score) && $old_score[3]==0){echo("checked");}?> required><big>' Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesnt share ideas.</big><br>
-      <input type="radio"  name="Q3" value="1" <?php if(isset($old_score) && $old_score[3]==1){echo("checked");}?> required><big>' Occasionally misses/ doesn't participate in meetings, somewhat unprepared for meetings, offers unclear/ unhelpful ideas.</big><br>
-      <input type="radio"  name="Q3" value="2" <?php if(isset($old_score) && $old_score[3]==2){echo("checked");}?> required><big>' Attends and participates in most meetings, comes prepared, and offers useful ideas.</big><br>
-      <input type="radio"  name="Q3" value="3" <?php if(isset($old_score) && $old_score[3]==3){echo("checked");}?> required><big>' Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas.</big><br>
+      <input type="radio"  name="Q3" value="1" <?php if($current_student_scores[2]==1){echo("checked");}?> required><big>' Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesnt share ideas.</big><br>
+      <input type="radio"  name="Q3" value="2" <?php if($current_student_scores[2]==2){echo("checked");}?> required><big>' Occasionally misses/ doesn't participate in meetings, somewhat unprepared for meetings, offers unclear/ unhelpful ideas.</big><br>
+      <input type="radio"  name="Q3" value="3" <?php if($current_student_scores[2]==3){echo("checked");}?> required><big>' Attends and participates in most meetings, comes prepared, and offers useful ideas.</big><br>
+      <input type="radio"  name="Q3" value="4" <?php if($current_student_scores[2]==4){echo("checked");}?> required><big>' Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas.</big><br>
     </fieldset>
 
     <hr>
     <h3>Question 4: Professionalism</h3>
     <fieldset id="Question4" >
-      <input type="radio"  name="Q4" value="0" <?php if(isset($old_score) && $old_score[4]==0){echo("checked");}?> required><big>' Often discourteous and/or openly critical of teammates, doesn't want to listen to alternative perspectives.</big><br>
-      <input type="radio"  name="Q4" value="1" <?php if(isset($old_score) && $old_score[4]==1){echo("checked");}?> required><big>' Not always considerate or courteous towards teammates, usually appreciates teammates perspectives but often unwilling to consider them.</big><br>
-      <input type="radio"  name="Q4" value="2" <?php if(isset($old_score) && $old_score[4]==2){echo("checked");}?> required><big>' Mostly courteous to teammates, values teammates' perspectives and often willing to consider them.</big><br>
-      <input type="radio"  name="Q4" value="3" <?php if(isset($old_score) && $old_score[4]==3){echo("checked");}?> required><big>' Always courteous to teammates, values teammates' perspectives, knowledge, and experience, and always willing to consider them.</big><br>
+      <input type="radio"  name="Q4" value="1" <?php if($current_student_scores[3]==1){echo("checked");}?> required><big>' Often discourteous and/or openly critical of teammates, doesn't want to listen to alternative perspectives.</big><br>
+      <input type="radio"  name="Q4" value="2" <?php if($current_student_scores[3]==2){echo("checked");}?> required><big>' Not always considerate or courteous towards teammates, usually appreciates teammates perspectives but often unwilling to consider them.</big><br>
+      <input type="radio"  name="Q4" value="3" <?php if($current_student_scores[3]==3){echo("checked");}?> required><big>' Mostly courteous to teammates, values teammates' perspectives and often willing to consider them.</big><br>
+      <input type="radio"  name="Q4" value="4" <?php if($current_student_scores[3]==4){echo("checked");}?> required><big>' Always courteous to teammates, values teammates' perspectives, knowledge, and experience, and always willing to consider them.</big><br>
     </fieldset>
 
     <hr>
     <h3>Question 5: Quality</h3>
     <fieldset id="Question5" >
-      <input type="radio"  name="Q5" value="0" <?php if(isset($old_score) && $old_score[5]==0){echo("checked");}?> required><big>' Rarely commits to shared documents, others often required to revise, debug, or fix their work.</big><br>
-      <input type="radio"  name="Q5" value="1" <?php if(isset($old_score) && $old_score[5]==1){echo("checked");}?> required><big>' Occasionally commits to shared documents, others sometimes needed to revise, debug, or fix their work.</big><br>
-      <input type="radio"  name="Q5" value="2" <?php if(isset($old_score) && $old_score[5]==2){echo("checked");}?> required><big>' Often commits to shared documents, others occasionally needed to revise, debug, or fix their work.</big><br>
-      <input type="radio"  name="Q5" value="3" <?php if(isset($old_score) && $old_score[5]==3){echo("checked");}?> required><big>' Frequently commits to shared documents, others rarely need to revise, debug, or fix their work.</big><br>
+      <input type="radio"  name="Q5" value="1" <?php if($current_student_scores[4]==1){echo("checked");}?> required><big>' Rarely commits to shared documents, others often required to revise, debug, or fix their work.</big><br>
+      <input type="radio"  name="Q5" value="2" <?php if($current_student_scores[4]==2){echo("checked");}?> required><big>' Occasionally commits to shared documents, others sometimes needed to revise, debug, or fix their work.</big><br>
+      <input type="radio"  name="Q5" value="3" <?php if($current_student_scores[4]==3){echo("checked");}?> required><big>' Often commits to shared documents, others occasionally needed to revise, debug, or fix their work.</big><br>
+      <input type="radio"  name="Q5" value="4" <?php if($current_student_scores[4]==4){echo("checked");}?> required><big>' Frequently commits to shared documents, others rarely need to revise, debug, or fix their work.</big><br>
     </fieldset>
 
     <hr>
