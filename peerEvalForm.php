@@ -181,46 +181,46 @@ input[type=radio]
     <hr>
     <h3>Question 1: Role</h3>
     <fieldset id="Question1" >
-      <input type="radio"  name="Q1" value="1" <?php if($current_student_scores[0]==1){echo("checked");}?> required><big>' Does not willingly assume team roles, rarely completes assigned work.</big><br>
-      <input type="radio"  name="Q1" value="2" <?php if($current_student_scores[0]==2){echo("checked");}?> required><big>' Usually accepts assigned team roles, occasionally completes assigned work.</big><br>
-      <input type="radio"  name="Q1" value="3" <?php if($current_student_scores[0]==3){echo("checked");}?> required><big>' Accepts assigned team roles, mostly completes assigned work.</big><br>
-      <input type="radio"  name="Q1" value="4" <?php if($current_student_scores[0]==4){echo("checked");}?> required><big>' Accepts all assigned team roles, always completes assigned work.</big><br>
+      <input type="radio"  name="Q1" value="0" <?php if($current_student_scores[0]==0){echo("checked");}?> required><big>' Does not willingly assume team roles, rarely completes assigned work.</big><br>
+      <input type="radio"  name="Q1" value="1" <?php if($current_student_scores[0]==1){echo("checked");}?> required><big>' Usually accepts assigned team roles, occasionally completes assigned work.</big><br>
+      <input type="radio"  name="Q1" value="2" <?php if($current_student_scores[0]==2){echo("checked");}?> required><big>' Accepts assigned team roles, mostly completes assigned work.</big><br>
+      <input type="radio"  name="Q1" value="3" <?php if($current_student_scores[0]==3){echo("checked");}?> required><big>' Accepts all assigned team roles, always completes assigned work.</big><br>
     </fieldset>
 
     <hr>
     <h3>Question 2: Leadership</h3>
     <fieldset id="Question2" >
-      <input type="radio"  name="Q2" value="1" <?php if($current_student_scores[1]==1){echo("checked");}?> required><big>' Rarely takes leadership role, does not collaborate, sometimes willing to assist teammates.</big><br>
-      <input type="radio"  name="Q2" value="2" <?php if($current_student_scores[1]==2){echo("checked");}?> required><big>' Occasionally shows leadership, mostly collaborates, generally willin to assist teammates.</big><br>
-      <input type="radio"  name="Q2" value="3" <?php if($current_student_scores[1]==3){echo("checked");}?> required><big>' Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates.</big><br>
-      <input type="radio"  name="Q2" value="4" <?php if($current_student_scores[1]==4){echo("checked");}?> required><big>' Takes leadership role, is a good collaborator, always willing to assist teammates.</big><br>
+      <input type="radio"  name="Q2" value="0" <?php if($current_student_scores[1]==0){echo("checked");}?> required><big>' Rarely takes leadership role, does not collaborate, sometimes willing to assist teammates.</big><br>
+      <input type="radio"  name="Q2" value="1" <?php if($current_student_scores[1]==1){echo("checked");}?> required><big>' Occasionally shows leadership, mostly collaborates, generally willin to assist teammates.</big><br>
+      <input type="radio"  name="Q2" value="2" <?php if($current_student_scores[1]==2){echo("checked");}?> required><big>' Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates.</big><br>
+      <input type="radio"  name="Q2" value="3" <?php if($current_student_scores[1]==3){echo("checked");}?> required><big>' Takes leadership role, is a good collaborator, always willing to assist teammates.</big><br>
     </fieldset>
 
     <hr>
     <h3>Question 3: Participation</h3>
     <fieldset id="Question3" >
-      <input type="radio"  name="Q3" value="1" <?php if($current_student_scores[2]==1){echo("checked");}?> required><big>' Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesnt share ideas.</big><br>
-      <input type="radio"  name="Q3" value="2" <?php if($current_student_scores[2]==2){echo("checked");}?> required><big>' Occasionally misses/ doesn't participate in meetings, somewhat unprepared for meetings, offers unclear/ unhelpful ideas.</big><br>
-      <input type="radio"  name="Q3" value="3" <?php if($current_student_scores[2]==3){echo("checked");}?> required><big>' Attends and participates in most meetings, comes prepared, and offers useful ideas.</big><br>
-      <input type="radio"  name="Q3" value="4" <?php if($current_student_scores[2]==4){echo("checked");}?> required><big>' Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas.</big><br>
+      <input type="radio"  name="Q3" value="0" <?php if($current_student_scores[2]==0){echo("checked");}?> required><big>' Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesnt share ideas.</big><br>
+      <input type="radio"  name="Q3" value="1" <?php if($current_student_scores[2]==1){echo("checked");}?> required><big>' Occasionally misses/ doesn't participate in meetings, somewhat unprepared for meetings, offers unclear/ unhelpful ideas.</big><br>
+      <input type="radio"  name="Q3" value="2" <?php if($current_student_scores[2]==2){echo("checked");}?> required><big>' Attends and participates in most meetings, comes prepared, and offers useful ideas.</big><br>
+      <input type="radio"  name="Q3" value="3" <?php if($current_student_scores[2]==3){echo("checked");}?> required><big>' Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas.</big><br>
     </fieldset>
 
     <hr>
     <h3>Question 4: Professionalism</h3>
     <fieldset id="Question4" >
-      <input type="radio"  name="Q4" value="1" <?php if($current_student_scores[3]==1){echo("checked");}?> required><big>' Often discourteous and/or openly critical of teammates, doesn't want to listen to alternative perspectives.</big><br>
-      <input type="radio"  name="Q4" value="2" <?php if($current_student_scores[3]==2){echo("checked");}?> required><big>' Not always considerate or courteous towards teammates, usually appreciates teammates perspectives but often unwilling to consider them.</big><br>
-      <input type="radio"  name="Q4" value="3" <?php if($current_student_scores[3]==3){echo("checked");}?> required><big>' Mostly courteous to teammates, values teammates' perspectives and often willing to consider them.</big><br>
-      <input type="radio"  name="Q4" value="4" <?php if($current_student_scores[3]==4){echo("checked");}?> required><big>' Always courteous to teammates, values teammates' perspectives, knowledge, and experience, and always willing to consider them.</big><br>
+      <input type="radio"  name="Q4" value="0" <?php if($current_student_scores[3]==0){echo("checked");}?> required><big>' Often discourteous and/or openly critical of teammates, doesn't want to listen to alternative perspectives.</big><br>
+      <input type="radio"  name="Q4" value="1" <?php if($current_student_scores[3]==1){echo("checked");}?> required><big>' Not always considerate or courteous towards teammates, usually appreciates teammates perspectives but often unwilling to consider them.</big><br>
+      <input type="radio"  name="Q4" value="2" <?php if($current_student_scores[3]==2){echo("checked");}?> required><big>' Mostly courteous to teammates, values teammates' perspectives and often willing to consider them.</big><br>
+      <input type="radio"  name="Q4" value="3" <?php if($current_student_scores[3]==3){echo("checked");}?> required><big>' Always courteous to teammates, values teammates' perspectives, knowledge, and experience, and always willing to consider them.</big><br>
     </fieldset>
 
     <hr>
     <h3>Question 5: Quality</h3>
     <fieldset id="Question5" >
-      <input type="radio"  name="Q5" value="1" <?php if($current_student_scores[4]==1){echo("checked");}?> required><big>' Rarely commits to shared documents, others often required to revise, debug, or fix their work.</big><br>
-      <input type="radio"  name="Q5" value="2" <?php if($current_student_scores[4]==2){echo("checked");}?> required><big>' Occasionally commits to shared documents, others sometimes needed to revise, debug, or fix their work.</big><br>
-      <input type="radio"  name="Q5" value="3" <?php if($current_student_scores[4]==3){echo("checked");}?> required><big>' Often commits to shared documents, others occasionally needed to revise, debug, or fix their work.</big><br>
-      <input type="radio"  name="Q5" value="4" <?php if($current_student_scores[4]==4){echo("checked");}?> required><big>' Frequently commits to shared documents, others rarely need to revise, debug, or fix their work.</big><br>
+      <input type="radio"  name="Q5" value="0" <?php if($current_student_scores[4]==0){echo("checked");}?> required><big>' Rarely commits to shared documents, others often required to revise, debug, or fix their work.</big><br>
+      <input type="radio"  name="Q5" value="1" <?php if($current_student_scores[4]==1){echo("checked");}?> required><big>' Occasionally commits to shared documents, others sometimes needed to revise, debug, or fix their work.</big><br>
+      <input type="radio"  name="Q5" value="2" <?php if($current_student_scores[4]==2){echo("checked");}?> required><big>' Often commits to shared documents, others occasionally needed to revise, debug, or fix their work.</big><br>
+      <input type="radio"  name="Q5" value="3" <?php if($current_student_scores[4]==3){echo("checked");}?> required><big>' Frequently commits to shared documents, others rarely need to revise, debug, or fix their work.</big><br>
     </fieldset>
 
     <hr>
