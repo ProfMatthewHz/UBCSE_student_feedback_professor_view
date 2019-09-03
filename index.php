@@ -65,7 +65,7 @@ if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText'])
 	$email = $_POST['loginEmailEntryText'];
 
 	//check if student is enrolled
-	$stmt = $con->prepare('SELECT Email from Students WHERE Email=?');
+	$stmt = $con->prepare('SELECT email from students WHERE email=?');
     $stmt->bind_param('s',$email);
     $stmt->execute();
 	$stmt->bind_result($flag);
@@ -89,20 +89,20 @@ if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText'])
       $stmt->bind_param('si', $email, $expiration_time);
       $stmt->execute();
     }
-    $codeFree = false;
+    $code_available = false;
     //if password is taken try until it's not taken
-    while(!$codeFree){
+    while(!$code_available){
       $code = random_string(10);
       $stmt = $con->prepare('UPDATE student_login SET password =? WHERE email=?');
       $stmt->bind_param('ss', $code, $email);
-      $codeFree = $stmt->execute();
+      $code_available = $stmt->execute();
     }
     $date = new DateTime("@$expiration_time");
     $date->setTimezone(new DateTimeZone('America/New_York'));
-    $humanExpTime = $date->format('h:i a');
+    $human_exp_time = $date->format('h:i a');
     //be careful the email text is whitespace sensitive
   mail($email,"Access Code", "<h1>Your code is: ".$code."</h1>
-        <p>It will expire at ".$humanExpTime." EST</p>
+        <p>It will expire at ".$human_exp_time." EST</p>
         </hr>
         Use it here: ".SITE_HOME."accessCodePage.php",
         'Content-type: text/html; charset=utf-8');

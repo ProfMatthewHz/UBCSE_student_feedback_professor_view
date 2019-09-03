@@ -67,9 +67,9 @@ if(isset($_POST['accessCodeEntryText']) && !empty($_POST['accessCodeEntryText'])
 		$stmt->close();
 		exit();
 	}
+	$time = time();
 
 	$stmt = $con->prepare('SELECT id, email FROM student_login WHERE password=? AND expiration_time > ?');
-	$time = time();
 	$stmt->bind_param('si',$code,$time);
 	$stmt->execute();
 	$stmt->store_result();
@@ -83,10 +83,10 @@ if(isset($_POST['accessCodeEntryText']) && !empty($_POST['accessCodeEntryText'])
 	$stmt->bind_result($id,$email);
 	$stmt->fetch();
 	
-	$stmt = $con->prepare('SELECT Student_ID FROM Students WHERE email=?');
+	$stmt = $con->prepare('SELECT student_ID FROM students WHERE email=?');
     $stmt->bind_param('s', $email);
     $stmt->execute();
-	$stmt->bind_result($Student_ID);
+	$stmt->bind_result($student_ID);
 	$stmt->store_result();
 	$stmt->fetch();
 	
@@ -94,7 +94,7 @@ if(isset($_POST['accessCodeEntryText']) && !empty($_POST['accessCodeEntryText'])
 	$_SESSION['loggedin'] = TRUE;
 	$_SESSION['email'] = $email;
 	$_SESSION['id'] = $id;
-	$_SESSION['Student_ID'] =$Student_ID;
+	$_SESSION['student_ID'] =$student_ID;
 	$stmt->close();
 	header("Location: courseSelect.php");
 	exit();

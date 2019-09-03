@@ -3,23 +3,24 @@ error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 session_start();
-require "lib/constants.php"
+require "lib/constants.php";
+
 if(!isset($_SESSION['id'])) {
    header("Location: ".SITE_HOME."index.php");
    exit();
  }
 $email = $_SESSION['email'];
 $id = $_SESSION['id'];
-$Student_ID = $_SESSION['Student_ID'];
+$student_ID = $_SESSION['student_ID'];
 require "lib/database.php";
 $con = connectToDatabase();
 
 
  $student_classes =array();
  $class_IDs = array();
- $stmt = $con->prepare('SELECT DISTINCT course.Name, course.Course_ID FROM `Teammates`  INNER JOIN course
-ON Teammates.Course_ID = course.Course_ID WHERE Teammates.Student_ID=?');
- $stmt->bind_param('i', $Student_ID);
+ $stmt = $con->prepare('SELECT DISTINCT course.name, course.course_ID FROM `teammates`  INNER JOIN course
+ON teammates.course_ID = course.course_ID WHERE teammates.student_ID=?');
+ $stmt->bind_param('i', $student_ID);
  $stmt->execute();
  $stmt->bind_result($class_name,$class_ID);
  $stmt->store_result();

@@ -8,7 +8,7 @@ session_start();
   
 $email = $_SESSION['email'];
 $id = $_SESSION['id'];
-$Student_ID= $_SESSION['Student_ID'];
+$student_ID= $_SESSION['student_ID'];
 $course_ID=$_SESSION['course_ID'];
 $course = $_SESSION['course'];
 
@@ -16,29 +16,20 @@ require "lib/database.php";
 $con = connectToDatabase();
 
  //fetch teammate key for current student
- 	$stmt = $con->prepare('SELECT Teammate_key FROM Teammates WHERE Student_ID=? AND Course_ID =?');
-    $stmt->bind_param('ss', $Student_ID, $course_ID);
+ 	$stmt = $con->prepare('SELECT teammate_key FROM teammates WHERE student_ID=? AND course_ID =?');
+    $stmt->bind_param('ss', $student_ID, $course_ID);
     $stmt->execute();
-	$stmt->bind_result($Teammate_key);
+	$stmt->bind_result($teammate_key);
 	$stmt->store_result();
 	$stmt->fetch();
-
-	if($stmt->num_rows == 0){ //student has not submitted yet.
-	//TODO: make an error here
-		//exit();
-	}
-  //check if grades are already submitted
-  //if(!empty($old_scores_string){
-    //$old_scores = explode(":", $old_scores_string);
-  //}
 
 	//get group members
 	$group_members=array();
 	$group_IDs=array();
-	$stmt = $con->prepare('SELECT Students.Name, Students.Student_ID FROM Teammates
-	INNER JOIN Students ON Teammates.Teammate_ID = Students.Student_ID WHERE
-	Teammates.Teammate_key=? AND Teammates.Course_ID =? AND Teammates.Student_ID=?;');
-    $stmt->bind_param('iii',$Teammate_key, $course_ID,$Student_ID);
+	$stmt = $con->prepare('SELECT students.name, students.student_ID FROM teammates
+	INNER JOIN students ON teammates.teammate_ID = students.student_ID WHERE
+	teammates.teammate_key=? AND teammates.course_ID =? AND teammates.student_ID=?;');
+    $stmt->bind_param('iii',$teammate_key, $course_ID,$student_ID);
     $stmt->execute();
 	$stmt->bind_result($group_member,$group_ID);
 	$stmt->store_result();
@@ -53,58 +44,58 @@ $con = connectToDatabase();
 	}
 
 	$Name =  $group_members[$_SESSION['group_member_number']];
-	$Name_ID = $group_IDs[$_SESSION['group_member_number']];
+	$name_ID = $group_IDs[$_SESSION['group_member_number']];
 
 	//fetch eval id, if it exists
-	$stmt = $con->prepare('SELECT id FROM Eval WHERE Teammate_key=? AND Course_ID =? AND Submitter_ID=? AND Teammate_ID=?');
-    $stmt->bind_param('iiii', $Teammate_key, $course_ID,$Student_ID,$Name_ID);
+	$stmt = $con->prepare('SELECT id FROM eval WHERE teammate_key=? AND course_ID =? AND submitter_ID=? AND teammate_ID=?');
+    $stmt->bind_param('iiii', $teammate_key, $course_ID,$student_ID,$name_ID);
     $stmt->execute();
-	$stmt->bind_result($Eval_ID);
+	$stmt->bind_result($eval_ID);
 	$stmt->store_result();
 	$stmt->fetch();
-	if($stmt->num_rows == 0){//create eval id if does not exist and get get the Eval_ID
-		$stmt = $con->prepare('INSERT INTO Eval (Teammate_key, Course_ID, Submitter_ID, Teammate_ID) VALUES(?, ?, ?, ?)');
-		$stmt->bind_param('iiii', $Teammate_key, $course_ID,$Student_ID,$Name_ID);
+	if($stmt->num_rows == 0){//create eval id if does not exist and get get the eval_ID
+		$stmt = $con->prepare('INSERT INTO eval (teammate_key, course_ID, submitter_ID, teammate_ID) VALUES(?, ?, ?, ?)');
+		$stmt->bind_param('iiii', $teammate_key, $course_ID,$student_ID,$name_ID);
 		$stmt->execute();
 
-		$stmt = $con->prepare('SELECT id FROM Eval WHERE Teammate_key=? AND Course_ID =? AND Submitter_ID=? AND Teammate_ID=?');
-		$stmt->bind_param('iiii', $Teammate_key, $course_ID,$Student_ID,$Name_ID);
+		$stmt = $con->prepare('SELECT id FROM eval WHERE teammate_key=? AND course_ID =? AND submitter_ID=? AND teammate_ID=?');
+		$stmt->bind_param('iiii', $teammate_key, $course_ID,$student_ID,$name_ID);
 		$stmt->execute();
-		$stmt->bind_result($Eval_ID);
+		$stmt->bind_result($eval_ID);
 		$stmt->store_result();
 		$stmt->fetch();
 	}
 
 	$current_student_scores=array(-1,-1,-1,-1,-1);
 	//grab scores if they exist
-	$stmt = $con->prepare('SELECT Score1, Score2, Score3, Score4, Score5 FROM Scores WHERE Eval_key=?');
-	$stmt->bind_param('i', $Eval_ID);
+	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_key=?');
+	$stmt->bind_param('i', $eval_ID);
 	$stmt->execute();
-	$stmt->bind_result($Score1, $Score2, $Score3, $Score4, $Score5);
+	$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
 	$stmt->store_result();
 	while($stmt->fetch()){
-		$current_student_scores=array($Score1, $Score2, $Score3, $Score4, $Score5);
+		$current_student_scores=array($score1, $score2, $score3, $score4, $score5);
 	}
 	//if scores don't exist
 	if($current_student_scores[1] ==-1){
-		$stmt = $con->prepare('INSERT INTO Scores (Eval_key) VALUES(?)');
+		$stmt = $con->prepare('INSERT INTO scores (eval_key) VALUES(?)');
 		$a=0;$b=0;$c=0;$d=0;$e=0;
-		$stmt->bind_param('i', $Eval_ID);
+		$stmt->bind_param('i', $eval_ID);
 		$stmt->execute();
 	}
 	//When submit button is pressed
 	if ( !empty($_POST) && isset($_POST)){
 		//save results
 		$a=intval($_POST['Q1']); $b=intval($_POST['Q2']); $c=intval($_POST['Q3']); $d=intval($_POST['Q4']); $e=intval($_POST['Q5']);
-		$stmt = $con->prepare('UPDATE Scores set Score1=?, Score2=?, Score3=?, Score4=?, Score5=? WHERE Eval_key=?');
+		$stmt = $con->prepare('UPDATE scores set score1=?, score2=?, score3=?, score4=?, score5=? WHERE eval_key=?');
 
-		$stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $Eval_ID);
+		$stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
 		$stmt->execute();
 
-		$stmt = $con->prepare('SELECT Score1, Score2, Score3, Score4, Score5 FROM Scores WHERE Eval_key=?');
-		$stmt->bind_param('i', $Eval_ID);
+		$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_key=?');
+		$stmt->bind_param('i', $eval_ID);
 		$stmt->execute();
-		$stmt->bind_result($Score1, $Score2, $Score3, $Score4, $Score5);
+		$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
 		$stmt->store_result();
 
 
