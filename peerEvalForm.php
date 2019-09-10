@@ -15,11 +15,11 @@ $course = $_SESSION['course'];
 require "lib/database.php";
 $con = connectToDatabase();
 
- //fetch teammate key for current student
- 	$stmt = $con->prepare('SELECT teammate_key FROM teammates WHERE student_ID=? AND course_ID =?');
-    $stmt->bind_param('ss', $student_ID, $course_ID);
+ //fetch survey_id for current class
+ 	$stmt = $con->prepare('SELECT survey_id FROM course WHERE course_ID =?');
+    $stmt->bind_param('s', $course_ID);
     $stmt->execute();
-	$stmt->bind_result($teammate_key);
+	$stmt->bind_result($survey_id);
 	$stmt->store_result();
 	$stmt->fetch();
 
@@ -27,9 +27,8 @@ $con = connectToDatabase();
 	$group_members=array();
 	$group_IDs=array();
 	$stmt = $con->prepare('SELECT students.name, students.student_ID FROM teammates
-	INNER JOIN students ON teammates.teammate_ID = students.student_ID WHERE
-	teammates.teammate_key=? AND teammates.course_ID =? AND teammates.student_ID=?;');
-    $stmt->bind_param('iii',$teammate_key, $course_ID,$student_ID);
+	INNER JOIN students ON teammates.teammate_ID = students.student_ID WHERE teammates.course_ID =? AND teammates.student_ID=?;');
+    $stmt->bind_param('ii',$course_ID,$student_ID);
     $stmt->execute();
 	$stmt->bind_result($group_member,$group_ID);
 	$stmt->store_result();
@@ -47,26 +46,26 @@ $con = connectToDatabase();
 	$name_ID = $group_IDs[$_SESSION['group_member_number']];
 
 	//fetch eval id, if it exists
-	$stmt = $con->prepare('SELECT id FROM eval WHERE teammate_key=? AND course_ID =? AND submitter_ID=? AND teammate_ID=?');
-    $stmt->bind_param('iiii', $teammate_key, $course_ID,$student_ID,$name_ID);
+	$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND course_ID =? AND submitter_ID=? AND teammate_id=?');
+    $stmt->bind_param('iiii', $survey_id, $course_ID,$student_ID,$name_ID);
     $stmt->execute();
 	$stmt->bind_result($eval_ID);
 	$stmt->store_result();
 	$stmt->fetch();
 	if($stmt->num_rows == 0){//create eval id if does not exist and get get the eval_ID
-		$stmt = $con->prepare('INSERT INTO eval (teammate_key, course_ID, submitter_ID, teammate_ID) VALUES(?, ?, ?, ?)');
-		$stmt->bind_param('iiii', $teammate_key, $course_ID,$student_ID,$name_ID);
+		$stmt = $con->prepare('INSERT INTO eval (survey_id, course_ID, submitter_ID, teammate_ID) VALUES(?, ?, ?, ?)');
+		$stmt->bind_param('iiii', $survey_id, $course_ID,$student_ID,$name_ID);
 		$stmt->execute();
 
-		$stmt = $con->prepare('SELECT id FROM eval WHERE teammate_key=? AND course_ID =? AND submitter_ID=? AND teammate_ID=?');
-		$stmt->bind_param('iiii', $teammate_key, $course_ID,$student_ID,$name_ID);
+		$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND course_ID =? AND submitter_ID=? AND teammate_ID=?');
+		$stmt->bind_param('iiii', $survey_id, $course_ID,$student_ID,$name_ID);
 		$stmt->execute();
 		$stmt->bind_result($eval_ID);
 		$stmt->store_result();
 		$stmt->fetch();
 	}
 
-	$current_student_scores=array(-1,-1,-1,-1,-1);
+	$student_scores=array(-1,-1,-1,-1,-1);
 	//grab scores if they exist
 	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_key=?');
 	$stmt->bind_param('i', $eval_ID);
@@ -74,10 +73,10 @@ $con = connectToDatabase();
 	$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
 	$stmt->store_result();
 	while($stmt->fetch()){
-		$current_student_scores=array($score1, $score2, $score3, $score4, $score5);
+		$student_scores=array($score1, $score2, $score3, $score4, $score5);
 	}
 	//if scores don't exist
-	if($current_student_scores[1] ==-1){
+	if($student_scores[1] ==-1){
 		$stmt = $con->prepare('INSERT INTO scores (eval_key) VALUES(?)');
 		$a=0;$b=0;$c=0;$d=0;$e=0;
 		$stmt->bind_param('i', $eval_ID);
@@ -184,46 +183,46 @@ option {
     <hr>
     <h3>Question 1: Role</h3>
 	  <select name="Q1"class="w3-select">
-	   <option value="0" name="Q1" required <?php if($current_student_scores[0]==0){echo("selected='selected'");}?> >Does not willingly assume team roles, rarely completes assigned work.</option>
-	   <option value="1" name="Q1" required <?php if($current_student_scores[0]==1){echo("selected='selected'");}?> >Usually accepts assigned team roles, occasionally completes assigned work.</option>
-	   <option value="2" name="Q1" required <?php if($current_student_scores[0]==2){echo("selected='selected'");}?> >Accepts assigned team roles, mostly completes assigned work.</option>
-	   <option value="3" name="Q1" required <?php if($current_student_scores[0]==3){echo("selected='selected'");}?> >Accepts all assigned team roles, always completes assigned work.</option>
+	   <option value="0" name="Q1" required <?php if($student_scores[0]==0){echo("selected='selected'");}?> >Does not willingly assume team roles, rarely completes assigned work.</option>
+	   <option value="1" name="Q1" required <?php if($student_scores[0]==1){echo("selected='selected'");}?> >Usually accepts assigned team roles, occasionally completes assigned work.</option>
+	   <option value="2" name="Q1" required <?php if($student_scores[0]==2){echo("selected='selected'");}?> >Accepts assigned team roles, mostly completes assigned work.</option>
+	   <option value="3" name="Q1" required <?php if($student_scores[0]==3){echo("selected='selected'");}?> >Accepts all assigned team roles, always completes assigned work.</option>
 	  </select>
 
     <hr>
     <h3>Question 2: Leadership</h3>
 	 <select name="Q2"class="w3-select">
-	   <option value="0" name="Q2" required <?php if($current_student_scores[1]==0){echo("selected='selected'");}?> >Rarely takes leadership role, does not collaborate, sometimes willing to assist teammates.</option>
-	   <option value="1" name="Q2" required <?php if($current_student_scores[1]==1){echo("selected='selected'");}?> >Occasionally shows leadership, mostly collaborates, generally willin to assist teammates.</option>
-	   <option value="2" name="Q2" required <?php if($current_student_scores[1]==2){echo("selected='selected'");}?> >Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates.</option>
-	   <option value="3" name="Q2" required <?php if($current_student_scores[1]==3){echo("selected='selected'");}?> >Takes leadership role, is a good collaborator, always willing to assist teammates.</option>
+	   <option value="0" name="Q2" required <?php if($student_scores[1]==0){echo("selected='selected'");}?> >Rarely takes leadership role, does not collaborate, sometimes willing to assist teammates.</option>
+	   <option value="1" name="Q2" required <?php if($student_scores[1]==1){echo("selected='selected'");}?> >Occasionally shows leadership, mostly collaborates, generally willin to assist teammates.</option>
+	   <option value="2" name="Q2" required <?php if($student_scores[1]==2){echo("selected='selected'");}?> >Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates.</option>
+	   <option value="3" name="Q2" required <?php if($student_scores[1]==3){echo("selected='selected'");}?> >Takes leadership role, is a good collaborator, always willing to assist teammates.</option>
 	  </select>
 
     <hr>
     <h3>Question 3: Participation</h3>
 	  <select name="Q3"class="w3-select">
-	   <option value="0" name="Q3" required <?php if($current_student_scores[2]==0){echo("selected='selected'");}?> >Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesnt share ideas.</option>
-	   <option value="1" name="Q3" required <?php if($current_student_scores[2]==1){echo("selected='selected'");}?> >Occasionally misses/ doesn't participate in meetings, somewhat unprepared for meetings, offers unclear/ unhelpful ideas.</option>
-	   <option value="2" name="Q3" required <?php if($current_student_scores[2]==2){echo("selected='selected'");}?> >Attends and participates in most meetings, comes prepared, and offers useful ideas.</option>
-	   <option value="3" name="Q3" required <?php if($current_student_scores[2]==3){echo("selected='selected'");}?> >Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas.</option>
+	   <option value="0" name="Q3" required <?php if($student_scores[2]==0){echo("selected='selected'");}?> >Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesnt share ideas.</option>
+	   <option value="1" name="Q3" required <?php if($student_scores[2]==1){echo("selected='selected'");}?> >Occasionally misses/ doesn't participate in meetings, somewhat unprepared for meetings, offers unclear/ unhelpful ideas.</option>
+	   <option value="2" name="Q3" required <?php if($student_scores[2]==2){echo("selected='selected'");}?> >Attends and participates in most meetings, comes prepared, and offers useful ideas.</option>
+	   <option value="3" name="Q3" required <?php if($student_scores[2]==3){echo("selected='selected'");}?> >Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas.</option>
 	  </select>
 
     <hr>
     <h3>Question 4: Professionalism</h3>
 	  <select name="Q4"class="w3-select">
-	   <option value="0" name="Q4" required <?php if($current_student_scores[3]==0){echo("selected='selected'");}?> >Often discourteous and/or openly critical of teammates, doesn't want to listen to alternative perspectives.</option>
-	   <option value="1" name="Q4" required <?php if($current_student_scores[3]==1){echo("selected='selected'");}?> >Not always considerate or courteous towards teammates, usually appreciates teammates perspectives but often unwilling to consider them.</option>
-	   <option value="2" name="Q4" required <?php if($current_student_scores[3]==2){echo("selected='selected'");}?> >Mostly courteous to teammates, values teammates' perspectives and often willing to consider them.</option>
-	   <option value="3" name="Q4" required <?php if($current_student_scores[3]==3){echo("selected='selected'");}?> >Always courteous to teammates, values teammates' perspectives, knowledge, and experience, and always willing to consider them.</option>
+	   <option value="0" name="Q4" required <?php if($student_scores[3]==0){echo("selected='selected'");}?> >Often discourteous and/or openly critical of teammates, doesn't want to listen to alternative perspectives.</option>
+	   <option value="1" name="Q4" required <?php if($student_scores[3]==1){echo("selected='selected'");}?> >Not always considerate or courteous towards teammates, usually appreciates teammates perspectives but often unwilling to consider them.</option>
+	   <option value="2" name="Q4" required <?php if($student_scores[3]==2){echo("selected='selected'");}?> >Mostly courteous to teammates, values teammates' perspectives and often willing to consider them.</option>
+	   <option value="3" name="Q4" required <?php if($student_scores[3]==3){echo("selected='selected'");}?> >Always courteous to teammates, values teammates' perspectives, knowledge, and experience, and always willing to consider them.</option>
 	  </select>
 
     <hr>
     <h3>Question 5: Quality</h3>
 	  <select name="Q5"class="w3-select">
-	   <option value="0" name="Q5" required <?php if($current_student_scores[4]==0){echo("selected='selected'");}?> >Rarely commits to shared documents, others often required to revise, debug, or fix their work.</option>
-	   <option value="1" name="Q5" required <?php if($current_student_scores[4]==1){echo("selected='selected'");}?> >Occasionally commits to shared documents, others sometimes needed to revise, debug, or fix their work.</option>
-	   <option value="2" name="Q5" required <?php if($current_student_scores[4]==2){echo("selected='selected'");}?> >Often commits to shared documents, others occasionally needed to revise, debug, or fix their work.</option>
-	   <option value="3" name="Q5" required <?php if($current_student_scores[4]==3){echo("selected='selected'");}?> >Frequently commits to shared documents, others rarely need to revise, debug, or fix their work.</option>
+	   <option value="0" name="Q5" required <?php if($student_scores[4]==0){echo("selected='selected'");}?> >Rarely commits to shared documents, others often required to revise, debug, or fix their work.</option>
+	   <option value="1" name="Q5" required <?php if($student_scores[4]==1){echo("selected='selected'");}?> >Occasionally commits to shared documents, others sometimes needed to revise, debug, or fix their work.</option>
+	   <option value="2" name="Q5" required <?php if($student_scores[4]==2){echo("selected='selected'");}?> >Often commits to shared documents, others occasionally needed to revise, debug, or fix their work.</option>
+	   <option value="3" name="Q5" required <?php if($student_scores[4]==3){echo("selected='selected'");}?> >Frequently commits to shared documents, others rarely need to revise, debug, or fix their work.</option>
 	  </select>
 
     <hr>
