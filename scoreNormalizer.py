@@ -39,32 +39,32 @@ def createCSV(inputDict,courseName):
 	print("Data exported to "+ courseName +".csv")
 
 
-def process(classSelect):
+def process(courseSelect):
 	mydb=connect()
 	mycursor=mydb.cursor()
 
-	mycursor.execute("SELECT course_ID, code FROM course WHERE code= %s",[classSelect])
-	ClassTuple = mycursor.fetchall()
+	mycursor.execute("SELECT course_ID, code FROM course WHERE code= %s",[courseSelect])
+	courseTuple = mycursor.fetchall()
 	#get the 0th index from the 0th tuple
-	Class=ClassTuple[0]
-	Class_ID=Class[0]
-	Class_code= Class[1]
+	course=courseTuple[0]
+	course_ID=course[0]
+	course_code= course[1]
 	studentInfo = {}
-	mycursor.execute("SELECT DISTINCT teammates.student_ID, students.name, students.email FROM teammates INNER JOIN students ON teammates.student_ID=students.student_ID WHERE course_ID= %s",[Class_ID])
-	Submitters = mycursor.fetchall()
-	Submitter_IDs =[]
-	for submitter in Submitters:
+	mycursor.execute("SELECT DISTINCT teammates.student_ID, students.name, students.email FROM teammates INNER JOIN students ON teammates.student_ID=students.student_ID WHERE course_ID= %s",[course_ID])
+	submitters = mycursor.fetchall()
+	submitter_IDs =[]
+	for submitter in submitters:
 		studentInfo[submitter[0]] = [submitter[1],submitter[2]]
-		Submitter_IDs.append(submitter[0])
+		submitter_IDs.append(submitter[0])
 	
 	results ={}
-	for submitter in Submitter_IDs:
+	for submitter in submitter_IDs:
 		denom=0   
-		mycursor.execute("SELECT DISTINCT students.student_ID, scores.score1,scores.score2, scores.score3, scores.score4, scores.score5, eval.teammate_ID FROM students INNER JOIN teammates on students.student_ID =teammates.student_ID and teammates.course_ID = %s INNER JOIN eval on teammates.teammate_key = eval.teammate_key AND teammates.student_ID = eval.submitter_ID INNER JOIN scores ON eval.id = scores.eval_key where students.student_ID = %s",[Class_ID,submitter])
+		mycursor.execute("SELECT DISTINCT students.student_ID, scores.score1,scores.score2, scores.score3, scores.score4, scores.score5, eval.teammate_ID, FROM students INNER JOIN teammates on students.student_ID =teammates.student_ID and teammates.course_ID = %s INNER JOIN eval on teammates.course_id = eval.course_id AND teammates.student_ID = eval.submitter_ID INNER JOIN scores ON eval.id = scores.eval_key where students.student_ID = %s",[course_ID,submitter])
 		myresult = mycursor.fetchall()
 		for x in myresult:
 			denom+= x[1] + x[2] + x[3] + x[4] + x[5]
-		mycursor.execute("SELECT DISTINCT students.student_ID, scores.score1,scores.score2, scores.score3, scores.score4, scores.score5, eval.teammate_ID FROM students INNER JOIN teammates on students.student_ID =teammates.student_ID and teammates.course_ID = %s INNER JOIN eval on teammates.teammate_key = eval.teammate_key AND teammates.student_ID = eval.submitter_ID INNER JOIN scores ON eval.id = scores.eval_key where students.student_ID = %s",[Class_ID,submitter])
+		mycursor.execute("SELECT DISTINCT students.student_ID, scores.score1,scores.score2, scores.score3, scores.score4, scores.score5, eval.teammate_ID FROM students INNER JOIN teammates on students.student_ID =teammates.student_ID and teammates.course_ID = %s INNER JOIN eval on teammates.course_id = eval.course_id AND teammates.student_ID = eval.submitter_ID INNER JOIN scores ON eval.id = scores.eval_key where students.student_ID = %s",[course_ID,submitter])
 		myresult = mycursor.fetchall()
 		norm={}
 		for x in myresult:
@@ -79,9 +79,9 @@ def process(classSelect):
 		solution[entry] = []
 		solution[entry].append(studentInfo[entry][0])
 		solution[entry].append(studentInfo[entry][1])
-		solution[entry].append(Class_code)
+		solution[entry].append(course_code)
 		solution[entry].append(sum(results[entry])/len(results[entry]))
-	createCSV(solution,Class_code)
+	createCSV(solution,course_code)
 
    
 
