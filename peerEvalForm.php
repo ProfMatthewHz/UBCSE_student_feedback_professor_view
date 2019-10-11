@@ -9,104 +9,98 @@ session_start();
 $email = $_SESSION['email'];
 $id = $_SESSION['id'];
 $student_ID= $_SESSION['student_ID'];
-$course_ID=$_SESSION['course_ID'];
+$surveys_ID=$_SESSION['surveys_ID'];
 $course = $_SESSION['course'];
 
 require "lib/database.php";
 $con = connectToDatabase();
 
- //fetch survey_id for current class
- 	$stmt = $con->prepare('SELECT survey_id FROM course WHERE course_ID =?');
-    $stmt->bind_param('s', $course_ID);
-    $stmt->execute();
-	$stmt->bind_result($survey_id);
-	$stmt->store_result();
-	$stmt->fetch();
+//get group members
+$group_members=array();
+$group_IDs=array();
+$stmt = $con->prepare('SELECT students.name, students.student_ID FROM teammates
+	                     INNER JOIN students ON teammates.teammate_ID = students.student_ID WHERE teammates.survey_ID =? AND teammates.student_ID=?;');
+$stmt->bind_param('ii',$surveys_ID,$student_ID);
+$stmt->execute();
+$stmt->bind_result($group_member,$group_ID);
+$stmt->store_result();
+while ($stmt->fetch()){
+	array_push($group_members,$group_member);
+	array_push($group_IDs,$group_ID);
+}
 
-	//get group members
-	$group_members=array();
-	$group_IDs=array();
-	$stmt = $con->prepare('SELECT students.name, students.student_ID FROM teammates
-	INNER JOIN students ON teammates.teammate_ID = students.student_ID WHERE teammates.course_ID =? AND teammates.student_ID=?;');
-    $stmt->bind_param('ii',$course_ID,$student_ID);
-    $stmt->execute();
-	$stmt->bind_result($group_member,$group_ID);
-	$stmt->store_result();
-	while ($stmt->fetch()){
-		array_push($group_members,$group_member);
-		array_push($group_IDs,$group_ID);
-	}
+$num_of_group_members =  count($group_members);
+if (!isset($_SESSION['group_member_number'])){
+	$_SESSION['group_member_number'] = 0;
+}
 
-	$num_of_group_members =  count($group_members);
-	if(!isset($_SESSION['group_member_number'])){
-		$_SESSION['group_member_number'] = 0;
-	}
+$Name =  $group_members[$_SESSION['group_member_number']];
+$name_ID = $group_IDs[$_SESSION['group_member_number']];
 
-	$Name =  $group_members[$_SESSION['group_member_number']];
-	$name_ID = $group_IDs[$_SESSION['group_member_number']];
+//fetch eval id, if it exists
+$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND submitter_ID=? AND teammate_id=?');
+$stmt->bind_param('iii', $surveys_ID, $student_ID,$name_ID);
+$stmt->execute();
+$stmt->bind_result($eval_ID);
+$stmt->store_result();
+$stmt->fetch();
+if ($stmt->num_rows == 0){
+  //create eval id if does not exist and get get the eval_ID
+	$stmt = $con->prepare('INSERT INTO eval (survey_id, submitter_ID, teammate_ID) VALUES(?, ?, ?)');
+	$stmt->bind_param('iii', $surveys_ID, $student_ID,$name_ID);
+	$stmt->execute();
 
-	//fetch eval id, if it exists
-	$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND course_ID =? AND submitter_ID=? AND teammate_id=?');
-    $stmt->bind_param('iiii', $survey_id, $course_ID,$student_ID,$name_ID);
-    $stmt->execute();
+	$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND submitter_ID=? AND teammate_ID=?');
+	$stmt->bind_param('iii', $surveys_ID, $student_ID,$name_ID);
+	$stmt->execute();
 	$stmt->bind_result($eval_ID);
 	$stmt->store_result();
 	$stmt->fetch();
-	if($stmt->num_rows == 0){//create eval id if does not exist and get get the eval_ID
-		$stmt = $con->prepare('INSERT INTO eval (survey_id, course_ID, submitter_ID, teammate_ID) VALUES(?, ?, ?, ?)');
-		$stmt->bind_param('iiii', $survey_id, $course_ID,$student_ID,$name_ID);
-		$stmt->execute();
+}
 
-		$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND course_ID =? AND submitter_ID=? AND teammate_ID=?');
-		$stmt->bind_param('iiii', $survey_id, $course_ID,$student_ID,$name_ID);
-		$stmt->execute();
-		$stmt->bind_result($eval_ID);
-		$stmt->store_result();
-		$stmt->fetch();
-	}
+$student_scores=array(-1,-1,-1,-1,-1);
+//grab scores if they exist
+$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_id=?');
+$stmt->bind_param('i', $eval_ID);
+$stmt->execute();
+$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
+$stmt->store_result();
+while ($stmt->fetch()) {
+	$student_scores=array($score1, $score2, $score3, $score4, $score5);
+}
 
-	$student_scores=array(-1,-1,-1,-1,-1);
-	//grab scores if they exist
-	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_key=?');
+//When submit button is pressed
+if ( !empty($_POST) && isset($_POST)) {
+	//save results
+	$a=intval($_POST['Q1']); $b=intval($_POST['Q2']); $c=intval($_POST['Q3']); $d=intval($_POST['Q4']); $e=intval($_POST['Q5']);
+  //if scores don't exist
+  if($student_scores[1] == -1){
+    $stmt = $con->prepare('INSERT INTO scores (score1, score2, score3, score4, score5, eval_id) VALUES(?,?,?,?,?,?)');
+    $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
+    $stmt->execute();
+  } else {
+		$stmt = $con->prepare('UPDATE scores set score1=?, score2=?, score3=?, score4=?, score5=? WHERE eval_id=?');
+		$stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
+		$stmt->execute();
+  }
+	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_id=?');
 	$stmt->bind_param('i', $eval_ID);
 	$stmt->execute();
 	$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
 	$stmt->store_result();
-	while($stmt->fetch()){
-		$student_scores=array($score1, $score2, $score3, $score4, $score5);
-	}
-	//When submit button is pressed
-	if ( !empty($_POST) && isset($_POST)){
-		//save results
-		$a=intval($_POST['Q1']); $b=intval($_POST['Q2']); $c=intval($_POST['Q3']); $d=intval($_POST['Q4']); $e=intval($_POST['Q5']);
-    //if scores don't exist
-    if($student_scores[1] == -1){
-      $stmt = $con->prepare('INSERT INTO scores (score1, score2, score3, score4, score5, eval_key) VALUES(?,?,?,?,?,?)');
-      $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
-      $stmt->execute();
-    } else {
-		  $stmt = $con->prepare('UPDATE scores set score1=?, score2=?, score3=?, score4=?, score5=? WHERE eval_key=?');
-		  $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
-		  $stmt->execute();
-    }
-		$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_key=?');
-		$stmt->bind_param('i', $eval_ID);
-		$stmt->execute();
-		$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
-		$stmt->store_result();
 
-		//move to next student in group
-		if($_SESSION['group_member_number'] < ($num_of_group_members - 1)){
-			$_SESSION['group_member_number'] +=1;
-			    header("Location: peerEvalForm.php"); //refresh page with next group member
-				exit();
-		}
-		else{//evaluated all students
-			$_SESSION = array();
-			header("Location: evalConfirm.php");
-			exit();
-		}
+	//move to next student in group
+	if ($_SESSION['group_member_number'] < ($num_of_group_members - 1)) {
+		$_SESSION['group_member_number'] +=1;
+	  header("Location: peerEvalForm.php"); //refresh page with next group member
+		exit();
+	} else{
+    //evaluated all students
+		$_SESSION = array();
+		header("Location: evalConfirm.php");
+		exit();
 	}
+}
 ?>
 <html>
 <title>UB CSE Peer Evaluation</title>
@@ -161,16 +155,11 @@ option {
 
 <!-- Header -->
 <header id="header" class="w3-container w3-theme w3-padding">
-  <div id="headerContentName"  <font color="black"> <h1><?php echo $_SESSION['course'];?> Peer Evaluation Form </h1> </font> </div>
+  <div id="headerContentName"><font color="black"><h1><?php echo $_SESSION['course'];?> Evaluation Form</h1></font></div>
 </header>
 
-
-
-
 <hr>
-
 <div id="login" class="w3-row-padding w3-padding">
-
   <form id="peerEval" class="w3-container w3-card-4 w3-light-blue" method='post'>
     <h1>You will fill out an evaluation form for yourself and each of your team mates. </h1>
     <hr>
@@ -235,13 +224,10 @@ option {
                                                                                             'Submit Peer Evaluation'
 																						<?php endif; ?>></input>
   </div>
-    <hr>
-  </form>
-    </div>
   <hr>
-
-
-</div>
+  </form>
+  </div>
+  <hr>
 
 <!-- Footer -->
 <footer id="footer" class="w3-container w3-theme-dark w3-padding-16">

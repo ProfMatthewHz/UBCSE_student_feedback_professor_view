@@ -1,3 +1,3 @@
 <?php
-define("SITE_HOME","https://www-student.cse.buffalo.edu/CSE442-542/2019-Summer/cse-442f/");
+define("SITE_HOME","http://www-student.cse.buffalo.edu/~mhertz/groupE/cse-442f/");
 ?>

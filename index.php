@@ -7,8 +7,6 @@
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
 <body>
-
-
 <style>
 .grid-container {
   display: grid;
@@ -22,23 +20,18 @@ hr {
     clear: both;
     visibility: hidden;
 }
-
 </style>
 
 <!-- Header -->
 <header id="header" class="w3-container w3-center w3-theme w3-padding">
-    <div id="headerContentName"  <font color="black"> <h1> UBCSE Peer Evaluation </h1> </font> </div>
+    <div id="headerContentName"><font color="black"><h1>UB CSE Evaluation Form</h1></font></div>
 </header>
-
-
-
 
 <hr>
 
 <div id="login" class="w3-row-padding w3-center w3-padding">
-
   <form id="loginEmail" class="w3-container w3-card-4 w3-light-blue" method='post'>
-    <h2>Please type in your UB email address! You'll then receive a verification code you can type in further down the page.</h2>
+    <h2>Please enter your UB email address! You'll then receive a verification code you can type in further down the page.</h2>
     <div id="loginEmailEntry" class="w3-section">
       <input placeholder="ubitname@buffalo.edu" name ='loginEmailEntryText' id="loginEmailEntryText" class="w3-input w3-light-grey" type="email" pattern="^[a-zA-Z0-9]+@buffalo.edu$" required>
       <hr>
@@ -61,13 +54,13 @@ require "lib/database.php";
 require "lib/constants.php";
 $con = connectToDatabase();
 
-if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText']) ){
-	$email = $_POST['loginEmailEntryText'];
+if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText']) ) {
+  $email = $_POST['loginEmailEntryText'];
 
 	//check if student is enrolled
 	$stmt = $con->prepare('SELECT email from students WHERE email=?');
-    $stmt->bind_param('s',$email);
-    $stmt->execute();
+  $stmt->bind_param('s',$email);
+  $stmt->execute();
 	$stmt->bind_result($flag);
 	$stmt->store_result();
 	$stmt->fetch();
@@ -79,28 +72,28 @@ if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText'])
 		exit();
 	}
 
-    $expiration_time = time()+ 60 * 15;
-    //update passcode and timestamp
-    $stmt = $con->prepare('UPDATE student_login SET expiration_time =? WHERE email=?');
-    $stmt->bind_param('is', $expiration_time, $email);
-    $stmt->execute();
-    if($stmt->affected_rows == 0){
+  $expiration_time = time()+ 60 * 15;
+  //update passcode and timestamp
+  $stmt = $con->prepare('UPDATE student_login SET expiration_time =? WHERE email=?');
+  $stmt->bind_param('is', $expiration_time, $email);
+  $stmt->execute();
+  if($stmt->affected_rows == 0){
       $stmt = $con->prepare('INSERT INTO student_login (email,expiration_time) VALUES(?,?)');
       $stmt->bind_param('si', $email, $expiration_time);
       $stmt->execute();
-    }
-    $code_available = false;
-    //if password is taken try until it's not taken
-    while(!$code_available){
+  }
+  $code_available = false;
+  //if password is taken try until it's not taken
+  while(!$code_available){
       $code = random_string(10);
       $stmt = $con->prepare('UPDATE student_login SET password =? WHERE email=?');
       $stmt->bind_param('ss', $code, $email);
       $code_available = $stmt->execute();
-    }
-    $date = new DateTime("@$expiration_time");
-    $date->setTimezone(new DateTimeZone('America/New_York'));
-    $human_exp_time = $date->format('h:i a');
-    //be careful the email text is whitespace sensitive
+  }
+  $date = new DateTime("@$expiration_time");
+  $date->setTimezone(new DateTimeZone('America/New_York'));
+  $human_exp_time = $date->format('h:i a');
+  //be careful the email text is whitespace sensitive
   mail($email,"Access Code", "<h1>Your code is: ".$code."</h1>
         <p>It will expire at ".$human_exp_time." EST</p>
         </hr>
@@ -110,9 +103,7 @@ if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText'])
   exit();
 }
 ?>
-  <hr>
-
-
+<hr>
 </div>
 
 <!-- Footer -->
