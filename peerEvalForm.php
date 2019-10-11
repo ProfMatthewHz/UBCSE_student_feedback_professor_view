@@ -161,11 +161,10 @@ option {
 <hr>
 <div id="login" class="w3-row-padding w3-padding">
   <form id="peerEval" class="w3-container w3-card-4 w3-light-blue" method='post'>
-    <h1>You will fill out an evaluation form for yourself and each of your team mates. </h1>
+    <h1>Current person you're evaluating: <?php echo $Name?></h1>
+		<h4>Evaluation <?php echo($_SESSION['group_member_number']+1)?> of <?php echo($num_of_group_members)?> </h4>
     <hr>
-    <h1>Current person you're evaluating: <?php echo $Name?> </h1>
-    <hr>
-    <h1>Please select the option for each prompt that best fits for each question.</h1>
+    <h1>For each prompt, select the description that best fits their performance on your team</h1>
     <hr>
     <h3>Question 1: Role</h3>
 	  <select name="Q1" required class="w3-select">
@@ -219,9 +218,9 @@ option {
     <hr>
     <div id="login" class="w3-row-padding w3-center w3-padding">
     <input type='submit' id="EvalSubmit" class="w3-center w3-button w3-theme-dark" value=<?php if ($_SESSION['group_member_number']<($num_of_group_members - 1)): ?>
-                                                                                            "Continue"
+                                                                                            "Continue with next evaluation"
                                                                                           <?php else: ?>
-                                                                                            'Submit Peer Evaluation'
+                                                                                            'Finish evaluations'
 																						<?php endif; ?>></input>
   </div>
   <hr>
