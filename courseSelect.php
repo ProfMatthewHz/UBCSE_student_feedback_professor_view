@@ -16,7 +16,7 @@
   $con = connectToDatabase();
   $student_classes = array();
   $stmt = $con->prepare('SELECT DISTINCT course.name, surveys.id FROM `teammates`  INNER JOIN surveys
-ON teammates.survey_id = surveys.id INNER JOIN course on course.id = surveys.course_id where teammates.student_id =? AND surveys.expiration_date > NOW() AND surveys.start_date >= NOW()');
+ON teammates.survey_id = surveys.id INNER JOIN course on course.id = surveys.course_id where teammates.student_id =? AND surveys.expiration_date > NOW() AND surveys.start_date <= NOW()');
   $stmt->bind_param('i', $student_ID);
   $stmt->execute();
   $stmt->bind_result($class_name,$surveys_id);
