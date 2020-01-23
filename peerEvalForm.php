@@ -18,6 +18,13 @@ $con = connectToDatabase();
 //get group members
 $group_members=array();
 $group_IDs=array();
+
+$stmt = $con->prepare('SELECT surveys.rubric_id FROM surveys WHERE surveys.id =?;');
+$stmt->bind_param('i',$surveys_ID);
+$stmt->execute();
+$stmt->bind_result($rubric_id);
+$stmt->store_result();
+$stmt->fetch();
 $stmt = $con->prepare('SELECT students.name, students.student_ID FROM teammates
 	                     INNER JOIN students ON teammates.teammate_ID = students.student_ID WHERE teammates.survey_ID =? AND teammates.student_ID=?;');
 $stmt->bind_param('ii',$surveys_ID,$student_ID);
@@ -164,7 +171,15 @@ option {
     <h1>Current person you're evaluating: <?php echo $Name?></h1>
 		<h4>Evaluation <?php echo($_SESSION['group_member_number']+1)?> of <?php echo($num_of_group_members)?> </h4>
     <hr>
-    <h1>For each prompt, select the description that best fits their performance on your team</h1>
+		<?php
+		$stmt = $con->prepare('SELECT description FROM rubrics WHERE rubrics.id=?');
+		$stmt->bind_param('i', $rubric_id);
+		$stmt->execute();
+		$stmt->bind_result($description);
+		$stmt->store_result();
+		$stmt->fetch();
+		?>
+    <h1><?php echo($description); ?></h1>
     <hr>
     <h3>Question 1: Role</h3>
 	  <select name="Q1" required class="w3-select">
