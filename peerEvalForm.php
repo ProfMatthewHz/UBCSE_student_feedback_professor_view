@@ -210,7 +210,7 @@ WHERE rubrics.id =?');
 			echo nl2br("<hr> \n");
 			echo nl2br("<h3>Question ". $question_num. ": ". $question. "</h3>\n");
 			echo nl2br("<select name=\"Q".$question_num. "\" required class=\"w3-select\">\n");
-			echo nl2br ("<option name=\"Q1".$question_num. "\" hidden disabled selected value>--select an option --</option>\n");
+			echo nl2br ("<option name=\"Q".$question_num. "\" hidden disabled selected value>--select an option --</option>\n");
 
 			foreach ($responses as $response) {
 				echo("<option value=\"".$response_num. "\"name=\"Q".$question_num."\"");
