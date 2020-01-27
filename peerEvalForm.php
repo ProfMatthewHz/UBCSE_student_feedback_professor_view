@@ -65,37 +65,36 @@ if ($stmt->num_rows == 0){
 	$stmt->fetch();
 }
 
-$student_scores=array(-1,-1,-1,-1,-1);
+$student_scores=array();
 //grab scores if they exist
-$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_id=?');
+$stmt = $con->prepare('SELECT score FROM scores2 WHERE eval_id=? ORDER BY question_number asc');
 $stmt->bind_param('i', $eval_ID);
 $stmt->execute();
-$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
+$stmt->bind_result($score);
 $stmt->store_result();
 while ($stmt->fetch()) {
-	$student_scores=array($score1, $score2, $score3, $score4, $score5);
+	$student_scores[] = $score;
 }
-
 //When submit button is pressed
 if ( !empty($_POST) && isset($_POST)) {
 	//save results
-	$a=intval($_POST['Q1']); $b=intval($_POST['Q2']); $c=intval($_POST['Q3']); $d=intval($_POST['Q4']); $e=intval($_POST['Q5']);
+	$res = $_POST['Q'];
+	var_dump($res);
+	echo("student_score: ".$student_scores);
   //if scores don't exist
-  if($student_scores[1] == -1){
-    $stmt = $con->prepare('INSERT INTO scores (score1, score2, score3, score4, score5, eval_id) VALUES(?,?,?,?,?,?)');
-    $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
-    $stmt->execute();
-  } else {
-		$stmt = $con->prepare('UPDATE scores set score1=?, score2=?, score3=?, score4=?, score5=? WHERE eval_id=?');
-		$stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
-		$stmt->execute();
-  }
-	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_id=?');
-	$stmt->bind_param('i', $eval_ID);
-	$stmt->execute();
-	$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
-	$stmt->store_result();
-
+	$question_count = 0;
+	foreach($res as $score){
+  	if(empty($student_scores)){
+    	$stmt = $con->prepare('INSERT INTO scores2 (score, eval_id, question_number) VALUES(?,?,?)');
+    	$stmt->bind_param('iii',$score,$eval_ID,$question_count);
+    	$stmt->execute();
+  	} else {
+			$stmt = $con->prepare('UPDATE scores2 set score=? WHERE eval_id=? AND question_number=?');
+			$stmt->bind_param('iii',$score, $eval_ID, $question_count);
+			$stmt->execute();
+  	}
+		$question_count +=1;
+	}
 	//move to next student in group
 	if ($_SESSION['group_member_number'] < ($num_of_group_members - 1)) {
 		$_SESSION['group_member_number'] +=1;
@@ -197,7 +196,6 @@ WHERE rubrics.id =?');
 			else{$questions[$question][] =$response;
 }
 		}
-		//var_dump($questions);
 
 		$prev_question = "";
 		$question_num = 0;
@@ -209,14 +207,20 @@ WHERE rubrics.id =?');
 
 			echo nl2br("<hr> \n");
 			echo nl2br("<h3>Question ". $question_num. ": ". $question. "</h3>\n");
-			echo nl2br("<select name=\"Q".$question_num. "\" required class=\"w3-select\">\n");
+			echo nl2br("<select name=\"Q[]\" required class=\"w3-select\">\n");
 			echo nl2br ("<option name=\"Q".$question_num. "\" hidden disabled selected value>--select an option --</option>\n");
 
 			foreach ($responses as $response) {
+				if(empty($student_scores)){
+					echo("<option value=\"".$response_num. "\"name=\"Q".$question_num."\"");
+					echo nl2br(">".$response."</option>\n");
+				}
+				else{
 				echo("<option value=\"".$response_num. "\"name=\"Q".$question_num."\"");
 				echo nl2br((($student_scores[$question_num -1]== $response_num)?"selected='selected'>":">").$response."</option>\n");
-				$response_num +=1;
 				}
+				$response_num +=1;
+			}
 				echo "</select>";
 
 		}
@@ -224,7 +228,7 @@ WHERE rubrics.id =?');
 
     <hr>
     <div id="login" class="w3-row-padding w3-center w3-padding">
-    <input type='submit' id="EvalSubmit" class="w3-center w3-button w3-theme-dark" value=<?php if ($_SESSION['group_member_number']<($num_of_group_members - 1)): ?>
+    <input type='submit' id="EvalSubmit" class="w3-center w3-button w3-theme-dark"  value=<?php if ($_SESSION['group_member_number']<($num_of_group_members - 1)): ?>
                                                                                             "Continue with next evaluation"
                                                                                           <?php else: ?>
                                                                                             'Finish evaluations'
