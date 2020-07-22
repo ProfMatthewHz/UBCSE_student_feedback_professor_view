@@ -27,7 +27,7 @@ ON reviewers.survey_id = surveys.id INNER JOIN course on course.id = surveys.cou
   $_SESSION['student_classes'] = $student_classes;
 
   if(isset($_POST['courseSelect'])){
-    $_SESSION['course'] = $_POST['courseSelect'];
+    $_SESSION['course'] = htmlspecialchars($_POST['courseSelect']);
     $_SESSION['surveys_ID'] = $_SESSION['student_classes'][$_SESSION['course']];
 
     header("Location: peerEvalForm.php");

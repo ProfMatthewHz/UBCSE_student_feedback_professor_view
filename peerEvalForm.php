@@ -1,4 +1,3 @@
-<!DOCTYPE HTML>
 <?php
 //error logging
 error_reporting(-1); // reports all errors
@@ -19,8 +18,8 @@ $con = connectToDatabase();
 $group_members=array();
 $group_ids=array();
 
-$stmt = $con->prepare('SELECT students.name, students.student_id FROM teammates
-	                     INNER JOIN students ON teammates.teammate_id = students.student_id WHERE teammates.survey_id =? AND teammates.student_id=?;');
+$stmt = $con->prepare('SELECT students.name, students.student_id FROM reviewers
+	                     INNER JOIN students ON reviewers.reviewee_id = students.student_id WHERE reviewers.survey_id =? AND reviewers.reviewer_id=?;');
 $stmt->bind_param('ii',$surveys_id,$student_id);
 $stmt->execute();
 $stmt->bind_result($group_member,$group_id);
@@ -35,7 +34,7 @@ if (!isset($_SESSION['group_member_number'])){
 	$_SESSION['group_member_number'] = 0;
 }
 
-$Name =  $group_members[$_SESSION['group_member_number']];
+$Name =  htmlspecialchars($group_members[$_SESSION['group_member_number']]);
 $name_id = $group_ids[$_SESSION['group_member_number']];
 
 //fetch eval id, if it exists
@@ -71,7 +70,12 @@ while ($stmt->fetch()) {
 	$student_scores=array($score1, $score2, $score3, $score4, $score5);
 }
 //When submit button is pressed
-if ( !empty($_POST) && isset($_POST)) {
+if ( !empty($_POST) && isset($_POST))
+  if (!isset($_POST['Q1']) || !isset($_POST['Q2']) || !isset($_POST['Q3']) || !isset($_POST['Q4']) || !isset($_POST['Q5'])) {
+		echo "Bad Request: Missing POST parameters";
+		http_response_code(400);
+		exit();
+	}
 	//save results
 	$a=intval($_POST['Q1']);
 	$b=intval($_POST['Q2']);
@@ -122,6 +126,7 @@ if ( !empty($_POST) && isset($_POST)) {
 	}
 }
 ?>
+<!DOCTYPE HTML>
 <html>
 <title>UB CSE Peer Evaluation</title>
 <meta charset="UTF-8">
