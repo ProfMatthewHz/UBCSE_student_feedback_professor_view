@@ -8,8 +8,8 @@ session_start();
 
 $email = $_SESSION['email'];
 $id = $_SESSION['id'];
-$student_ID= $_SESSION['student_ID'];
-$surveys_ID=$_SESSION['surveys_ID'];
+$student_id= $_SESSION['student_id'];
+$surveys_id=$_SESSION['surveys_id'];
 $course = $_SESSION['course'];
 
 require "lib/database.php";
@@ -17,17 +17,17 @@ $con = connectToDatabase();
 
 //get group members
 $group_members=array();
-$group_IDs=array();
+$group_ids=array();
 
-$stmt = $con->prepare('SELECT students.name, students.student_ID FROM teammates
-	                     INNER JOIN students ON teammates.teammate_ID = students.student_ID WHERE teammates.survey_ID =? AND teammates.student_ID=?;');
-$stmt->bind_param('ii',$surveys_ID,$student_ID);
+$stmt = $con->prepare('SELECT students.name, students.student_id FROM teammates
+	                     INNER JOIN students ON teammates.teammate_id = students.student_id WHERE teammates.survey_id =? AND teammates.student_id=?;');
+$stmt->bind_param('ii',$surveys_id,$student_id);
 $stmt->execute();
-$stmt->bind_result($group_member,$group_ID);
+$stmt->bind_result($group_member,$group_id);
 $stmt->store_result();
 while ($stmt->fetch()){
 	array_push($group_members,$group_member);
-	array_push($group_IDs,$group_ID);
+	array_push($group_ids,$group_id);
 }
 
 $num_of_group_members =  count($group_members);
@@ -36,25 +36,25 @@ if (!isset($_SESSION['group_member_number'])){
 }
 
 $Name =  $group_members[$_SESSION['group_member_number']];
-$name_ID = $group_IDs[$_SESSION['group_member_number']];
+$name_id = $group_ids[$_SESSION['group_member_number']];
 
 //fetch eval id, if it exists
 $stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND submitter_id=? AND teammate_id=?');
-$stmt->bind_param('iii', $surveys_ID, $student_ID,$name_ID);
+$stmt->bind_param('iii', $surveys_id, $student_id,$name_id);
 $stmt->execute();
-$stmt->bind_result($eval_ID);
+$stmt->bind_result($eval_id);
 $stmt->store_result();
 $stmt->fetch();
 if ($stmt->num_rows == 0){
-  //create eval id if does not exist and get get the eval_ID
+  //create eval id if does not exist and get get the eval_id
 	$stmt = $con->prepare('INSERT INTO eval (survey_id, submitter_id, teammate_id) VALUES(?, ?, ?)');
-	$stmt->bind_param('iii', $surveys_ID, $student_ID,$name_ID);
+	$stmt->bind_param('iii', $surveys_id, $student_id,$name_id);
 	$stmt->execute();
 
 	$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND submitter_id=? AND teammate_id=?');
-	$stmt->bind_param('iii', $surveys_ID, $student_ID,$name_ID);
+	$stmt->bind_param('iii', $surveys_id, $student_id,$name_id);
 	$stmt->execute();
-	$stmt->bind_result($eval_ID);
+	$stmt->bind_result($eval_id);
 	$stmt->store_result();
 	$stmt->fetch();
 }
@@ -63,7 +63,7 @@ if ($stmt->num_rows == 0){
 $student_scores=array(-1,-1,-1,-1,-1);
 //grab scores if they exist
 $stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_id=?');
-$stmt->bind_param('i', $eval_ID);
+$stmt->bind_param('i', $eval_id);
 $stmt->execute();
 $stmt->bind_result($score1, $score2, $score3, $score4, $score5);
 $stmt->store_result();
@@ -81,15 +81,15 @@ if ( !empty($_POST) && isset($_POST)) {
   //if scores don't exist
 	if($student_scores[1] == -1){
     $stmt = $con->prepare('INSERT INTO scores (score1, score2, score3, score4, score5, eval_id) VALUES(?,?,?,?,?,?)');
-    $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
+    $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_id);
     $stmt->execute();
 	 } else {
     $stmt = $con->prepare('UPDATE scores set score1=?, score2=?, score3=?, score4=?, score5=? WHERE eval_id=?');
-    $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
+    $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_id);
     $stmt->execute();
   }
 	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_id=?');
-	$stmt->bind_param('i', $eval_ID);
+	$stmt->bind_param('i', $eval_id);
 	$stmt->execute();
 	$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
 	$stmt->store_result();
@@ -99,11 +99,11 @@ if ( !empty($_POST) && isset($_POST)) {
 	foreach($res as $score){
   	if(empty($student_scores)){
     	$stmt = $con->prepare('INSERT INTO scores2 (score, eval_id, question_number) VALUES(?,?,?)');
-    	$stmt->bind_param('iii',$score,$eval_ID,$question_count);
+    	$stmt->bind_param('iii',$score,$eval_id,$question_count);
     	$stmt->execute();
   	} else {
 			$stmt = $con->prepare('UPDATE scores2 set score=? WHERE eval_id=? AND question_number=?');
-			$stmt->bind_param('iii',$score, $eval_ID, $question_count);
+			$stmt->bind_param('iii',$score, $eval_id, $question_count);
 			$stmt->execute();
   	}
 		$question_count +=1;

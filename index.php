@@ -1,53 +1,9 @@
-<!DOCTYPE HTML>
-<html>
-<title>UB CSE Peer Evaluation</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
-<body>
-<style>
-.grid-container {
-  display: grid;
-  grid-column-start: 1;
-  grid-column-end: 3;
-  grid-template-columns: auto auto auto;
-  background-color: #2196F3;
-  padding: 10px;
-}
-hr {
-    clear: both;
-    visibility: hidden;
-}
-</style>
-
-<!-- Header -->
-<header id="header" class="w3-container w3-center w3-theme w3-padding">
-    <div id="headerContentName"><font color="black"><h1>UB CSE Evaluation Form</h1></font></div>
-</header>
-
-<hr>
-
-<div id="login" class="w3-row-padding w3-center w3-padding">
-  <form id="loginEmail" class="w3-container w3-card-4 w3-light-blue" method='post'>
-    <h2>Please enter your UB email address! You'll then receive a verification code you can type in further down the page.</h2>
-    <div id="loginEmailEntry" class="w3-section">
-      <input placeholder="ubitname@buffalo.edu" name ='loginEmailEntryText' id="loginEmailEntryText" class="w3-input w3-light-grey" type="email" pattern="^[a-zA-Z0-9]+@buffalo.edu$" required>
-      <hr>
-      <input type='submit' id="loginEmailEntryButton" class="w3-center w3-button w3-theme-dark" value='Get Verification Code'></input>
-      <hr>
-      <input type='button' onclick="window.location.href = 'accessCodePage.php';" class="w3-center w3-button w3-theme-dark" value="Already have valid code?"/></input>
-      <hr>
-    </div>
-  </form>
 <?php
 //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
-
 
 require "lib/random.php";
 require "lib/database.php";
@@ -104,7 +60,50 @@ if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText'])
   exit();
 }
 ?>
+<!DOCTYPE HTML>
+<html>
+<title>UB CSE Peer Evaluation</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+<body>
+<style>
+.grid-container {
+  display: grid;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  grid-template-columns: auto auto auto;
+  background-color: #2196F3;
+  padding: 10px;
+}
+hr {
+    clear: both;
+    visibility: hidden;
+}
+</style>
+
+<!-- Header -->
+<header id="header" class="w3-container w3-center w3-theme w3-padding">
+    <div id="headerContentName"><font color="black"><h1>UB CSE Evaluation Form</h1></font></div>
+</header>
+
 <hr>
+
+<div id="login" class="w3-row-padding w3-center w3-padding">
+  <form id="loginEmail" class="w3-container w3-card-4 w3-light-blue" method='post'>
+    <h2>Please enter your UB email address! You'll then receive a verification code you can type in further down the page.</h2>
+    <div id="loginEmailEntry" class="w3-section">
+      <input placeholder="ubitname@buffalo.edu" name ='loginEmailEntryText' id="loginEmailEntryText" class="w3-input w3-light-grey" type="email" pattern="^[a-zA-Z0-9]+@buffalo.edu$" required>
+      <hr>
+      <input type='submit' id="loginEmailEntryButton" class="w3-center w3-button w3-theme-dark" value='Get Verification Code'></input>
+      <hr>
+      <input type='button' onclick="window.location.href = 'accessCodePage.php';" class="w3-center w3-button w3-theme-dark" value="Already have valid code?"/></input>
+      <hr>
+    </div>
+  </form>
+  <hr>
 </div>
 
 <!-- Footer -->
