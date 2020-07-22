@@ -94,11 +94,12 @@ if(isset($_POST['loginEmailEntryText']) && !empty($_POST['loginEmailEntryText'])
   $date->setTimezone(new DateTimeZone('America/New_York'));
   $human_exp_time = $date->format('h:i a');
   //be careful the email text is whitespace sensitive
-  mail($email,"Access Code", "<h1>Your code is: ".$code."</h1>
+  mail($email,"Teamwork Evaluation Form Access Code", "<h1>Your code is: ".$code."</h1>
         <p>It will expire at ".$human_exp_time." EST</p>
         </hr>
         Use it here: ".SITE_HOME."accessCodePage.php",
-        'Content-type: text/html; charset=utf-8');
+        'Content-type: text/html; charset=utf-8\r\n'.
+        'From: Teamwork Evaluation Access Code Generator <apache@buffalo.edu>');
       header("Location: emailConfirmation.php"); /* Redirect browser to a test link*/
   exit();
 }
