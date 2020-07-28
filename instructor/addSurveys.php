@@ -68,7 +68,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
       !isset($_POST['course-id']))
   {
     http_response_code(400);
-    echo "Bad Request: Missing parmeters.";
+    echo "Bad Request: Missing parameters.";
     exit();
   }
 
@@ -235,31 +235,26 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
       fclose($file_handle);
 
       // check for any errors
-      if (isset($emails['error'])) {
-        $errorMsg['pairing-file'] = $emails['error'];
+      if (isset($pairings['error'])) {
+        $errorMsg['pairing-file'] = $pairings['error'];
       } else {
-        // check for any errors
-        if (isset($student_ids['error'])) {
-          $errorMsg['pairing-file'] = $student_ids['error'];
-        } else {
-          // finally add the pairings to the database if no other error message were set so far
-          // first add the survey details to the database
-          if (empty($errorMsg)) {
-            $sdate = $start_date . ' ' . $start_time;
-            $edate = $end_date . ' ' . $end_time;
-            $stmt = $con->prepare('INSERT INTO surveys (course_id, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, 0)');
-            $stmt->bind_param('iss', $course_id, $sdate, $edate);
-            $stmt->execute();
+        // finally add the pairings to the database if no other error message were set so far
+        // first add the survey details to the database
+        if (empty($errorMsg)) {
+          $sdate = $start_date . ' ' . $start_time;
+          $edate = $end_date . ' ' . $end_time;
+          $stmt = $con->prepare('INSERT INTO surveys (course_id, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, 0)');
+          $stmt->bind_param('iss', $course_id, $sdate, $edate);
+          $stmt->execute();
 
-            add_pairings($pairings, $con->insert_id, $con);
+          add_pairings($pairings, $con->insert_id, $con);
 
-            // redirect to survey page with sucess message
-            $_SESSION['survey-add'] = "Successfully added survey.";
+          // redirect to survey page with sucess message
+          $_SESSION['survey-add'] = "Successfully added survey.";
 
-            http_response_code(302);
-            header("Location: surveys.php");
-            exit();
-          }
+          http_response_code(302);
+          header("Location: surveys.php");
+          exit();
         }
       }
     }
@@ -318,19 +313,19 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"];} ?></span><br />
     <label for="start-date">Start Date:</label><br>
-    <input type="date" id="start-date" class="w3-input w3-border" name="start-date" <?php if ($start_date) {echo 'value="' . htmlspecialchars($start_date) . '"';} ?>><br>
+    <input type="date" id="start-date" class="w3-input w3-border" name="start-date" required <?php if ($start_date) {echo 'value="' . htmlspecialchars($start_date) . '"';} ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["start-time"])) {echo $errorMsg["start-time"];} ?></span><br />
     <label for="start-time">Start time:</label><br>
-    <input type="time" id="start-time" class="w3-input w3-border" name="start-time" <?php if ($start_time) {echo 'value="' . htmlspecialchars($start_time) . '"';} ?>><br>
+    <input type="time" id="start-time" class="w3-input w3-border" name="start-time" required <?php if ($start_time) {echo 'value="' . htmlspecialchars($start_time) . '"';} ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"];} ?></span><br />
     <label for="end-date">End Date:</label><br>
-    <input type="date" id="end-date" class="w3-input w3-border" name="end-date" <?php if ($end_date) {echo 'value="' . htmlspecialchars($end_date) . '"';} ?>><br>
+    <input type="date" id="end-date" class="w3-input w3-border" name="end-date" required <?php if ($end_date) {echo 'value="' . htmlspecialchars($end_date) . '"';} ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"];} ?></span><br />
     <label for="end-time">End time:</label><br>
-    <input type="time" id="end-time" class="w3-input w3-border" name="end-time" <?php if ($end_time) {echo 'value="' . htmlspecialchars($end_time) . '"';} ?>><br>
+    <input type="time" id="end-time" class="w3-input w3-border" name="end-time" required <?php if ($end_time) {echo 'value="' . htmlspecialchars($end_time) . '"';} ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"];} ?></span><br />
     <label for="pairing-mode">Pairing File Mode:</label><br>

@@ -157,7 +157,7 @@ foreach($courses as $course) {
       // echo deletion message
       else if (isset($_SESSION['survey-delete']) and $_SESSION['survey-delete'])
       {
-        echo '<div class="w3-container w3-center w3-red">' . $_SESSION['survey-delete'] . '</div><br />';
+        echo '<div class="w3-container w3-center w3-green">' . $_SESSION['survey-delete'] . '</div><br />';
         $_SESSION['survey-delete'] = NULL;
       }
 

@@ -1,5 +1,4 @@
 <?php
-
 function parse_review_pairs($file_handle, $db_connection) {
   // return array
   $ret_val = array();
@@ -12,16 +11,19 @@ function parse_review_pairs($file_handle, $db_connection) {
 
     // Verify the current line's data seems reasonable.
     if ($line_fields != 2) {
-      $ret_val['error'] = 'Input CSV file has incorrect number of fields on line: {$line_num}';
+      $ret_val['error'] = 'Input CSV file has incorrect number of fields on line ' . $line_num;
+      return $ret_val;
     } else {
       // Clean up any whitespace oddities
       $line_text[0] = trim($line_text[0]);
       $line_text[1] = trim($line_text[1]);
 
       if (!email_already_exists($line_text[0], $db_connection)) {
-        $ret_val['error'] = 'Input CSV file line: {$line_num} has email that is not in system: {$line_text[0]}';
+        $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[0];
+        return $ret_val;
       } else if (!email_already_exists($line_text[1], $db_connection)) {
-        $ret_val['error'] = 'Input CSV file line: {$line_num} has email that is not in system: {$line_text[1]}';
+        $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[1];
+        return $ret_val;
       } else {
         // Fast than array_push when appending large numbers of data
         $ret_val[] = $line_text;
@@ -46,7 +48,8 @@ function parse_review_teams($file_handle, $db_connection) {
     for ($j = 0; $j < $line_fields; $j++) {
       $line_fields[$j] = trim($line_text[$j]);
       if (!email_already_exists($line_text[$j], $db_connection)) {
-        $ret_val['error'] = 'Input CSV file line: {$line_num} has email that is not in system: {$line_text[$j]}';
+        $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
+        return $ret_val;
       }
     }
 
@@ -76,7 +79,7 @@ function parse_roster_file($file_handle) {
     $line_fields = count($line_text);
 
     if ($line_fields != 2) {
-      $split['error'] = 'Input CSV file has incorrect number of fields at line: {$line_num}.';
+      $ret_val['error'] = 'Input CSV file has incorrect format at line ' . $line_num;
       return $split;
     }
 
@@ -85,13 +88,13 @@ function parse_roster_file($file_handle) {
     $line_text[1] = trim($line_text[1]);
 
     if (!ctype_print($line_text[0])) {
-      $split['error'] = 'Input CSV file has name with unprintable character at line: {$line_num}.';
-      return $split;
+      $ret_val['error'] = 'Input CSV file includes a name with unprintable characters on line ' . $line_num;
+      return $ret_val;
     }
 
     if (!filter_var($line_text[1], FILTER_VALIDATE_EMAIL)) {
-      $split['error'] = 'Input CSV file has incorrect email address at line: {$line_num}.';
-      return $split;
+      $ret_val['error'] = 'Input CSV file includes an improperly formatted email address on line ' . $line_num;
+      return $ret_val;
     }
     // add the fields to the array
     $ret_val[] = $line_text;
@@ -116,20 +119,17 @@ function add_pairings($emails, $survey_id, $db_connection) {
   $stmt_check = $db_connection->prepare('SELECT id FROM reviewers WHERE survey_id=? AND reviewer_email=? AND teammate_email=?');
   $stmt_add = $db_connection->prepare('INSERT INTO reviewers (survey_id, reviewer_email, teammate_email) VALUES (?, ?, ?)');
 
-  // loop over each array
-  $size = count($emails);
-
   // loop over each pairing
-  for ($i = 0; $i < $size; $i++) {
+  foreach ($emails as $pairing) {
     // check if the pairing already exists
-    $stmt_check->bind_param('iss', $survey_id, $emails[$i][0], $emails[$i][1]);
+    $stmt_check->bind_param('iss', $survey_id, $pairing[0], $pairing[1]);
     $stmt_check->execute();
     $result = $stmt_check->get_result();
     $data = $result->fetch_all(MYSQLI_ASSOC);
 
     // add the pairing if it does not exist
     if ($result->num_rows == 0) {
-      $stmt_add->bind_param('issii', $survey_id, $emails[$i][0], $emails[$i][1]);
+      $stmt_add->bind_param('iss', $survey_id, $pairing[0], $pairing[1]);
       $stmt_add->execute();
     }
   }
