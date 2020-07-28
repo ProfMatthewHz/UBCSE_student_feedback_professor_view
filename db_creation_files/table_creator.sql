@@ -4,7 +4,12 @@ CREATE TABLE `course` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `code` text NOT NULL,
  `name` text NOT NULL,
- PRIMARY KEY (`id`)
+ `semester` int(4) NOT NULL,
+ `year` int(4) NOT NULL,
+ `instructor_id` int(11) NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `course_instructor_idx` (`instructor_id`),
+ CONSTRAINT `course_instructor_constraint` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
 
@@ -36,30 +41,32 @@ CREATE TABLE `students` (
 
 -- eval table
 -- each row defines a single peer- or self-evaluation. Rows are added/updated only as students complete their evaluations
-CREATE TABLE `eval` (
+CREATE TABLE `evals` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
- `survey_id` int(11) NOT NULL,
- `submitter_id` int(11) NOT NULL,
- `teammate_id` int(11) NOT NULL,
+ `reviewers_id` int(11) NOT NULL AUTO_INCREMENT,
  PRIMARY KEY (`id`),
  KEY `eval_survey_id` (`survey_id`),
- KEY `eval_submitter_id` (`submitter_id`),
- KEY `eval_teammate_id` (`teammate_id`),
- CONSTRAINT `eval_submitter_id_constraint` FOREIGN KEY (`submitter_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
- CONSTRAINT `eval_teammate_id_constraint` FOREIGN KEY (`teammate_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
- CONSTRAINT `eval_survey_id_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+ KEY `eval_reviewers_id` (`reviewers_id`),
+ CONSTRAINT `eval_reviewers_id_constraint` FOREIGN KEY (`reviewers_id`) REFERENCES `reviewers` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
 -- faculty table
--- each row defines a single instructor who could use this system?
--- FIXME: THIS TABLE WAS NEVER USED AND MAY NEED TO BE REDONE
-CREATE TABLE `faculty` (
- `id` int(11) NOT NULL AUTO_INCREMENT,
- `name` varchar(255) NOT NULL,
- `password` varchar(250) NOT NULL,
- `email` varchar(100) NOT NULL,
- PRIMARY KEY (`id`),
- UNIQUE KEY `username` (`name`)
+-- each row defines a single instructor who could use this system
+CREATE TABLE `instructors` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` TEXT NOT NULL,
+  `email` VARCHAR(20) NOT NULL,
+  `init_auth_id` VARCHAR(255),
+  `otp` TEXT,
+  `otp_expiration` INT,
+  `session_token` VARCHAR(255),
+  `session_expiration` INT,
+  `csrf_token` VARCHAR(255),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `init_auth` (`init_auth_id`),
+  UNIQUE KEY `session_token` (`session_token`),
+  UNIQUE KEY `csrf_token` (`csrf_token`)
 ) ENGINE=InnoDB;
 
 -- reviewers TABLE
@@ -84,15 +91,15 @@ CREATE TABLE `reviewers` (
 -- each row represents the scores submitted. These scores are for the evaluation the row connects to
 -- in the eval table using the eval_id field
 CREATE TABLE `scores` (
- `eval_id` int(11) NOT NULL,
+ `evals_id` int(11) NOT NULL,
  `score1` int(11) NOT NULL,
  `score2` int(11) NOT NULL,
  `score3` int(11) NOT NULL,
  `score4` int(11) NOT NULL,
  `score5` int(11) NOT NULL,
- PRIMARY KEY (`eval_id`),
- UNIQUE KEY `eval_id` (`eval_id`),
- CONSTRAINT `scores_eval_id_constraint` FOREIGN KEY (`eval_id`) REFERENCES `eval` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+ PRIMARY KEY (`evals_id`),
+ UNIQUE KEY `evals_id` (`evals_id`),
+ CONSTRAINT `scores_evals_id_constraint` FOREIGN KEY (`evals_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
 -- student_login TABLE
@@ -140,12 +147,12 @@ CREATE TABLE `rubric_responses` (
 -- it would be
 CREATE TABLE `scores2` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
- `eval_id` int(11) NOT NULL,
+ `evals_id` int(11) NOT NULL,
  `score` int(11) NOT NULL,
  `question_number` int(11) NOT NULL,
  PRIMARY KEY (`id`),
- KEY `fk_eval` (`eval_id`),
+ KEY `fk_evals` (`evals_id`),
  KEY `quest_num` (`question_number`),
- CONSTRAINT `scores2_ibfk_1` FOREIGN KEY (`eval_id`) REFERENCES `eval` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+ CONSTRAINT `scores2_ibfk_1` FOREIGN KEY (`evals_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
  CONSTRAINT `scores2_ibfk2_1` FOREIGN KEY (`question_number`) REFERENCES `rubric_questions` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;

@@ -18,15 +18,15 @@ $con = connectToDatabase();
 $group_members=array();
 $group_ids=array();
 
-$stmt = $con->prepare('SELECT students.name, students.student_id FROM reviewers
-	                     INNER JOIN students ON reviewers.reviewee_id = students.student_id WHERE reviewers.survey_id =? AND reviewers.reviewer_id=?;');
-$stmt->bind_param('ii',$surveys_id,$student_id);
+$stmt = $con->prepare('SELECT students.name, reviewers.id FROM reviewers
+	                     INNER JOIN students ON reviewers.teammate_email = students.email WHERE reviewers.survey_id =? AND reviewers.reviewer_email=?');
+$stmt->bind_param('ii',$surveys_id,$email);
 $stmt->execute();
-$stmt->bind_result($group_member,$group_id);
+$stmt->bind_result($group_member,$review_id);
 $stmt->store_result();
 while ($stmt->fetch()){
 	array_push($group_members,$group_member);
-	array_push($group_ids,$group_id);
+	array_push($group_reviews,$review_id);
 }
 
 $num_of_group_members =  count($group_members);
@@ -35,23 +35,23 @@ if (!isset($_SESSION['group_member_number'])){
 }
 
 $Name =  htmlspecialchars($group_members[$_SESSION['group_member_number']]);
-$name_id = $group_ids[$_SESSION['group_member_number']];
+$reviewers_id = $group_reviews[$_SESSION['group_member_number']];
 
 //fetch eval id, if it exists
-$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND submitter_id=? AND teammate_id=?');
-$stmt->bind_param('iii', $surveys_id, $student_id,$name_id);
+$stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
+$stmt->bind_param('i', $reviewers_id);
 $stmt->execute();
 $stmt->bind_result($eval_id);
 $stmt->store_result();
 $stmt->fetch();
 if ($stmt->num_rows == 0){
   //create eval id if does not exist and get get the eval_id
-	$stmt = $con->prepare('INSERT INTO eval (survey_id, submitter_id, teammate_id) VALUES(?, ?, ?)');
-	$stmt->bind_param('iii', $surveys_id, $student_id,$name_id);
+	$stmt = $con->prepare('INSERT INTO evals (reviewers_id) VALUES(?)');
+	$stmt->bind_param('i', $reviewers_id);
 	$stmt->execute();
 
-	$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND submitter_id=? AND teammate_id=?');
-	$stmt->bind_param('iii', $surveys_id, $student_id,$name_id);
+	$stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
+	$stmt->bind_param('i', $reviewers_id);
 	$stmt->execute();
 	$stmt->bind_result($eval_id);
 	$stmt->store_result();
@@ -61,7 +61,7 @@ if ($stmt->num_rows == 0){
 // force students to submit results
 $student_scores=array(-1,-1,-1,-1,-1);
 //grab scores if they exist
-$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_id=?');
+$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE evals_id=?');
 $stmt->bind_param('i', $eval_id);
 $stmt->execute();
 $stmt->bind_result($score1, $score2, $score3, $score4, $score5);
@@ -88,11 +88,11 @@ if ( !empty($_POST) && isset($_POST))
     $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_id);
     $stmt->execute();
 	 } else {
-    $stmt = $con->prepare('UPDATE scores set score1=?, score2=?, score3=?, score4=?, score5=? WHERE eval_id=?');
+    $stmt = $con->prepare('UPDATE scores set score1=?, score2=?, score3=?, score4=?, score5=? WHERE evals_id=?');
     $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_id);
     $stmt->execute();
   }
-	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_id=?');
+	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE evals_id=?');
 	$stmt->bind_param('i', $eval_id);
 	$stmt->execute();
 	$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
