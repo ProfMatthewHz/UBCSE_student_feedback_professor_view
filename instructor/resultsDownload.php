@@ -93,10 +93,10 @@ $datas = array();
 $overalls = array();
 
 // Get information completed by the reviewer -- how many were reviewed and the total points
-$stmt_scores = $con->prepare('SELECT stu_reviewer.name reviewer_name, stu_reviewee.name reviewee_name, stu_reviewee.email reviewee_email,score1, score2, score3, score4, score5 FROM reviewers LEFT JOIN students stu_reviewer ON reviewers.reviewer_email=stu_reviewer.email LEFT JOIN students stu_reviewee ON reviewers.reviewee_email stu_reviewee.email
-                             LEFT JOIN evals on evals.reviewer_id=reviewer.id LEFT JOIN scores ON evals.id=scores.evals_id WHERE survey_id=? AND reviewers.reviewer_email=?');
-$stmt = $con->prepare('SELECT reviewer_email, COUNT(reviewers.id) num_intended, COUNT(eval_id) num_scored, SUM(score1 + score2 + score3 + score4 + score5) total_score
-                       FROM reviewers LEFT JOIN evals ON evals.reviewer_id=reviewers.id LEFT JOIN scores ON scores.evals_id=evals.id GROUP BY reviewer_email WHERE survey_id=?');
+$stmt_scores = $con->prepare('SELECT stu_reviewer.name reviewer_name, stu_reviewee.name reviewee_name, stu_reviewee.email reviewee_email,score1, score2, score3, score4, score5 FROM reviewers LEFT JOIN students stu_reviewer ON reviewers.reviewer_email=stu_reviewer.email LEFT JOIN students stu_reviewee ON reviewers.teammate_email=stu_reviewee.email
+                             LEFT JOIN evals on evals.reviewers_id=reviewers.id LEFT JOIN scores ON evals.id=scores.evals_id WHERE survey_id=? AND reviewers.reviewer_email=?');
+$stmt = $con->prepare('SELECT reviewer_email, COUNT(reviewers.id) num_intended, COUNT(evals_id) num_scored, SUM(score1 + score2 + score3 + score4 + score5) total_score
+                       FROM reviewers LEFT JOIN evals ON evals.reviewers_id=reviewers.id LEFT JOIN scores ON scores.evals_id=evals.id AND scores.score1 <> -1 WHERE survey_id=? GROUP BY reviewer_email ');
 $stmt->bind_param('i', $sid);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -123,11 +123,11 @@ while ($row = $result->fetch_assoc()) {
 
       //  Check if this is a result that allows normalization
       if ($row['num_intended'] == $row['num_scored']) {
-        $pair_info['normalized'] = (($score['score1'] + $score['score2'] + $score['score3'] + $score['score4'] + $score['score5']) / total_score) * num_scored;
+        $pair_info['normalized'] = (($score['score1'] + $score['score2'] + $score['score3'] + $score['score4'] + $score['score5']) / $row['total_score']) * $row['num_scored'];
 
         // initialize reviewer and reviewee info arrays
         if (!isset($overalls[$score['reviewee_name']])) {
-          $overalls[$score['reviewee_name']] = array('reviewee_email' => $score['reviewee_email'], 'running_sum' => $pair_info['normalized'], 'num_of_evals' => 1);
+          $overalls[$score['reviewee_name']] = array('reviewee_name' => $score['reviewee_name'], 'reviewee_email' => $score['reviewee_email'], 'running_sum' => $pair_info['normalized'], 'num_of_evals' => 1);
         } else {
           $overalls[$score['reviewee_name']]['running_sum'] += $pair_info['normalized'];
           $overalls[$score['reviewee_name']]['num_of_evals'] += 1;
@@ -137,7 +137,7 @@ while ($row = $result->fetch_assoc()) {
 
         // initialize reviewer and reviewee info arrays
         if (!isset($overalls[$score['reviewee_name']])) {
-          $overalls[$score['reviewee_name']] = array('reviewee_email' => $score['reviewee_email'], 'running_sum' => 0, 'num_of_evals' => 0);
+          $overalls[$score['reviewee_name']] = array('reviewee_name' => $score['reviewee_name'], 'reviewee_email' => $score['reviewee_email'], 'running_sum' => 0, 'num_of_evals' => 0);
         }
       }
       array_push($datas, $pair_info);
@@ -151,7 +151,7 @@ if ($_GET['type'] === 'raw')
   $raw_output = "";
   // start the download
   foreach ($datas as $datum) {
-    $raw_output .= $datum['reviewer_email'] . ',' . $datum['teammate_email'] . ',' . $datum['score1'] . ',' . $datum['score2'] . ',' . $datum['score3'] . ',' . $datum['score4'] . ',' . $datum['score5'] . $datum['normalized'] ."\n";
+    $raw_output .= $datum['reviewer_email'] . ',' . $datum['reviewee_email'] . ',' . $datum['score1'] . ',' . $datum['score2'] . ',' . $datum['score3'] . ',' . $datum['score4'] . ',' . $datum['score5'] ."\n";
   }
 
   // generate the correct headers for the file download
@@ -169,7 +169,7 @@ if ($_GET['type'] === 'raw')
 
   // start the download
   foreach ($datas as $datum) {
-    $normal_output .= $datum['reviewer_email'] . ',' . $datum['teammate_email'] . ',' . $datum['score1'] . ',' . $datum['score2'] . ',' . $datum['score3'] . ',' . $datum['score4'] . ',' . $datum['score5'] . $datum['normalized'] ."\n";
+    $normal_output .= $datum['reviewer_email'] . ',' . $datum['teammate_email'] . ',' . $datum['score1'] . ',' . $datum['score2'] . ',' . $datum['score3'] . ',' . $datum['score4'] . ',' . $datum['score5'] . ',' . $datum['normalized'] ."\n";
   }
 
   // ouput the data
@@ -177,16 +177,16 @@ if ($_GET['type'] === 'raw')
 } else {
   // generate the correct headers for the file download
   header('Content-Type: text/csv; charset=UTF-8');
-  header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-results.csv"');
+  header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-averages.csv"');
 
   $result_output = "";
 
   // start the download
   foreach ($overalls as $overall) {
     if ($overall['num_of_evals'] == 0) {
-      $result_output .= $datum['reviewee_email'] . ", -- \n";
+      $result_output .= $overall['reviewee_email'] . ", -- \n";
     } else {
-      $result_output .= $datum['reviewee_email'] . ',' . $overall['running_sum'] / $overall['num_of_evals'] ."\n";
+      $result_output .= $overall['reviewee_email'] . ',' . $overall['running_sum'] / $overall['num_of_evals'] ."\n";
     }
   }
   echo $result_output;

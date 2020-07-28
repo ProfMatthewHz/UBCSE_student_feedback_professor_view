@@ -55,12 +55,12 @@ $today = new DateTime();
 
 // then, get information about surveys an instructor has active surveys for
 foreach($courses as $course) {
-  
+
     $stmt2 = $con->prepare('SELECT course_id, start_date, expiration_date, rubric_id, id FROM surveys WHERE course_id=? ORDER BY start_date DESC, expiration_date DESC');
     $stmt2->bind_param('i', $course['id']);
     $stmt2->execute();
     $result2 = $stmt2->get_result();
-    
+
     while ($row = $result2->fetch_assoc())
     {
         $survey_info = array();
@@ -69,7 +69,7 @@ foreach($courses as $course) {
         $survey_info['expiration_date'] = $row['expiration_date'];
         $survey_info['rubric_id'] = $row['rubric_id'];
         $survey_info['id'] = $row['id'];
-        
+
         // determine the completion of each survey
         // first get the total number of surveys assigned
         $stmt_total = $con->prepare('SELECT COUNT(id) AS total FROM reviewers WHERE survey_id=?');
@@ -79,7 +79,8 @@ foreach($courses as $course) {
         $data_total = $result_total->fetch_all(MYSQLI_ASSOC);
 
         // now, get the number of completed evaluation associated with the survey
-        $stmt_completed = $con->prepare('SELECT COUNT(scores.reviewers_id) AS completed FROM scores WHERE EXISTS (SELECT reviewers.id FROM reviewers WHERE reviewers.id=scores.reviewers_id AND reviewers.survey_id=?)');
+        $stmt_completed = $con->prepare('SELECT COUNT(scores.evals_id) AS completed FROM scores INNER JOIN evals ON (scores.evals_id=evals.id) INNER JOIN reviewers ON (reviewers.id=evals.reviewers_id)
+                                        WHERE reviewers.survey_id=?');
         $stmt_completed->bind_param('i', $survey_info['id']);
         $stmt_completed->execute();
         $result_completed = $stmt_completed->get_result();
@@ -92,14 +93,14 @@ foreach($courses as $course) {
           $percentage = floor(($data_completed[0]['completed'] / $data_total[0]['total']) * 100);
         }
         $survey_info['completion'] = $data_completed[0]['completed'] . '/' . $data_total[0]['total'] . '<br />(' . $percentage . '%)';
-        
+
         // determine status of survey. then adjust dates to more friendly format
         $s = new DateTime($survey_info['start_date']);
         $e = new DateTime($survey_info['expiration_date']);
-        
+
         $survey_info['start_date'] = $s->format('F j, Y') . '<br />' . $s->format('g:i A');
         $survey_info['expiration_date'] = $e->format('F j, Y') . '<br />' . $e->format('g:i A');
-        
+
         if ($today < $s)
         {
           array_push($surveys_upcoming, $survey_info);
@@ -112,7 +113,7 @@ foreach($courses as $course) {
         {
           array_push($surveys_expired, $survey_info);
         }
-    } 
+    }
 }
 
 
@@ -144,9 +145,9 @@ foreach($courses as $course) {
     <div class="w3-container w3-center">
         <h2>Surveys</h2>
     </div>
-    
+
     <?php
-      
+
       // echo the success message if any
       if (isset($_SESSION['survey-add']) and $_SESSION['survey-add'])
       {
@@ -159,9 +160,9 @@ foreach($courses as $course) {
         echo '<div class="w3-container w3-center w3-red">' . $_SESSION['survey-delete'] . '</div><br />';
         $_SESSION['survey-delete'] = NULL;
       }
-      
+
     ?>
- 
+
     <div class="w3-responsive">
     <h3>Upcoming Surveys</h3>
     <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
@@ -171,9 +172,9 @@ foreach($courses as $course) {
         <th>End Date and Time</th>
         <th>Actions</th>
         </tr>
-        <?php 
+        <?php
           foreach ($surveys_upcoming as $survey)
-          { 
+          {
             echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '</td>';
             echo '<td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyPairings.php?survey=' . $survey['id'] . '">View or Edit Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
           }
@@ -188,9 +189,9 @@ foreach($courses as $course) {
         <th>End Date and Time</th>
         <th>Actions</th>
         </tr>
-        <?php 
+        <?php
           foreach ($surveys_active as $survey)
-          { 
+          {
             echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '</td>';
             echo '<td>' . $survey['completion'] . '</td><td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyPairings.php?survey=' . $survey['id'] . '">View Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
           }
@@ -205,9 +206,9 @@ foreach($courses as $course) {
         <th>End Date and Time</th>
         <th>Actions</th>
         </tr>
-        <?php 
+        <?php
           foreach ($surveys_expired as $survey)
-          { 
+          {
             echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '</td>';
             echo '<td>' . $survey['completion'] . '</td><td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyPairings.php?survey=' . $survey['id'] . '">View Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
           }
@@ -217,7 +218,7 @@ foreach($courses as $course) {
     <br />
 <div class = "w3-center w3-mobile">
     <a href="addSurveys.php"><button class="w3-button w3-green">+ Add Survey</button></a>
-</div> 
+</div>
 </div>
 </body>
 </html>

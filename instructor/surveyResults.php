@@ -81,10 +81,10 @@ $datas = array();
 $overalls = array();
 
 // Get information completed by the reviewer -- how many were reviewed and the total points
-$stmt_scores = $con->prepare('SELECT stu_reviewer.name reviewer_name, stu_reviewee.name reviewee_name, stu_reviewee.email reviewee_email,score1, score2, score3, score4, score5 FROM reviewers LEFT JOIN students stu_reviewer ON reviewers.reviewer_email=stu_reviewer.email LEFT JOIN students stu_reviewee ON reviewers.reviewee_email stu_reviewee.email
-                             LEFT JOIN evals on evals.reviewer_id=reviewer.id LEFT JOIN scores ON evals.id=scores.evals_id WHERE survey_id=? AND reviewers.reviewer_email=?');
-$stmt = $con->prepare('SELECT reviewer_email, COUNT(reviewers.id) num_intended, COUNT(eval_id) num_scored, SUM(score1 + score2 + score3 + score4 + score5) total_score
-                       FROM reviewers LEFT JOIN evals ON evals.reviewer_id=reviewers.id LEFT JOIN scores ON scores.evals_id=evals.id GROUP BY reviewer_email WHERE survey_id=?');
+$stmt_scores = $con->prepare('SELECT stu_reviewer.name reviewer_name, stu_reviewee.name reviewee_name, stu_reviewee.email reviewee_email,score1, score2, score3, score4, score5 FROM reviewers LEFT JOIN students stu_reviewer ON reviewers.reviewer_email=stu_reviewer.email LEFT JOIN students stu_reviewee ON reviewers.teammate_email=stu_reviewee.email
+                             LEFT JOIN evals on evals.reviewers_id=reviewers.id LEFT JOIN scores ON evals.id=scores.evals_id WHERE survey_id=? AND reviewers.reviewer_email=?');
+$stmt = $con->prepare('SELECT reviewer_email, COUNT(reviewers.id) num_intended, COUNT(evals_id) num_scored, SUM(score1 + score2 + score3 + score4 + score5) total_score
+                       FROM reviewers LEFT JOIN evals ON evals.reviewers_id=reviewers.id LEFT JOIN scores ON scores.evals_id=evals.id AND scores.score1 <> -1 WHERE survey_id=? GROUP BY reviewer_email ');
 $stmt->bind_param('i', $sid);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -111,11 +111,11 @@ while ($row = $result->fetch_assoc()) {
 
       //  Check if this is a result that allows normalization
       if ($row['num_intended'] == $row['num_scored']) {
-        $pair_info['normalized'] = (($score['score1'] + $score['score2'] + $score['score3'] + $score['score4'] + $score['score5']) / total_score) * num_scored;
+        $pair_info['normalized'] = (($score['score1'] + $score['score2'] + $score['score3'] + $score['score4'] + $score['score5']) / $row['total_score']) * $row['num_scored'];
 
         // initialize reviewer and reviewee info arrays
         if (!isset($overalls[$score['reviewee_name']])) {
-          $overalls[$score['reviewee_name']] = array('reviewee_email' => $score['reviewee_email'], 'running_sum' => $pair_info['normalized'], 'num_of_evals' => 1);
+          $overalls[$score['reviewee_name']] = array('reviewee_name' => $score['reviewee_name'], 'reviewee_email' => $score['reviewee_email'], 'running_sum' => $pair_info['normalized'], 'num_of_evals' => 1);
         } else {
           $overalls[$score['reviewee_name']]['running_sum'] +=$pair_info['normalized'];
           $overalls[$score['reviewee_name']]['num_of_evals'] += 1;
@@ -125,7 +125,7 @@ while ($row = $result->fetch_assoc()) {
 
         // initialize reviewer and reviewee info arrays
         if (!isset($overalls[$score['reviewee_name']])) {
-          $overalls[$score['reviewee_name']] = array('reviewee_email' => $score['reviewee_email'], 'running_sum' => 0, 'num_of_evals' => 0);
+          $overalls[$score['reviewee_name']] = array('reviewee_name' => $score['reviewee_name'], 'reviewee_email' => $score['reviewee_email'], 'running_sum' => 0, 'num_of_evals' => 0);
         }
       }
       array_push($datas, $pair_info);
@@ -200,7 +200,7 @@ while ($row = $result->fetch_assoc()) {
         </tr>
         <?php
           foreach ($overalls as $overall) {
-            echo '<tr><td>' . htmlspecialchars($overall['teammate_email']) . '<br />(' . htmlspecialchars($overall['teammate_name']) . ')' . '</td>';
+            echo '<tr><td>' . htmlspecialchars($overall['reviewee_email']) . '<br />(' . htmlspecialchars($overall['reviewee_name']) . ')' . '</td>';
 
             if ($overall['num_of_evals'] === 0) {
               echo '<td>--</td></tr>';

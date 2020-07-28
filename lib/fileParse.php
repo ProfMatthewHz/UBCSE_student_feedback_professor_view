@@ -30,7 +30,7 @@ function parse_review_pairs($file_handle, $db_connection) {
   }
 
   return $ret_val;
-)
+}
 
 function parse_review_teams($file_handle, $db_connection) {
   // return array
