@@ -11,13 +11,12 @@
   }
   $email = $_SESSION['email'];
   $id = $_SESSION['id'];
-  $student_ID = $_SESSION['student_ID'];
   require "lib/database.php";
   $con = connectToDatabase();
   $student_classes = array();
   $stmt = $con->prepare('SELECT DISTINCT course.name, surveys.id FROM `reviewers`  INNER JOIN surveys
-ON reviewers.survey_id = surveys.id INNER JOIN course on course.id = surveys.course_id WHERE reviewers.student_id =? AND surveys.expiration_date > NOW() AND surveys.start_date <= NOW()');
-  $stmt->bind_param('i', $student_ID);
+ON reviewers.survey_id = surveys.id INNER JOIN course on course.id = surveys.course_id WHERE reviewers.reviewer_email=? AND surveys.expiration_date > NOW() AND surveys.start_date <= NOW()');
+  $stmt->bind_param('s', $email);
   $stmt->execute();
   $stmt->bind_result($class_name,$surveys_id);
   $stmt->store_result();
@@ -26,9 +25,9 @@ ON reviewers.survey_id = surveys.id INNER JOIN course on course.id = surveys.cou
   }
   $_SESSION['student_classes'] = $student_classes;
 
-  if(isset($_POST['courseSelect'])){
-    $_SESSION['course'] = htmlspecialchars($_POST['courseSelect']);
-    $_SESSION['surveys_ID'] = $_SESSION['student_classes'][$_SESSION['course']];
+  if(isset($_POST['courseSelect'])) {
+    $_SESSION['course'] = $_POST['courseSelect'];
+    $_SESSION['surveys_id'] = $_SESSION['student_classes'][$_SESSION['course']];
 
     header("Location: peerEvalForm.php");
     exit();

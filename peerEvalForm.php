@@ -6,8 +6,6 @@ ini_set("log_errors", 1);
 session_start();
 
 $email = $_SESSION['email'];
-$id = $_SESSION['id'];
-$student_id= $_SESSION['student_id'];
 $surveys_id=$_SESSION['surveys_id'];
 $course = $_SESSION['course'];
 
@@ -20,22 +18,22 @@ $group_ids=array();
 
 $stmt = $con->prepare('SELECT students.name, reviewers.id FROM reviewers
 	                     INNER JOIN students ON reviewers.teammate_email = students.email WHERE reviewers.survey_id =? AND reviewers.reviewer_email=?');
-$stmt->bind_param('ii',$surveys_id,$email);
+$stmt->bind_param('is',$surveys_id,$email);
 $stmt->execute();
 $stmt->bind_result($group_member,$review_id);
 $stmt->store_result();
-while ($stmt->fetch()){
+while ($stmt->fetch()) {
 	array_push($group_members,$group_member);
-	array_push($group_reviews,$review_id);
+	array_push($group_ids,$review_id);
 }
 
 $num_of_group_members =  count($group_members);
-if (!isset($_SESSION['group_member_number'])){
+if (!isset($_SESSION['group_member_number'])) {
 	$_SESSION['group_member_number'] = 0;
 }
 
-$Name =  htmlspecialchars($group_members[$_SESSION['group_member_number']]);
-$reviewers_id = $group_reviews[$_SESSION['group_member_number']];
+$name =  htmlspecialchars($group_members[$_SESSION['group_member_number']]);
+$reviewers_id = $group_ids[$_SESSION['group_member_number']];
 
 //fetch eval id, if it exists
 $stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
@@ -70,7 +68,7 @@ while ($stmt->fetch()) {
 	$student_scores=array($score1, $score2, $score3, $score4, $score5);
 }
 //When submit button is pressed
-if ( !empty($_POST) && isset($_POST))
+if ( !empty($_POST) && isset($_POST)) {
   if (!isset($_POST['Q1']) || !isset($_POST['Q2']) || !isset($_POST['Q3']) || !isset($_POST['Q4']) || !isset($_POST['Q5'])) {
 		echo "Bad Request: Missing POST parameters";
 		http_response_code(400);
@@ -83,8 +81,8 @@ if ( !empty($_POST) && isset($_POST))
 	$d=intval($_POST['Q4']);
 	$e=intval($_POST['Q5']);
   //if scores don't exist
-	if($student_scores[1] == -1){
-    $stmt = $con->prepare('INSERT INTO scores (score1, score2, score3, score4, score5, eval_id) VALUES(?,?,?,?,?,?)');
+	if($student_scores[1] == -1) {
+    $stmt = $con->prepare('INSERT INTO scores (score1, score2, score3, score4, score5, evals_id) VALUES(?,?,?,?,?,?)');
     $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_id);
     $stmt->execute();
 	 } else {
@@ -118,7 +116,7 @@ if ( !empty($_POST) && isset($_POST))
 		$_SESSION['group_member_number'] +=1;
 	  header("Location: peerEvalForm.php"); //refresh page with next group member
 		exit();
-	} else{
+	} else {
     //evaluated all students
 		$_SESSION = array();
 		header("Location: evalConfirm.php");
@@ -186,10 +184,10 @@ option {
 <hr>
 <div id="login" class="w3-row-padding w3-padding">
   <form id="peerEval" class="w3-container w3-card-4 w3-light-blue" method='post'>
-    <h1>Current person you're evaluating: <?php echo $Name?></h1>
+    <h1>Evaluating: <?php echo $name?></h1>
 		<h4>Evaluation <?php echo($_SESSION['group_member_number']+1)?> of <?php echo($num_of_group_members)?> </h4>
     <hr>
-    <h1>For each prompt, select the description that best fits their performance on your team</h1>
+    <h1>Select the best description of <?php echo $name?>'s performance on your team</h1>
     <hr>
     <h3>Question 1: Role</h3>
 	  <select name="Q1" required class="w3-select">
@@ -205,7 +203,7 @@ option {
 	 <select name="Q2" required class="w3-select">
      <option name="Q2" hidden disabled selected value>--select an option --</option>
 	   <option value="0" name="Q2" <?php if($student_scores[1]==0){echo("selected='selected'");}?> >Rarely takes leadership role, does not collaborate, sometimes willing to assist teammates.</option>
-	   <option value="1" name="Q2" <?php if($student_scores[1]==1){echo("selected='selected'");}?> >Occasionally shows leadership, mostly collaborates, generally willin to assist teammates.</option>
+	   <option value="1" name="Q2" <?php if($student_scores[1]==1){echo("selected='selected'");}?> >Occasionally shows leadership, mostly collaborates, generally willing to assist teammates.</option>
 	   <option value="2" name="Q2" <?php if($student_scores[1]==2){echo("selected='selected'");}?> >Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates.</option>
 	   <option value="3" name="Q2" <?php if($student_scores[1]==3){echo("selected='selected'");}?> >Takes leadership role, is a good collaborator, always willing to assist teammates.</option>
 	  </select>
@@ -214,8 +212,8 @@ option {
     <h3>Question 3: Participation</h3>
 	  <select name="Q3" required class="w3-select">
      <option name="Q3" hidden disabled selected value>--select an option --</option>
-	   <option value="0" name="Q3" <?php if($student_scores[2]==0){echo("selected='selected'");}?> >Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesnt share ideas.</option>
-	   <option value="1" name="Q3" <?php if($student_scores[2]==1){echo("selected='selected'");}?> >Occasionally misses/ doesn't participate in meetings, somewhat unprepared for meetings, offers unclear/ unhelpful ideas.</option>
+	   <option value="0" name="Q3" <?php if($student_scores[2]==0){echo("selected='selected'");}?> >Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesn't share ideas.</option>
+	   <option value="1" name="Q3" <?php if($student_scores[2]==1){echo("selected='selected'");}?> >Occasionally misses/doesn't participate in meetings, somewhat unprepared for meetings, offers unclear/ unhelpful ideas.</option>
 	   <option value="2" name="Q3" <?php if($student_scores[2]==2){echo("selected='selected'");}?> >Attends and participates in most meetings, comes prepared, and offers useful ideas.</option>
 	   <option value="3" name="Q3" <?php if($student_scores[2]==3){echo("selected='selected'");}?> >Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas.</option>
 	  </select>

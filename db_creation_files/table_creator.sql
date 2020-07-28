@@ -4,12 +4,12 @@ CREATE TABLE `course` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `code` text NOT NULL,
  `name` text NOT NULL,
- `semester` int(4) NOT NULL,
- `year` int(4) NOT NULL,
+ `semester` tinyint NOT NULL,
+ `year` tinyint NOT NULL,
  `instructor_id` int(11) NOT NULL,
  PRIMARY KEY (`id`),
  KEY `course_instructor_idx` (`instructor_id`),
- CONSTRAINT `course_instructor_constraint` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+ CONSTRAINT `course_instructor_constraint` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
 
@@ -43,9 +43,8 @@ CREATE TABLE `students` (
 -- each row defines a single peer- or self-evaluation. Rows are added/updated only as students complete their evaluations
 CREATE TABLE `evals` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
- `reviewers_id` int(11) NOT NULL AUTO_INCREMENT,
+ `reviewers_id` int(11) NOT NULL,
  PRIMARY KEY (`id`),
- KEY `eval_survey_id` (`survey_id`),
  KEY `eval_reviewers_id` (`reviewers_id`),
  CONSTRAINT `eval_reviewers_id_constraint` FOREIGN KEY (`reviewers_id`) REFERENCES `reviewers` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
