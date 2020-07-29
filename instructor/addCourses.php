@@ -44,7 +44,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token'])) {
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
     exit();
@@ -258,7 +258,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"];} ?></span><br />
     <label for="roster-file">Roster (CSV File):</label><br>
-    <input type="file" id="roster-file" class="w3-input w3-border" name="roster-file"><br><br />
+    <input type="file" id="roster-file" class="w3-input w3-border" name="roster-file" required><br><br />
 
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
 
