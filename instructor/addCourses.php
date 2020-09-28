@@ -146,8 +146,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // prepare sql statements
             $stmt_check = $con->prepare('SELECT student_id FROM students WHERE email=?');
             $stmt_news = $con->prepare('INSERT INTO students (email, name) VALUES (?, ?)');
-            $stmt_checkros = $con->prepare('SELECT id FROM roster WHERE student_id=? AND course_id=?');
-            $stmt_ros = $con->prepare('INSERT INTO roster (student_id, course_id) VALUES (?, ?)');
 
             for ($i = 0; $i < $roster_size; $i ++) {
               $stmt_check->bind_param('s', $names_emails[$i][1]);
@@ -168,19 +166,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
               {
                 $student_id = $student_info[0]['student_id'];
               }
-
-              // now, insert the student into the roster if they do not exist already
-              $stmt_checkros->bind_param('ii', $student_id, $course_id);
-              $stmt_checkros->execute();
-              $result = $stmt_checkros->get_result();
-              $data = $result->fetch_all(MYSQLI_ASSOC);
-
-              if ($result->num_rows == 0)
-              {
-                $stmt_ros->bind_param('ii', $student_id, $course_id);
-                $stmt_ros->execute();
-              }
-
             }
 
             // redirect to course page with message
