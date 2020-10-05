@@ -220,12 +220,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 <form action="addCourses.php" method ="post" enctype="multipart/form-data" style="width:60%" class="w3-container w3-mobile">
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-code"])) {echo $errorMsg["course-code"];} ?></span><br />
     <label for="course-code">Course Code:</label><br>
-    <input type="text" id="course-code" class="w3-input w3-border" name="course-code" placeholder="e.g, CSE442" <?php if ($course_code) {echo 'value="' . htmlspecialchars($course_code) . '"';} required ?>><br>
+    <input type="text" id="course-code" class="w3-input w3-border" name="course-code" placeholder="e.g, CSE442" <?php if ($course_code) {echo 'value="' . htmlspecialchars($course_code) . '"';} ?>> required><br>
 
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-name"])) {echo $errorMsg["course-name"];} ?></span><br />
     <label for="course-name">Course Name:</label><br>
-    <input type="text" id="course-name" class="w3-input w3-border" name="course-name" placeholder="e.g, Software Engineering Concepts" <?php if ($course_name) {echo 'value="' . htmlspecialchars($course_name) . '"';} required ?>><br>
+    <input type="text" id="course-name" class="w3-input w3-border" name="course-name" placeholder="e.g, Software Engineering Concepts" <?php if ($course_name) {echo 'value="' . htmlspecialchars($course_name) . '"';} ?>> required><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["semester"])) {echo $errorMsg["semester"];} ?></span><br />
     <label for="semester">Course Semester:</label><br>
@@ -239,11 +239,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-year"])) {echo $errorMsg["course-year"];} ?></span><br />
     <label for="year">Course Year:</label><br>
-    <input type="number" id="year" class="w3-input w3-border" name="course-year" placeholder="e.g, 2020" <?php if ($course_year) {echo 'value="' . htmlspecialchars($course_year) . '"';} required ?>><br>
+    <input type="number" id="year" class="w3-input w3-border" name="course-year" placeholder="e.g, 2020" <?php if ($course_year) {echo 'value="' . htmlspecialchars($course_year) . '"';} ?>> required><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"];} ?></span><br />
     <label for="roster-file">Roster (CSV File):</label><br>
-    <input type="file" id="roster-file" class="w3-input w3-border" name="roster-file" required><br><br />
+    <input type="file" id="roster-file" class="w3-input w3-border" name="roster-file" required><br><br>
+    <span style="font-size:small;color:AliceBlue">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span> 
 
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
 
