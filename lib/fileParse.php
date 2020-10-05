@@ -88,7 +88,7 @@ function parse_roster_file($file_handle) {
     $line_text[1] = trim($line_text[1]);
 
     if (!ctype_print($line_text[0])) {
-      $ret_val['error'] = 'Input CSV file includes a name with unprintable characters on line ' . $line_num;
+      $ret_val['error'] = 'Input CSV file includes a name ('.$line_text[0].') with unprintable characters on line ' . $line_num;
       return $ret_val;
     }
 

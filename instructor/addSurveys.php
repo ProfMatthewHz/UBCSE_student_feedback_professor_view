@@ -73,7 +73,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   }
 
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']) || !is_uploaded_file($_FILES['file']['tmp_name']))
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']) || !is_uploaded_file($_FILES['pairing-file']['tmp_name']))
   {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
@@ -335,7 +335,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     </select><br><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"];} ?></span><br />
-    <label for="pairing-file">Pairings (CSV File):</label><br>
+    <label for="pairing-file">Review Assignments (CSV File):</label><br>
+    <span style="font-size:small;color:DarkGrey">File needs email addresses of 1 pair or team per row.</span>
     <input type="file" id="pairing-file" class="w3-input w3-border" name="pairing-file" required><br><br />
 
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />

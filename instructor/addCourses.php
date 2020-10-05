@@ -44,7 +44,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
     exit();
