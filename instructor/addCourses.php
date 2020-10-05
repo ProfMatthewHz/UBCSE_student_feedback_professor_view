@@ -243,7 +243,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"];} ?></span><br />
     <label for="roster-file">Roster (CSV File):</label><br>
-    <span style="font-size:small;color:AliceBlue">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
+    <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
     <input type="file" id="roster-file" class="w3-input w3-border" name="roster-file" required><br><br>
 
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
