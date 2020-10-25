@@ -46,7 +46,7 @@ function parse_review_teams($file_handle, $db_connection) {
 
     // Make sure the current line's data are valid
     for ($j = 0; $j < $line_fields; $j++) {
-      $line_fields[$j] = trim($line_text[$j]);
+      $line_text[$j] = trim($line_text[$j]);
       if (!email_already_exists($line_text[$j], $db_connection)) {
         $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
         return $ret_val;
@@ -108,10 +108,10 @@ function email_already_exists($email_addr, $db_connection) {
   $stmt->bind_param('s', $email_addr);
   $stmt->execute();
   $result = $stmt->get_result();
-  $data = $result->fetch_all(MYSQLI_ASSOC);
+  $count = mysqli_num_rows($result);
 
   // Return if that email address already exists
-  return $result->num_rows != 0;
+  return $count != 0;
 }
 
 function add_pairings($emails, $survey_id, $db_connection) {
