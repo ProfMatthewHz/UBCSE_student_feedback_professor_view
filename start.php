@@ -6,6 +6,7 @@ ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
 session_start();
+require "lib/constants.php";
 require "lib/database.php";
 $con = connectToDatabase();
 
@@ -28,7 +29,7 @@ if(!empty($_SERVER['uid'])) {
 	$_SESSION['email'] = $email;
 	$_SESSION['student_ID'] = $student_ID;
 	$stmt->close();
-	header("Location: ".SITE_HOME."courseSelect.php");
+	header("Location: ".SITE_HOME."/courseSelect.php");
 	exit();
 } else {
   http_response_code(400);
