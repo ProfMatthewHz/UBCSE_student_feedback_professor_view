@@ -5,16 +5,15 @@
   session_start();
   require "lib/constants.php";
 
-  if(!isset($_SESSION['id'])) {
-    header("Location: ".SITE_HOME."index.php");
+  if(!isset($_SESSION['email'])) {
+    header("Location: ".SITE_HOME."start.php");
     exit();
   }
   $email = $_SESSION['email'];
-  $id = $_SESSION['id'];
   require "lib/database.php";
   $con = connectToDatabase();
   $student_classes = array();
-  $stmt = $con->prepare('SELECT DISTINCT course.name, surveys.id FROM `reviewers`  INNER JOIN surveys
+  $stmt = $con->prepare('SELECT DISTINCT course.name, surveys.id FROM reviewers  INNER JOIN surveys
 ON reviewers.survey_id = surveys.id INNER JOIN course on course.id = surveys.course_id WHERE reviewers.reviewer_email=? AND surveys.expiration_date > NOW() AND surveys.start_date <= NOW()');
   $stmt->bind_param('s', $email);
   $stmt->execute();

@@ -20,7 +20,6 @@ class InstructorInfo {
   public $otp_status = 1;
   public $session_status = 2;
 
-
   // function members
   // checks the value of the initial authorization cookie
   public function check_init_auth($db_connection) {
@@ -67,7 +66,7 @@ class InstructorInfo {
     $this->email = $data[0]['email'];
     $this->otp = $data[0]['otp'];
     $this->otp_expiration = $data[0]['otp_expiration'];
-    
+
     // check the otp expiration status
     if (time() < $this->otp_expiration) {
       $this->otp_status = 0;
@@ -89,7 +88,7 @@ class InstructorInfo {
 
       if ($action == 0) {
         http_response_code(302);
-        header("Location: instructorLogin.php");
+        header("Location: ".INSTRUCTOR_HOME."index.php");
         exit();
       } else if ($action == 2) {
         http_response_code(403);
@@ -109,7 +108,7 @@ class InstructorInfo {
 
       if ($action == 0) {
         http_response_code(302);
-        header("Location: instructorLogin.php");
+        header("Location: ".INSTRUCTOR_HOME."index.php");
         exit();
       } else if ($action == 2) {
         http_response_code(403);
@@ -135,7 +134,7 @@ class InstructorInfo {
 
       if ($action == 0) {
         http_response_code(302);
-        header("Location: instructorLogin.php");
+        header("Location: ".INSTRUCTOR_HOME."index.php");
         exit();
       } else if ($action == 2) {
         http_response_code(403);
@@ -165,7 +164,7 @@ class InstructorInfo {
 
       if ($action == 0) {
         http_response_code(302);
-        header("Location: instructorLogin.php");
+        header("Location: ".INSTRUCTOR_HOME."index.php");
         exit();
       } else if ($action == 2) {
         http_response_code(403);
@@ -179,7 +178,7 @@ class InstructorInfo {
     // finally last redirect action
     if ($action == 1) {
       http_response_code(302);
-      header("Location: surveys.php");
+      header("Location: ".INSTRUCTOR_HOME."surveys.php");
       exit();
     }
 

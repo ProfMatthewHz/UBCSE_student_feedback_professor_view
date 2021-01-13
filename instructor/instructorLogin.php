@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
     // redirect to the next page
     http_response_code(302);
-    header("Location: instructorOTPEntry.php");
+    header("Location: ".INSTRUCTOR_HOME."instructorOTPEntry.php");
     exit();
 
   }

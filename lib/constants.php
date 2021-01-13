@@ -1,5 +1,6 @@
 <?php
 define("SITE_HOME","http://cse.buffalo.edu/teamwork/");
+define("INSTRUCTOR_HOME","http://cse.buffalo.edu/teamwork/instructor/");
 define("OTP_EXPIRATION_SECONDS", 60 * 15);
 define("SESSIONS_SALT", "session-salt");
 define("PBKDF2_ITERS", 50000);

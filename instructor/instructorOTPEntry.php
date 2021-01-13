@@ -31,7 +31,7 @@ $invalid_otp = false;
 // handle access code submissions only if the initial authorization token exists
 if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status != 1))
 {
-  
+
   // make sure the access code has been sent
   if (!isset($_POST['otp']))
   {
@@ -39,56 +39,56 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
     echo "Bad Request: Missing parmeters.";
     exit();
   }
-  
+
   // make sure the access code is not just whitespace
   $supplied_otp = trim($_POST['otp']);
-  
+
   // update error flag
   if (empty($supplied_otp))
   {
     $blank_otp = true;
   }
-  
+
   // continue only if the access code has not expired and the entered access code was not blank
   if ($instructor->otp_status == 0 and !$blank_otp)
   {
-    
+
     // now make sure the entered password is valid
     if (password_verify($supplied_otp, $instructor->otp))
     {
-      
+
       // password good, so start generating needed tokens
       // first, generate the session cookie
       $session_cookie = random_bytes(TOKEN_SIZE);
-      
+
       // hash the initial authorization cookie
       $hashed_cookie = hash_pbkdf2("sha256", $session_cookie, SESSIONS_SALT, PBKDF2_ITERS);
-      
+
       // set the initial authorization cookie for 12 hours
       $session_expiration = time() + SESSION_TOKEN_EXPIRATION_SECONDS;
       $c_options['expires'] = $session_expiration;
       $c_options['samesite'] = 'Lax';
       setcookie(SESSION_COOKIE_NAME, bin2hex($session_cookie), $c_options);
-      
+
       // now, generate the CSRF token
       $csrf_token = bin2hex(random_bytes(TOKEN_SIZE));
-      
+
       // store the new tokens and expiration dates in the database, NULL out the initial authorization id
       $stmt = $con->prepare('UPDATE instructors SET init_auth_id=NULL, session_token=?, session_expiration=?, csrf_token=? WHERE id=?');
       $stmt->bind_param('sisi', $hashed_cookie, $session_expiration, $csrf_token, $instructor->id);
       $stmt->execute();
-      
+
       // redirect the instructor to the next page
-      http_response_code(302);   
-      header("Location: surveys.php");
+      http_response_code(302);
+      header("Location: ".INSTRUCTOR_HOME."surveys.php");
       exit();
-      
+
     }
     else
     {
       $invalid_otp = true;
     }
-    
+
   }
 
 }
@@ -117,8 +117,8 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
 </div>
 
     <div class="form-group">
-    
-      <?php 
+
+      <?php
         if ($_SERVER['REQUEST_METHOD'] == 'GET')
         {
           if ($instructor->init_auth_status == 1)
@@ -135,13 +135,13 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
           }
         }
       ?>
-      
+
       <br />
       <br />
       <p>Please enter the access code that was sent to your email.</p><br />
       <span class="w3-red">
-      
-        <?php 
+
+        <?php
           if ($_SERVER['REQUEST_METHOD'] == 'POST')
           {
             if ($instructor->init_auth_status == 1)
@@ -162,7 +162,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
             }
           }
         ?>
-      
+
       </span>
       <form method="post" action="instructorOTPEntry.php">
         <label for="otp">Access Code:</label><br />
