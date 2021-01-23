@@ -227,8 +227,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     else {
       if ($pairing_mode == '1') {
         $pairings = parse_review_pairs($file_handle, $con);
-      } else {
+      } else if ($pairing_mode == '2') {
         $pairings = parse_review_teams($file_handle, $con);
+      } else {
+        $pairings = parse_review_managed_teams($file_handle, $con);        
       }
 
       // Clean up our file handling
@@ -332,11 +334,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     <select id="pairing-mode" class="w3-select w3-border" name="pairing-mode">
         <option value="1" <?php if (!$pairing_mode) {echo 'selected';} ?>>Raw</option>
         <option value="2" <?php if ($pairing_mode == 2) {echo 'selected';} ?>>Team</option>
+        <option value="3" <?php if ($pairing_mode == 3) {echo 'selected';} ?>>Manager + Team</option>
     </select><br><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"];} ?></span><br />
     <label for="pairing-file">Review Assignments (CSV File):</label><br>
-    <span style="font-size:small;color:DarkGrey">File needs email addresses of 1 pair or team per row.</span>
+    <span style="font-size:small;color:DarkGrey">Each row of file should contain email addresses of one pair or one team. PM's must be first email address in row.</span>
     <input type="file" id="pairing-file" class="w3-input w3-border" name="pairing-file" required><br><br />
 
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />

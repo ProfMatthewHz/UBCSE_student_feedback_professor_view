@@ -67,6 +67,50 @@ function parse_review_teams($file_handle, $db_connection) {
   return $ret_val;
 }
 
+function parse_review_managed_teams($file_handle, $db_connection) {
+  // return array
+  $ret_val = array();
+
+  $line_num = 0;
+  while (($line_text = fgetcsv($file_handle, 1000, ",")) !== FALSE) {
+    $line_num = $line_num + 1;
+
+    $line_fields = count($line_text);
+
+    $manager = trim($line_text[0]);
+    if (!email_already_exists($manager, $db_connection)) {
+      $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $manager;
+      return $ret_val;
+    }
+
+    // Make sure the current line's data are valid
+    for ($j = 1; $j < $line_fields; $j++) {
+      $line_text[$j] = trim($line_text[$j]);
+      if (!email_already_exists($line_text[$j], $db_connection)) {
+        $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
+        return $ret_val;
+      }
+    }
+
+    // Now that we know data are valid, create & add all possible team pairings
+    for ($j = 1; $j < $line_fields; $j++) {
+      $managed = array();
+      $managed[0] = $manager;
+      $managed[1] = $line_text[$j];
+      $ret_val[] = $pairing;
+
+      for ($k = 1; $k < $line_fields; $k++) {
+        $pairing = array();
+        $pairing[0] = $line_text[$j];
+        $pairing[1] = $line_text[$k];
+        $ret_val[] = $pairing;
+      }
+    }
+  }
+
+  return $ret_val;
+}
+
 function parse_roster_file($file_handle) {
   // return array
   $rev_val = array();
