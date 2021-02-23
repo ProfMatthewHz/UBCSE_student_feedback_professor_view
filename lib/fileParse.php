@@ -97,7 +97,7 @@ function parse_review_managed_teams($file_handle, $db_connection) {
       $managed = array();
       $managed[0] = $manager;
       $managed[1] = $line_text[$j];
-      $ret_val[] = $pairing;
+      $ret_val[] = $managed;
 
       for ($k = 1; $k < $line_fields; $k++) {
         $pairing = array();

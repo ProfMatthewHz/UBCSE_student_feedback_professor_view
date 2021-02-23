@@ -315,11 +315,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"];} ?></span><br />
     <label for="start-date">Start Date:</label><br>
-    <input type="date" id="start-date" class="w3-input w3-border" name="start-date" required <?php if ($start_date) {echo 'value="' . htmlspecialchars($start_date) . '"';} ?>><br>
+    <input type="date" id="start-date" class="w3-input w3-border" name="start-date" required <?php if ($start_date) {echo 'value="' . htmlspecialchars($start_date) . '"';} else { echo 'value="' .date("Y-m-d"). '"'; } ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["start-time"])) {echo $errorMsg["start-time"];} ?></span><br />
     <label for="start-time">Start time:</label><br>
-    <input type="time" id="start-time" class="w3-input w3-border" name="start-time" required <?php if ($start_time) {echo 'value="' . htmlspecialchars($start_time) . '"';} ?>><br>
+    <input type="time" id="start-time" class="w3-input w3-border" name="start-time" required <?php if ($start_time) {echo 'value="' . htmlspecialchars($start_time) . '"';} else { echo 'value="00:00"'; } ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"];} ?></span><br />
     <label for="end-date">End Date:</label><br>
@@ -327,7 +327,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"];} ?></span><br />
     <label for="end-time">End time:</label><br>
-    <input type="time" id="end-time" class="w3-input w3-border" name="end-time" required <?php if ($end_time) {echo 'value="' . htmlspecialchars($end_time) . '"';} ?>><br>
+    <input type="time" id="end-time" class="w3-input w3-border" name="end-time" required <?php if ($end_time) {echo 'value="' . htmlspecialchars($end_time) . '"';} else { echo 'value="23:59"'; } ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"];} ?></span><br />
     <label for="pairing-mode">Pairing File Mode:</label><br>
