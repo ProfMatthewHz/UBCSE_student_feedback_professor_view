@@ -44,6 +44,11 @@ function parse_review_teams($file_handle, $db_connection) {
 
     $line_fields = count($line_text);
 
+    // This is a hack to avoid a trailing blank entry
+    if (empty(trim($line_text[$line_fields]))) {
+      $line_fields = $line_fields - 1;
+    }
+
     // Make sure the current line's data are valid
     for ($j = 0; $j < $line_fields; $j++) {
       $line_text[$j] = trim($line_text[$j]);
@@ -81,6 +86,11 @@ function parse_review_managed_teams($file_handle, $db_connection) {
     if (!email_already_exists($manager, $db_connection)) {
       $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $manager;
       return $ret_val;
+    }
+
+    // This is a hack to avoid a trailing blank entry
+    if (empty(trim($line_text[$line_fields]))) {
+      $line_fields = $line_fields - 1;
     }
 
     // Make sure the current line's data are valid
