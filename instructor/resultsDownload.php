@@ -169,7 +169,7 @@ if ($_GET['type'] === 'raw')
 
   // start the download
   foreach ($datas as $datum) {
-    $normal_output .= $datum['reviewer_email'] . ',' . $datum['teammate_email'] . ',' . $datum['score1'] . ',' . $datum['score2'] . ',' . $datum['score3'] . ',' . $datum['score4'] . ',' . $datum['score5'] . ',' . $datum['normalized'] ."\n";
+    $normal_output .= $datum['reviewer_email'] . ',' . $datum['reviewee_email'] . ',' . $datum['score1'] . ',' . $datum['score2'] . ',' . $datum['score3'] . ',' . $datum['score4'] . ',' . $datum['score5'] . ',' . $datum['normalized'] ."\n";
   }
 
   // ouput the data
