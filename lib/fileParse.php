@@ -4,7 +4,7 @@ function parse_review_pairs($file_handle, $db_connection) {
   $ret_val = array();
 
   $line_num = 0;
-  while (($line_text = fgetcsv($file_handle, 1000, ",")) !== FALSE) {
+  while (($line_text = fgetcsv($file_handle)) !== FALSE) {
     $line_num = $line_num + 1;
 
     // Clean up any whitespace oddities
@@ -38,7 +38,7 @@ function parse_review_teams($file_handle, $db_connection) {
   $ret_val = array();
 
   $line_num = 0;
-  while (($line_text = fgetcsv($file_handle, 1000, ",")) !== FALSE) {
+  while (($line_text = fgetcsv($file_handle)) !== FALSE) {
     $line_num = $line_num + 1;
 
     // Clean up any whitespace oddities
@@ -78,7 +78,7 @@ function parse_review_managed_teams($file_handle, $db_connection) {
   $ret_val = array();
 
   $line_num = 0;
-  while (($line_text = fgetcsv($file_handle, 1000, ",")) !== FALSE) {
+  while (($line_text = fgetcsv($file_handle)) !== FALSE) {
     $team_members = array();
     $team_size = 0;
 
@@ -131,7 +131,7 @@ function parse_roster_file($file_handle) {
   $rev_val = array();
 
   $line_num = 0;
-  while (($line_text = fgetcsv($file_handle, 1000, ",")) !== FALSE) {
+  while (($line_text = fgetcsv($file_handle)) !== FALSE) {
 
     $line_num = $line_num + 1;
 
