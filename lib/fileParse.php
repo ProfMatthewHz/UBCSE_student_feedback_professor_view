@@ -92,7 +92,7 @@ function parse_review_managed_teams($file_handle, $db_connection) {
     for ($j = 0; $j < $line_fields; $j++) {
       if (!empty($line_text[$j])) {
         if (!email_already_exists($line_text[$j], $db_connection)) {
-          $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
+          $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j].".";
           return $ret_val;
         } else {
           $team_members[] = $line_text[$j];

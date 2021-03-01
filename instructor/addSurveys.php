@@ -339,7 +339,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"];} ?></span><br />
     <label for="pairing-file">Review Assignments (CSV File):</label><br>
-    <span style="font-size:small;color:DarkGrey">Each row of file should contain email addresses of one pair or one team. PM's must be last email address in row.</span>
+    <span style="font-size:small;color:DarkGrey">Each row of file should contain email addresses of one pair or one team. PMs must be last email address in row.</span>
     <input type="file" id="pairing-file" class="w3-input w3-border" name="pairing-file" required><br><br />
 
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
