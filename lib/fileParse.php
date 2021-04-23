@@ -1,4 +1,24 @@
 <?php
+function force_ascii($str) {
+
+    // detect the character encoding
+    $encoding = mb_detect_encoding($str, ['ASCII','UTF-8']);
+      
+    // escape all of the question marks to remove any illegal artifacts
+    $str = str_replace( "?", "[question_mark]", $str);
+      
+    // convert the string to the target encoding
+    $str = mb_convert_encoding($str, "ASCII", $encoding);
+      
+    // remove any question marks that have been introduced because of illegal characters
+    $str = str_replace( "?", "", $str);
+      
+    // replace the token string "[question_mark]" with the symbol "?"
+    $str = str_replace("[question_mark]", "?", $str);
+  
+    return $str;
+}
+
 function parse_review_pairs($file_handle, $db_connection) {
   // return array
   $ret_val = array();
@@ -7,8 +27,11 @@ function parse_review_pairs($file_handle, $db_connection) {
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
     $line_num = $line_num + 1;
 
+    // Force the input into ASCII format
+    $line_text = array_map("force_ascii", $line_text);
+
     // Clean up any whitespace oddities
-    $line_text = array_map(trim, $line_text);
+    $line_text = array_map("trim", $line_text);
 
     $line_fields = count($line_text);
 
@@ -41,8 +64,11 @@ function parse_review_teams($file_handle, $db_connection) {
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
     $line_num = $line_num + 1;
 
+    // Force the input into ASCII format
+    $line_text = array_map("force_ascii", $line_text);
+
     // Clean up any whitespace oddities
-    $line_text = array_map(trim, $line_text);
+    $line_text = array_map("trim", $line_text);
 
     $line_fields = count($line_text);
 
@@ -83,8 +109,12 @@ function parse_review_managed_teams($file_handle, $db_connection) {
     $team_size = 0;
 
     $line_num = $line_num + 1;
+
+    // Force the input into ASCII format
+    $line_text = array_map("force_ascii", $line_text);
+
     // Clean up white space oddities
-    $line_text = array_map(trim, $line_text);
+    $line_text = array_map("trim", $line_text);
 
     $line_fields = count($line_text) - 1;
 
@@ -135,8 +165,11 @@ function parse_roster_file($file_handle) {
 
     $line_num = $line_num + 1;
 
+    // Force the input into ASCII format
+    $line_text = array_map("force_ascii", $line_text);
+
     // Clean up whitespace oddities
-    $line_text = array_map(trim, $line_text);
+    $line_text = array_map("trim", $line_text);
 
     $line_fields = count($line_text);
 
