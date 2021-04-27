@@ -72,14 +72,9 @@ function parse_review_teams($file_handle, $db_connection) {
 
     $line_fields = count($line_text);
 
-    // This is a hack to avoid a trailing blank entry
-    if (empty($line_text[$line_fields])) {
-      $line_fields = $line_fields - 1;
-    }
-
     // Make sure the current line's data are valid
     for ($j = 0; $j < $line_fields; $j++) {
-      if (!email_already_exists($line_text[$j], $db_connection)) {
+      if ((!empty($line_text[$line_fields])) && !email_already_exists($line_text[$j], $db_connection)) {
         $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
         return $ret_val;
       }
