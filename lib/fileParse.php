@@ -170,7 +170,7 @@ function parse_roster_file($file_handle) {
 
     if ($line_fields != 2) {
       $ret_val['error'] = 'Input CSV file has incorrect format at line ' . $line_num;
-      return $split;
+      return $ret_val;
     }
 
     if (!ctype_print($line_text[0])) {
