@@ -27,13 +27,41 @@ while ($stmt->fetch()) {
 	array_push($group_ids,$review_id);
 }
 
-$num_of_group_members =  count($group_members);
+$num_of_group_members = count($group_members);
 if (!isset($_SESSION['group_member_number'])) {
 	$_SESSION['group_member_number'] = 0;
-}
 
+}
+$progress_pct = round(($_SESSION['group_member_number'] * 100) / $num_of_group_members);
 $name =  htmlspecialchars($group_members[$_SESSION['group_member_number']]);
 $reviewers_id = $group_ids[$_SESSION['group_member_number']];
+
+// Prepare the questions and answers for this survey
+if (!isset($_SESSION['topics'])) {
+	$_SESSION['topics'] = array('TEAMWORK', 'LEADERSHIP', 'PARTICIPATION', 'PROFESSIONALISM', 'QUALITY');
+	$_SESSION['answers'] = array();
+	$_SESSION['answers']['TEAMWORK'] = array('Does not willingly assume team roles, rarely completes assigned work',
+																					 'Usually accepts assigned team roles, occasionally completes assigned work',
+																					 'Accepts assigned team roles, mostly completes assigned work',
+																					 'Accepts all assigned team roles, always completes assigned work');
+	$_SESSION['answers']['LEADERSHIP'] = array('Rarely takes leadership role, does not collaborate, sometimes willing to assist teammates',
+																						'Occasionally shows leadership, mostly collaborates, generally willing to assist teammates',
+																						'Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates',
+																						'Takes leadership role, is a good collaborator, always willing to assist teammates.');
+	$_SESSION['answers']['PARTICIPATION'] = array('Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesn\'t share ideas',
+																								'Occasionally misses/doesn\'t participate in meetings, somewhat unprepared for meetings, offers unclear/unhelpful ideas',
+																								'Attends and participates in most meetings, comes prepared, offers useful ideas',
+																								'Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas');
+	$_SESSION['answers']['PROFESSIONALISM'] = array('Often discourteous and/or openly critical of teammates, doesn\'t listen to alternative perspectives',
+																									'Often courteous to teammates, usually appreciates teammates perspectives but often unwilling to consider them',
+																									'Mostly courteous to teammates, values teammates\' perspectives and often willing to consider them',
+																									'Always courteous to teammates, values teammates\' perspectives, knowledge, and experience, and always willing to consider them');
+	$_SESSION['answers']['QUALITY'] = array('Rarely commits to shared documents, others often required to revise, debug, or fix their work',
+																					'Occasionally commits to shared documents, others sometimes needed to revise, debug, or fix their work',
+																					'Often commits to shared documents, others occasionally needed to revise, debug, or fix their work',
+																					'Frequently commits to shared documents, others rarely need to revise, debug, or fix their work');
+	$_SESSION['scores'] = array('Unsatisfactory', 'Developing', 'Satisfactory', 'Exemplary');
+}
 
 //fetch eval id, if it exists
 $stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
@@ -69,17 +97,17 @@ while ($stmt->fetch()) {
 }
 //When submit button is pressed
 if ( !empty($_POST) && isset($_POST)) {
-  if (!isset($_POST['Q1']) || !isset($_POST['Q2']) || !isset($_POST['Q3']) || !isset($_POST['Q4']) || !isset($_POST['Q5'])) {
+  if (!isset($_POST['Q0']) || !isset($_POST['Q1']) || !isset($_POST['Q2']) || !isset($_POST['Q3']) || !isset($_POST['Q4'])) {
 		echo "Bad Request: Missing POST parameters";
 		http_response_code(400);
 		exit();
 	}
 	//save results
-	$a=intval($_POST['Q1']);
-	$b=intval($_POST['Q2']);
-	$c=intval($_POST['Q3']);
-	$d=intval($_POST['Q4']);
-	$e=intval($_POST['Q5']);
+	$a=intval($_POST['Q0']);
+	$b=intval($_POST['Q1']);
+	$c=intval($_POST['Q2']);
+	$d=intval($_POST['Q3']);
+	$e=intval($_POST['Q4']);
   //if scores don't exist
 	if($student_scores[1] == -1) {
     $stmt = $con->prepare('INSERT INTO scores (score1, score2, score3, score4, score5, evals_id) VALUES(?,?,?,?,?,?)');
@@ -126,137 +154,65 @@ if ( !empty($_POST) && isset($_POST)) {
 ?>
 <!DOCTYPE HTML>
 <html>
-<title>UB CSE Peer Evaluation</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+	<title>UB CSE Peer Evaluation</title>
+	<!--<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">-->
+</head>
 <body>
-
-
-<style>
-hr {
-    clear: both;
-    visibility: hidden;
-}
-input[type=radio]
-{
-  /* Double-sized Checkboxes */
-  -ms-transform: scale(2); /* IE */
-  -moz-transform: scale(2); /* FF */
-  -webkit-transform: scale(2); /* Safari and Chrome */
-  -o-transform: scale(2); /* Opera */
-  transform: scale(2);
-  padding: 10px;
-}
-.checkboxtext
-{
-  /* Checkbox text */
-  font-size: 160%;
-  display: inline;
-}
-select {
-  width: 950px;
-  max-width: 100%;
-  /* So it doesn't overflow from it's parent */
-}
-
-option {
-  /* wrap text in compatible browsers */
-  -moz-white-space: pre-wrap;
-  -o-white-space: pre-wrap;
-  white-space: pre-wrap;
-  /* hide text that can't wrap with an ellipsis */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-wrap: break-word;
-  /* add border after every option */
-  border-bottom: 1px solid #DDD;
-}
-</style>
-
-<!-- Header -->
-<header id="header" class="w3-container w3-theme w3-padding">
-  <div id="headerContentName"><font color="black"><h1><?php echo $_SESSION['course'];?> Teamwork Evaluation Form</h1></font></div>
-</header>
-
-<hr>
-<div id="login" class="w3-row-padding w3-padding">
-  <form id="peerEval" class="w3-container w3-card-4 w3-light-blue" method='post'>
-    <h1>Evaluating: <?php echo $name?></h1>
-		<h4>Evaluation <?php echo($_SESSION['group_member_number']+1)?> of <?php echo($num_of_group_members)?> </h4>
-    <hr>
-    <h1>Select the best description of <?php echo $name?>'s performance on your team</h1>
-    <hr>
-    <h3>Question 1: Role</h3>
-	  <select name="Q1" required class="w3-select">
-     <option name="Q1" hidden disabled selected value>--select an option --</option>
-	   <option value="0" name="Q1" <?php if($student_scores[0]==0){echo("selected='selected'");}?> >Does not willingly assume team roles, rarely completes assigned work.</option>
-	   <option value="1" name="Q1" <?php if($student_scores[0]==1){echo("selected='selected'");}?> >Usually accepts assigned team roles, occasionally completes assigned work.</option>
-	   <option value="2" name="Q1" <?php if($student_scores[0]==2){echo("selected='selected'");}?> >Accepts assigned team roles, mostly completes assigned work.</option>
-	   <option value="3" name="Q1" <?php if($student_scores[0]==3){echo("selected='selected'");}?> >Accepts all assigned team roles, always completes assigned work.</option>
-	  </select>
-
-    <hr>
-    <h3>Question 2: Leadership</h3>
-	 <select name="Q2" required class="w3-select">
-     <option name="Q2" hidden disabled selected value>--select an option --</option>
-	   <option value="0" name="Q2" <?php if($student_scores[1]==0){echo("selected='selected'");}?> >Rarely takes leadership role, does not collaborate, sometimes willing to assist teammates.</option>
-	   <option value="1" name="Q2" <?php if($student_scores[1]==1){echo("selected='selected'");}?> >Occasionally shows leadership, mostly collaborates, generally willing to assist teammates.</option>
-	   <option value="2" name="Q2" <?php if($student_scores[1]==2){echo("selected='selected'");}?> >Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates.</option>
-	   <option value="3" name="Q2" <?php if($student_scores[1]==3){echo("selected='selected'");}?> >Takes leadership role, is a good collaborator, always willing to assist teammates.</option>
-	  </select>
-
-    <hr>
-    <h3>Question 3: Participation</h3>
-	  <select name="Q3" required class="w3-select">
-     <option name="Q3" hidden disabled selected value>--select an option --</option>
-	   <option value="0" name="Q3" <?php if($student_scores[2]==0){echo("selected='selected'");}?> >Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesn't share ideas.</option>
-	   <option value="1" name="Q3" <?php if($student_scores[2]==1){echo("selected='selected'");}?> >Occasionally misses/doesn't participate in meetings, somewhat unprepared for meetings, offers unclear/ unhelpful ideas.</option>
-	   <option value="2" name="Q3" <?php if($student_scores[2]==2){echo("selected='selected'");}?> >Attends and participates in most meetings, comes prepared, and offers useful ideas.</option>
-	   <option value="3" name="Q3" <?php if($student_scores[2]==3){echo("selected='selected'");}?> >Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas.</option>
-	  </select>
-
-    <hr>
-    <h3>Question 4: Professionalism</h3>
-	  <select name="Q4" required class="w3-select">
-     <option name="Q4" hidden disabled selected value>--select an option --</option>
-	   <option value="0" name="Q4" <?php if($student_scores[3]==0){echo("selected='selected'");}?> >Often discourteous and/or openly critical of teammates, doesn't want to listen to alternative perspectives.</option>
-	   <option value="1" name="Q4" <?php if($student_scores[3]==1){echo("selected='selected'");}?> >Not always considerate or courteous towards teammates, usually appreciates teammates perspectives but often unwilling to consider them.</option>
-	   <option value="2" name="Q4" <?php if($student_scores[3]==2){echo("selected='selected'");}?> >Mostly courteous to teammates, values teammates' perspectives and often willing to consider them.</option>
-	   <option value="3" name="Q4" <?php if($student_scores[3]==3){echo("selected='selected'");}?> >Always courteous to teammates, values teammates' perspectives, knowledge, and experience, and always willing to consider them.</option>
-	  </select>
-
-    <hr>
-    <h3>Question 5: Quality</h3>
-	  <select name="Q5" required class="w3-select">
-     <option name="Q4" hidden disabled selected value>--select an option --</option>
-	   <option value="0" name="Q5" <?php if($student_scores[4]==0){echo("selected='selected'");}?> >Rarely commits to shared documents, others often required to revise, debug, or fix their work.</option>
-	   <option value="1" name="Q5" <?php if($student_scores[4]==1){echo("selected='selected'");}?> >Occasionally commits to shared documents, others sometimes needed to revise, debug, or fix their work.</option>
-	   <option value="2" name="Q5" <?php if($student_scores[4]==2){echo("selected='selected'");}?> >Often commits to shared documents, others occasionally needed to revise, debug, or fix their work.</option>
-	   <option value="3" name="Q5" <?php if($student_scores[4]==3){echo("selected='selected'");}?> >Frequently commits to shared documents, others rarely need to revise, debug, or fix their work.</option>
-	  </select>
-
-    <hr>
-    <div id="login" class="w3-row-padding w3-center w3-padding">
-    <input type='submit' id="EvalSubmit" class="w3-center w3-button w3-theme-dark" value=<?php if ($_SESSION['group_member_number']<($num_of_group_members - 1)): ?>
-                                                                                            "Continue with next evaluation"
-                                                                                          <?php else: ?>
-                                                                                            'Finish evaluations'
-																						<?php endif; ?>></input>
-  </div>
-  <hr>
-  </form>
-  </div>
-  <hr>
-
-<!-- Footer -->
-<footer id="footer" class="w3-container w3-theme-dark w3-padding-16">
-  <h3>Acknowledgements</h3>
-  <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
-  <p> <a  class=" w3-theme-light" target="_blank"></a></p>
-</footer>
-
+	<main>
+	  <div class="container-fluid">
+			<!-- Header -->
+			<h1 class="display-1"><?php echo $_SESSION['course'];?> Teamwork Evaluation</h1>
+  		<form id="peerEval" method='post'>
+				<div class="text-primary"><p class="lead">Evaluating: <?php echo $name?></p></div>
+				<div class="progress">
+					<div class="progress-bar" role="progressbar" style="width: <?php echo($progress_pct);?>%;" aria-valuenow="<?php echo($_SESSION['group_member_number']);?>" aria-valuemin="0" aria-valuemax="<?php echo($num_of_group_members);?>"><?php echo($progress_pct);?>%</div>
+				</div>
+				<br>
+				<?php
+				$topic_num = 0;
+				foreach ($_SESSION['topics'] as $topic) {
+					echo '<div class="row mt-5 mx-1">';
+					echo '   <div class="col-12 bg-primary text-white"><b>Select the best description of '.$name.'\'s '.$topic.'</b></div>';
+					echo '</div>';
+					echo '<div class="row pt-1 mx-1 align-items-center">';
+					for ($score_num = 0; $score_num < count($_SESSION['scores']); $score_num++) {
+						if ($score_num == 0) {
+							$end_str = '">';
+						} else {
+							$end_str = 'ms-auto">';
+						}
+						echo '<div class="col-3 ';
+						echo $end_str;
+						echo '<input type="radio" class="btn-check" name="Q'.$topic_num.'" id="Q'.$topic_num.$score_num.'" autocomplete="off" required value="'.$score_num.'"';
+						if ($student_scores[$topic_num] == $score_num) {
+							echo 'checked ';
+						}
+						echo '><label class="btn btn-outline-secondary" for="Q'.$topic_num.$score_num.'">';
+						echo $_SESSION['answers'][$topic][$score_num];
+						echo '</label>';
+						echo '</div>';
+					}
+					echo '</div>';
+					$topic_num = $topic_num + 1;
+				}
+				?>
+				<hr>
+				<div id="login">
+					<input type='submit' id="EvalSubmit" value=<?php if ($_SESSION['group_member_number']<($num_of_group_members - 1)): ?>
+																																																	'Continue with next evaluation'
+																																																<?php else: ?>
+																																																	'Finish evaluations'
+																									<?php endif; ?>></input>
+				</div>
+				<br>
+			</form>
+	  </div>
+	</main>
 </body>
 </html>
