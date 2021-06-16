@@ -140,7 +140,7 @@
                   echo('<p><a href="startSurvey.php?survey='.$value.'">'.$key.'</a></p>');
                 }
               } else {
-                echo('<p><i>No surveys currently available</i>'.$month.' '.$term.' '.$year.'</p>');
+                echo('<p><i>No surveys currently available</i></p>');
               }
               ?>
             </div>
