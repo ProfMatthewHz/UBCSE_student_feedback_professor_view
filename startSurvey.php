@@ -23,11 +23,12 @@
   }
 
   // Verify that the survey is a valid one for this student.
+  // TECHNICAL DEBT TODO: Make this into a separate function
   $stmt_request = $con->prepare('SELECT DISTINCT course.name
-                              FROM reviewers
-                              INNER JOIN surveys ON reviewers.survey_id = surveys.id 
-                              INNER JOIN course on course.id = surveys.course_id 
-                              WHERE surveys.id=? AND reviewers.reviewer_email=? AND surveys.start_date <= NOW() AND surveys.expiration_date < NOW()');
+                                  FROM reviewers
+                                  INNER JOIN surveys ON reviewers.survey_id = surveys.id 
+                                  INNER JOIN course on course.id = surveys.course_id 
+                                  WHERE surveys.id=? AND reviewers.reviewer_email=? AND surveys.start_date <= NOW() AND surveys.expiration_date > NOW()');
   $stmt_request->bind_param('is', $survey, $email);
   $stmt_request->execute();
   $result = $stmt_request->get_result();
@@ -89,4 +90,4 @@
   // Now redirect the user to the peer evaluation form
   header("Location: ".SITE_HOME."/peerEvalForm.php");
   exit();
-  ?>
+?>

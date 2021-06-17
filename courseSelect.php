@@ -17,6 +17,7 @@
   $term = MONTH_MAP_SEMESTER[$month];
   $year = idate('Y');
 
+  // TECHNICAL DEBT TODO: Make this into a separate function
   $past_surveys = array();
   $stmt_past = $con->prepare('SELECT DISTINCT course.name, surveys.name, surveys.id, surveys.expiration_date
                               FROM reviewers
@@ -35,6 +36,7 @@
   }
   $stmt_past->close();
 
+  // TECHNICAL DEBT TODO: Make this into a separate function
   $current_surveys = array();
   $stmt_curr = $con->prepare('SELECT DISTINCT course.name, surveys.name, surveys.id, surveys.expiration_date
                               FROM reviewers
@@ -53,6 +55,7 @@
   }
   $stmt_curr->close();
 
+  // TECHNICAL DEBT TODO: Make this into a separate function
   $upcoming_surveys = array();
   $stmt_next = $con->prepare('SELECT DISTINCT course.name, surveys.name, surveys.id, surveys.start_date
                               FROM reviewers
@@ -70,14 +73,6 @@
     $upcoming_surveys[] = $display_name;
   }
   $stmt_next->close();
-
-  /* if(isset($_POST['courseSelect'])) {
-    $_SESSION['course'] = $_POST['courseSelect'];
-    $_SESSION['surveys_id'] = $_SESSION['student_classes'][$_SESSION['course']];
-
-    header("Location: peerEvalForm.php");
-    exit();
-  } */
  ?>
 <!doctype html>
 <html lang="en">
