@@ -30,7 +30,7 @@
   $stmt_past->store_result();
   while ($stmt_past->fetch()){
     $e = new DateTime($expire);
-    $display_name = $survey_name.' ('.$class_name.') ended '.$e->format('M d at g:H a');
+    $display_name = '('.$class_name.') '.$survey_name.' was due by '.$e->format('M d').' at '.$e->format('g:H a');
     $past_surveys[htmlspecialchars($display_name)] = $survey_id;
   }
   $stmt_past->close();
@@ -40,7 +40,7 @@
                               FROM reviewers
                               INNER JOIN surveys ON reviewers.survey_id = surveys.id 
                               INNER JOIN course on course.id = surveys.course_id 
-                              WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.start_date <= NOW() AND surveys.expiration_date < NOW()
+                              WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.start_date <= NOW() AND surveys.expiration_date > NOW()
                               ORDER BY surveys.expiration_date');
   $stmt_curr->bind_param('s', $email);
   $stmt_curr->execute();
@@ -48,7 +48,7 @@
   $stmt_curr->store_result();
   while ($stmt_curr->fetch()){
     $e = new DateTime($expire);
-    $display_name = $survey_name.' ('.$class_name.') ending '.$e->format('M d at g:H a');
+    $display_name = '('.$class_name.') '.$survey_name.' must be completed '.$e->format('M d').' at '.$e->format('g:H a');
     $current_surveys[htmlspecialchars($display_name)] = $survey_id;
   }
   $stmt_curr->close();
@@ -66,7 +66,7 @@
   $stmt_next->store_result();
   while ($stmt_next->fetch()){
     $e = new DateTime($start);
-    $display_name = $survey_name.' ('.$class_name.') starting '.$e->format('M d at g:H a');
+    $display_name = '('.$class_name.') '.$survey_name.' opening on '.$e->format('M d').' at '.$e->format('g:H a');
     $upcoming_surveys[] = $display_name;
   }
   $stmt_next->close();
