@@ -6,9 +6,10 @@
   require "lib/constants.php";
 
   if(!isset($_SESSION['email'])) {
-    header("Location: ".SITE_HOME."start.php");
+    header("Location: ".SITE_HOME."index.php");
     exit();
   }
+  
   $email = $_SESSION['email'];
   require "lib/database.php";
   $con = connectToDatabase();

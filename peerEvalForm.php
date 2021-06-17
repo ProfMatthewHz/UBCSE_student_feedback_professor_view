@@ -5,6 +5,11 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 session_start();
 
+if (!isset($_SESSION['email']) || !isset($_SESSION['surveys_id']) || !isset($_SESSION['course']) || 
+		!isset($_SESSION['group_members']) || !isset($_SESSION['group_ids']) || !isset($_SESSION['group_member_number'])) {
+	header("Location: ".SITE_HOME."/index.php");
+	exit();
+}
 $email = $_SESSION['email'];
 $surveys_id=$_SESSION['surveys_id'];
 $course = $_SESSION['course'];
@@ -13,55 +18,13 @@ require "lib/database.php";
 $con = connectToDatabase();
 
 //get group members
-$group_members=array();
-$group_ids=array();
-
-$stmt = $con->prepare('SELECT students.name, reviewers.id FROM reviewers
-	                     INNER JOIN students ON reviewers.teammate_email = students.email WHERE reviewers.survey_id =? AND reviewers.reviewer_email=?');
-$stmt->bind_param('is',$surveys_id,$email);
-$stmt->execute();
-$stmt->bind_result($group_member,$review_id);
-$stmt->store_result();
-while ($stmt->fetch()) {
-	array_push($group_members,$group_member);
-	array_push($group_ids,$review_id);
-}
+$group_members=$_SESSION['group_members'];
+$group_ids=$_SESSION['group_ids'];
 
 $num_of_group_members = count($group_members);
-if (!isset($_SESSION['group_member_number'])) {
-	$_SESSION['group_member_number'] = 0;
-
-}
 $progress_pct = round(($_SESSION['group_member_number'] * 100) / $num_of_group_members);
 $name =  htmlspecialchars($group_members[$_SESSION['group_member_number']]);
 $reviewers_id = $group_ids[$_SESSION['group_member_number']];
-
-// Prepare the questions and answers for this survey
-if (!isset($_SESSION['topics'])) {
-	$_SESSION['topics'] = array('TEAMWORK', 'LEADERSHIP', 'PARTICIPATION', 'PROFESSIONALISM', 'QUALITY');
-	$_SESSION['answers'] = array();
-	$_SESSION['answers']['TEAMWORK'] = array('Does not willingly assume team roles, rarely completes assigned work',
-																					 'Usually accepts assigned team roles, occasionally completes assigned work',
-																					 'Accepts assigned team roles, mostly completes assigned work',
-																					 'Accepts all assigned team roles, always completes assigned work');
-	$_SESSION['answers']['LEADERSHIP'] = array('Rarely takes leadership role, does not collaborate, sometimes willing to assist teammates',
-																						'Occasionally shows leadership, mostly collaborates, generally willing to assist teammates',
-																						'Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates',
-																						'Takes leadership role, is a good collaborator, always willing to assist teammates.');
-	$_SESSION['answers']['PARTICIPATION'] = array('Often misses meetings, routinely unprepared for meetings, rarely participates in meetings and doesn\'t share ideas',
-																								'Occasionally misses/doesn\'t participate in meetings, somewhat unprepared for meetings, offers unclear/unhelpful ideas',
-																								'Attends and participates in most meetings, comes prepared, offers useful ideas',
-																								'Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas');
-	$_SESSION['answers']['PROFESSIONALISM'] = array('Often discourteous and/or openly critical of teammates, doesn\'t listen to alternative perspectives',
-																									'Often courteous to teammates, usually appreciates teammates perspectives but often unwilling to consider them',
-																									'Mostly courteous to teammates, values teammates\' perspectives and often willing to consider them',
-																									'Always courteous to teammates, values teammates\' perspectives, knowledge, and experience, and always willing to consider them');
-	$_SESSION['answers']['QUALITY'] = array('Rarely commits to shared documents, others often required to revise, debug, or fix their work',
-																					'Occasionally commits to shared documents, others sometimes needed to revise, debug, or fix their work',
-																					'Often commits to shared documents, others occasionally needed to revise, debug, or fix their work',
-																					'Frequently commits to shared documents, others rarely need to revise, debug, or fix their work');
-	$_SESSION['scores'] = array('Unsatisfactory', 'Developing', 'Satisfactory', 'Exemplary');
-}
 
 //fetch eval id, if it exists
 $stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
