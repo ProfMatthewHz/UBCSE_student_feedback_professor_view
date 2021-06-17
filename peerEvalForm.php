@@ -6,8 +6,9 @@ ini_set("log_errors", 1);
 session_start();
 
 if (!isset($_SESSION['email']) || !isset($_SESSION['surveys_id']) || !isset($_SESSION['course']) || 
-		!isset($_SESSION['group_members']) || !isset($_SESSION['group_ids']) || !isset($_SESSION['group_member_number'])) {
-	header("Location: ".SITE_HOME."/index.php");
+		!isset($_SESSION['group_members']) || !isset($_SESSION['group_ids']) || !isset($_SESSION['group_member_number']) ||
+    !isset($_SESSION['topics']) || !isset($_SESSION['answers'])) {
+	header("Location: " . SITE_HOME . "/index.php");
 	exit();
 }
 $email = $_SESSION['email'];
@@ -105,12 +106,10 @@ if ( !empty($_POST) && isset($_POST)) {
 	//move to next student in group
 	if ($_SESSION['group_member_number'] < ($num_of_group_members - 1)) {
 		$_SESSION['group_member_number'] +=1;
-	  header("Location: peerEvalForm.php"); //refresh page with next group member
+	  header("Location: ".SITE_HOME."peerEvalForm.php"); //refresh page with next group member
 		exit();
 	} else {
-    //evaluated all students
-		$_SESSION = array();
-		header("Location: evalConfirm.php");
+		header("Location: ".SITE_HOME."evalConfirm.php");
 		exit();
 	}
 }
