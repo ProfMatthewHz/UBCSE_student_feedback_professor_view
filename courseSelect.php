@@ -90,8 +90,8 @@
   <div class="container-fluid">
     <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
       <div class="col-sm-auto text-center">
-        <h1 class="text-white">Welcome to the UB CSE Evalution System</h1><br>
-        <p class="text-white">All of this term's known evaluations listed below</p>
+        <h1 class="text-white display-1">UB CSE Evalution System</h1><br>
+        <p class="text-white lead">All of this term's known evaluations listed below</p>
       </div>
     </div>
     <div class="row justify-content-md-center mt-5 mx-4">
@@ -111,7 +111,7 @@
                   if ($empty($value)) {
                     echo ($key);
                   } else {
-                    echo ('<a href="surveySubmission.php?survey='.$value.'">'.$key.'</a>');
+                    echo ('<a href="'.SITE_HOME.'surveyResults.php?survey='.$value.'">'.$key.'</a>');
                   }
                   echo('</p>');
                 }
@@ -133,7 +133,7 @@
               <?php
               if(count($current_surveys) > 0) {
                 foreach ($current_surveys as $key => $value) {
-                  echo('<p><a href="startSurvey.php?survey='.$value.'">'.$key.'</a></p>');
+                  echo('<p><a href="'.SITE_HOME.'startSurvey.php?survey='.$value.'">'.$key.'</a></p>');
                 }
               } else {
                 echo('<p><i>No surveys currently available</i></p>');

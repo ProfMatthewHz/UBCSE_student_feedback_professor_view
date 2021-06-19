@@ -4,15 +4,14 @@ error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 session_start();
-
-if (!isset($_SESSION['email']) || !isset($_SESSION['surveys_id']) || !isset($_SESSION['course']) || 
+require "lib/constants.php";
+if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course']) || 
 		!isset($_SESSION['group_members']) || !isset($_SESSION['group_ids']) || !isset($_SESSION['group_member_number']) ||
     !isset($_SESSION['topics']) || !isset($_SESSION['answers'])) {
-	header("Location: " . SITE_HOME . "/index.php");
+	header("Location: " . SITE_HOME . "index.php");
 	exit();
 }
 $email = $_SESSION['email'];
-$surveys_id=$_SESSION['surveys_id'];
 $course = $_SESSION['course'];
 
 require "lib/database.php";
@@ -127,13 +126,19 @@ if ( !empty($_POST) && isset($_POST)) {
 	<main>
 	  <div class="container-fluid">
 			<!-- Header -->
-			<h1 class="display-1"><?php echo $_SESSION['course'];?> Teamwork Evaluation</h1>
-  		<form id="peerEval" method='post'>
-				<div class="text-primary"><p class="lead">Evaluating: <?php echo $name?></p></div>
-				<div class="progress">
-					<div class="progress-bar" role="progressbar" height="32px;" style="width: <?php echo($progress_pct);?>%;" aria-valuenow="<?php echo($_SESSION['group_member_number']);?>" aria-valuemin="0" aria-valuemax="<?php echo($num_of_group_members);?>"><b><?php echo($progress_pct);?>%</b></div>
+			<div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
+				<div class="col-sm-auto text-center">
+					<h1 class="text-white display-1"><?php echo $_SESSION['course'];?> Teamwork Evaluation</h1><br>
+					<p class="text-white lead">Evaluating: <?php echo $name?></p>
 				</div>
-				<br>
+			</div>
+			<div class="row justify-content-md-center mt-4 mx-1 border border-dark border-2">
+				<div class="progress">
+						<div class="progress-bar" role="progressbar" height="20px;" style="width: <?php echo($progress_pct);?>%;" aria-valuenow="<?php echo($_SESSION['group_member_number']);?>" aria-valuemin="0" aria-valuemax="<?php echo($num_of_group_members);?>"><b><?php echo($progress_pct);?>%</b></div>
+					</div>
+				</div>
+			</div>
+			<form id="peerEval" method='post'>
 				<?php
 				$topic_num = 0;
 				foreach ($_SESSION['topics'] as $topic) {

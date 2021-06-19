@@ -7,8 +7,8 @@ ini_set("log_errors", 1);
 session_start();
 
 if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course']) || 
-	!isset($_SESSION['group_members']) || !isset($_SESSION['group_ids']) || !isset($_SESSION['group_member_number']) ||
-    !isset($_SESSION['topics']) || !isset($_SESSION['answers'])) {
+	!isset($_SESSION['group_members']) || !isset($_SESSION['group_ids']) || !isset($_SESSION['topics']) || 
+  !isset($_SESSION['answers'])) {
     header("Location: " . SITE_HOME . "index.php");
     exit();
 } else {
@@ -96,10 +96,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
             ?>
         </div>
         <div class="row pt-1 mx-1">
-            <div class="col-auto align-items-left me-auto">
-                <a class="btn btn-outline-secondary" href="<?php echo(SITE_HOME . 'startSurvey.php?survey='.$survey_id);?>" role="button">Revise these evaluations</a>
-            </div>
-            <div class="col-auto align-items-right">
+            <div class="col-auto align-self-end">
                <a class="btn btn-primary" href="<?php echo(SITE_HOME . 'index.php');?>" role="button">Return to evaluation center</a>
             </div>
         </div>

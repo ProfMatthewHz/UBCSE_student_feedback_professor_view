@@ -28,13 +28,13 @@
                                   FROM reviewers
                                   INNER JOIN surveys ON reviewers.survey_id = surveys.id 
                                   INNER JOIN course on course.id = surveys.course_id 
-                                  WHERE surveys.id=? AND reviewers.reviewer_email=? AND surveys.start_date <= NOW() AND surveys.expiration_date > NOW()');
+                                  WHERE surveys.id=? AND reviewers.reviewer_email=? AND surveys.expiration_date < NOW()');
   $stmt_request->bind_param('is', $survey, $email);
   $stmt_request->execute();
   $result = $stmt_request->get_result();
   if ($row = $result->fetch_row()){
     $_SESSION['course'] = $row[0];
-    $_SESSION['survey_id'] = $survey;
+    $_SESSION['surveys_id'] = $survey;
   } else {
     // This is not a valid survey for this student
     echo "Bad Request: Talk to your instructor about this error.";
@@ -42,9 +42,6 @@
     exit();
   }
   $stmt_request->close();
-
-  // Get the list of students being evaluated and initialize the variable count
-  $_SESSION['group_member_number'] = 0;
 
   $group_members=array();
   $group_ids=array();
@@ -88,6 +85,6 @@
 	$_SESSION['scores'] = array('Unsatisfactory', 'Developing', 'Satisfactory', 'Exemplary');
 
   // Now redirect the user to the peer evaluation form
-  header("Location: ".SITE_HOME."/peerEvalForm.php");
+  header("Location: ".SITE_HOME."/evalReview.php");
   exit();
 ?>
