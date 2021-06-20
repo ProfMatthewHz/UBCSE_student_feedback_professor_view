@@ -59,6 +59,16 @@
     array_push($group_ids,$review_id);
   }
   $stmt_group->close();
+  $unfinished_evals = count($group_ids);
+  foreach ($group_ids as $review_id) {
+    $stmt_complete = $con->prepare('SELECT evals_id FROM scores INNER JOIN evals ON scores.evals_id=evals.id WHERE score1 <> -1 AND score2 <> -1 AND score3 <> -1 AND score4 <> -1 AND score5 <> -1 AND reviewers_id=?');
+    $stmt_complete->bind_param('i',$review_id);
+    $stmt_complete->execute();
+    if ($stmt_complete->fetch()) {
+      $unfinished_evals = $unfinished_evals - 1;
+    }
+    $stmt_complete->close();
+  }
   $_SESSION['group_members'] = $group_members;
   $_SESSION['group_ids'] = $group_ids;
 
@@ -88,6 +98,11 @@
 	$_SESSION['scores'] = array('Unsatisfactory', 'Developing', 'Satisfactory', 'Exemplary');
 
   // Now redirect the user to the peer evaluation form
-  header("Location: ".SITE_HOME."/peerEvalForm.php");
+  if ($unfinished_evals > 0) {
+    $loc_string = "Location: ".SITE_HOME."/peerEvalForm.php";
+  } else {
+    $loc_string = "Location: ".SITE_HOME."/evalConfirm.php";
+  }
+  header($loc_string);
   exit();
 ?>
