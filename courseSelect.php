@@ -111,7 +111,7 @@
                   if ($empty($value)) {
                     echo ($key);
                   } else {
-                    echo ('<a href="'.SITE_HOME.'surveyResults.php?survey='.$value.'">'.$key.'</a>');
+                    echo ('<a href="'.SITE_HOME.'startReview.php?survey='.$value.'">'.$key.'</a>');
                   }
                   echo('</p>');
                 }
