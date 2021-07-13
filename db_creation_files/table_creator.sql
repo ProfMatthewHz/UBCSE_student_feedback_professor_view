@@ -21,6 +21,7 @@ CREATE TABLE `surveys` (
  `course_id` int(11) NOT NULL,
  `start_date` datetime NOT NULL,
  `expiration_date` datetime NOT NULL,
+ `name` varchar(30),
  `rubric_id` int(11) NOT NULL,
  PRIMARY KEY (`id`),
  UNIQUE KEY `id` (`id`),

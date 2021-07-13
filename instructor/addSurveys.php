@@ -27,7 +27,6 @@ $con = connectToDatabase();
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
-
 // store information about courses as array of array
 $courses = array();
 
@@ -65,7 +64,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
   // make sure values exist
   if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || !isset($_POST['start-date']) || !isset($_POST['start-time']) || !isset($_POST['end-date']) || !isset($_POST['end-time']) || !isset($_POST['csrf-token']) ||
-      !isset($_POST['course-id']))
+      !isset($_POST['course-id']) || !isset($_POST['survey-name']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parameters.";
@@ -245,8 +244,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         if (empty($errorMsg)) {
           $sdate = $start_date . ' ' . $start_time;
           $edate = $end_date . ' ' . $end_time;
-          $stmt = $con->prepare('INSERT INTO surveys (course_id, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, 0)');
-          $stmt->bind_param('iss', $course_id, $sdate, $edate);
+          $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, ?, 0)');
+          $stmt->bind_param('isss', $course_id, trim($_POST['survey-name']), $sdate, $edate);
           $stmt->execute();
 
           add_pairings($pairings, $con->insert_id, $con);
@@ -312,6 +311,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         }
         ?>
     </select><br><br>
+
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"];} ?></span><br />
+    <label for="name">Survey Name:</label><br>
+    <input type="text" id="survey-name" class="w3-input w3-border" name="survey-name" required <?php if ($survey_name) {echo 'value="' . htmlspecialchars($survey_name) . '"';} ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"];} ?></span><br />
     <label for="start-date">Start Date:</label><br>

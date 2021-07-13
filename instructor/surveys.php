@@ -1,4 +1,16 @@
 <?php
+function survey_cmp($a, $b) {
+  if ($a['sort_start_date'] < $b['sort_start_date']) {
+    return 1;
+  } else if ($a['sort_start_date'] > $b['sort_start_date']) {
+    return -1;
+  } else if ($a['sort_expiration_date'] < $b['sort_expiration_date']) {
+    return 1;
+  } else if ($a['sort_expiration_date'] > $b['sort_expiration_date']) {
+    return -1;
+  }
+  return 0;
+}
 
 //error logging
 error_reporting(-1); // reports all errors
@@ -24,7 +36,6 @@ $con = connectToDatabase();
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
-
 // store information about surveys as three arrays for each type
 $surveys_upcoming = array();
 $surveys_active = array();
@@ -39,8 +50,7 @@ $stmt1->bind_param('i', $instructor->id);
 $stmt1->execute();
 $result1 = $stmt1->get_result();
 
-while ($row = $result1->fetch_assoc())
-{
+while ($row = $result1->fetch_assoc()) {
   $tempSurvey = array();
   $tempSurvey['name'] = $row['name'];
   $tempSurvey['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
@@ -56,15 +66,15 @@ $today = new DateTime();
 // then, get information about surveys an instructor has active surveys for
 foreach($courses as $course) {
 
-    $stmt2 = $con->prepare('SELECT course_id, start_date, expiration_date, rubric_id, id FROM surveys WHERE course_id=? ORDER BY start_date DESC, expiration_date DESC');
+    $stmt2 = $con->prepare('SELECT course_id, name, start_date, expiration_date, rubric_id, id FROM surveys WHERE course_id=?');
     $stmt2->bind_param('i', $course['id']);
     $stmt2->execute();
     $result2 = $stmt2->get_result();
 
-    while ($row = $result2->fetch_assoc())
-    {
+    while ($row = $result2->fetch_assoc()) {
         $survey_info = array();
         $survey_info['course_id'] = $row['course_id'];
+        $survey_info['name'] = $row['name'];
         $survey_info['start_date'] = $row['start_date'];
         $survey_info['expiration_date'] = $row['expiration_date'];
         $survey_info['rubric_id'] = $row['rubric_id'];
@@ -97,7 +107,8 @@ foreach($courses as $course) {
         // determine status of survey. then adjust dates to more friendly format
         $s = new DateTime($survey_info['start_date']);
         $e = new DateTime($survey_info['expiration_date']);
-
+        $survey_info['sort_start_date'] = $survey_info['start_date'];
+        $survey_info['sort_expiration_date'] = $survey_info['expiration_date'];
         $survey_info['start_date'] = $s->format('F j, Y') . '<br />' . $s->format('g:i A');
         $survey_info['expiration_date'] = $e->format('F j, Y') . '<br />' . $e->format('g:i A');
 
@@ -114,9 +125,11 @@ foreach($courses as $course) {
           array_push($surveys_expired, $survey_info);
         }
     }
-}
-
-
+  }
+  // Finally sort each of the arrays so that the presentation looks correct.
+  usort($surveys_upcoming, "survey_cmp");
+  usort($surveys_active, "survey_cmp");
+  usort($surveys_expired, "survey_cmp");
 ?>
 <!DOCTYPE html>
 <html>
@@ -125,13 +138,12 @@ foreach($courses as $course) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" type="text/css" href="../styles/styles.css">
-    <title>Surveys :: UB CSE Peer Evaluation System</title>
+    <title>Surveys :: CSE Peer Evaluation System</title>
 </head>
 <body>
 <header>
     <div class="w3-container">
-          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
-          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
+          <h1 class="header-text">CSE Peer Evaluation System</h1>
     </div>
     <div class="w3-bar w3-blue w3-mobile w3-border-blue">
       <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
@@ -147,7 +159,6 @@ foreach($courses as $course) {
     </div>
 
     <?php
-
       // echo the success message if any
       if (isset($_SESSION['survey-add']) and $_SESSION['survey-add'])
       {
@@ -165,55 +176,69 @@ foreach($courses as $course) {
 
     <div class="w3-responsive">
     <h3>Upcoming Surveys</h3>
-    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
-        <tr>
-        <th>Course</th>
-        <th>Start Date and Time</th>
-        <th>End Date and Time</th>
-        <th>Actions</th>
-        </tr>
-        <?php
+    <?php
+      if (count($surveys_upcoming) > 0) {
+          echo '<table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">';
+          echo '  <tr>';
+          echo ' <th>Survey</th>';
+          echo ' <th>Start Date and Time</th>';
+          echo ' <th>End Date and Time</th>';
+          echo ' <th>Actions</th>';
+          echo '  </tr>';
           foreach ($surveys_upcoming as $survey)
           {
-            echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '</td>';
+            echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '<br/>' . $survey['name'] . '</td>';
             echo '<td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyPairings.php?survey=' . $survey['id'] . '">View or Edit Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
           }
-          ?>
-    </table>
-    <h3>Currently Active Surveys</h3>
-    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
-        <tr>
-        <th>Course</th>
-        <th>Evaluations Completed</th>
-        <th>Start Date and Time</th>
-        <th>End Date and Time</th>
-        <th>Actions</th>
-        </tr>
-        <?php
-          foreach ($surveys_active as $survey)
-          {
-            echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '</td>';
-            echo '<td>' . $survey['completion'] . '</td><td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyPairings.php?survey=' . $survey['id'] . '">View Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
-          }
-          ?>
-    </table>
+          echo '</table>';
+        } else {
+          echo '<p><i>No upcoming surveys</i></p>';
+        }
+    ?>
+    <hr>
+    <h3>Active Surveys</h3>
+    <?php
+      if (count($surveys_active) > 0) {
+        echo '<table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">';
+        echo '  <tr>';
+        echo ' <th>Survey</th>';
+        echo ' <th>Evaluations Completed</th>';
+        echo ' <th>Start Date and Time</th>';
+        echo ' <th>End Date and Time</th>';
+        echo ' <th>Actions</th>';
+        echo '  </tr>';
+        foreach ($surveys_active as $survey)
+        {
+          echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '<br/>' . $survey['name'] . '</td>';
+          echo '<td>' . $survey['completion'] . '</td><td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyPairings.php?survey=' . $survey['id'] . '">View Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
+      }
+        echo '</table>';
+      } else {
+        echo '<p><i>No current surveys</i></p>';
+      }
+  ?>
+  <hr>
     <h3>Expired Surveys</h3>
-    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
-        <tr>
-        <th>Course</th>
-        <th>Evaluations Completed</th>
-        <th>Start Date and Time</th>
-        <th>End Date and Time</th>
-        <th>Actions</th>
-        </tr>
-        <?php
-          foreach ($surveys_expired as $survey)
-          {
-            echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '</td>';
-            echo '<td>' . $survey['completion'] . '</td><td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyPairings.php?survey=' . $survey['id'] . '">View Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
-          }
-          ?>
-    </table>
+    <?php
+      if (count($surveys_expired) > 0) {
+        echo '<table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">';
+        echo '  <tr>';
+        echo ' <th>Survey</th>';
+        echo ' <th>Evaluations Completed</th>';
+        echo ' <th>Start Date and Time</th>';
+        echo ' <th>End Date and Time</th>';
+        echo ' <th>Actions</th>';
+        echo '  </tr>';
+        foreach ($surveys_expired as $survey)
+        {
+          echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '<br/>' . $survey['name'] . '</td>';
+          echo '<td>' . $survey['completion'] . '</td><td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyPairings.php?survey=' . $survey['id'] . '">View Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
+      }
+        echo '</table>';
+      } else {
+        echo '<p><i>No past surveys</i></p>';
+      }
+  ?>
     </div>
     <br />
 <div class = "w3-center w3-mobile">
