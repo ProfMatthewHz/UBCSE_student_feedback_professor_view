@@ -58,6 +58,7 @@ $end_date = NULL;
 $start_time = NULL;
 $end_time = NULL;
 $pairing_mode = NULL;
+$survey_name = NULL;
 
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
