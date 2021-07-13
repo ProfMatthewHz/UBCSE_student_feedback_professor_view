@@ -79,6 +79,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     exit();
   }
 
+  // get the name of this survey
+  $survey_name = trim($_POST['survey-name']);
+
   // check course is not empty
   $course_id = trim($_POST['course-id']);
   $course_id = intval($course_id);
@@ -245,7 +248,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
           $sdate = $start_date . ' ' . $start_time;
           $edate = $end_date . ' ' . $end_time;
           $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, ?, 0)');
-          $stmt->bind_param('isss', $course_id, trim($_POST['survey-name']), $sdate, $edate);
+          $stmt->bind_param('isss', $course_id, $survey_name, $sdate, $edate);
           $stmt->execute();
 
           add_pairings($pairings, $con->insert_id, $con);
