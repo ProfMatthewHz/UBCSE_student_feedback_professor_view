@@ -99,7 +99,7 @@
         <div class="accordion-item shadow">
           <h2 class="accordion-header" id="headerPrior">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrior" aria-expanded="false" aria-controls="collapsePrior">
-            Past Surveys
+            Closed Surveys
             </button>
           </h2>
           <div id="collapsePrior" class="accordion-collapse collapse" aria-labelledby="headerPrior" data-bs-parent="#surveys">
@@ -125,7 +125,7 @@
         <div class="accordion-item shadow">
           <h2 class="accordion-header" id="headerCurrent">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCurrent" aria-expanded="true" aria-controls="collapseCurrent">
-            Active Surveys
+            Ongoing Surveys
             </button>
           </h2>
           <div id="collapseCurrent" class="accordion-collapse collapse show" aria-labelledby="headerCurrent" data-bs-parent="#surveys">

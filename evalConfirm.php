@@ -96,11 +96,11 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
             ?>
         </div>
         <div class="row pt-1 mx-1">
-            <div class="col-auto align-items-left me-auto">
-                <a class="btn btn-outline-secondary" href="<?php echo(SITE_HOME . 'startSurvey.php?survey='.$survey_id);?>" role="button">Revise these evaluations</a>
-            </div>
             <div class="col-auto align-items-right">
-               <a class="btn btn-primary" href="<?php echo(SITE_HOME . 'index.php');?>" role="button">Return to evaluation center</a>
+               <a class="btn btn-outline-primary" href="<?php echo(SITE_HOME . 'index.php');?>" role="button">Return to evaluation center</a>
+            </div>
+            <div class="col-auto align-items-left me-auto">
+                <a class="btn btn-secondary" href="<?php echo(SITE_HOME . 'startSurvey.php?survey='.$survey_id);?>" role="button">Revise these evaluations</a>
             </div>
         </div>
     </main>
