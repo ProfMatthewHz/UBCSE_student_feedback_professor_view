@@ -34,10 +34,11 @@
   $stmt_past->store_result();
   while ($stmt_past->fetch()){
     $e = new DateTime($expire);
-    $display_name = '('.$class_name.') '.$survey_name.' was due by '.$e->format('M d').' at '.$e->format('g:H a');
     if ($assigned == $submitted) {
+      $display_name = '('.$class_name.') '.$survey_name.' closed on '.$e->format('M d').' at '.$e->format('g:H a').' but can be reviewed.';
       $past_surveys[htmlspecialchars($display_name)] = $survey_id;
     } else {
+      $display_name = '('.$class_name.') '.$survey_name.' was due by '.$e->format('M d').' at '.$e->format('g:H a');
       $past_surveys[htmlspecialchars($display_name)] = null;
     }
   }
