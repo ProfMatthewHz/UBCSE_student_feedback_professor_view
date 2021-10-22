@@ -88,7 +88,7 @@
 	$_SESSION['scores'] = array('Unsatisfactory', 'Developing', 'Satisfactory', 'Exemplary');
 
   // Now redirect the user to the peer evaluation form
-  $loc_string = "Location: ".SITE_HOME."/peerEvalForm.php";
+  $loc_string = "Location: ".SITE_HOME."/evalConfirm.php";
   header($loc_string);
   exit();
 ?>

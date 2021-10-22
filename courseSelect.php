@@ -19,11 +19,14 @@
 
   // TECHNICAL DEBT TODO: Make this into a separate function
   $past_surveys = array();
-  $stmt_past = $con->prepare('SELECT DISTINCT course.name, surveys.name, surveys.id, surveys.expiration_date
-                              FROM reviewers
-                              INNER JOIN surveys ON reviewers.survey_id = surveys.id 
+  $stmt_past = $con->prepare('SELECT course.name, surveys.name, surveys.id, surveys.expiration_date, COUNT(reviewers.id) assigned, COUNT(scores.evals_id) submitted
+                              FROM surveys
                               INNER JOIN course on course.id = surveys.course_id 
+                              INNER JOIN reviewers on reviewers.survey_id=surveys.id
+                              LEFT JOIN evals on evals.reviewers_id=reviewers.id
+                              LEFT JOIN scores on scores.evals_id=evals.id and scores.score1<>-1
                               WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.expiration_date < NOW()
+                              GROUP BY course.name, surveys.name, surveys.id, surveys.expiration_date
                               ORDER BY surveys.expiration_date');
   $stmt_past->bind_param('s', $email);
   $stmt_past->execute();
@@ -32,25 +35,37 @@
   while ($stmt_past->fetch()){
     $e = new DateTime($expire);
     $display_name = '('.$class_name.') '.$survey_name.' was due by '.$e->format('M d').' at '.$e->format('g:H a');
-    $past_surveys[htmlspecialchars($display_name)] = $survey_id;
+    if ($assigned == $submitted) {
+      $past_surveys[htmlspecialchars($display_name)] = $survey_id;
+    } else {
+      $past_surveys[htmlspecialchars($display_name)] = null;
+    }
   }
   $stmt_past->close();
 
   // TECHNICAL DEBT TODO: Make this into a separate function
   $current_surveys = array();
-  $stmt_curr = $con->prepare('SELECT DISTINCT course.name, surveys.name, surveys.id, surveys.expiration_date
-                              FROM reviewers
-                              INNER JOIN surveys ON reviewers.survey_id = surveys.id 
+  $stmt_curr = $con->prepare('SELECT course.name, surveys.name, surveys.id, surveys.expiration_date, COUNT(reviewers.id) assigned, COUNT(scores.evals_id) submitted
+                              FROM surveys
                               INNER JOIN course on course.id = surveys.course_id 
+                              INNER JOIN reviewers on reviewers.survey_id=surveys.id
+                              LEFT JOIN evals on evals.reviewers_id=reviewers.id
+                              LEFT JOIN scores on scores.evals_id=evals.id and scores.score1<>-1
                               WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.start_date <= NOW() AND surveys.expiration_date > NOW()
+                              GROUP BY course.name, surveys.name, surveys.id, surveys.expiration_date
                               ORDER BY surveys.expiration_date');
   $stmt_curr->bind_param('s', $email);
   $stmt_curr->execute();
-  $stmt_curr->bind_result($class_name,$survey_name, $survey_id, $expire);
+  $stmt_curr->bind_result($class_name,$survey_name, $survey_id, $expire, $assigned, $submitted);
   $stmt_curr->store_result();
   while ($stmt_curr->fetch()){
     $e = new DateTime($expire);
-    $display_name = '('.$class_name.') '.$survey_name.' must be completed '.$e->format('M d').' at '.$e->format('g:H a');
+    if ($assigned == $submitted) {
+      $display_name = '('.$class_name.') '.$survey_name.' can be revised until '.$e->format('M d').' at '.$e->format('g:H a');
+      $survey_id = $survey_id * -1;
+    } else {
+      $display_name = '('.$class_name.') '.$survey_name.' must be completed '.$e->format('M d').' at '.$e->format('g:H a');
+    }
     $current_surveys[htmlspecialchars($display_name)] = $survey_id;
   }
   $stmt_curr->close();
@@ -108,7 +123,7 @@
               if(count($past_surveys) > 0) {
                 foreach ($past_surveys as $key => $value) {
                   echo('<p>');
-                  if ($empty($value)) {
+                  if (empty($value)) {
                     echo ($key);
                   } else {
                     echo ('<a href="'.SITE_HOME.'startReview.php?survey='.$value.'">'.$key.'</a>');
@@ -116,7 +131,7 @@
                   echo('</p>');
                 }
               } else {
-                echo('<p><i>No surveys have been completed this term</i></p>');
+                echo('<p><i>No closed surveys for this term</i></p>');
               }
               ?>
             </div>
@@ -133,7 +148,12 @@
               <?php
               if(count($current_surveys) > 0) {
                 foreach ($current_surveys as $key => $value) {
-                  echo('<p><a href="'.SITE_HOME.'startSurvey.php?survey='.$value.'">'.$key.'</a></p>');
+                  if ($value < 0) {
+                    $value = $value * -1;
+                    echo('<p><a href="'.SITE_HOME.'startConfirm.php?survey='.$value.'">'.$key.'</a></p>');
+                  } else {
+                    echo('<p><a href="'.SITE_HOME.'startSurvey.php?survey='.$value.'">'.$key.'</a></p>');
+                  }
                 }
               } else {
                 echo('<p><i>No surveys currently available</i></p>');
@@ -156,7 +176,7 @@
                   echo('<p>'.$key.'</p>');
                 }
               } else {
-                echo('<p><i>No known surveys. Check back later!</i></p>');
+                echo('<p><i>No known surveys upcoming. Check back later!</i></p>');
               }
               ?>
             </div>
