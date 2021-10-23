@@ -11,6 +11,7 @@
   }
   $email = $_SESSION['email'];
   require "lib/database.php";
+  require "lib/surveyQueries.php";
   $con = connectToDatabase();
 
   // Verify that the survey exists
@@ -22,18 +23,8 @@
     exit();
   }
 
-  // Verify that the survey is a valid one for this student.
-  // TECHNICAL DEBT TODO: Make this into a separate function
-  $stmt_request = $con->prepare('SELECT DISTINCT course.name
-                                  FROM reviewers
-                                  INNER JOIN surveys ON reviewers.survey_id = surveys.id 
-                                  INNER JOIN course on course.id = surveys.course_id 
-                                  WHERE surveys.id=? AND reviewers.reviewer_email=? AND surveys.start_date <= NOW() AND surveys.expiration_date > NOW()');
-  $stmt_request->bind_param('is', $survey, $email);
-  $stmt_request->execute();
-  $result = $stmt_request->get_result();
-  if ($row = $result->fetch_row()){
-    $_SESSION['course'] = $row[0];
+  // Verify that the survey is a valid one for this student
+  if (validActiveSurvey($con, $survey, $email)) {
     $_SESSION['survey_id'] = $survey;
   } else {
     // This is not a valid survey for this student
@@ -41,29 +32,15 @@
     http_response_code(400);
     exit();
   }
-  $stmt_request->close();
 
   // Get the list of students being evaluated and initialize the variable count
   $_SESSION['group_member_number'] = 0;
 
-  $group_members=array();
-  $group_ids=array();
-  $stmt_group = $con->prepare('SELECT students.name, reviewers.id FROM reviewers
-  INNER JOIN students ON reviewers.teammate_email = students.email WHERE reviewers.survey_id =? AND reviewers.reviewer_email=?');
-  $stmt_group->bind_param('is',$survey,$email);
-  $stmt_group->execute();
-  $stmt_group->bind_result($group_member,$review_id);
-  $stmt_group->store_result();
-  while ($stmt_group->fetch()) {
-    array_push($group_members,$group_member);
-    array_push($group_ids,$review_id);
-  }
-  $stmt_group->close();
-  $_SESSION['group_members'] = $group_members;
-  $_SESSION['group_ids'] = $group_ids;
+  // Setup the names and ids for the student's to review
+  initializeRevieweeData($con, $survey, $email);
 
   // Get the questions and responses for this survey. For now, this will be hard coded.
-  $_SESSION['topics'] = array('TEAMWORK', 'LEADERSHIP', 'PARTICIPATION', 'PROFESSIONALISM', 'QUALITY');
+  $_SESSION['topics'] = getSurveyTopics($con, $survey);
 	$_SESSION['answers'] = array();
 	$_SESSION['answers']['TEAMWORK'] = array('Does not willingly assume team roles, rarely completes assigned work',
 																					 'Usually accepts assigned team roles, occasionally completes assigned work',
