@@ -172,7 +172,7 @@ if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
 				<hr>
 				<div class="row pt-1 mx-1 justify-content-end">
 					<div class="col-auto" id="login">
-						<input type='submit' id="EvalSubmit" value=<?php echo $button_text; ?>></input>
+						<input type='submit' id="EvalSubmit" value="<?php echo $button_text; ?>"></input>
 					</div>
 				</div>
 				<br>
