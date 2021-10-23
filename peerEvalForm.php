@@ -134,7 +134,7 @@ if ( !empty($_POST) && isset($_POST)) {
 			</div>
 			<div class="row justify-content-md-center mt-4 mx-1 border border-dark border-2">
 				<div class="progress">
-						<div class="progress-bar" role="progressbar" height="20px;" style="width: <?php echo($progress_pct);?>%;" aria-valuenow="<?php echo($_SESSION['group_member_number']);?>" aria-valuemin="0" aria-valuemax="<?php echo($num_of_group_members);?>"><b><?php echo($progress_text);?>%</b></div>
+						<div class="progress-bar" role="progressbar" height="20px;" style="width: <?php echo($progress_pct);?>%;" aria-valuenow="<?php echo($_SESSION['group_member_number']);?>" aria-valuemin="0" aria-valuemax="<?php echo($num_of_group_members);?>"><b><?php echo($progress_text);?></b></div>
 				</div>
 			</div>
 			<form id="peerEval" method='post'>
