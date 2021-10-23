@@ -30,7 +30,7 @@
                               ORDER BY surveys.expiration_date');
   $stmt_past->bind_param('s', $email);
   $stmt_past->execute();
-  $stmt_past->bind_result($class_name,$survey_name, $survey_id, $expire);
+  $stmt_past->bind_result($class_name,$survey_name, $survey_id, $expire, $assigned, $submitted);
   $stmt_past->store_result();
   while ($stmt_past->fetch()){
     $e = new DateTime($expire);
