@@ -53,7 +53,7 @@
     $stmt_topics->execute();
     $result = $stmt_topics->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
-      array_push($retVal, $row[0]);
+      array_push($retVal, strtoupper($row[0]));
     }
     return $retVal;
   }
