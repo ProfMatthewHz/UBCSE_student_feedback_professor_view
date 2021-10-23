@@ -112,6 +112,12 @@ if ( !empty($_POST) && isset($_POST)) {
 		exit();
 	}
 }
+$button_text = '';
+if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
+	$button_text = 'Continue with next evaluation';
+} else {
+	$button_text = 'Finish evaluations';
+}
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -166,13 +172,9 @@ if ( !empty($_POST) && isset($_POST)) {
 				<hr>
 				<div class="row pt-1 mx-1 justify-content-end">
 					<div class="col-auto" id="login">
-						<input type='submit' id="EvalSubmit" value=<?php if ($_SESSION['group_member_number']<($num_of_group_members - 1)): ?>
-																																																		'Continue with next evaluation'
-																																																	<?php else: ?>
-																																																		'Finish evaluations'<?php endif; ?>>
-						</input>
+						<input type='submit' id="EvalSubmit" value=<?php echo $button_text; ?>></input>
 					</div>
-				</div
+				</div>
 				<br>
 			</form>
 	  </div>
