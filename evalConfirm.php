@@ -99,7 +99,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
             <div class="col-auto align-items-left">
                <a class="btn btn-outline-primary" href="<?php echo(SITE_HOME . 'index.php');?>" role="button">Return to evaluation center</a>
             </div>
-            <div class="col-auto align-items-right me-auto">
+            <div class="col-auto align-items-right ms-auto">
                 <a class="btn btn-secondary" href="<?php echo(SITE_HOME . 'startSurvey.php?survey='.$survey_id);?>" role="button">Revise these evaluations</a>
             </div>
         </div>

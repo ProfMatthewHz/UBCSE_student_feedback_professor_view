@@ -35,7 +35,7 @@
   while ($stmt_past->fetch()){
     $e = new DateTime($expire);
     if ($assigned == $submitted) {
-      $display_name = '('.$class_name.') '.$survey_name.' is available for review after closing on '.$e->format('M d').' at '.$e->format('g:H a');
+      $display_name = '('.$class_name.') '.$survey_name.' is available for review after closing on '.$e->format('M d').' at '.$e->format('g:i a');
       $past_surveys[htmlspecialchars($display_name)] = $survey_id;
     } else {
       $display_name = '('.$class_name.') '.$survey_name.' was due by '.$e->format('M d').' at '.$e->format('g:H a');
@@ -62,10 +62,10 @@
   while ($stmt_curr->fetch()){
     $e = new DateTime($expire);
     if ($assigned == $submitted) {
-      $display_name = '('.$class_name.') '.$survey_name.' can be revised through '.$e->format('M d').' at '.$e->format('g:H a');
+      $display_name = '('.$class_name.') '.$survey_name.' can be revised through '.$e->format('M d').' at '.$e->format('g:i a');
       $survey_id = $survey_id * -1;
     } else {
-      $display_name = '('.$class_name.') '.$survey_name.' must be completed by '.$e->format('M d').' at '.$e->format('g:H a');
+      $display_name = '('.$class_name.') '.$survey_name.' must be completed by '.$e->format('M d').' at '.$e->format('g:i a');
     }
     $current_surveys[htmlspecialchars($display_name)] = $survey_id;
   }
@@ -85,7 +85,7 @@
   $stmt_next->store_result();
   while ($stmt_next->fetch()){
     $e = new DateTime($start);
-    $display_name = '('.$class_name.') '.$survey_name.' opening on '.$e->format('M d').' at '.$e->format('g:H a');
+    $display_name = '('.$class_name.') '.$survey_name.' opening on '.$e->format('M d').' at '.$e->format('g:i a');
     $upcoming_surveys[] = $display_name;
   }
   $stmt_next->close();

@@ -1,6 +1,6 @@
 <?php
-define("SITE_HOME","http://cse.buffalo.edu/teamwork/");
-define("INSTRUCTOR_HOME","http://cse.buffalo.edu/teamwork/instructor/");
+define("SITE_HOME","https://cse.buffalo.edu/teamwork/");
+define("INSTRUCTOR_HOME","https://cse.buffalo.edu/teamwork/instructor/");
 define("SESSIONS_SALT", "session-salt");
 define("PBKDF2_ITERS", 50000);
 define("TOKEN_SIZE", 32);
