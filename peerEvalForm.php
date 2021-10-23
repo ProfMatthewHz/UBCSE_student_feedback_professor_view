@@ -22,8 +22,9 @@ $group_ids = array_keys($_SESSION['group_members']);
 
 $num_of_group_members = count($_SESSION['group_members']);
 $progress_pct = round((($_SESSION['group_member_number']+1) * 100) / $num_of_group_members);
+$progress_text = ($_SESSION['group_member_number']+1).' of '.$num_of_group_members;
 $reviewers_id = $group_ids[$_SESSION['group_member_number']];
-$name =  htmlspecialchars($group_members[$reviewers_id]);
+$name =  htmlspecialchars($_SESSION['group_members'][$reviewers_id]);
 
 //fetch eval id, if it exists
 $stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
@@ -133,7 +134,7 @@ if ( !empty($_POST) && isset($_POST)) {
 			</div>
 			<div class="row justify-content-md-center mt-4 mx-1 border border-dark border-2">
 				<div class="progress">
-						<div class="progress-bar" role="progressbar" height="20px;" style="width: <?php echo($progress_pct);?>%;" aria-valuenow="<?php echo($_SESSION['group_member_number']);?>" aria-valuemin="0" aria-valuemax="<?php echo($num_of_group_members);?>"><b><?php echo($progress_pct);?>%</b></div>
+						<div class="progress-bar" role="progressbar" height="20px;" style="width: <?php echo($progress_pct);?>%;" aria-valuenow="<?php echo($_SESSION['group_member_number']);?>" aria-valuemin="0" aria-valuemax="<?php echo($num_of_group_members);?>"><b><?php echo($progress_text);?>%</b></div>
 				</div>
 			</div>
 			<form id="peerEval" method='post'>
