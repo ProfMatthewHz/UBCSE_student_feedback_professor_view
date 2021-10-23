@@ -13,6 +13,8 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
     exit();
 } else {
   require "lib/database.php";
+  require "lib/scoreQueries.php";
+  require "lib/resultsTable.php";
   $con = connectToDatabase();
   $course = $_SESSION['course'];
   $survey_id = $_SESSION['survey_id'];
@@ -24,21 +26,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
   // Store the scores submitted for each teammate
   $scores = array();
   foreach ($members as $reviewer_id => $name) {
-    // Select the scores for this student
-    $stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores INNER JOIN evals ON scores.evals_id=evals.id WHERE evals.reviewers_id=?');
-    $stmt->bind_param('i', $reviewer_id);
-    $stmt->execute();
-    $stmt->bind_result($score1, $score2, $score3, $score4, $score5);
-    $stmt->store_result();
-    $stmt->fetch();
-    if ($stmt->num_rows != 1) {
-        // This is not a valid survey for this student
-        echo "Cannot find a survey submission: Talk to your instructor about this error.";
-        http_response_code(400);
-        exit();
-    }
-    $student_scores=array($score1, $score2, $score3, $score4, $score5);
-    $scores[$name] = $student_scores;
+    $scores[$name] = getReviewScores($con, $reviewer_id, $topics, $answers);
   }
   unset($_SESSION['surveys_id']);
   unset($_SESSION['course']);
@@ -59,7 +47,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
 </head>
 <body>
 	<main>
-	  <div class="container-fluid">
+	    <div class="container-fluid">
 			<!-- Header -->
 			<div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
 				<div class="col-sm-auto text-center">
@@ -71,37 +59,17 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
                 <div class="col-12 bg-primary text-white text-center"><b class="lead">Your Submissions</b></div>
             </div>
             <div class="row pt-1 mx-1 align-items-center text-center border-bottom border-3 border-dark">
-                <div class="col-2"><b>Name</b></div>
-            <?php
-                foreach ($topics as $topic_id => $topic) {
-                    echo '<div class="col-2 ms-auto"><b>'.$topic.'</b></div>';
-                }
-                echo '</div>';
-                $shaded = true;
-                foreach ($members as $reviewer_id => $name) {
-                    if ($shaded) {
-                        $bg_color = "#e1e1e1";
-                    } else {
-                        $bg_color = "#f8f8f8";
-                    }
-                    echo '<div class="row py-2 mx-1 align-items-center border-bottom border-1 border-secondary" style="background-color:'.$bg_color.'">';
-                    echo '  <div class="col-2 text-center"><b>'.$name.'</b></div>';
-                    $idx = 0;
-                    foreach ($topics as $topic_id => $topic) {
-                        echo '<div class="col-2 ms-auto">'.$answers[$topic_id][$scores[$name][$idx]+1].'</div>';
-                        $idx += 1;
-                    }
-                    echo '</div>';
-                    $shaded = !$shaded;
-                }
-            ?>
-        </div>
-        <div class="row pt-1 mx-1">
-            <div class="col-auto align-items-left">
-               <a class="btn btn-outline-primary" href="<?php echo(SITE_HOME . 'index.php');?>" role="button">Return to evaluation center</a>
+                <?php
+                    emitResultsTable($topics, $answers, $scores, $members);
+                ?>
             </div>
-            <div class="col-auto align-items-right ms-auto">
-                <a class="btn btn-secondary" href="<?php echo(SITE_HOME . 'startSurvey.php?survey='.$survey_id);?>" role="button">Revise these evaluations</a>
+            <div class="row pt-1 mx-1">
+                <div class="col-auto align-items-left">
+                <a class="btn btn-outline-primary" href="<?php echo(SITE_HOME . 'index.php');?>" role="button">Return to evaluation center</a>
+                </div>
+                <div class="col-auto align-items-right ms-auto">
+                    <a class="btn btn-secondary" href="<?php echo(SITE_HOME . 'startSurvey.php?survey='.$survey_id);?>" role="button">Revise these evaluations</a>
+                </div>
             </div>
         </div>
     </main>
