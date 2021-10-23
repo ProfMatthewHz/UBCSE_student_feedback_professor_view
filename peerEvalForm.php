@@ -6,7 +6,7 @@ ini_set("log_errors", 1);
 session_start();
 require "lib/constants.php";
 if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course']) || 
-		!isset($_SESSION['group_members']) || !isset($_SESSION['group_ids']) || !isset($_SESSION['group_member_number']) ||
+		!isset($_SESSION['group_members']) || !isset($_SESSION['group_member_number']) ||
     !isset($_SESSION['topics']) || !isset($_SESSION['answers'])) {
 	header("Location: " . SITE_HOME . "index.php");
 	exit();
@@ -18,13 +18,12 @@ require "lib/database.php";
 $con = connectToDatabase();
 
 //get group members
-$group_members=$_SESSION['group_members'];
-$group_ids=$_SESSION['group_ids'];
+$group_ids = array_keys($_SESSION['group_members']);
 
-$num_of_group_members = count($group_members);
-$progress_pct = round(($_SESSION['group_member_number'] * 100) / $num_of_group_members);
-$name =  htmlspecialchars($group_members[$_SESSION['group_member_number']]);
+$num_of_group_members = count($_SESSION['group_members']);
+$progress_pct = round((($_SESSION['group_member_number']+1) * 100) / $num_of_group_members);
 $reviewers_id = $group_ids[$_SESSION['group_member_number']];
+$name =  htmlspecialchars($group_members[$reviewers_id]);
 
 //fetch eval id, if it exists
 $stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
@@ -104,7 +103,7 @@ if ( !empty($_POST) && isset($_POST)) {
 
 	//move to next student in group
 	if ($_SESSION['group_member_number'] < ($num_of_group_members - 1)) {
-		$_SESSION['group_member_number'] +=1;
+		$_SESSION['group_member_number'] += 1;
 	  header("Location: ".SITE_HOME."peerEvalForm.php"); //refresh page with next group member
 		exit();
 	} else {
@@ -140,27 +139,24 @@ if ( !empty($_POST) && isset($_POST)) {
 			<form id="peerEval" method='post'>
 				<?php
 				$topic_num = 0;
-				foreach ($_SESSION['topics'] as $topic) {
+				foreach ($_SESSION['topics'] as $topic_id => $topic) {
 					echo '<div class="row mt-5 mx-1">';
 					echo '   <div class="col-12 bg-primary text-white"><b>Select the best description of '.$name.'\'s '.$topic.'</b></div>';
 					echo '</div>';
 					echo '<div class="row pt-1 mx-1 align-items-center">';
-					for ($score_num = 0; $score_num < count($_SESSION['scores']); $score_num++) {
-						if ($score_num == 0) {
-							$end_str = '">';
-						} else {
-							$end_str = 'ms-auto">';
-						}
+					$end_str = '">';
+					foreach ($_SESSION['answers'][$topic_id] as $score_id => $response) {
+						$score_num = $_SESSION['scores'][$score_id];
 						echo '<div class="col-3 ';
 						echo $end_str;
 						echo '<input type="radio" class="btn-check" name="Q'.$topic_num.'" id="Q'.$topic_num.$score_num.'" autocomplete="off" required value="'.$score_num.'"';
 						if ($student_scores[$topic_num] == $score_num) {
 							echo 'checked ';
 						}
-						echo '><label class="btn btn-outline-secondary" for="Q'.$topic_num.$score_num.'">';
-						echo $_SESSION['answers'][$topic][$score_num];
-						echo '</label>';
+						echo '><label class="btn btn-outline-secondary" for="Q'.$topic_num.$score_num.'">'.$response.'</label>';
 						echo '</div>';
+						// Update formatting so that all but first score use size correctly
+						$end_str = 'ms-auto">';
 					}
 					echo '</div>';
 					$topic_num = $topic_num + 1;

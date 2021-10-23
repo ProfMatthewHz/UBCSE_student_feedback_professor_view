@@ -7,7 +7,7 @@ ini_set("log_errors", 1);
 session_start();
 
 if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course']) || 
-	!isset($_SESSION['group_members']) || !isset($_SESSION['group_ids']) || !isset($_SESSION['group_member_number']) ||
+	!isset($_SESSION['group_members']) || !isset($_SESSION['group_member_number']) ||
     !isset($_SESSION['topics']) || !isset($_SESSION['answers'])) {
     header("Location: " . SITE_HOME . "index.php");
     exit();
@@ -16,17 +16,17 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
   $con = connectToDatabase();
   $course = $_SESSION['course'];
   $survey_id = $_SESSION['survey_id'];
-  $num_of_group_members = count($_SESSION['group_ids']);
+  $num_of_group_members = count($_SESSION['group_members']);
   $topics = $_SESSION['topics'];
   $answers = $_SESSION['answers'];
-  $names = $_SESSION['group_members'];
+  $members = $_SESSION['group_members'];
 
   // Store the scores submitted for each teammate
   $scores = array();
-  for ($idx = 0; $idx < count($_SESSION['group_ids']); $idx++) {
+  foreach ($members as $reviewer_id => $name) {
     // Select the scores for this student
     $stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores INNER JOIN evals ON scores.evals_id=evals.id WHERE evals.reviewers_id=?');
-    $stmt->bind_param('i', $_SESSION['group_ids'][$idx]);
+    $stmt->bind_param('i', $reviewer_id);
     $stmt->execute();
     $stmt->bind_result($score1, $score2, $score3, $score4, $score5);
     $stmt->store_result();
@@ -38,12 +38,11 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
         exit();
     }
     $student_scores=array($score1, $score2, $score3, $score4, $score5);
-    $scores[$names[$idx]] = $student_scores;
+    $scores[$name] = $student_scores;
   }
   unset($_SESSION['surveys_id']);
   unset($_SESSION['course']);
   unset($_SESSION['group_members']);
-  unset($_SESSION['group_ids']);
   unset($_SESSION['group_member_number']);
   unset($_SESSION['topics']);
   unset($_SESSION['answers']);
@@ -74,12 +73,12 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
             <div class="row pt-1 mx-1 align-items-center text-center border-bottom border-3 border-dark">
                 <div class="col-2"><b>Name</b></div>
             <?php
-                foreach ($topics as $topic) {
+                foreach ($topics as $topic_id => $topic) {
                     echo '<div class="col-2 ms-auto"><b>'.$topic.'</b></div>';
                 }
                 echo '</div>';
                 $shaded = true;
-                foreach ($names as $name) {
+                foreach ($members as $reviewer_id => $name) {
                     if ($shaded) {
                         $bg_color = "#e1e1e1";
                     } else {
@@ -87,8 +86,10 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
                     }
                     echo '<div class="row py-2 mx-1 align-items-center border-bottom border-1 border-secondary" style="background-color:'.$bg_color.'">';
                     echo '  <div class="col-2 text-center"><b>'.$name.'</b></div>';
-                    for ($idx = 0; $idx < count($topics); $idx++) {
-                        echo '<div class="col-2 ms-auto">'.$answers[$topics[$idx]][$scores[$name][$idx]].'</div>';
+                    $idx = 0;
+                    foreach ($topics as $topic_id => $topic) {
+                        echo '<div class="col-2 ms-auto">'.$answers[$topic_id][$scores[$name][$idx]+1].'</div>';
+                        $idx += 1;
                     }
                     echo '</div>';
                     $shaded = !$shaded;
