@@ -135,7 +135,6 @@ if ( !empty($_POST) && isset($_POST)) {
 			<div class="row justify-content-md-center mt-4 mx-1 border border-dark border-2">
 				<div class="progress">
 						<div class="progress-bar" role="progressbar" height="20px;" style="width: <?php echo($progress_pct);?>%;" aria-valuenow="<?php echo($_SESSION['group_member_number']);?>" aria-valuemin="0" aria-valuemax="<?php echo($num_of_group_members);?>"><b><?php echo($progress_pct);?>%</b></div>
-					</div>
 				</div>
 			</div>
 			<form id="peerEval" method='post'>
@@ -168,13 +167,15 @@ if ( !empty($_POST) && isset($_POST)) {
 				}
 				?>
 				<hr>
-				<div id="login">
-					<input type='submit' id="EvalSubmit" value=<?php if ($_SESSION['group_member_number']<($num_of_group_members - 1)): ?>
-																																																	'Continue with next evaluation'
-																																																<?php else: ?>
-																																																	'Finish evaluations'
-																									<?php endif; ?>></input>
-				</div>
+				<div class="row pt-1 mx-1 justify-content-end">
+					<div class="col-auto" id="login">
+						<input type='submit' id="EvalSubmit" value=<?php if ($_SESSION['group_member_number']<($num_of_group_members - 1)): ?>
+																																																		'Continue with next evaluation'
+																																																	<?php else: ?>
+																																																		'Finish evaluations'<?php endif; ?>>
+						</input>
+					</div>
+				</div
 				<br>
 			</form>
 	  </div>

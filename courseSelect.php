@@ -35,7 +35,7 @@
   while ($stmt_past->fetch()){
     $e = new DateTime($expire);
     if ($assigned == $submitted) {
-      $display_name = '('.$class_name.') '.$survey_name.' closed on '.$e->format('M d').' at '.$e->format('g:H a').' but can be reviewed.';
+      $display_name = '('.$class_name.') '.$survey_name.' is available for review after closing on '.$e->format('M d').' at '.$e->format('g:H a');
       $past_surveys[htmlspecialchars($display_name)] = $survey_id;
     } else {
       $display_name = '('.$class_name.') '.$survey_name.' was due by '.$e->format('M d').' at '.$e->format('g:H a');
@@ -62,10 +62,10 @@
   while ($stmt_curr->fetch()){
     $e = new DateTime($expire);
     if ($assigned == $submitted) {
-      $display_name = '('.$class_name.') '.$survey_name.' can be revised until '.$e->format('M d').' at '.$e->format('g:H a');
+      $display_name = '('.$class_name.') '.$survey_name.' can be revised through '.$e->format('M d').' at '.$e->format('g:H a');
       $survey_id = $survey_id * -1;
     } else {
-      $display_name = '('.$class_name.') '.$survey_name.' must be completed '.$e->format('M d').' at '.$e->format('g:H a');
+      $display_name = '('.$class_name.') '.$survey_name.' must be completed by '.$e->format('M d').' at '.$e->format('g:H a');
     }
     $current_surveys[htmlspecialchars($display_name)] = $survey_id;
   }
