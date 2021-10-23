@@ -74,7 +74,7 @@
 
   function getSurveyScores($db_connection, $survey_id) {
     $retVal = array();
-    $query_str = 'SELECT rubric_scores.id, score FROM rubric_scores INNER JOIN surveys ON surveys.rubric_id = rubric_scores.rubric_id WHERE surveys.id = ? ORDER BY rubric_topics.id';
+    $query_str = 'SELECT rubric_scores.id, score FROM rubric_scores INNER JOIN surveys ON surveys.rubric_id = rubric_scores.rubric_id WHERE surveys.id = ? ORDER BY rubric_scores.score';
     $stmt_scores = $db_connection->prepare($query_str);
     $stmt_scores->bind_param('i', $survey_id);
     $stmt_scores->execute();
