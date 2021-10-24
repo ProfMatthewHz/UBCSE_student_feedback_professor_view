@@ -6,16 +6,17 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 session_start();
 
-if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course']) || 
-	!isset($_SESSION['group_members']) || !isset($_SESSION['topics']) || 
-  !isset($_SESSION['answers'])) {
+if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course_name']) || 
+    !isset($_SESSION['survey_name']) || !isset($_SESSION['group_members']) ||
+    !isset($_SESSION['topics']) || !isset($_SESSION['answers'])) {
     header("Location: " . SITE_HOME . "index.php");
     exit();
 } else {
   require "lib/database.php";
   require "lib/scoreQueries.php";
   $con = connectToDatabase();
-  $course = $_SESSION['course'];
+  $course = $_SESSION['course_name'];
+  $survey_name = $_SESSION['survey_name'];
   $survey_id = $_SESSION['survey_id'];
   $num_of_group_members = count($_SESSION['group_members']);
   $topics = $_SESSION['topics'];
@@ -28,7 +29,8 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
     $scores[$name] = getReviewScores($con, $reviewer_id, $topics, $answers);
   }
   unset($_SESSION['surveys_id']);
-  unset($_SESSION['course']);
+  unset($_SESSION['course_name']);
+  unset($_SESSION['survey_name']);
   unset($_SESSION['group_members']);
   unset($_SESSION['group_member_number']);
   unset($_SESSION['topics']);
@@ -50,7 +52,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
 			<!-- Header -->
 			<div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
 				<div class="col-sm-auto text-center">
-					<h1 class="text-white display-1"><?php echo $course?> Teamwork Evaluation</h1><br>
+                    <h1 class="text-white display-1"><?php echo $course?> <?php echo $survey_name?> Evaluation</h1><br>
 					<p class="text-white lead">Evaluation Review</p>
 				</div>
 			</div>

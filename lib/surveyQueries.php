@@ -1,11 +1,16 @@
 <?php
-  function handleSurveyQuery($db_connection, $survey_id, $email, $query) {
-    $stmt_request = $db_connection->prepare($query);
+  function handleSurveyQuery($db_connection, $survey_id, $email, $addl_query) {
+    $base_query = 'SELECT DISTINCT course.name course_name, surveys.name survey_name FROM reviewers
+                   INNER JOIN surveys ON reviewers.survey_id = surveys.id 
+                   INNER JOIN course on course.id = surveys.course_id 
+                   WHERE surveys.id=? AND reviewers.reviewer_email=? AND '.$addl_query;
+    $stmt_request = $db_connection->prepare($base_query);
     $stmt_request->bind_param('is', $survey_id, $email);
     $stmt_request->execute();
     $result = $stmt_request->get_result();
     if ($row = $result->fetch_row()){
-      $_SESSION['course'] = $row[0];
+      $_SESSION['course_name'] = $row[0];
+      $_SESSION['survey_name'] = $row[1];
       $stmt_request->close();
       return true;
     }
@@ -14,18 +19,12 @@
   }
 
   function validCompletedSurvey($db_connection, $survey_id, $email) {
-    $query_str = 'SELECT DISTINCT course.name FROM reviewers
-                  INNER JOIN surveys ON reviewers.survey_id = surveys.id 
-                  INNER JOIN course on course.id = surveys.course_id 
-                  WHERE surveys.id=? AND reviewers.reviewer_email=? AND surveys.expiration_date < NOW()';
+    $query_str = 'surveys.expiration_date < NOW()';
     return handleSurveyQuery($db_connection, $survey_id, $email, $query_str);
   }
 
   function validActiveSurvey($db_connection, $survey_id, $email) {
-    $query_str = 'SELECT DISTINCT course.name FROM reviewers
-                  INNER JOIN surveys ON reviewers.survey_id = surveys.id 
-                  INNER JOIN course on course.id = surveys.course_id 
-                  WHERE surveys.id=? AND reviewers.reviewer_email=? AND surveys.start_date <= NOW() AND surveys.expiration_date > NOW()';
+    $query_str = 'surveys.start_date <= NOW() AND surveys.expiration_date > NOW()';
     return handleSurveyQuery($db_connection, $survey_id, $email, $query_str);
   }
 

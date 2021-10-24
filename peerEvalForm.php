@@ -5,16 +5,18 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 session_start();
 require "lib/constants.php";
-if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course']) || 
-		!isset($_SESSION['group_members']) || !isset($_SESSION['group_member_number']) ||
+if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course_name']) || 
+		!isset($_SESSION['survey_name']) || !isset($_SESSION['group_members']) || !isset($_SESSION['group_member_number']) ||
     !isset($_SESSION['topics']) || !isset($_SESSION['answers'])) {
 	header("Location: " . SITE_HOME . "index.php");
 	exit();
 }
 $email = $_SESSION['email'];
-$course = $_SESSION['course'];
+$course = $_SESSION['course_name'];
+$survey_name = $_SESSION['survey_name'];
 
 require "lib/database.php";
+require "lib/scoreQueries.php";
 $con = connectToDatabase();
 
 //get group members
@@ -25,6 +27,7 @@ $progress_pct = round((($_SESSION['group_member_number']+1) * 100) / $num_of_gro
 $progress_text = ($_SESSION['group_member_number']+1).' of '.$num_of_group_members;
 $reviewers_id = $group_ids[$_SESSION['group_member_number']];
 $name =  htmlspecialchars($_SESSION['group_members'][$reviewers_id]);
+$topic_ids = array_keys($_SESSION['topics']);
 
 //fetch eval id, if it exists
 $stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
@@ -33,74 +36,63 @@ $stmt->execute();
 $stmt->bind_result($eval_id);
 $stmt->store_result();
 $stmt->fetch();
-if ($stmt->num_rows == 0){
+if ($stmt->num_rows == 0) {
   //create eval id if does not exist and get get the eval_id
 	$stmt = $con->prepare('INSERT INTO evals (reviewers_id) VALUES(?)');
 	$stmt->bind_param('i', $reviewers_id);
 	$stmt->execute();
-
-	$stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
-	$stmt->bind_param('i', $reviewers_id);
-	$stmt->execute();
-	$stmt->bind_result($eval_id);
-	$stmt->store_result();
-	$stmt->fetch();
+	$eval_id = $stmt->insert_id;
 }
 
-// force students to submit results
-$student_scores=array(-1,-1,-1,-1,-1);
-//grab scores if they exist
-$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE evals_id=?');
-$stmt->bind_param('i', $eval_id);
-$stmt->execute();
-$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
-$stmt->store_result();
-while ($stmt->fetch()) {
-	$student_scores=array($score1, $score2, $score3, $score4, $score5);
-}
+// Get scores (or initialize them to -1)
+$student_scores=getEvalScores($con, $eval_id);
+
 //When submit button is pressed
 if ( !empty($_POST) && isset($_POST)) {
-  if (!isset($_POST['Q0']) || !isset($_POST['Q1']) || !isset($_POST['Q2']) || !isset($_POST['Q3']) || !isset($_POST['Q4'])) {
-		echo "Bad Request: Missing POST parameters";
+	if (count($_POST) != count($_SESSION['topics'])) {
+		echo "Bad Request: Expected ".count($_SESSION['topics'])." items, but posted ".count($_POST);
 		http_response_code(400);
 		exit();
 	}
-	//save results
-	$a=intval($_POST['Q0']);
-	$b=intval($_POST['Q1']);
-	$c=intval($_POST['Q2']);
-	$d=intval($_POST['Q3']);
-	$e=intval($_POST['Q4']);
-  //if scores don't exist
-	if($student_scores[1] == -1) {
-    $stmt = $con->prepare('INSERT INTO scores (score1, score2, score3, score4, score5, evals_id) VALUES(?,?,?,?,?,?)');
-    $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_id);
-    $stmt->execute();
+	// Verify we have a response for each of the topics (cause I'm paranoid)
+	foreach ($topic_ids as $topic_id) {
+		$radio_name = 'Q'.$topic_id;
+		if (!isset($_POST[$radio_name])) {
+			echo "Bad Request: Missing POST parameter: ".$radio_name;
+			http_response_code(400);
+			exit();
+		}
+	}
+	// Next two lines are a hack while we use the 2 score tables
+	$student_reviews = array();
+	$insert_review = (count($student_scores) != $_SESSION['topics']);
+	// Now add or update the scores in our modern scores table
+	foreach ($topic_ids as $topic_id) {
+		$radio_name = 'Q'.$topic_id;
+		$score_id = intval($_POST[$radio_name]);
+		// Check if this key existed previously
+		if (array_key_exists($topic_id, $student_scores)) {
+			// Update the existing score if it exists
+			updateExistingScore($con, $eval_id, $topic_id, $score_id);
+		} else {
+			// Insert a new score if it had not existed
+			insertNewScore($con, $eval_id, $topic_id, $score_id);
+		}
+		// This last selection statement is a hack to allow using both score tables
+		if (count($student_reviews) < 5) {
+			array_push($student_reviews, $_SESSION['scores'][$score_id]);
+		}
+	}
+	// This loop is a hack to allow using both score tables with rubrics with fewer criteria
+	while (count($student_reviews) < 5) {
+		array_push($student_reviews, -1);
+	}
+	// Now insert/update data into the older table
+	if ($insert_review) {
+		insertNewReview($con, $_SESSION['scores'], $eval_id, $student_reviews);
 	 } else {
-    $stmt = $con->prepare('UPDATE scores set score1=?, score2=?, score3=?, score4=?, score5=? WHERE evals_id=?');
-    $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_id);
-    $stmt->execute();
-  }
-	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE evals_id=?');
-	$stmt->bind_param('i', $eval_id);
-	$stmt->execute();
-	$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
-	$stmt->store_result();
-
-/* When we eventually switch to a normalized tables of scores, this would be the code to update the results
-	$question_count = 0;
-	foreach($res as $score){
-  	if(empty($student_scores)){
-    	$stmt = $con->prepare('INSERT INTO scores2 (score, eval_id, question_number) VALUES(?,?,?)');
-    	$stmt->bind_param('iii',$score,$eval_id,$question_count);
-    	$stmt->execute();
-  	} else {
-			$stmt = $con->prepare('UPDATE scores2 set score=? WHERE eval_id=? AND question_number=?');
-			$stmt->bind_param('iii',$score, $eval_id, $question_count);
-			$stmt->execute();
-  	}
-		$question_count +=1;
-	} */
+		updateExistingReview($con, $_SESSION['scores'], $eval_id, $student_reviews);
+	 }
 
 	//move to next student in group
 	if ($_SESSION['group_member_number'] < ($num_of_group_members - 1)) {
@@ -134,7 +126,7 @@ if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
 			<!-- Header -->
 			<div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
 				<div class="col-sm-auto text-center">
-					<h1 class="text-white display-1"><?php echo $_SESSION['course'];?> Teamwork Evaluation</h1><br>
+					<h1 class="text-white display-1"><?php echo $course?> <?php echo $survey_name?> Evaluation</h1><br>
 					<p class="text-white lead">Evaluating: <?php echo $name?></p>
 				</div>
 			</div>
@@ -145,7 +137,6 @@ if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
 			</div>
 			<form id="peerEval" method='post'>
 				<?php
-				$topic_num = 0;
 				foreach ($_SESSION['topics'] as $topic_id => $topic) {
 					echo '<div class="row mt-5 mx-1">';
 					echo '   <div class="col-12 bg-primary text-white"><b>Select the best description of '.$name.'\'s '.$topic.'</b></div>';
@@ -156,17 +147,16 @@ if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
 						$score_num = $_SESSION['scores'][$score_id];
 						echo '<div class="col-3 ';
 						echo $end_str;
-						echo '<input type="radio" class="btn-check" name="Q'.$topic_num.'" id="Q'.$topic_num.$score_num.'" autocomplete="off" required value="'.$score_num.'"';
-						if ($student_scores[$topic_num] == $score_num) {
+						echo '<input type="radio" class="btn-check" name="Q'.$topic_id.'" id="Q'.$topic_id.$score_id.'" autocomplete="off" required value="'.$score_id.'"';
+						if (array_key_exists($topic_id, $student_scores) && $student_scores[$topic_id] == $score_id) {
 							echo 'checked ';
 						}
-						echo '><label class="btn btn-outline-secondary" for="Q'.$topic_num.$score_num.'">'.$response.'</label>';
+						echo '><label class="btn btn-outline-secondary" for="Q'.$topic_id.$score_id.'">'.$response.'</label>';
 						echo '</div>';
 						// Update formatting so that all but first score use size correctly
 						$end_str = 'ms-auto">';
 					}
 					echo '</div>';
-					$topic_num = $topic_num + 1;
 				}
 				?>
 				<hr>
