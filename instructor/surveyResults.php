@@ -35,8 +35,7 @@ if (!isset($_GET['survey']))
 // make sure the query string is an integer, reply 404 otherwise
 $sid = intval($_GET['survey']);
 
-if ($sid === 0)
-{
+if ($sid === 0) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
@@ -75,63 +74,77 @@ if ($result->num_rows == 0)
   exit();
 }
 
-// now, get information about survey pairings and scores as array of array
-// also store information about each reviewer and reviewee
-$datas = array();
-$overalls = array();
+// This wil be an array of arrays organized by the person BEING REVIEWED.
+$scores = array();
+// Array mapping email to total number of points
+$totals = array();
+// Array mapping email addresses to names
+$emails = array();
+// Array mapping email address to normalized results
+$normalized = array();
 
-// Get information completed by the reviewer -- how many were reviewed and the total points
-$stmt_scores = $con->prepare('SELECT stu_reviewer.name reviewer_name, stu_reviewee.name reviewee_name, stu_reviewee.email reviewee_email,score1, score2, score3, score4, score5 FROM reviewers LEFT JOIN students stu_reviewer ON reviewers.reviewer_email=stu_reviewer.email LEFT JOIN students stu_reviewee ON reviewers.teammate_email=stu_reviewee.email
-                             LEFT JOIN evals on evals.reviewers_id=reviewers.id LEFT JOIN scores ON evals.id=scores.evals_id WHERE survey_id=? AND reviewers.reviewer_email=?');
-$stmt = $con->prepare('SELECT reviewer_email, COUNT(reviewers.id) num_intended, COUNT(evals_id) num_scored, SUM(score1 + score2 + score3 + score4 + score5) total_score
-                       FROM reviewers LEFT JOIN evals ON evals.reviewers_id=reviewers.id LEFT JOIN scores ON scores.evals_id=evals.id AND scores.score1 <> -1 WHERE survey_id=? GROUP BY reviewer_email ');
+$stmt = $con->prepare('SELECT reviewer_email, students.name, SUM(rubric_scores.score) total_score
+                       FROM reviewers INNER JOIN students ON reviewers.reviewer_email=students.email LEFT JOIN evals ON evals.reviewers_id=reviewers.id LEFT JOIN scores2 ON scores2.eval_id=evals.id LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id WHERE survey_id=? GROUP BY reviewer_email, students.name');
 $stmt->bind_param('i', $sid);
 $stmt->execute();
 $result = $stmt->get_result();
+while ($row = $result->fetch_array(MYSQLI_NUM)) {
+  $email_addr = $row[0];
+  $emails[$email_addr] = $row[1];
+  $scores[$email_addr] = array();
+  // If the reviewer completed this survey
+  if (isset($row[2])) {
+    // Initialize the total number of points
+    $totals[$email_addr] = $row[3];
+  }
+}
+$stmt->close();
 
-while ($row = $result->fetch_assoc()) {
-
-  // now get the names for each pairing and scores for each pairing
-  $stmt_scores->bind_param('is',$sid, $row['reviewer_email']);
+// Get information completed by the reviewer -- how many were reviewed and the total points
+$stmt_scores = $con->prepare('SELECT reviewer_email, reviewee_email, topic_id, score 
+                              FROM reviewers
+                              LEFT JOIN evals on evals.reviewers_id=reviewers.id 
+                              LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
+                              LEFT JOIN scores2 ON evals.id=scores2.eval_id
+                              WHERE survey_id=? AND reviewee_email=?');
+foreach ($totals as $email => $points) {
+  $stmt_scores->bind_param('is',$sid, $email);
   $stmt_scores->execute();
-  $result_scores = $stmt_scores->get_result();
-
-  while ($score = $result_scores->fetch_assoc()) {
-    $pair_info = array();
-    $pair_info['reviewer_email'] = $row['reviewer_email'];
-    $pair_info['reviewer_name'] = $score['reviewer_name'];
-    $pair_info['reviewee_email'] = $score['reviewee_email'];
-    $pair_info['reviewee_name'] = $score['reviewee_name'];
-    if (isset($score['score1'])) {
-      $pair_info['score1'] = $score['score1'];
-      $pair_info['score2'] = $score['score2'];
-      $pair_info['score3'] = $score['score3'];
-      $pair_info['score4'] = $score['score4'];
-      $pair_info['score5'] = $score['score5'];
-
-      //  Check if this is a result that allows normalization
-      if ($row['num_intended'] == $row['num_scored']) {
-        $pair_info['normalized'] = (($score['score1'] + $score['score2'] + $score['score3'] + $score['score4'] + $score['score5']) / $row['total_score']) * $row['num_scored'];
-
-        // initialize reviewer and reviewee info arrays
-        if (!isset($overalls[$score['reviewee_name']])) {
-          $overalls[$score['reviewee_name']] = array('reviewee_name' => $score['reviewee_name'], 'reviewee_email' => $score['reviewee_email'], 'running_sum' => $pair_info['normalized'], 'num_of_evals' => 1);
-        } else {
-          $overalls[$score['reviewee_name']]['running_sum'] +=$pair_info['normalized'];
-          $overalls[$score['reviewee_name']]['num_of_evals'] += 1;
-        }
-      } else {
-        $pair_info['normalized'] = NO_SCORE_MARKER;
-
-        // initialize reviewer and reviewee info arrays
-        if (!isset($overalls[$score['reviewee_name']])) {
-          $overalls[$score['reviewee_name']] = array('reviewee_name' => $score['reviewee_name'], 'reviewee_email' => $score['reviewee_email'], 'running_sum' => 0, 'num_of_evals' => 0);
-        }
-      }
-      array_push($datas, $pair_info);
+  $result = $stmt_scores->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    if (!isset($scores[$email][$row[0]])) {
+      $scores[$email][$row[0]] = array();
+    }
+    if (isset($row[3])) {
+      $scores[$email][$row[0]][$row[2]] = $row[3];
     }
   }
 }
+$stmt_scores->close();
+
+foreach ($scores as $email => $reviewers) {
+  $sum_normalized = 0;
+  $reviews = 0;
+  foreach ($reviewers as $reviewer => $scored) {
+    // Verify that this reviewer completed all of their 
+    if (isset($totals[$reviewer])) {
+      $sum = 0;
+      foreach ($scored as $id => $score) {
+        $sum = $sum + $score;
+      }
+      $scored['normalized'] = ($sum / $totals[$reviewer]);
+      $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
+      $reviews = $reviews + 1;
+    }
+  }
+  if ($reviews == 0) {
+    $normalized[$email] = NO_SCORE_MARKER;
+  } else {
+    $normalized[$email] = $sum_normalized / $reviews;
+  }
+}
+$topics = getSurveyTopics($con, $sid);
+$topics['normalized'] = 'Normalized Score';
 ?>
 <!DOCTYPE html>
 <html>
@@ -170,24 +183,27 @@ while ($row = $result->fetch_assoc()) {
         <tr>
         <th>Reviewer Email (Name)</th>
         <th>Reviewee Email (Name)</th>
-        <th>Score 1</th>
-        <th>Score 2</th>
-        <th>Score 3</th>
-        <th>Score 4</th>
-        <th>Score 5</th>
-        <th>Normalized Score</th>
+        <?php
+        foreach ($topics as $topic_id => $question) {
+          echo '<th>'.$question.'</th>';
+        }
+        ?>
         </tr>
         <?php
-          foreach ($datas as $datum) {
-            echo '<tr><td>' . htmlspecialchars($datum['reviewer_email']) . '<br />(' . htmlspecialchars($datum['reviewer_name']) . ')' . '</td><td>' . htmlspecialchars($datum['reviewee_email']) . '<br />(' . htmlspecialchars($datum['reviewee_name']) . ')' . '</td>';
-            echo '<td>' . $datum['score1'] . '</td><td>' . $datum['score2'] . '</td><td>' . $datum['score3'] . '</td><td>' . $datum['score4'] . '</td><td>' . $datum['score5'] . '</td>';
-            if ($datum['normalized'] === NO_SCORE_MARKER) {
-              echo '<td>--</td></tr>';
-            } else {
-              echo '<td>' . $datum['normalized'] . '</td></tr>';
+          foreach ($emails as $email => $name) {
+            foreach ($scores[$email] as $reviewer => $scored) {
+              echo '<tr><td>' . htmlspecialchars($reviewer) . '<br />(' . htmlspecialchars($emails[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br />(' . htmlspecialchars($name) . ')' . '</td>';
+              foreach ($topics as $topic_id => $question) {
+                if (isset($scored[$topic_id])) {
+                  echo '<td>'.$scored[$topic_id].'</td>';
+                } else {
+                  echo '<td>--</td>';
+                }
+              }
             }
+            echo '</tr>';
           }
-          ?>
+        ?>
     </table>
     <hr />
     <div class="w3-container w3-center">
@@ -195,17 +211,16 @@ while ($row = $result->fetch_assoc()) {
     </div>
     <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
         <tr>
-        <th>Reviewee Email (Name)</th>
+        <th>Email (Name)</th>
         <th>Average Normalized Score</th>
         </tr>
         <?php
-          foreach ($overalls as $overall) {
-            echo '<tr><td>' . htmlspecialchars($overall['reviewee_email']) . '<br />(' . htmlspecialchars($overall['reviewee_name']) . ')' . '</td>';
-
-            if ($overall['num_of_evals'] === 0) {
+          foreach ($normalized as $email => $norm) {
+            echo '<tr><td>' . htmlspecialchars($email) . '<br />(' . htmlspecialchars($emais[$email]) . ')' . '</td>';
+            if ($norm === NO_SCORE_MARKER) {
               echo '<td>--</td></tr>';
             } else {
-              echo '<td>' . $overall['running_sum'] / $overall['num_of_evals'] . '</td></tr>';
+              echo '<td>' . $norm . '</td></tr>';
             }
           }
           ?>
