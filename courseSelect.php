@@ -19,12 +19,11 @@
 
   // TECHNICAL DEBT TODO: Make this into a separate function
   $past_surveys = array();
-  $stmt_past = $con->prepare('SELECT course.name, surveys.name, surveys.id, surveys.expiration_date, COUNT(reviewers.id) assigned, COUNT(scores.evals_id) submitted
+  $stmt_past = $con->prepare('SELECT course.name, surveys.name, surveys.id, surveys.expiration_date, COUNT(reviewers.id) assigned, COUNT(evals.id) submitted
                               FROM surveys
                               INNER JOIN course on course.id = surveys.course_id 
                               INNER JOIN reviewers on reviewers.survey_id=surveys.id
                               LEFT JOIN evals on evals.reviewers_id=reviewers.id
-                              LEFT JOIN scores on scores.evals_id=evals.id and scores.score1<>-1
                               WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.expiration_date < NOW()
                               GROUP BY course.name, surveys.name, surveys.id, surveys.expiration_date
                               ORDER BY surveys.expiration_date');
@@ -46,12 +45,11 @@
 
   // TECHNICAL DEBT TODO: Make this into a separate function
   $current_surveys = array();
-  $stmt_curr = $con->prepare('SELECT course.name, surveys.name, surveys.id, surveys.expiration_date, COUNT(reviewers.id) assigned, COUNT(scores.evals_id) submitted
+  $stmt_curr = $con->prepare('SELECT course.name, surveys.name, surveys.id, surveys.expiration_date, COUNT(reviewers.id) assigned, COUNT(evals.id) submitted
                               FROM surveys
                               INNER JOIN course on course.id = surveys.course_id 
                               INNER JOIN reviewers on reviewers.survey_id=surveys.id
                               LEFT JOIN evals on evals.reviewers_id=reviewers.id
-                              LEFT JOIN scores on scores.evals_id=evals.id and scores.score1<>-1
                               WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.start_date <= NOW() AND surveys.expiration_date > NOW()
                               GROUP BY course.name, surveys.name, surveys.id, surveys.expiration_date
                               ORDER BY surveys.expiration_date');

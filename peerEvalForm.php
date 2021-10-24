@@ -35,13 +35,8 @@ $stmt->bind_param('i', $reviewers_id);
 $stmt->execute();
 $stmt->bind_result($eval_id);
 $stmt->store_result();
-$stmt->fetch();
-if ($stmt->num_rows == 0) {
-  //create eval id if does not exist and get get the eval_id
-	$stmt = $con->prepare('INSERT INTO evals (reviewers_id) VALUES(?)');
-	$stmt->bind_param('i', $reviewers_id);
-	$stmt->execute();
-	$eval_id = $stmt->insert_id;
+if (!$stmt->fetch()) {
+	unset($eval_id);
 }
 
 // Get scores (or initialize them to -1)
@@ -62,6 +57,14 @@ if ( !empty($_POST) && isset($_POST)) {
 			http_response_code(400);
 			exit();
 		}
+	}
+	// Only create the eval id when we have an evaluation for this review pairing.
+	if (!isset($eval_id)) {
+		$stmt = $con->prepare('INSERT INTO evals (reviewers_id) VALUES(?)');
+		$stmt->bind_param('i', $reviewers_id);
+		$stmt->execute();
+		$eval_id = $stmt->insert_id;
+		$stmt->close();
 	}
 	// Next two lines are a hack while we use the 2 score tables
 	$student_reviews = array();
