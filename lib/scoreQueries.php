@@ -40,27 +40,27 @@
     $stmt->close();
     return $retVal;
   }
-  function insertNewReview($db_connection, $scores, $eval_id, $student_scores) {
+  function insertNewReview($db_connection, $eval_id, $student_scores) {
     $query_str = 'INSERT INTO scores (evals_id, score1, score2, score3, score4, score5) VALUES (?,?,?,?,?,?)';
     $stmt = $db_connection->prepare($query_str);
-    $a = $scores[$student_scores[0]];
-    $b = $scores[$student_scores[1]];
-    $c = $scores[$student_scores[2]];
-    $d = $scores[$student_scores[3]];
-    $e = $scores[$student_scores[4]];
+    $a =$student_scores[0];
+    $b =$student_scores[1];
+    $c =$student_scores[2];
+    $d =$student_scores[3];
+    $e =$student_scores[4];
     $stmt->bind_param('iiiiii',$eval_id, $a, $b, $c, $d, $e);
     $stmt->execute();
     $stmt->close();
   }
 
-  function updateExistingReview($db_connection, $scores, $eval_id, $student_scores) {
+  function updateExistingReview($db_connection, $eval_id, $student_scores) {
     $query_str = 'UPDATE scores SET score1 = ?, score2=?, score3=?, score4=?, score5=? WHERE evals_id=?';
     $stmt = $db_connection->prepare($query_str);
-    $a = $scores[$student_scores[0]];
-    $b = $scores[$student_scores[1]];
-    $c = $scores[$student_scores[2]];
-    $d = $scores[$student_scores[3]];
-    $e = $scores[$student_scores[4]];
+    $a =$student_scores[0];
+    $b =$student_scores[1];
+    $c =$student_scores[2];
+    $d =$student_scores[3];
+    $e =$student_scores[4];
     $stmt->bind_param('iiiiii',$a, $b, $c, $d, $e, $eval_id);
     $stmt->execute();
     $stmt->close();

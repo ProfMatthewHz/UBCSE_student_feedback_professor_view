@@ -89,9 +89,9 @@ if ( !empty($_POST) && isset($_POST)) {
 	}
 	// Now insert/update data into the older table
 	if ($insert_review) {
-		insertNewReview($con, $_SESSION['scores'], $eval_id, $student_reviews);
+		insertNewReview($con, $eval_id, $student_reviews);
 	 } else {
-		updateExistingReview($con, $_SESSION['scores'], $eval_id, $student_reviews);
+		updateExistingReview($con, $eval_id, $student_reviews);
 	 }
 
 	//move to next student in group
