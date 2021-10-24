@@ -217,7 +217,7 @@ $topics['normalized'] = 'Normalized Score';
         </tr>
         <?php
           foreach ($normalized as $email => $norm) {
-            echo '<tr><td>' . htmlspecialchars($email) . '<br />(' . htmlspecialchars($emais[$email]) . ')' . '</td>';
+            echo '<tr><td>' . htmlspecialchars($email) . '<br />(' . htmlspecialchars($emails[$email]) . ')' . '</td>';
             if ($norm === NO_SCORE_MARKER) {
               echo '<td>--</td></tr>';
             } else {
