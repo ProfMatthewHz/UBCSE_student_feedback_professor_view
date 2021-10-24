@@ -104,8 +104,8 @@ $stmt->close();
 $stmt_scores = $con->prepare('SELECT reviewer_email, teammate_email, topic_id, score 
                               FROM reviewers
                               LEFT JOIN evals on evals.reviewers_id=reviewers.id 
-                              LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
                               LEFT JOIN scores2 ON evals.id=scores2.eval_id
+                              LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
                               WHERE survey_id=? AND teammate_email=?');
 foreach ($totals as $email => $points) {
   $stmt_scores->bind_param('is',$sid, $email);
