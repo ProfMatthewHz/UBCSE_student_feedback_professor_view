@@ -133,7 +133,7 @@ foreach ($scores as $email => $reviewers) {
       foreach ($scored as $id => $score) {
         $sum = $sum + $score;
       }
-      $scored['normalized'] = ($sum / $totals[$reviewer]);
+      $reviewers[$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
       $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
       $reviews = $reviews + 1;
     }
