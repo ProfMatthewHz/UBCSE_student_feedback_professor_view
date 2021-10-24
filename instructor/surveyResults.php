@@ -95,7 +95,7 @@ while ($row = $result->fetch_array(MYSQLI_NUM)) {
   // If the reviewer completed this survey
   if (isset($row[2])) {
     // Initialize the total number of points
-    $totals[$email_addr] = $row[3];
+    $totals[$email_addr] = $row[2];
   }
 }
 $stmt->close();
