@@ -101,12 +101,12 @@ while ($row = $result->fetch_array(MYSQLI_NUM)) {
 $stmt->close();
 
 // Get information completed by the reviewer -- how many were reviewed and the total points
-$stmt_scores = $con->prepare('SELECT reviewer_email, reviewee_email, topic_id, score 
+$stmt_scores = $con->prepare('SELECT reviewer_email, teammate_email, topic_id, score 
                               FROM reviewers
                               LEFT JOIN evals on evals.reviewers_id=reviewers.id 
                               LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
                               LEFT JOIN scores2 ON evals.id=scores2.eval_id
-                              WHERE survey_id=? AND reviewee_email=?');
+                              WHERE survey_id=? AND teammate_email=?');
 foreach ($totals as $email => $points) {
   $stmt_scores->bind_param('is',$sid, $email);
   $stmt_scores->execute();
