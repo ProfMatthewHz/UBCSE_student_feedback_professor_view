@@ -68,7 +68,7 @@ if ( !empty($_POST) && isset($_POST)) {
 	}
 	// Next two lines are a hack while we use the 2 score tables
 	$student_reviews = array();
-	$insert_review = (count($student_scores) != $_SESSION['topics']);
+	$insert_review = (count($student_scores) != count($_SESSION['topics']));
 	// Now add or update the scores in our modern scores table
 	foreach ($topic_ids as $topic_id) {
 		$radio_name = 'Q'.$topic_id;
