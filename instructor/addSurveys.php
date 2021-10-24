@@ -248,7 +248,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         if (empty($errorMsg)) {
           $sdate = $start_date . ' ' . $start_time;
           $edate = $end_date . ' ' . $end_time;
-          $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, ?, 0)');
+          $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, ?, 1)');
           $stmt->bind_param('isss', $course_id, $survey_name, $sdate, $edate);
           $stmt->execute();
 
