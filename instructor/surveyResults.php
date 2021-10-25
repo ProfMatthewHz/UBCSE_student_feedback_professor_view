@@ -116,24 +116,24 @@ foreach ($totals as $email => $points) {
     if (!isset($scores[$email][$row[0]])) {
       $scores[$email][$row[0]] = array();
     }
-    if (isset($row[3])) {
+    if (isset($row[2])) {
       $scores[$email][$row[0]][$row[2]] = $row[3];
     }
   }
 }
 $stmt_scores->close();
 
-foreach ($scores as $email => $reviewers) {
+foreach ($emails as $email => $name) {
   $sum_normalized = 0;
   $reviews = 0;
-  foreach ($reviewers as $reviewer => $scored) {
+  foreach ($scores[$email] as $reviewer => $scored) {
     // Verify that this reviewer completed all of their 
     if (isset($totals[$reviewer])) {
       $sum = 0;
       foreach ($scored as $id => $score) {
         $sum = $sum + $score;
       }
-      $reviewers[$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
+      $scores[$email][$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
       $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
       $reviews = $reviews + 1;
     }
