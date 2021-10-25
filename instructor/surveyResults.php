@@ -75,6 +75,8 @@ if ($result->num_rows == 0)
   exit();
 }
 
+// TODO: Refactor this code so I do not need to duplicate it on download
+
 // This wil be an array of arrays organized by the person BEING REVIEWED.
 $scores = array();
 // Array mapping email to total number of points
@@ -203,8 +205,8 @@ $topics['normalized'] = 'Normalized Score';
                   echo '<td>--</td>';
                 }
               }
+              echo '</tr>';
             }
-            echo '</tr>';
           }
         ?>
     </table>
