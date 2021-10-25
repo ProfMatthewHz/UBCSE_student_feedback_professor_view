@@ -164,7 +164,14 @@ $topics = getSurveyTopics($con, $sid);
 
 // now generate the raw scores output
 if ($_GET['type'] === 'raw') {
+  header('Content-Type: text/csv; charset=UTF-8');
+  header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-results.csv"');
   $out = fopen('php://output', 'w');
+  $header = array("Reviewer","Reviewee");
+  foreach ($topics as $topic_id => $question) {
+    array_push($header,$question);
+  } 
+  fputcsv($out, $header);
   foreach ($emails as $email => $name) {
     foreach ($scores[$email] as $reviewer => $scored) {
       $line = array();
@@ -182,19 +189,32 @@ if ($_GET['type'] === 'raw') {
   }
   fclose($out);
 } else if ($_GET['type'] === 'normalized') {
+  $topics['normalized'] = 'Normalized Score';
   // generate the correct headers for the file download
   header('Content-Type: text/csv; charset=UTF-8');
   header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-results.csv"');
-
-  $normal_output = "";
-
-  // start the download
-  foreach ($datas as $datum) {
-    $normal_output .= $datum['reviewer_email'] . ',' . $datum['reviewee_email'] . ',' . $datum['score1'] . ',' . $datum['score2'] . ',' . $datum['score3'] . ',' . $datum['score4'] . ',' . $datum['score5'] . ',' . $datum['normalized'] ."\n";
+  $out = fopen('php://output', 'w');
+  $header = array("Reviewer","Reviewee");
+  foreach ($topics as $topic_id => $question) {
+    array_push($header,$question);
+  } 
+  fputcsv($out, $header);
+  foreach ($emails as $email => $name) {
+    foreach ($scores[$email] as $reviewer => $scored) {
+      $line = array();
+      array_push($line, $reviewer);
+      array_push($line, $email);
+      foreach ($topics as $topic_id => $question) {
+        if (isset($scored[$topic_id])) {
+          array_push($line, $scored[$topic_id]);
+        } else {
+          array_push($line, '--');
+        }
+      }
+      fputcsv($out, $line);
+    }
   }
-
-  // ouput the data
-  echo $normal_output;
+  fclose($out);
 } else {
   // generate the correct headers for the file download
   header('Content-Type: text/csv; charset=UTF-8');
