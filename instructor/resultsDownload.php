@@ -219,17 +219,17 @@ if ($_GET['type'] === 'raw') {
   // generate the correct headers for the file download
   header('Content-Type: text/csv; charset=UTF-8');
   header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-averages.csv"');
-
-  $result_output = "";
-
-  // start the download
-  foreach ($overalls as $overall) {
-    if ($overall['num_of_evals'] == 0) {
-      $result_output .= $overall['reviewee_email'] . ", -- \n";
+  fputcsv($out, array("Reviewee","Average Normalized Score"));
+  foreach ($normalized as $email => $norm) {
+    $line = array();
+    array_push($line, $email);
+    if ($norm === NO_SCORE_MARKER) {
+      array_push($line, '--');
     } else {
-      $result_output .= $overall['reviewee_email'] . ',' . $overall['running_sum'] / $overall['num_of_evals'] ."\n";
+      array_push($line, $norm);
     }
+    fputcsv($out, $line);
   }
-  echo $result_output;
+  fclose($out);
 }
 ?>
