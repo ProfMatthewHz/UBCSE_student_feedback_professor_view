@@ -97,8 +97,6 @@ while ($row = $result->fetch_array(MYSQLI_NUM)) {
   if ($row[3] == $row[4]) {
     // Initialize the total number of points
     $totals[$email_addr] = $row[2] / $row[3];
-  } else if (isset($row[2])) {
-    $totals[$email_addr] = NO_SCORE_MARKER;
   }
 }
 $stmt->close();
@@ -110,7 +108,7 @@ $stmt_scores = $con->prepare('SELECT reviewer_email, teammate_email, topic_id, s
                               LEFT JOIN scores2 ON evals.id=scores2.eval_id
                               LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
                               WHERE survey_id=? AND teammate_email=?');
-foreach ($totals as $email => $points) {
+foreach ($emails as $email => $name) {
   $stmt_scores->bind_param('is',$sid, $email);
   $stmt_scores->execute();
   $result = $stmt_scores->get_result();
