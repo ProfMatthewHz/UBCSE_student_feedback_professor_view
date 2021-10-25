@@ -113,11 +113,13 @@ foreach ($emails as $email => $name) {
   $stmt_scores->execute();
   $result = $stmt_scores->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    if (!isset($scores[$email][$row[0]])) {
-      $scores[$email][$row[0]] = array();
-    }
     if (isset($row[2])) {
-      $scores[$email][$row[0]][$row[2]] = $row[3];
+      if (!isset($scores[$email][$row[0]])) {
+        $scores[$email][$row[0]] = array();
+      }
+      if (isset($row[2])) {
+        $scores[$email][$row[0]][$row[2]] = $row[3];
+      }
     }
   }
 }
