@@ -365,7 +365,7 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
     <select id="rubric-id" class="w3-select w3-border" name="rubric-id">
         <option value="-1" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Rubric</option>
         <?php
-        foreach ($rubics as $rubric) {
+        foreach ($rubrics as $rubric) {
           if ($rubric_id == $rubric['id'])
           {
             echo '<option value="' . $rubric['id'] . '" selected>' . htmlspecialchars($rubric['description']) . '</option>';
