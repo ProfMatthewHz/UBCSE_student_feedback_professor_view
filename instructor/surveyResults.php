@@ -84,7 +84,7 @@ $emails = array();
 // Array mapping email address to normalized results
 $normalized = array();
 
-$stmt = $con->prepare('SELECT reviewer_email, students.name, SUM(rubric_scores.score) total_score, COUNT(DISTINCT teammate_email) total_reviews
+$stmt = $con->prepare('SELECT reviewer_email, students.name, SUM(rubric_scores.score) total_score, COUNT(DISTINCT teammate_email) expected, COUNT(DISTINCT evals.id) actual
                        FROM reviewers INNER JOIN students ON reviewers.reviewer_email=students.email LEFT JOIN evals ON evals.reviewers_id=reviewers.id LEFT JOIN scores2 ON scores2.eval_id=evals.id LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id WHERE survey_id=? GROUP BY reviewer_email, students.name');
 $stmt->bind_param('i', $sid);
 $stmt->execute();
@@ -94,7 +94,7 @@ while ($row = $result->fetch_array(MYSQLI_NUM)) {
   $emails[$email_addr] = $row[1];
   $scores[$email_addr] = array();
   // If the reviewer completed this survey
-  if (isset($row[2])) {
+  if ($row[3] == $row[4]) {
     // Initialize the total number of points
     $totals[$email_addr] = $row[2] / $row[3];
   }
