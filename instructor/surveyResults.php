@@ -97,6 +97,8 @@ while ($row = $result->fetch_array(MYSQLI_NUM)) {
   if ($row[3] == $row[4]) {
     // Initialize the total number of points
     $totals[$email_addr] = $row[2] / $row[3];
+  } else if (isset($row[2])) {
+    $totals[$email_addr] = NO_SCORE_MARKER;
   }
 }
 $stmt->close();
@@ -128,7 +130,7 @@ foreach ($emails as $email => $name) {
   $reviews = 0;
   foreach ($scores[$email] as $reviewer => $scored) {
     // Verify that this reviewer completed all of their 
-    if (isset($totals[$reviewer])) {
+    if (isset($totals[$reviewer]) && ($totals[$reviewer] != NO_SCORE_MARKER)) {
       $sum = 0;
       foreach ($scored as $id => $score) {
         $sum = $sum + $score;
