@@ -47,6 +47,18 @@ while ($row = $result->fetch_assoc())
   array_push($courses, $course_info);
 }
 
+// store information about rubrics as array of array
+$rubrics = array();
+
+// get information about the rubrics
+$stmt = $con->prepare('SELECT id, description FROM rubrics ORDER BY description');
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+  $rubric_info = array('id' => $row['id'], 'description' => $row['description']);
+  array_push($rubrics, $rubric_info);
+}
+
 //stores error messages corresponding to form fields
 $errorMsg = array();
 
@@ -60,12 +72,11 @@ $end_time = NULL;
 $pairing_mode = NULL;
 $survey_name = NULL;
 
-if($_SERVER['REQUEST_METHOD'] == 'POST')
-{
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
   if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || !isset($_POST['start-date']) || !isset($_POST['start-time']) || !isset($_POST['end-date']) || !isset($_POST['end-time']) || !isset($_POST['csrf-token']) ||
-      !isset($_POST['course-id']) || !isset($_POST['survey-name']))
+      !isset($_POST['course-id']) || !isset($_POST['survey-name']) || !isset($_POST['rubric-id']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parameters.";
@@ -88,6 +99,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   $course_id = intval($course_id);
   if ($course_id === 0) {
     $errorMsg['course-id'] = "Please choose a valid course.";
+  }
+
+  // check rubric is not empty
+  $rubric_id = trim($_POST['rubric-id']);
+  $rubric_id = intval($rubric_id);
+  if ($rubric_id === 0) {
+    $errorMsg['rubric-id'] = "Please choose a valid rubric.";
   }
 
   $stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
@@ -248,8 +266,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         if (empty($errorMsg)) {
           $sdate = $start_date . ' ' . $start_time;
           $edate = $end_date . ' ' . $end_time;
-          $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, ?, 1)');
-          $stmt->bind_param('isss', $course_id, $survey_name, $sdate, $edate);
+          $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, ?, ?)');
+          $stmt->bind_param('isssi', $course_id, $survey_name, $sdate, $edate, $rubric_id);
           $stmt->execute();
 
           add_pairings($pairings, $con->insert_id, $con);
@@ -264,7 +282,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
       }
     }
   }
-
+}
+if (!isset($rubric_id) && count($rubrics) == 1) {
+  $rubric_id = $rubrics[0]['id'];
 }
 ?>
 <!DOCTYPE html>
@@ -335,6 +355,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     <span class="w3-card w3-red"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"];} ?></span><br />
     <label for="end-time">End time:</label><br>
     <input type="time" id="end-time" class="w3-input w3-border" name="end-time" required <?php if ($end_time) {echo 'value="' . htmlspecialchars($end_time) . '"';} else { echo 'value="23:59"'; } ?>><br>
+
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"];} ?></span><br />
+    <label for="rubric-id">Rubric:</label><br>
+    <select id="rubric-id" class="w3-select w3-border" name="rubric-id"><?php if ($rubric_id) {echo 'value="' . htmlspecialchars($rubric_id) . '"';} ?>
+        <option value="-1" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Rubric</option>
+        <?php
+        foreach ($rubics as $rubric) {
+          if ($rubric_id == $rubric['id'])
+          {
+            echo '<option value="' . $rubric['id'] . '" selected>' . htmlspecialchars($rubric['description']) . '</option>';
+          }
+          else
+          {
+            echo '<option value="' . $rubric['id'] . '" >' . htmlspecialchars($rubric['description']) . '</option>';
+          }
+        }
+        ?>
+    </select><br><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"];} ?></span><br />
     <label for="pairing-mode">Pairing File Mode:</label><br>
