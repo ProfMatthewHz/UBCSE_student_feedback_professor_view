@@ -46,6 +46,7 @@ while ($row = $result->fetch_assoc())
   $course_info['id'] = $row['id'];
   array_push($courses, $course_info);
 }
+$stmt->close();
 
 // store information about rubrics as array of array
 $rubrics = array();
@@ -55,9 +56,12 @@ $stmt = $con->prepare('SELECT id, description FROM rubrics ORDER BY description'
 $stmt->execute();
 $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
-  $rubric_info = array('id' => $row['id'], 'description' => $row['description']);
+  $rubric_info = array();
+  $rubric_info['id'] = $row['id'];
+  $rubric_info['description'] = $row['description'];
   array_push($rubrics, $rubric_info);
 }
+$stmt->close();
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
