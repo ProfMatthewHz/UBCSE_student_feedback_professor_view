@@ -287,7 +287,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 }
-if (!isset($rubric_id) && count($rubrics) == 1) {
+if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
   $rubric_id = $rubrics[0]['id'];
 }
 ?>
@@ -324,7 +324,7 @@ if (!isset($rubric_id) && count($rubrics) == 1) {
 <form action="addSurveys.php" method ="post" enctype="multipart/form-data" style="width:60%" class="w3-container w3-mobile">
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-id"])) {echo $errorMsg["course-id"];} ?></span><br />
     <label for="course-id">Course:</label><br>
-    <select id="course-id" class="w3-select w3-border" name="course-id"><?php if ($course_id) {echo 'value="' . htmlspecialchars($course_id) . '"';} ?>
+    <select id="course-id" class="w3-select w3-border" name="course-id">
         <option value="-1" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
         <?php
         foreach ($courses as $course) {
@@ -362,7 +362,7 @@ if (!isset($rubric_id) && count($rubrics) == 1) {
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"];} ?></span><br />
     <label for="rubric-id">Rubric:</label><br>
-    <select id="rubric-id" class="w3-select w3-border" name="rubric-id"><?php if ($rubric_id) {echo 'value="' . htmlspecialchars($rubric_id) . '"';} ?>
+    <select id="rubric-id" class="w3-select w3-border" name="rubric-id">
         <option value="-1" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Rubric</option>
         <?php
         foreach ($rubics as $rubric) {
