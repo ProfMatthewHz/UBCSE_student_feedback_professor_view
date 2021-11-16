@@ -37,14 +37,14 @@ function parse_review_pairs($file_handle, $db_connection) {
 
     // Verify the current line's data seems reasonable.
     if ($line_fields != 2) {
-      $ret_val['error'] = 'Input CSV file has incorrect number of fields on line ' . $line_num;
+      $ret_val['error'] = 'CSV file does not have a review pair on line ' . $line_num;
       return $ret_val;
     } else {
       if (!email_already_exists($line_text[0], $db_connection)) {
-        $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[0];
+        $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[0];
         return $ret_val;
       } else if (!email_already_exists($line_text[1], $db_connection)) {
-        $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[1];
+        $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[1];
         return $ret_val;
       } else {
         // Fast than array_push when appending large numbers of data
@@ -74,8 +74,8 @@ function parse_review_teams($file_handle, $db_connection) {
 
     // Make sure the current line's data are valid
     for ($j = 0; $j < $line_fields; $j++) {
-      if ((!empty($line_text[$line_fields])) && !email_already_exists($line_text[$j], $db_connection)) {
-        $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
+      if ( (!empty($line_text[$j])) && !email_already_exists($line_text[$j], $db_connection)) {
+        $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
         return $ret_val;
       }
     }
@@ -117,7 +117,7 @@ function parse_review_managed_teams($file_handle, $db_connection) {
     for ($j = 0; $j < $line_fields; $j++) {
       if (!empty($line_text[$j])) {
         if (!email_already_exists($line_text[$j], $db_connection)) {
-          $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j].".";
+          $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
           return $ret_val;
         } else {
           $team_members[] = $line_text[$j];
@@ -128,7 +128,7 @@ function parse_review_managed_teams($file_handle, $db_connection) {
 
     $manager = $line_text[$line_fields];
     if (!email_already_exists($manager, $db_connection)) {
-      $ret_val['error'] = 'Input CSV file at line '. $line_num . ' includes an email that is not in system: ' . $manager;
+      $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $manager;
       return $ret_val;
     }
 
