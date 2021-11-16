@@ -171,7 +171,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     }
     else
     {
-      $names_emails = parse_pairings("3", $file_string);
+      $names_emails = // TODO: FIXME parse_pairings("3", $file_string);
 
       // check for any errors
       if (isset($names_emails['error']))

@@ -95,7 +95,6 @@ while ($row = $result->fetch_assoc()) {
         foreach ($courses as $course)
         {
           // TODO: Removed option to modify a course's roster
-          // echo '<tr><td>' . htmlspecialchars($course['code']) . '</td><td>' . htmlspecialchars($course['name']) . '</td><td>' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</td><td>' . htmlspecialchars($instructor->name) . '</td><td><a href="courseRoster.php?course=' . $course['id'] . '">View or Edit Course Roster</a></td></tr>';
           echo '<tr><td>' . htmlspecialchars($course['code']) . '</td><td>' . htmlspecialchars($course['name']) . '</td><td>' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</td><td>' . htmlspecialchars($instructor->name) . '</td></tr>';
         }
       ?>
