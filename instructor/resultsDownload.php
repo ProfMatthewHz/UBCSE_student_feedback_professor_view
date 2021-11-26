@@ -219,6 +219,7 @@ if ($_GET['type'] === 'raw') {
   // generate the correct headers for the file download
   header('Content-Type: text/csv; charset=UTF-8');
   header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-averages.csv"');
+  $out = fopen('php://output', 'w');
   fputcsv($out, array("Reviewee","Average Normalized Score"));
   foreach ($normalized as $email => $norm) {
     $line = array();
