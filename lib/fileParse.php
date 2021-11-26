@@ -83,10 +83,12 @@ function parse_review_teams($file_handle, $db_connection) {
     // Now that we know data are valid, create & add all possible team pairings
     for ($j = 0; $j < $line_fields; $j++) {
       for ($k = 0; $k < $line_fields; $k++) {
-        $pairing = array();
-        $pairing[0] = $line_text[$j];
-        $pairing[1] = $line_text[$k];
-        $ret_val[] = $pairing;
+        if (!empty($line_text[$j]) && !empty($line_text[$k])) {
+          $pairing = array();
+          $pairing[0] = $line_text[$j];
+          $pairing[1] = $line_text[$k];
+          $ret_val[] = $pairing;
+        }
       }
     }
   }
@@ -134,16 +136,20 @@ function parse_review_managed_teams($file_handle, $db_connection) {
 
     // Now that we know data are valid, create & add all possible team pairings
     for ($j = 0; $j < $team_size; $j++) {
-      $managed = array();
-      $managed[0] = $manager;
-      $managed[1] = $team_members[$j];
-      $ret_val[] = $managed;
+      if (!empty($team_members[$j])) {
+        $managed = array();
+        $managed[0] = $manager;
+        $managed[1] = $team_members[$j];
+        $ret_val[] = $managed;
 
-      for ($k = 0; $k < $team_size; $k++) {
-        $pairing = array();
-        $pairing[0] = $team_members[$j];
-        $pairing[1] = $team_members[$k];
-        $ret_val[] = $pairing;
+        for ($k = 0; $k < $team_size; $k++) {
+          if (!empty($team_members[$k])) {
+            $pairing = array();
+            $pairing[0] = $team_members[$j];
+            $pairing[1] = $team_members[$k];
+            $ret_val[] = $pairing;
+          }
+        }
       }
     }
   }
