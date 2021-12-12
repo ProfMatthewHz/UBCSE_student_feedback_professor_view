@@ -37,10 +37,11 @@ $stmt->bind_result($eval_id);
 $stmt->store_result();
 if (!$stmt->fetch()) {
 	unset($eval_id);
+	$student_scores=array();
+} else {
+	// Get any existing scores
+	$student_scores=getEvalScores($con, $eval_id);
 }
-
-// Get scores (or initialize them to -1)
-$student_scores=getEvalScores($con, $eval_id);
 
 //When submit button is pressed
 if ( !empty($_POST) && isset($_POST)) {
