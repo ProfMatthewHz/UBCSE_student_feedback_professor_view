@@ -82,22 +82,7 @@ if ( !empty($_POST) && isset($_POST)) {
 			// Insert a new score if it had not existed
 			insertNewScore($con, $eval_id, $topic_id, $score_id);
 		}
-		// This last selection statement is a hack to allow using both score tables
-		if (count($student_reviews) < 5) {
-			array_push($student_reviews, $_SESSION['scores'][$score_id]);
-		}
 	}
-	// This loop is a hack to allow using both score tables with rubrics with fewer criteria
-	while (count($student_reviews) < 5) {
-		array_push($student_reviews, -1);
-	}
-	// Now insert/update data into the older table
-	if ($insert_review) {
-		insertNewReview($con, $eval_id, $student_reviews);
-	 } else {
-		updateExistingReview($con, $eval_id, $student_reviews);
-	 }
-
 	//move to next student in group
 	if ($_SESSION['group_member_number'] < ($num_of_group_members - 1)) {
 		$_SESSION['group_member_number'] += 1;
