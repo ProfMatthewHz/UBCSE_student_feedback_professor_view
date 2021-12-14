@@ -12,7 +12,7 @@
   }
 
   function getReviewScores($db_connection, $review_id, $topics, $answers) {
-    $query_str = 'SELECT topic_id, score_id FROM scores2 INNER JOIN evals ON scores2.evals_id=evals.id WHERE evals.reviewers_id=?';
+    $query_str = 'SELECT topic_id, score_id FROM scores2 INNER JOIN evals ON scores2.eval_id=evals.id WHERE evals.reviewers_id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
