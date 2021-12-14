@@ -16,7 +16,7 @@
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
-    $stmt->bind_param('ii', $review_id, $topic_id);
+    $stmt->bind_param('i', $review_id);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
