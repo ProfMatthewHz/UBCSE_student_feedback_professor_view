@@ -12,7 +12,7 @@ session_start();
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
-require_once "../teamPresentation.php";
+require_once "../termPresentation.php";
 
 // set timezone
 date_default_timezone_set('America/New_York');
