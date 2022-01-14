@@ -52,7 +52,7 @@ function emit_term_accordian($counter, $name, $course_list) {
   $counterTwo = 0;
   foreach ($course_list as $id => $course) {
     $widgetId = $counter."part".$counterTwo;
-    emit_course_accordian($widgetId, $counterTwo, $course);
+    emit_course_accordian($widgetId, $course);
     $counterTwo++;
   }
   echo

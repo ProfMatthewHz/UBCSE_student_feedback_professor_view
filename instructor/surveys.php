@@ -40,6 +40,10 @@ while ($row = $result1->fetch_assoc()) {
   $tempSurvey['year'] = $row['year'];
   $tempSurvey['code'] = $row['code'];
   $tempSurvey['id'] = $row['id'];
+  // Create the arrays we will need for later
+  $tempSurvey['upcoming'] = array();
+  $tempSurvey['active'] = array();
+  $tempSurvey['expired'] = array();
   $term_name = $tempSurvey['year']." ".$tempSurvey['semester'];
   $term_courses = null;
   if (array_key_exists($term_name, $terms)) {
@@ -57,11 +61,6 @@ $today = new DateTime();
 // Now get data on all of the surveys in each of those courses
 foreach ($terms as $name => $term_courses) {
   foreach($term_courses as $id => $course) {
-    // store information about surveys as three arrays for each type
-    $course['upcoming'] = array();
-    $course['active'] = array();
-    $course['expired'] = array();
-
     // Get the course's surveys in reverse chronological order
     $stmt2 = $con->prepare('SELECT name, start_date, expiration_date, rubric_id, id FROM surveys WHERE course_id=? ORDER BY start_date DESC, expiration_date DESC');
     $stmt2->bind_param('i', $id);
