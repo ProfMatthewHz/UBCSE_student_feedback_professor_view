@@ -1,5 +1,5 @@
 <?php
-function emit_course_accordian($widgetId, $course_info) {
+function emit_course($widgetId, $course_info) {
   echo 
 ' <div class="accordion ms-1" id="'.$widgetId.'">
     <div class="accordion-item shadow">
@@ -12,9 +12,9 @@ function emit_course_accordian($widgetId, $course_info) {
           if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) != 0) {
             echo
             '<div class="row justify-content-evenly">
-              <div class="col">Survey Name</div>
-              <div class="col-6">Dates Available</div>
-              <div class="col">Actions</div>
+              <div class="col"><b>Survey Name</b></div>
+              <div class="col-6"><b>Dates Available</b></div>
+              <div class="col"><b>Actions</b></div>
             </div>';
           }
           foreach ($course_info['upcoming'] as $survey) {
@@ -48,7 +48,7 @@ function emit_course_accordian($widgetId, $course_info) {
   </div>';
 }
 
-function emit_term_accordian($counter, $name, $course_list) {
+function emit_term($counter, $name, $course_list) {
   echo
 '   <div class="accordion-item shadow">
       <h2 class="accordion-header" id="header'.$counter.'">
@@ -60,7 +60,7 @@ function emit_term_accordian($counter, $name, $course_list) {
   $counterTwo = 0;
   foreach ($course_list as $id => $course) {
     $widgetId = $counter."part".$counterTwo;
-    emit_course_accordian($widgetId, $course);
+    emit_course($widgetId, $course);
     $counterTwo++;
   }
   echo

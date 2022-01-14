@@ -143,7 +143,7 @@ foreach ($terms as $name => &$term_courses) {
         <?php
         $counter = 0;
         foreach ($terms as $name => $course_list) {
-          emit_term_accordian($counter,$name, $course_list);
+          emit_term($counter,$name, $course_list);
           $counter++;
         }
         ?>
