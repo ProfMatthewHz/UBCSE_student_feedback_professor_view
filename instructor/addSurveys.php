@@ -297,110 +297,99 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
   $rubric_id = $rubrics[0]['id'];
 }
 ?>
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
-    <title>Create New Survey :: UB CSE Peer Evaluation System</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <title>CSE Evaluation Survey System - Instuctor Overview</title>
 </head>
-<body>
-<header>
-    <div class="w3-container">
-          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
-          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
+<body class="text-center">
+<!-- Header -->
+<main>
+  <div class="container-fluid">
+    <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
+      <div class="col-sm-auto text-center">
+        <h4 class="text-white display-1">UB CSE Evalution System<br>Create New Survey</h4>
+      </div>
     </div>
-    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
-      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
-      <a href="courses.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-white">Courses</a>
-      <form action="logout.php" method ="post">
-        <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
-        <input class="w3-bar-item w3-button w3-mobile w3-right w3-border-right w3-border-left w3-border-white" type="submit" value="Logout"></form>
-      <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
-    </div>
-</header>
-<div class="main-content">
-  <div class="w3-container w3-center">
-    <h2>Create New Survey</h2>
-  </div>
+    <form id = "add-survey" method ="post">
+    <div class="form-inline justify-content-center align-items-center">
+      <div class="form-floating mb-3">
+          <select class="form-select <?php if(isset($errorMsg["course-id"])) {echo "is-invalid ";} ?>" id="course-id" name="course-id">
+            <option value="-1" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
+            <?php
+            foreach ($courses as $course) {
+              if ($course_id == $course['id']) {
+                echo '<option value="' . $course['id'] . '" selected>' . htmlspecialchars($course['code']) . ' ' . htmlspecialchars($course['name']) . ' - ' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</option>';
+              } else {
+                echo '<option value="' . $course['id'] . '" >' . htmlspecialchars($course['code']) . ' ' . htmlspecialchars($course['name']) . ' - ' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</option>';
+              }
+            }
+            ?>
+          </select>
+          <label for="course-id"><?php if(isset($errorMsg["course-id"])) {echo $errorMsg["course-id"]; } else { echo "Course:";} ?></label>
+      </div>
+      <div class="form-floating mb-3">
+          <input type="text" id="survey-name" class="form-control" name="survey-name" required <?php if ($survey_name) {echo 'value="' . htmlspecialchars($survey_name) . '"';} ?>></input>
+          <label for="survey-name">Survey Name:</label>
+      </div>
+      <div class="form-floating mb-3">
+          <input type="date" id="start-date" name="start-date" class="form-control <?php if(isset($errorMsg["start-date"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_date) {echo htmlspecialchars($start_date);} else {echo date("Y-m-d");} ?>"></input>
+          <label for="start-date"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"]; } else { echo "Start Date:";} ?></label>
+      </div>
+      <div class="form-floating mb-3">
+          <input type="time" id="start-time" name="start-time" class="form-control <?php if(isset($errorMsg["start-time"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_time) {echo htmlspecialchars($start_time);} else {echo "00:00";} ?>"></input>
+          <label for="start-time"><?php if(isset($errorMsg["start-time"])) {echo $errorMsg["start-time"]; } else { echo "Start Time:";} ?></label>
+      </div>
+      <div class="form-floating mb-3">
+          <input type="date" id="end-date" name="end-date" class="form-control <?php if(isset($errorMsg["end-date"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_date) {echo htmlspecialchars($start_date);} else {echo date("Y-m-d");} ?>"></input>
+          <label for="end-date"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"]; } else { echo "End Date:";} ?></label>
+      </div>
+      <div class="form-floating mb-3">
+          <input type="time" id="end-time" name="end-time" class="form-control <?php if(isset($errorMsg["end-time"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_time) {echo htmlspecialchars($start_time);} else {echo "00:00";} ?>"></input>
+          <label for="end-time"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"]; } else { echo "End Time:";} ?></label>
+      </div>
+      <div class="form-floating mb-3">
+          <select class="form-select <?php if(isset($errorMsg["rubric-id"])) {echo "is-invalid ";} ?>" id="rubric-id" name="rubric-id">
+            <option value="-1" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Rubric</option>
+            <?php
+            foreach ($rubrics as $rubric) {
+              if ($rubric_id == $rubric['id']) {
+                echo '<option value="' . $rubric['id'] . '" selected>' . htmlspecialchars($rubric['description']) . '</option>';
+              } else {
+                echo '<option value="' . $rubric['id'] . '" >' . htmlspecialchars($rubric['description']) . '</option>';
+              }
+            }
+            ?>
+          </select>
+          <label for="rubric-id"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"]; } else { echo "Rubric:";} ?></label>
+      </div>
+      <div class="form-floating mb-3">
+          <select class="form-select <?php if(isset($errorMsg["pairing-mode"])) {echo "is-invalid ";} ?>" id="pairing-mode" name="pairing-mode">
+            <option value="-1" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Pairing Mode</option>
+            <option value="1" <?php if (!$pairing_mode) {echo 'selected';} ?>>Raw</option>
+            <option value="2" <?php if ($pairing_mode == 2) {echo 'selected';} ?>>Team</option>
+            <option value="3" <?php if ($pairing_mode == 3) {echo 'selected';} ?>>Manager + Team</option>
+          </select>
+          <label for="pairing-mode"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"]; } else { echo "Pairing Mode:";} ?></label>
+      </div>
 
+      <p style="font-size:small;color:DarkGrey">Each row of file should contain email addresses of one pair or one team. PMs must be last email address in row.</p>
+      <div class="form-floating mb-3">
+        <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
+        <label for="pairing-file"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>
+      </div>
 
-<form action="addSurveys.php" method ="post" enctype="multipart/form-data" style="width:60%" class="w3-container w3-mobile">
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["course-id"])) {echo $errorMsg["course-id"];} ?></span><br />
-    <label for="course-id">Course:</label><br>
-    <select id="course-id" class="w3-select w3-border" name="course-id">
-        <option value="-1" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
-        <?php
-        foreach ($courses as $course) {
-          if ($course_id == $course['id'])
-          {
-            echo '<option value="' . $course['id'] . '" selected>' . htmlspecialchars($course['code']) . ' ' . htmlspecialchars($course['name']) . ' - ' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</option>';
-          }
-          else
-          {
-            echo '<option value="' . $course['id'] . '" >' . htmlspecialchars($course['code']) . ' ' . htmlspecialchars($course['name']) . ' - ' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</option>';
-          }
-        }
-        ?>
-    </select><br><br>
+      <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
 
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"];} ?></span><br />
-    <label for="name">Survey Name:</label><br>
-    <input type="text" id="survey-name" class="w3-input w3-border" name="survey-name" required <?php if ($survey_name) {echo 'value="' . htmlspecialchars($survey_name) . '"';} ?>><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"];} ?></span><br />
-    <label for="start-date">Start Date:</label><br>
-    <input type="date" id="start-date" class="w3-input w3-border" name="start-date" required <?php if ($start_date) {echo 'value="' . htmlspecialchars($start_date) . '"';} else { echo 'value="' .date("Y-m-d"). '"'; } ?>><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["start-time"])) {echo $errorMsg["start-time"];} ?></span><br />
-    <label for="start-time">Start time:</label><br>
-    <input type="time" id="start-time" class="w3-input w3-border" name="start-time" required <?php if ($start_time) {echo 'value="' . htmlspecialchars($start_time) . '"';} else { echo 'value="00:00"'; } ?>><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"];} ?></span><br />
-    <label for="end-date">End Date:</label><br>
-    <input type="date" id="end-date" class="w3-input w3-border" name="end-date" required <?php if ($end_date) {echo 'value="' . htmlspecialchars($end_date) . '"';} ?>><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"];} ?></span><br />
-    <label for="end-time">End time:</label><br>
-    <input type="time" id="end-time" class="w3-input w3-border" name="end-time" required <?php if ($end_time) {echo 'value="' . htmlspecialchars($end_time) . '"';} else { echo 'value="23:59"'; } ?>><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"];} ?></span><br />
-    <label for="rubric-id">Rubric:</label><br>
-    <select id="rubric-id" class="w3-select w3-border" name="rubric-id">
-        <option value="-1" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Rubric</option>
-        <?php
-        foreach ($rubrics as $rubric) {
-          if ($rubric_id == $rubric['id'])
-          {
-            echo '<option value="' . $rubric['id'] . '" selected>' . htmlspecialchars($rubric['description']) . '</option>';
-          }
-          else
-          {
-            echo '<option value="' . $rubric['id'] . '" >' . htmlspecialchars($rubric['description']) . '</option>';
-          }
-        }
-        ?>
-    </select><br><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"];} ?></span><br />
-    <label for="pairing-mode">Pairing File Mode:</label><br>
-    <select id="pairing-mode" class="w3-select w3-border" name="pairing-mode">
-        <option value="1" <?php if (!$pairing_mode) {echo 'selected';} ?>>Raw</option>
-        <option value="2" <?php if ($pairing_mode == 2) {echo 'selected';} ?>>Team</option>
-        <option value="3" <?php if ($pairing_mode == 3) {echo 'selected';} ?>>Manager + Team</option>
-    </select><br><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"];} ?></span><br />
-    <label for="pairing-file">Review Assignments (CSV File):</label><br>
-    <span style="font-size:small;color:DarkGrey">Each row of file should contain email addresses of one pair or one team. PMs must be last email address in row.</span>
-    <input type="file" id="pairing-file" class="w3-input w3-border" name="pairing-file" required><br><br />
-
-    <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
-
-    <input type="submit" class="w3-button w3-green" value="Create Survey">
+      <input type="submit" class="w3-button w3-green" value="Create Survey">
+          </div>
 </form>
 </div>
+          </main>
 </body>
 </html>
