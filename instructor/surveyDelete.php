@@ -144,46 +144,40 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 }
 
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
-    <title>Delete Survey :: UB CSE Peer Evaluation System</title>
-</head>
-<body>
-<header>
-    <div class="w3-container">
-          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
-          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
-    </div>
-    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
-      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
-      <a href="courses.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-white">Courses</a>
-      <form action="logout.php" method ="post"><input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" /><input class="w3-bar-item w3-button w3-mobile w3-right w3-border-right w3-border-left w3-border-white" type="submit" value="Logout"></form>
-      <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
-    </div>
-</header>
-<div class="main-content">
-    <div class="w3-container w3-center">
-        <h2>Delete Survey</h2>
-    </div>
-    <br />
+<!doctype html>
+<html lang="en">
 
-      <form action="surveyDelete.php?survey=<?php echo $sid; ?>" method ="post" class="w3-container">  
-        <span class="w3-card w3-red"><?php if(isset($errorMsg["agreement"])) {echo $errorMsg["agreement"];} ?></span><br />
-        <input type="checkbox" id="agreement" name="agreement" value="1">
-        <label for="agreement">I understand that deleting this survey will delete all scores associated with this survey.</label><br /><br />
-        
-        <input type="hidden" name="survey" value="<?php echo $sid; ?>" />
-        
-        <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
-        
-        <input type="submit" class="w3-button w3-red" value="Delete Survey" />
-      </form>
-    <br />
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <title>CSE Evaluation Survey System - Delete Survey</title>
+</head>
+<body class="text-center">
+<!-- Header -->
+<main>
+  <div class="container-fluid">
+    <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
+      <div class="col-sm-auto text-center">
+        <h4 class="text-white display-1">UB CSE Evalution System<br>Delete Existing Survey</h4>
+      </div>
+    </div>
+    <form class="mt-5 mx-4" action="surveyDelete.php?survey=<?php echo $sid; ?>" id="delete-survey" method="post">
+      <div class="form-inline justify-content-center align-items-center">
+        <p class="text-danger fs-3"><?php if(isset($errorMsg["agreement"])) {echo $errorMsg["agreement"];} ?></p>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="agreement" name="agreement" value="1">
+          <label class="form-check-label" for="agreement">
+            I understand that deleting this survey will delete all scores associated with this survey.</label>
+        </div>
+        <input type="hidden" name="survey" value="<?php echo $sid; ?>"></input>
+        <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
+        <input type="submit" class="btn btn-danger" value="Delete Survey"></input>
 </div>
+        </form>
+        </div>
+          </main>
 </body>
-</html> 
+</html>
+

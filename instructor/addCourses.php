@@ -186,71 +186,63 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 }
 ?>
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
-    <title>Add New Course :: UB CSE Peer Evaluation System</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <title>CSE Evaluation Survey System - Add Course</title>
 </head>
-<body>
-  <header>
-    <div class="w3-container">
-          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
-          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
+<body class="text-center">
+<!-- Header -->
+<main>
+  <div class="container-fluid">
+    <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
+      <div class="col-sm-auto text-center">
+        <h4 class="text-white display-1">UB CSE Evalution System<br>Create New Course</h4>
+      </div>
     </div>
-    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
-      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
-      <a href="courses.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-white">Courses</a>
-      <form action="logout.php" method ="post"><input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
-        <input class="w3-bar-item w3-button w3-mobile w3-right w3-border-right w3-border-left w3-border-white" type="submit" value="Logout"></form>
-      <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
-    </div>
-  </header>
-<div class="main-content">
+    <form class="mt-5 mx-4" id="add-course" method="post">
+      <p class="text-danger fs-3"><?php if(isset($errorMsg["duplicate"])) {echo $errorMsg["duplicate"];} ?></p>
+      <div class="form-inline justify-content-center align-items-center">
+        <div class="form-floating mb-3">
+          <input type="text" id="course-code" class="form-control <?php if(isset($errorMsg["course-code"])) {echo "is-invalid ";} ?>" name="course-code" required placeholder="e.g, CSE442" value="<?php if ($course_code) {echo htmlspecialchars($course_code);} ?>"></input>
+          <label for="course-code">Course Code:</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="text" id="course-name" class="form-control <?php if(isset($errorMsg["course-name"])) {echo "is-invalid ";} ?>" name="course-name" required placeholder="e.g, Software Engineering Concepts" value="<?php if ($course_name) {echo htmlspecialchars($course_name);} ?>"></input>
+          <label for="course-name">Course Name:</label>
+        </div>
+        <div class="form-floating mb-3">
+          <select class="form-select <?php if(isset($errorMsg["semester"])) {echo "is-invalid ";} ?>" id="semester" name="semester">
+            <option value="" disabled <?php if (!$semester) {echo 'selected';} ?>>Choose semester:</option>
+            <option value="winter" <?php if ($semester == 1) {echo 'selected';} ?>>Winter</option>
+            <option value="spring" <?php if ($semester == 2) {echo 'selected';} ?>>Spring</option>
+            <option value="summer" <?php if ($semester == 3) {echo 'selected';} ?>>Summer</option>
+            <option value="fall" <?php if ($semester == 4) {echo 'selected';} ?>>Fall</option>
+          </select>
+          <label for="semester"><?php if(isset($errorMsg["semester"])) {echo $errorMsg["semester"]; } else { echo "Semester:";} ?></label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="number" id="course-year" class="form-control <?php if(isset($errorMsg["course-year"])) {echo "is-invalid ";} ?>" name="course-year" required placeholder="e.g, 2020" value="<?php if ($course_year) {echo htmlspecialchars($course_year);} ?>"></input>
+          <label for="course-year">Course Year:</label>
+        </div>
 
-
-    <div class="w3-container w3-center">
-        <h2>Add New Course</h2>
-    </div>
-
-<span class="w3-card w3-red"><?php if(isset($errorMsg["duplicate"])) {echo $errorMsg["duplicate"];} ?></span>
-<form action="addCourses.php" method ="post" enctype="multipart/form-data" style="width:60%" class="w3-container w3-mobile">
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["course-code"])) {echo $errorMsg["course-code"];} ?></span><br />
-    <label for="course-code">Course Code:</label><br>
-    <input type="text" id="course-code" class="w3-input w3-border" name="course-code" placeholder="e.g, CSE442" <?php if ($course_code) {echo 'value="' . htmlspecialchars($course_code) . '"';} ?> required><br>
-
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["course-name"])) {echo $errorMsg["course-name"];} ?></span><br />
-    <label for="course-name">Course Name:</label><br>
-    <input type="text" id="course-name" class="w3-input w3-border" name="course-name" placeholder="e.g, Software Engineering Concepts" <?php if ($course_name) {echo 'value="' . htmlspecialchars($course_name) . '"';} ?> required><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["semester"])) {echo $errorMsg["semester"];} ?></span><br />
-    <label for="semester">Course Semester:</label><br>
-    <select class="w3-select w3-border" name="semester">
-        <option value="" disabled <?php if (!$semester) {echo 'selected';} ?>>Choose semester:</option>
-        <option value="fall" <?php if ($semester == 4) {echo 'selected';} ?>>Fall</option>
-        <option value="winter" <?php if ($semester == 1) {echo 'selected';} ?>>Winter</option>
-        <option value="spring" <?php if ($semester == 2) {echo 'selected';} ?>>Spring</option>
-        <option value="summer" <?php if ($semester == 3) {echo 'selected';} ?>>Summer</option>
-    </select><br><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["course-year"])) {echo $errorMsg["course-year"];} ?></span><br />
-    <label for="year">Course Year:</label><br>
-    <input type="number" id="year" class="w3-input w3-border" name="course-year" placeholder="e.g, 2020" <?php if ($course_year) {echo 'value="' . htmlspecialchars($course_year) . '"';} ?> required><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"];} ?></span><br />
-    <label for="roster-file">Roster (CSV File):</label><br>
-    <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
-    <input type="file" id="roster-file" class="w3-input w3-border" name="roster-file" required><br><br>
+        <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
+        <div class="form-floating mt-0 mb-3">
+          <input type="file" id="roster-file" class="form-control <?php if(isset($errorMsg["roster-file"])) {echo "is-invalid ";} ?>" name="roster-file" required></input>
+          <label for="roster-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"]; } else { echo "Roster (CSV File):";} ?></label>
+        </div>
 
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
 
-    <input class="w3-button w3-green" type="submit" value="Add Course" />
+    <input class="btn btn-success" type="submit" value="Create Course" />
+    </div>
 </form>
 </div>
-
+          </main>
 </body>
 </html>
