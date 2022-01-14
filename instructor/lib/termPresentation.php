@@ -8,36 +8,39 @@ function emit_course_accordian($widgetId, $course_info) {
         </button>
       </h2>
       <div id="collapse'.$widgetId.'" class="accordion-collapse collapse" aria-labelledby="header'.$widgetId.'">
-        <div class="accordion-body"><div class="container">
-        <div class="row justify-content-evenly">
-          <div class="col">Survey Name</div>
-          <div class="col-6">Dates Available</div>
-          <div class="col">Actions</div>
-        </div>';
-            foreach ($course_info['upcoming'] as $survey) {
-              echo '<div class="row justify-content-evenly">
-                      <div class="col">'.$survey['name'].'</div>
-                      <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
-                      <div class="col"><a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
-                    </div>';
-            }
-            foreach ($course_info['active'] as $survey) {
-              echo '<div class="row justify-content-evenly">
-                      <div class="col">'.$survey['name'].'</div>
-                      <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
-                      <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
-                    </div>';
-            }
-            foreach ($course_info['expired'] as $survey) {
-              echo '<div class="row justify-content-evenly">
-                      <div class="col">'.$survey['name'].'</div>
-                      <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
-                      <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
-                    </div>';
-            }
-            if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) == 0) {
-              echo '<div class="container"><div class="row justify-content-center"><p><i>No surveys created yet</i></p></div></div>';
-            }
+        <div class="accordion-body"><div class="container">';
+          if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) != 0) {
+            echo
+            '<div class="row justify-content-evenly">
+              <div class="col">Survey Name</div>
+              <div class="col-6">Dates Available</div>
+              <div class="col">Actions</div>
+            </div>';
+          }
+          foreach ($course_info['upcoming'] as $survey) {
+            echo '<div class="row justify-content-evenly">
+                    <div class="col">'.$survey['name'].'</div>
+                    <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                    <div class="col"><a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
+                  </div>';
+          }
+          foreach ($course_info['active'] as $survey) {
+            echo '<div class="row justify-content-evenly">
+                    <div class="col">'.$survey['name'].'</div>
+                    <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                    <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
+                  </div>';
+          }
+          foreach ($course_info['expired'] as $survey) {
+            echo '<div class="row justify-content-evenly">
+                    <div class="col">'.$survey['name'].'</div>
+                    <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                    <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
+                  </div>';
+          }
+          if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) == 0) {
+            echo '<div class="container"><div class="row justify-content-center"><p><i>No surveys created yet</i></p></div></div>';
+          }
   echo
   '     </div></div>
       </div>
