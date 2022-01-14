@@ -15,24 +15,24 @@ function emit_course_accordian($widgetId, $course_info) {
           <div class="col-auto">Actions</div>
         </div>';
             foreach ($course_info['upcoming'] as $survey) {
-              echo '<div class="row justify-content-evenly">
-                      <div class="col-auto">'.$survey['name'].'</div>
-                      <div class="col-auto">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
-                      <div class="col-auto"><a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
+              echo '<div class="row">
+                      <div class="col">'.$survey['name'].'</div>
+                      <div class="col">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                      <div class="col"><a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                     </div>';
             }
             foreach ($course_info['active'] as $survey) {
-              echo '<div class="row justify-content-evenly">
-                      <div class="col-auto">'.$survey['name'].'</div>
-                      <div class="col-auto">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
-                      <div class="col-auto"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
+              echo '<div class="row">
+                      <div class="col">'.$survey['name'].'</div>
+                      <div class="col">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                      <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                     </div>';
             }
             foreach ($course_info['expired'] as $survey) {
-              echo '<div class="row justify-content-evenly">
-                      <div class="col-auto">'.$survey['name'].'</div>
-                      <div class="col-auto">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
-                      <div class="col-auto"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
+              echo '<div class="row">
+                      <div class="col">'.$survey['name'].'</div>
+                      <div class="col">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                      <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                     </div>';
             }
             if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) == 0) {
