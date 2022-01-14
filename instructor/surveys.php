@@ -24,6 +24,11 @@ $con = connectToDatabase();
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
+// Find out the term that we are currently in
+$month = idate('m');
+$term = MONTH_MAP_SEMESTER[$month];
+$year = idate('Y');
+
 // store information about courses based on the terms. The value for each term will be a map of course ids to courses
 $terms = array();
 
@@ -40,6 +45,8 @@ while ($row = $result1->fetch_assoc()) {
   $tempSurvey['year'] = $row['year'];
   $tempSurvey['code'] = $row['code'];
   $tempSurvey['id'] = $row['id'];
+  // If this course is current or in the future, we can create new surveys for it
+  $tempSurvey['mutable'] = ($tempSurvey['year'] >= $year) && ($row['semester'] >= $term);
   // Create the arrays we will need for later
   $tempSurvey['upcoming'] = array();
   $tempSurvey['active'] = array();
@@ -135,7 +142,7 @@ foreach ($terms as $name => &$term_courses) {
     </div>
     <div class="row justify-content-md-center mt-5 mx-4">
       <div class="col-auto">
-        <a href="addCourses.php" class="btn btn-success">+ Add Class</a>
+        <a href="addCourses.php" class="btn btn-success fs-4">+ Add Class</a>
       </div>
     </div>
     <div class="row justify-content-md-center mt-5 mx-4">

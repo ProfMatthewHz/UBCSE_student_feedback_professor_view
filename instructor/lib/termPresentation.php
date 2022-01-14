@@ -39,7 +39,10 @@ function emit_course($widgetId, $course_info) {
                   </div>';
           }
           if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) == 0) {
-            echo '<div class="container"><div class="row justify-content-center"><p><i>No surveys created yet</i></p></div></div>';
+            echo '<div class="row justify-content-center"><p><i>No surveys created yet</i></p></div>';
+          }
+          if ($course_info['mutable']) {
+            echo '<div class="row justify-content-center"><div class="col-auto"><a href="addSurveys.php" class="btn btn-outline-success">+ Add Survey</a></div></div>';
           }
   echo
   '     </div></div>
@@ -52,7 +55,7 @@ function emit_term($counter, $name, $course_list) {
   echo
 '   <div class="accordion-item shadow">
       <h2 class="accordion-header" id="header'.$counter.'">
-        <button class="accordion-button f-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$counter.'" aria-expanded="true" aria-controls="collapse'.$counter.'">'.$name.'
+        <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$counter.'" aria-expanded="true" aria-controls="collapse'.$counter.'">'.$name.'
         </button>
       </h2>
       <div id="collapse'.$counter.'" class="accordion-collapse collapse show" aria-labelledby="header'.$counter.'">
