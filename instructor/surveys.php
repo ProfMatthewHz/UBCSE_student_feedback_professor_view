@@ -134,7 +134,9 @@ foreach ($terms as $name => &$term_courses) {
       </div>
     </div>
     <div class="row justify-content-md-center mt-5 mx-4">
-      <a href="addCourses.php" class="btn btn-success">+ Add Class</a>
+      <div class="col-auto">
+        <a href="addCourses.php" class="btn btn-success">+ Add Class</a>
+      </div>
     </div>
     <div class="row justify-content-md-center mt-5 mx-4">
       <div class="accordion" id="surveys">
