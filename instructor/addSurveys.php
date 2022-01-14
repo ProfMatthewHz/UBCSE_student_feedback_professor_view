@@ -316,7 +316,7 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
         <h4 class="text-white display-1">UB CSE Evalution System<br>Create New Survey</h4>
       </div>
     </div>
-    <form id = "add-survey" method ="post">
+    <form class="mt-5 mx-4" id="add-survey" method="post">
     <div class="form-inline justify-content-center align-items-center">
       <div class="form-floating mb-3">
           <select class="form-select <?php if(isset($errorMsg["course-id"])) {echo "is-invalid ";} ?>" id="course-id" name="course-id">
