@@ -110,7 +110,7 @@ foreach ($terms as $name => &$term_courses) {
         }
       }
     }
-    unset($course)
+    unset($course);
   }
 ?>
 <!doctype html>
