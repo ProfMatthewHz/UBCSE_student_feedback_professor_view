@@ -98,8 +98,8 @@ foreach ($terms as $name => &$term_courses) {
         $e = new DateTime($survey_info['expiration_date']);
         $survey_info['sort_start_date'] = $survey_info['start_date'];
         $survey_info['sort_expiration_date'] = $survey_info['expiration_date'];
-        $survey_info['start_date'] = $s->format('g:i A F j, Y');
-        $survey_info['expiration_date'] = $e->format('g:i A F j, Y');
+        $survey_info['start_date'] = $s->format('M j').' at '. $s->format('g:i A');
+        $survey_info['expiration_date'] = $e->format('M j').' at '. $e->format('g:i A');
 
         if ($today < $s) {
           $course['upcoming'][] = $survey_info;
