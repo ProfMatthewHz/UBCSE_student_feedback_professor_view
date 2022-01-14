@@ -381,7 +381,7 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
       <span style="font-size:small;color:DarkGrey">Each row of file should contain email addresses of one pair or one team. PMs must be last email address in row.</span>
       <div class="form-floating mt-0 mb-3">
         <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
-        <label for="pairing-file"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>
+        <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>
       </div>
 
       <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
