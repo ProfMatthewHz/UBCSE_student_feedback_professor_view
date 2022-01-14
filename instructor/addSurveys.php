@@ -15,7 +15,6 @@ require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
 
-
 // set timezone
 date_default_timezone_set('America/New_York');
 
@@ -29,6 +28,11 @@ $instructor->check_session($con, 0);
 
 // store information about courses as array of array
 $courses = array();
+
+// Find out the term that we are currently in
+$month = idate('m');
+$term = MONTH_MAP_SEMESTER[$month];
+$year = idate('Y');
 
 // get information about the courses
 $stmt = $con->prepare('SELECT id, code, name, semester, year FROM course WHERE instructor_id=? ORDER BY year DESC, semester DESC');
@@ -44,7 +48,9 @@ while ($row = $result->fetch_assoc())
   $course_info['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
   $course_info['year'] = $row['year'];
   $course_info['id'] = $row['id'];
-  array_push($courses, $course_info);
+  if (($course_info['year'] >= $year) && ($course_info['semester'] >= $term)) {
+    $courses[] = $course_info;
+  }
 }
 $stmt->close();
 
