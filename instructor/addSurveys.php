@@ -48,7 +48,7 @@ while ($row = $result->fetch_assoc())
   $course_info['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
   $course_info['year'] = $row['year'];
   $course_info['id'] = $row['id'];
-  if (($course_info['year'] >= $year) && ($course_info['semester'] >= $term)) {
+  if (($course_info['year'] >= $year) && ($row['semester'] >= $term)) {
     $courses[] = $course_info;
   }
 }

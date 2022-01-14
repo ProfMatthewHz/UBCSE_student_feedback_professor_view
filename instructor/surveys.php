@@ -136,8 +136,7 @@ foreach ($terms as $name => &$term_courses) {
   <div class="container-fluid">
     <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
       <div class="col-sm-auto text-center">
-        <h3 class="text-white display-1">UB CSE Evalution System</h3>
-        <p class="text-white lead">Instructor Mode</p>
+        <h4 class="text-white display-1">UB CSE Evalution System<br>Instructor Overview</h4>
       </div>
     </div>
     <div class="row justify-content-md-center mt-5 mx-4">
