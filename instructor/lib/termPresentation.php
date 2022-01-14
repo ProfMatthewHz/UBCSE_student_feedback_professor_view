@@ -8,25 +8,30 @@ function emit_course_accordian($widgetId, $course_info) {
         </button>
       </h2>
       <div id="collapse'.$widgetId.'" class="accordion-collapse collapse" aria-labelledby="header'.$widgetId.'">
-        <div class="accordion-body">';
+        <div class="accordion-body">
+        <div class="container"><div class="row justify-content-evenly">
+          <div class="col-auto">Survey Name</div>
+          <div class="col-auto">Dates Available</div>
+          <div class="col-auto">Actions</div>
+        </div></div>';
             foreach ($course_info['upcoming'] as $survey) {
               echo '<div class="container"><div class="row justify-content-evenly">
-                      <div class="col-2">'.$survey['name'].'</div>
-                      <div class="col-5">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                      <div class="col-auto">'.$survey['name'].'</div>
+                      <div class="col-auto">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
                       <div class="col-auto"><a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                     </div></div>';
             }
             foreach ($course_info['active'] as $survey) {
               echo '<div class="container"><div class="row justify-content-evenly">
-                      <div class="col-2">'.$survey['name'].'</div>
-                      <div class="col-5">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                      <div class="col-auto">'.$survey['name'].'</div>
+                      <div class="col-auto">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
                       <div class="col-auto"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                     </div></div>';
             }
             foreach ($course_info['expired'] as $survey) {
               echo '<div class="container"><div class="row justify-content-evenly">
-                      <div class="col-2">'.$survey['name'].'</div>
-                      <div class="col-5">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                      <div class="col-auto">'.$survey['name'].'</div>
+                      <div class="col-auto">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
                       <div class="col-auto"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                     </div></div>';
             }
