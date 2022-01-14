@@ -57,8 +57,6 @@ CREATE TABLE `instructors` (
   `name` TEXT NOT NULL,
   `email` VARCHAR(20) NOT NULL,
   `init_auth_id` VARCHAR(255),
-  `otp` TEXT,
-  `otp_expiration` INT,
   `session_token` VARCHAR(255),
   `session_expiration` INT,
   `csrf_token` VARCHAR(255),

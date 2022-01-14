@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $hashed_access_code = password_hash($access_code, PASSWORD_BCRYPT);
 
     // generate the expiration time
-    $otp_expiration = time() + OTP_EXPIRATION_SECONDS;
+    $otp_expiration = time() ;// No longer exists+ OTP_EXPIRATION_SECONDS;
 
     // generate the inital authorization cookie
     $initial_auth_cookie = random_bytes(TOKEN_SIZE);

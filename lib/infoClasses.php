@@ -10,14 +10,11 @@ class InstructorInfo {
   public $id = NULL;
   public $name = NULL;
   public $email = NULL;
-  public $otp = NULL;
-  public $otp_expiration = NULL;
   public $session_expiration = NULL;
   public $csrf_token = NULL;
 
   // flag data members
   public $init_auth_status = 1;
-  public $otp_status = 1;
   public $session_status = 2;
 
   // function members
@@ -46,7 +43,7 @@ class InstructorInfo {
     $init_auth = hash_pbkdf2("sha256", $init_auth, SESSIONS_SALT, PBKDF2_ITERS);
 
     // query the database for the associated instructor
-    $stmt = $db_connection->prepare('SELECT id, email, otp, otp_expiration FROM instructors WHERE init_auth_id=?');
+    $stmt = $db_connection->prepare('SELECT id, email FROM instructors WHERE init_auth_id=?');
     $stmt->bind_param('s', $init_auth);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -64,15 +61,6 @@ class InstructorInfo {
     // populate the necessary data into the object
     $this->id = $data[0]['id'];
     $this->email = $data[0]['email'];
-    $this->otp = $data[0]['otp'];
-    $this->otp_expiration = $data[0]['otp_expiration'];
-
-    // check the otp expiration status
-    if (time() < $this->otp_expiration) {
-      $this->otp_status = 0;
-    } else {
-      $this->otp_status = 1;
-    }
   }
 
   // checks the value of the session cookie
