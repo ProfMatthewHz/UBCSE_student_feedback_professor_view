@@ -134,7 +134,7 @@ if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
 					$end_str = '">';
 					foreach ($_SESSION['answers'][$topic_id] as $score_id => $response) {
 						$score_num = $_SESSION['scores'][$score_id];
-						echo '<div class="col-3 ';
+						echo '<div class="col ';
 						echo $end_str;
 						echo '<input type="radio" class="btn-check" name="Q'.$topic_id.'" id="Q'.$topic_id.$score_id.'" autocomplete="off" required value="'.$score_id.'"';
 						if (array_key_exists($topic_id, $student_scores) && $student_scores[$topic_id] == $score_id) {
