@@ -59,7 +59,7 @@ while ($row = $result1->fetch_assoc()) {
 $today = new DateTime();
 
 // Now get data on all of the surveys in each of those courses
-foreach ($terms as $name => $term_courses) {
+foreach ($terms as $name => &$term_courses) {
   foreach($term_courses as $id => &$course) {
     // Get the course's surveys in reverse chronological order
     $stmt2 = $con->prepare('SELECT name, start_date, expiration_date, rubric_id, id FROM surveys WHERE course_id=? ORDER BY start_date DESC, expiration_date DESC');
@@ -110,7 +110,7 @@ foreach ($terms as $name => $term_courses) {
         }
       }
     }
-    unset($course);
+    unset($course)
   }
 ?>
 <!doctype html>
