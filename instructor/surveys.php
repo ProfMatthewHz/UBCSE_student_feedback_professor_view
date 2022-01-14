@@ -55,22 +55,22 @@ while ($row = $result1->fetch_assoc()) {
 $today = new DateTime();
 
 // Now get data on all of the surveys in each of those courses
-foreach ($terms as $term_courses) {
-  foreach($term_courses as $course) {
+foreach ($terms as $name => $term_courses) {
+  foreach($term_courses as $id => $course) {
     // store information about surveys as three arrays for each type
     $course['upcoming'] = array();
     $course['active'] = array();
     $course['expired'] = array();
 
     // Get the course's surveys in reverse chronological order
-    $stmt2 = $con->prepare('SELECT course_id, name, start_date, expiration_date, rubric_id, id FROM surveys WHERE course_id=? ORDER BY start_date DESC, expiration_date DESC');
-    $stmt2->bind_param('i', $course['id']);
+    $stmt2 = $con->prepare('SELECT name, start_date, expiration_date, rubric_id, id FROM surveys WHERE course_id=? ORDER BY start_date DESC, expiration_date DESC');
+    $stmt2->bind_param('i', $id);
     $stmt2->execute();
     $result2 = $stmt2->get_result();
 
     while ($row = $result2->fetch_assoc()) {
         $survey_info = array();
-        $survey_info['course_id'] = $row['course_id'];
+        $survey_info['course_id'] = $id;
         $survey_info['name'] = $row['name'];
         $survey_info['start_date'] = $row['start_date'];
         $survey_info['expiration_date'] = $row['expiration_date'];

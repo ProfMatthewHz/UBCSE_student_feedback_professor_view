@@ -43,11 +43,11 @@ function emit_course_accordian($course_id, $course_info) {
 function emit_term_accordian($name, $course_list) {
   echo
 '   <div class="accordion-item shadow">
-      <h2 class="accordion-header" id="'.$name.'">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrior" aria-expanded="false" aria-controls="collapsePrior">'.$name.'
+      <h2 class="accordion-header" id="header'.$name.'">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$name.'" aria-expanded="false" aria-controls="collapse'.$name.'">'.$name.'
         </button>
       </h2>
-      <div id="collapsePrior" class="accordion-collapse collapse" aria-labelledby="headerPrior">
+      <div id="collapse'.$name.'" class="accordion-collapse collapse" aria-labelledby="header'.$name.'">
         <div class="accordion-body">';
   foreach ($course_list as $id => $course) {
     emit_course_accordian($id, $course);
