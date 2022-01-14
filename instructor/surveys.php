@@ -46,9 +46,9 @@ while ($row = $result1->fetch_assoc()) {
     $term_courses = $terms[$term_name];
   } else {
     $term_courses = array();
-    $terms[$term_name] = $term_courses;
   }
   $term_courses[$tempSurvey['id']] = $tempSurvey;
+  $terms[$term_name] = $term_courses;
 }
 
 // get today's date

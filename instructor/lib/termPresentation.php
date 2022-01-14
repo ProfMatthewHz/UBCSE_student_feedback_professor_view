@@ -1,13 +1,13 @@
 <?php
-function emit_course_accordian($course_id, $course_info) {
+function emit_course_accordian($widgetId, $course_info) {
   echo 
-' <div class="accordion ms-1" id="'.$course_info["name"].$course_id.'">
+' <div class="accordion ms-1" id="'.$widgetId.'">
     <div class="accordion-item shadow">
-      <h2 class="accordion-header" id="'.$course_info["name"].$course_id.'head">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrior" aria-expanded="false" aria-controls="collapsePrior">'.$course_info["name"].'
+      <h2 class="accordion-header" id="header'.$widgetId.'">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$widgetId.'" aria-expanded="false" aria-controls="collapse'.$widgetId.'">'.$course_info["name"].'
         </button>
       </h2>
-      <div id="collapsePrior" class="accordion-collapse collapse" aria-labelledby="headerPrior">
+      <div id="collapse'.$widgetId.'" class="accordion-collapse collapse" aria-labelledby="header'.$widgetId.'">
         <div class="accordion-body">';
             foreach ($course_info['upcoming'] as $survey) {
               echo '<div class="container"><div class="row justify-content-evenly">
@@ -49,8 +49,11 @@ function emit_term_accordian($counter, $name, $course_list) {
       </h2>
       <div id="collapse'.$counter.'" class="accordion-collapse collapse" aria-labelledby="header'.$counter.'">
         <div class="accordion-body">';
+  $counterTwo = 0;
   foreach ($course_list as $id => $course) {
-    emit_course_accordian($id, $course);
+    $widgetId = $counter."part".$counterTwo;
+    emit_course_accordian($widgetId, $counterTwo, $course);
+    $counterTwo++;
   }
   echo
 '       </div>
