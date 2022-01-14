@@ -10,26 +10,26 @@ function emit_course_accordian($widgetId, $course_info) {
       <div id="collapse'.$widgetId.'" class="accordion-collapse collapse" aria-labelledby="header'.$widgetId.'">
         <div class="accordion-body"><div class="container">
         <div class="row justify-content-evenly">
-          <div class="col-auto">Survey Name</div>
-          <div class="col-auto">Dates Available</div>
-          <div class="col-auto">Actions</div>
+          <div class="col">Survey Name</div>
+          <div class="col">Dates Available</div>
+          <div class="col">Actions</div>
         </div>';
             foreach ($course_info['upcoming'] as $survey) {
-              echo '<div class="row">
+              echo '<div class="row justify-content-evenly">
                       <div class="col">'.$survey['name'].'</div>
                       <div class="col">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
                       <div class="col"><a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                     </div>';
             }
             foreach ($course_info['active'] as $survey) {
-              echo '<div class="row">
+              echo '<div class="row justify-content-evenly">
                       <div class="col">'.$survey['name'].'</div>
                       <div class="col">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
                       <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                     </div>';
             }
             foreach ($course_info['expired'] as $survey) {
-              echo '<div class="row">
+              echo '<div class="row justify-content-evenly">
                       <div class="col">'.$survey['name'].'</div>
                       <div class="col">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
                       <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
