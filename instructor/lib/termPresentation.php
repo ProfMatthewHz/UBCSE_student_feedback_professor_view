@@ -57,4 +57,3 @@ function emit_term_accordian($name, $course_list) {
       </div>
     </div>';
 }
-?>
