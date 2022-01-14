@@ -153,4 +153,3 @@ foreach ($terms as $name => &$term_courses) {
 </main>
 </body>
 </html>
-?>
