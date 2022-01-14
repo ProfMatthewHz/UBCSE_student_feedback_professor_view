@@ -205,7 +205,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h4 class="text-white display-1">UB CSE Evalution System<br>Create New Course</h4>
       </div>
     </div>
-    <form class="mt-5 mx-4" id="add-course" method="post">
+    <form class="mt-5 mx-4" id="add-course" method="post" enctype="multipart/form-data">
       <p class="text-danger fs-3"><?php if(isset($errorMsg["duplicate"])) {echo $errorMsg["duplicate"];} ?></p>
       <div class="form-inline justify-content-center align-items-center">
         <div class="form-floating mb-3">
