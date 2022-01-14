@@ -40,14 +40,14 @@ function emit_course_accordian($course_id, $course_info) {
   </div>';
 }
 
-function emit_term_accordian($name, $course_list) {
+function emit_term_accordian($counter, $name, $course_list) {
   echo
 '   <div class="accordion-item shadow">
-      <h2 class="accordion-header" id="header'.$name.'">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$name.'" aria-expanded="false" aria-controls="collapse'.$name.'">'.$name.'
+      <h2 class="accordion-header" id="header'.$counter.'">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$counter.'" aria-expanded="false" aria-controls="collapse'.$counter.'">'.$name.'
         </button>
       </h2>
-      <div id="collapse'.$name.'" class="accordion-collapse collapse" aria-labelledby="header'.$name.'">
+      <div id="collapse'.$counter.'" class="accordion-collapse collapse" aria-labelledby="header'.$counter.'">
         <div class="accordion-body">';
   foreach ($course_list as $id => $course) {
     emit_course_accordian($id, $course);

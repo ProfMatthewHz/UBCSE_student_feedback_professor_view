@@ -136,8 +136,10 @@ foreach ($terms as $name => $term_courses) {
     <div class="row justify-content-md-center mt-5 mx-4">
       <div class="accordion" id="surveys">
         <?php
+        $counter = 0;
         foreach ($terms as $name => $course_list) {
-          emit_term_accordian($name, $course_list);
+          emit_term_accordian($counter,$name, $course_list);
+          $counter++;
         }
         ?>
       </div>
