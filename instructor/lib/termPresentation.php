@@ -4,7 +4,7 @@ function emit_course_accordian($widgetId, $course_info) {
 ' <div class="accordion ms-1" id="'.$widgetId.'">
     <div class="accordion-item shadow">
       <h2 class="accordion-header" id="header'.$widgetId.'">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$widgetId.'" aria-expanded="false" aria-controls="collapse'.$widgetId.'">'.$course_info["name"].'
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$widgetId.'" aria-expanded="false" aria-controls="collapse'.$widgetId.'">'.$course_info["code"].' '.$course_info["name"].'
         </button>
       </h2>
       <div id="collapse'.$widgetId.'" class="accordion-collapse collapse" aria-labelledby="header'.$widgetId.'">
@@ -55,7 +55,7 @@ function emit_term_accordian($counter, $name, $course_list) {
         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$counter.'" aria-expanded="true" aria-controls="collapse'.$counter.'">'.$name.'
         </button>
       </h2>
-      <div id="collapse'.$counter.'" class="accordion-collapse collapse" aria-labelledby="header'.$counter.'">
+      <div id="collapse'.$counter.'" class="accordion-collapse collapse show" aria-labelledby="header'.$counter.'">
         <div class="accordion-body">';
   $counterTwo = 0;
   foreach ($course_list as $id => $course) {
