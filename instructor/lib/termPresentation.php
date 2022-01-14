@@ -52,7 +52,7 @@ function emit_term($counter, $name, $course_list) {
   echo
 '   <div class="accordion-item shadow">
       <h2 class="accordion-header" id="header'.$counter.'">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$counter.'" aria-expanded="true" aria-controls="collapse'.$counter.'">'.$name.'
+        <button class="accordion-button f-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$counter.'" aria-expanded="true" aria-controls="collapse'.$counter.'">'.$name.'
         </button>
       </h2>
       <div id="collapse'.$counter.'" class="accordion-collapse collapse show" aria-labelledby="header'.$counter.'">
