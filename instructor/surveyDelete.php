@@ -175,7 +175,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         </div>
         <input type="hidden" name="survey" value="<?php echo $sid; ?>"></input>
         <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
-        <input type="submit" class="btn btn-danger" value="Delete Survey"></input>
+        <div class="row justify-content-center align-items-center">
+          <div class="col-sm-auto form-check">
+            <input type="submit" class="btn btn-danger" value="Delete Survey"></input>
+          </div>
+        </div>
       </div>
     </form>
   </div>

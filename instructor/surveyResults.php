@@ -194,7 +194,7 @@ $topics['normalized'] = 'Normalized Score';
           <a class="nav-link" id="avg-normalized-pill" data-bs-toggle="tab" data-bs-target="#avg-normalized" role="tab" aria-controls="avg-normalized" aria-selected="false">Final Averages</a>
         </li>
       </ul>
-      <div id="results-tabs" class="tab-content">
+      <div id="results-tabs" class="tab-content border mt-2">
         <div class="tab-pane active show mt-2" id="raw" role="tabpanel" aria-labelledby="raw-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
