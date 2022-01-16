@@ -209,7 +209,7 @@ $topics['normalized'] = 'Normalized Score';
                   <th scope="col">Reviewee Name (Email)</th>
                   <?php
                   foreach ($topics as $topic_id => $question) {
-                    if ($topic_ic != 'normalized') {
+                    if ($topic_id != 'normalized') {
                       echo '<th scope="col">'.$question.'</th>';
                     }
                   }
@@ -222,7 +222,7 @@ $topics['normalized'] = 'Normalized Score';
                   foreach ($scores[$email] as $reviewer => $scored) {
                     echo '<tr><td>' . htmlspecialchars($reviewer) . '<br>(' . htmlspecialchars($emails[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
                     foreach ($topics as $topic_id => $question) {
-                      if ($topic_ic != 'normalized') {
+                      if ($topic_id != 'normalized') {
                         if (isset($scored[$topic_id])) {
                           echo '<td>'.$scored[$topic_id].'</td>';
                         } else {
