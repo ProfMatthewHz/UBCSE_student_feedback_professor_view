@@ -195,7 +195,7 @@ $topics['normalized'] = 'Normalized Score';
         </li>
       </ul>
       <div id="results-tabs" class="tab-content">
-        <div class="tab-pane active show" id="raw" role="tabpanel" aria-labelledby="raw-pill">
+        <div class="tab-pane active show mt-2" id="raw" role="tabpanel" aria-labelledby="raw-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
               <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw" target="_blank">Download Raw Results</a>
@@ -209,7 +209,9 @@ $topics['normalized'] = 'Normalized Score';
                   <th scope="col">Reviewee Name (Email)</th>
                   <?php
                   foreach ($topics as $topic_id => $question) {
-                    echo '<th scope="col">'.$question.'</th>';
+                    if ($topic_ic != 'normalized') {
+                      echo '<th scope="col">'.$question.'</th>';
+                    }
                   }
                   ?>
                 </tr>
@@ -220,10 +222,12 @@ $topics['normalized'] = 'Normalized Score';
                   foreach ($scores[$email] as $reviewer => $scored) {
                     echo '<tr><td>' . htmlspecialchars($reviewer) . '<br>(' . htmlspecialchars($emails[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
                     foreach ($topics as $topic_id => $question) {
-                      if (isset($scored[$topic_id])) {
-                        echo '<td>'.$scored[$topic_id].'</td>';
-                      } else {
-                        echo '<td>--</td>';
+                      if ($topic_ic != 'normalized') {
+                        if (isset($scored[$topic_id])) {
+                          echo '<td>'.$scored[$topic_id].'</td>';
+                        } else {
+                          echo '<td>--</td>';
+                        }
                       }
                     }
                     echo '</tr>';
@@ -234,7 +238,7 @@ $topics['normalized'] = 'Normalized Score';
             </table>
           </div>
         </div>
-        <div class="tab-pane" id="full-normalized" role="tabpanel" aria-labelledby="full-normalized-pill">
+        <div class="tab-pane mt-2" id="full-normalized" role="tabpanel" aria-labelledby="full-normalized-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
               <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=normalized" target="_blank">Download Full Normalized Results</a>
@@ -251,7 +255,6 @@ $topics['normalized'] = 'Normalized Score';
                     echo '<th scope="col">'.$question.'</th>';
                   }
                   ?>
-                  <th scope="col">Normalized Result</th>
                 </tr>
               </thead>
               <tbody>
@@ -266,7 +269,6 @@ $topics['normalized'] = 'Normalized Score';
                         echo '<td>--</td>';
                       }
                     }
-                    echo '<td>'.$scored['normalized'].'</td>';
                     echo '</tr>';
                   }
                 }
@@ -275,7 +277,7 @@ $topics['normalized'] = 'Normalized Score';
             </table>
           </div>
         </div>
-        <div class="tab-pane" id="avg-normalized" role="tabpanel" aria-labelledby="avg-normalized-pill">
+        <div class="tab-pane mt-2" id="avg-normalized" role="tabpanel" aria-labelledby="avg-normalized-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
               <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=average" target="_blank">Download Final Results</a>
