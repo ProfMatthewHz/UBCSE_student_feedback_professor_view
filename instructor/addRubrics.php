@@ -61,6 +61,7 @@ $errorMsg = array();
                 <input id="level1-name" type="text" class="form-control <?php if(isset($errorMsg["level1-name"])) {echo "is-invalid ";} ?>" name="level1-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
                 <label for="level1-name">Name for Best Level:</label>
               </div>
+            </div>
             </div class="col-sm-2 offset-sm-2">
               <div class="form-floating ml-5 mb-3">
                 <input id="level1-value" type="number" class="form-control <?php if(isset($errorMsg["level1-value"])) {echo "is-invalid ";} ?>" name="level1-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '4'; } ?>"></input>
