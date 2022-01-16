@@ -51,7 +51,7 @@ $result = $stmt->get_result();
 $survey_info = $result->fetch_all(MYSQLI_ASSOC);
 
 // reply not found on no match
-if ($result->num_rows == 0) {
+if ($result->num_rows != 1) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
@@ -67,7 +67,7 @@ $result = $stmt->get_result();
 $course_info = $result->fetch_all(MYSQLI_ASSOC);
 
 // reply forbidden if instructor did not create survey or the course is ambiguous
-if ($result->num_rows != 0) {
+if ($result->num_rows != 1) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();
