@@ -164,10 +164,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   </div>
   <div clas="container-fluid">
     <form class="mt-5 mx-4" action="surveyDelete.php?survey=<?php echo $sid; ?>" id="delete-survey" method="post">
-      <div class="form-inline justify-content-center align-items-center">
+      <div class="row justify-content-center align-items-center">
         <p class="text-danger fs-3"><?php if(isset($errorMsg["agreement"])) {echo $errorMsg["agreement"];} ?></p>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="agreement" name="agreement" value="1">
+      </div>
+      <div class="row justify-content-center align-items-center">
+        <div class="col-sm-auto form-check">
+          <input class="form-check-input" type="checkbox" id="agreement" name="agreement" value="1"></input>
           <label class="form-check-label" for="agreement">
             I understand that deleting this survey will delete all scores associated with this survey.</label>
         </div>
