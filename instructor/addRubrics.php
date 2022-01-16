@@ -54,7 +54,7 @@ $errorMsg = array();
           <input type="number" min="3" max="5" id="rubric-levels" class="form-control <?php if(isset($errorMsg["rubric-levels"])) {echo "is-invalid ";} ?>" name="rubric-levels" required value="<?php if (isset($rubric_levels)) {echo htmlspecialchars($rubric_levels);} ?>"></input>
           <label for="rubric-levels">Rubric Levels:</label>
         </div>
-        <div class="container-fluid">
+        <div class="container">
           <div class="row justify-content-center">
             <div class="col-sm-8">
               <div class="form-floating mb-3">
@@ -62,55 +62,74 @@ $errorMsg = array();
                 <label for="level1-name">Name for Best Level:</label>
               </div>
             </div>
-            </div class="col-sm-2 offset-sm-2">
+            <div class="col-sm-2 offset-sm-1">
               <div class="form-floating ml-5 mb-3">
                 <input id="level1-value" type="number" class="form-control <?php if(isset($errorMsg["level1-value"])) {echo "is-invalid ";} ?>" name="level1-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '4'; } ?>"></input>
                 <label for="level1-value">Points for Best Level:</label>
               </div>
             </div>
           </div>
-        </div>
-        <div class="input-group mb-3" id="rubric-level2">
-          <div class="form-floating mb-3">
-            <input id="level2-name" type="text" class="form-control <?php if(isset($errorMsg["level2-name"])) {echo "is-invalid ";} ?>" name="level2-name" required value="<?php if (isset($level2_name)) {echo htmlspecialchars($level2_name);} ?>"></input>
-            <label for="level2-name">Name for 2nd Best Level:</label>
-          </div>
-          <div class="form-floating ml-5 mb-3">
-            <input id="level2-value" type="number" class="form-control <?php if(isset($errorMsg["level2-value"])) {echo "is-invalid ";} ?>" name="level1-value" required value="<?php if (isset($level2_value)) {echo htmlspecialchars($level2_value);} else { echo '3'; } ?>"></input>
-            <label for="level2-value">Points for 2nd Best Level:</label>
-          </div>
-        </div>
-        <div class="input-group mb-3" id="rubric-level3">
-          <div class="form-floating mb-3">
-            <input id="level3-name" type="text" class="form-control <?php if(isset($errorMsg["level3-name"])) {echo "is-invalid ";} ?>" name="level3-name" required value="<?php if (isset($level3_name)) {echo htmlspecialchars($level3_name);} ?>"></input>
-            <label for="level3-name">Name for 2nd Best Level:</label>
-          </div>
-          <div class="form-floating ml-5 mb-3">
-            <input id="level3-value" type="number" class="form-control <?php if(isset($errorMsg["level3-value"])) {echo "is-invalid ";} ?>" name="level1-value" required value="<?php if (isset($level3_value)) {echo htmlspecialchars($level3_value);} else { echo '2'; } ?>"></input>
-            <label for="level3-value">Points for 2nd Best Level:</label>
-          </div>
-        </div>
-        <div class="input-group mb-3" id="rubric-level4">
-          <div class="form-floating mb-3">
-            <input id="level4-name" type="text" class="form-control <?php if(isset($errorMsg["level4-name"])) {echo "is-invalid ";} ?>" name="level4-name" required value="<?php if (isset($level4_name)) {echo htmlspecialchars($level4_name);} ?>"></input>
-            <label for="level4-name">Name for 2nd Word Level:</label>
-          </div>
-          <div class="form-floating ml-5 mb-3">
-            <input id="level4-value" type="number" class="form-control <?php if(isset($errorMsg["level4-value"])) {echo "is-invalid ";} ?>" name="level4-value" required value="<?php if (isset($level4_value)) {echo htmlspecialchars($level4_value);} else { echo '1'; } ?>"></input>
-            <label for="level4-value">Points for 2nd Worst Level:</label>
-          </div>
-        </div>
-        <div class="input-group mb-3" id="rubric-level5">
-          <div class="form-floating mb-3">
-            <input id="level5-name" type="text" class="form-control <?php if(isset($errorMsg["level5-name"])) {echo "is-invalid ";} ?>" name="level5-name" required value="<?php if (isset($level5_name)) {echo htmlspecialchars($level5_name);} ?>"></input>
-            <label for="level5-name">Name for Worst Level:</label>
-          </div>
-          <div class="form-floating ml-5 mb-3">
-            <input id="level5-value" type="number" class="form-control <?php if(isset($errorMsg["level5-value"])) {echo "is-invalid ";} ?>" name="level1-value" required value="<?php if (isset($level5_value)) {echo htmlspecialchars($level5_value);} else { echo '0'; } ?>"></input>
-            <label for="level5-value">Points for Worst Level:</label>
-          </div>
-        </div>
 
+          <div class="row justify-content-center">
+            <div class="col-sm-8">
+              <div class="form-floating mb-3">
+                <input id="level2-name" type="text" class="form-control <?php if(isset($errorMsg["level2-name"])) {echo "is-invalid ";} ?>" name="level2-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
+                <label for="level2-name">Name for 2nd Best Level:</label>
+              </div>
+            </div>
+            <div class="col-sm-2 offset-sm-1">
+              <div class="form-floating ml-5 mb-3">
+                <input id="level2-value" type="number" class="form-control <?php if(isset($errorMsg["level2-value"])) {echo "is-invalid ";} ?>" name="level2-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '3'; } ?>"></input>
+                <label for="level2-value">Points for 2nd Best Level:</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-content-center">
+            <div class="col-sm-8">
+              <div class="form-floating mb-3">
+                <input id="level3-name" type="text" class="form-control <?php if(isset($errorMsg["level3-name"])) {echo "is-invalid ";} ?>" name="level3-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
+                <label for="level3-name">Name for Middle Level:</label>
+              </div>
+            </div>
+            <div class="col-sm-2 offset-sm-1">
+              <div class="form-floating ml-5 mb-3">
+                <input id="level3-value" type="number" class="form-control <?php if(isset($errorMsg["level3-value"])) {echo "is-invalid ";} ?>" name="level3-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '2'; } ?>"></input>
+                <label for="level3-value">Points for Middle Level:</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-content-center">
+            <div class="col-sm-8">
+              <div class="form-floating mb-3">
+                <input id="level4-name" type="text" class="form-control <?php if(isset($errorMsg["level4-name"])) {echo "is-invalid ";} ?>" name="level4-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
+                <label for="level4-name">Name for 2nd Worst Level:</label>
+              </div>
+            </div>
+            <div class="col-sm-2 offset-sm-1">
+              <div class="form-floating ml-5 mb-3">
+                <input id="level4-value" type="number" class="form-control <?php if(isset($errorMsg["level4-value"])) {echo "is-invalid ";} ?>" name="level4-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '1'; } ?>"></input>
+                <label for="level4-value">Points for 2nd Worst Level:</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-content-center">
+            <div class="col-sm-8">
+              <div class="form-floating mb-3">
+                <input id="level5-name" type="text" class="form-control <?php if(isset($errorMsg["level5-name"])) {echo "is-invalid ";} ?>" name="level5-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
+                <label for="level5-name">Name for Worst Level:</label>
+              </div>
+            </div>
+            <div class="col-sm-2 offset-sm-1">
+              <div class="form-floating ml-5 mb-3">
+                <input id="level5-value" type="number" class="form-control <?php if(isset($errorMsg["level5-value"])) {echo "is-invalid ";} ?>" name="level5-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '0'; } ?>"></input>
+                <label for="level5-value">Points for Worst Level:</label>
+              </div>
+            </div>
+          </div>
+        </div>
         <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
 
         <input class="btn btn-success" type="submit" value="Create Rubric" />
