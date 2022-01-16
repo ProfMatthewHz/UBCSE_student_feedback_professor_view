@@ -60,7 +60,7 @@ $survey_name = $survey_info[0]['name'];
 
 
 // make sure the survey is for a course the current instructor actually teaches
-$stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
+$stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE id=? AND instructor_id=?');
 $stmt->bind_param('ii', $survey_info[0]['course_id'], $instructor->id);
 $stmt->execute();
 $result = $stmt->get_result();
