@@ -172,7 +172,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);
 
             http_response_code(302);
-            header("Location: courses.php");
+            header("Location: ".INSTRUCTOR_HOME."surveys.php");
             exit();
 
           }
