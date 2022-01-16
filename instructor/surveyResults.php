@@ -142,6 +142,8 @@ foreach ($emails as $email => $name) {
       $scores[$email][$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
       $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
       $reviews = $reviews + 1;
+    } else {
+      $scores[$email][$reviewer]['normalized'] = NO_SCORE_MARKER;
     }
   }
   if ($reviews == 0) {
@@ -196,7 +198,7 @@ $topics['normalized'] = 'Normalized Score';
         <div class="tab-pane active show" id="raw" role="tabpanel" aria-labelledby="raw-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-primary" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw" target="_blank">Download Raw Results</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw" target="_blank">Download Raw Results</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">
@@ -235,7 +237,7 @@ $topics['normalized'] = 'Normalized Score';
         <div class="tab-pane" id="full-normalized" role="tabpanel" aria-labelledby="full-normalized-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-primary" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=normalized" target="_blank">Download Full Normalized Results</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=normalized" target="_blank">Download Full Normalized Results</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">
@@ -276,7 +278,7 @@ $topics['normalized'] = 'Normalized Score';
         <div class="tab-pane" id="avg-normalized" role="tabpanel" aria-labelledby="avg-normalized-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-primary" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=average" target="_blank">Download Final Results</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=average" target="_blank">Download Final Results</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">

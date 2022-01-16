@@ -152,6 +152,8 @@ foreach ($emails as $email => $name) {
       $scores[$email][$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
       $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
       $reviews = $reviews + 1;
+    } else {
+      $scores[$email][$reviewer]['normalized'] = NO_SCORE_MARKER;
     }
   }
   if ($reviews == 0) {
