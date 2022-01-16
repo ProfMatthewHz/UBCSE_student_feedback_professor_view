@@ -74,7 +74,7 @@ if ($result->num_rows != 1) {
 }
 $course_name = $course_info[0]['name'];
 $course_code = $course_info[0]['code'];
-$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+$course_term = SEMESTER_MAP_REVERSE[$course_info[0]['semester']];
 $course_year = $course_info[0]['year'];
 
 // TODO: Refactor this code so I do not need to duplicate it on download
