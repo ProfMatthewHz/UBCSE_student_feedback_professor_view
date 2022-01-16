@@ -131,12 +131,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   $start_date = trim($_POST['start-date']);
   $end_date = trim($_POST['end-date']);
-  if (empty($start_date))
-  {
+  if (empty($start_date)) {
     $errorMsg['start-date'] = "Please choose a start date.";
   }
-  if (empty($end_date))
-  {
+  if (empty($end_date)) {
     $errorMsg['end-date'] = "Please choose a end date.";
   }
 
@@ -144,22 +142,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!isset($errorMsg['start-date']) and !isset($errorMsg['end-date']))
   {
     $start = DateTime::createFromFormat('Y-m-d', $start_date);
-    if (!$start)
-    {
+    if (!$start) {
       $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
-    }
-    else if ($start->format('Y-m-d') != $start_date)
-    {
+    } else if ($start->format('Y-m-d') != $start_date) {
       $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
     }
 
     $end = DateTime::createFromFormat('Y-m-d', $end_date);
-    if (!$end)
-    {
+    if (!$end) {
       $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
-    }
-    else if ($end->format('Y-m-d') != $end_date)
-    {
+    } else if ($end->format('Y-m-d') != $end_date) {
       $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
     }
   }
@@ -167,54 +159,41 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $start_time = trim($_POST['start-time']);
   $end_time = trim($_POST['end-time']);
 
-  if (empty($start_time))
-  {
+  if (empty($start_time)) {
     $errorMsg['start-time'] = "Please choose a start time.";
   }
-  if (empty($end_time))
-  {
+  if (empty($end_time)) {
     $errorMsg['end-time'] = "Please choose a end time.";
   }
 
-  if (!isset($errorMsg['start-time']) && !isset($errorMsg['end-time']))
-  {
+  if (!isset($errorMsg['start-time']) && !isset($errorMsg['end-time'])) {
     $start = DateTime::createFromFormat('H:i', $start_time);
-    if (!$start)
-    {
+    if (!$start) {
       $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
-    }
-    else if ($start->format('H:i') != $start_time)
-    {
+    } else if ($start->format('H:i') != $start_time) {
       $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
     }
 
     $end = DateTime::createFromFormat('H:i', $end_time);
-    if (!$end)
-    {
+    if (!$end) {
       $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
-    }
-    else if ($end->format('H:i') != $end_time)
-    {
+    } else if ($end->format('H:i') != $end_time) {
       $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
     }
   }
 
   // check dates and times
-  if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset($errorMsg['end-date']) && !isset($errorMsg['end-time']))
-  {
+  if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
     $s = new DateTime($start_date . ' ' . $start_time);
     $e = new DateTime($end_date . ' ' . $end_time);
     $today = new DateTime();
 
-    if ($e < $s)
-    {
+    if ($e < $s) {
       $errorMsg['end-date'] = "End date and time cannot be before start date and time.";
       $errorMsg['end-time'] = "End date and time cannot be before start date and time.";
       $errorMsg['start-date'] = "End date and time cannot be before start date and time.";
       $errorMsg['start-time'] = "End date and time cannot be before start date and time.";
-    }
-    else if ($e < $today)
-    {
+    } else if ($e < $today) {
       $errorMsg['end-date'] = "End date and time must occur in the future.";
       $errorMsg['end-time'] = "End date and time must occur in the future.";
     }
@@ -222,12 +201,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // check the pairing mode
   $pairing_mode = trim($_POST['pairing-mode']);
-  if (empty($pairing_mode))
-  {
+  if (empty($pairing_mode)) {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-  }
-  else if ($pairing_mode != '1' && $pairing_mode != '2' && $pairing_mode != '3')
-  {
+  } else if ($pairing_mode != '1' && $pairing_mode != '2' && $pairing_mode != '3') {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
   }
 

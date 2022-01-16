@@ -26,8 +26,7 @@ $instructor->check_session($con, 0);
 
 // respond not found on no query string parameter
 $sid = NULL;
-if (!isset($_GET['survey']))
-{
+if (!isset($_GET['survey'])) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
@@ -45,35 +44,38 @@ if ($sid === 0) {
 // try to look up info about the requested survey
 $survey_info = array();
 
-$stmt = $con->prepare('SELECT course_id, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
+$stmt = $con->prepare('SELECT course_id, name, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
 $stmt->bind_param('i', $sid);
 $stmt->execute();
 $result = $stmt->get_result();
-
 $survey_info = $result->fetch_all(MYSQLI_ASSOC);
 
 // reply not found on no match
-if ($result->num_rows == 0)
-{
+if ($result->num_rows == 0) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
 }
+$survey_name = $survey_info[0]['name'];
+
 
 // make sure the survey is for a course the current instructor actually teaches
 $stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
 $stmt->bind_param('ii', $survey_info[0]['course_id'], $instructor->id);
 $stmt->execute();
 $result = $stmt->get_result();
-$data = $result->fetch_all(MYSQLI_ASSOC);
+$course_info = $result->fetch_all(MYSQLI_ASSOC);
 
-// reply forbidden if instructor did not create survey
-if ($result->num_rows == 0)
-{
+// reply forbidden if instructor did not create survey or the course is ambiguous
+if ($result->num_rows != 0) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();
 }
+$course_name = $course_info[0]['name'];
+$course_code = $course_info[0]['code'];
+$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+$course_year = $course_info[0]['year'];
 
 // TODO: Refactor this code so I do not need to duplicate it on download
 
@@ -151,85 +153,158 @@ foreach ($emails as $email => $name) {
 $topics = getSurveyTopics($con, $sid);
 $topics['normalized'] = 'Normalized Score';
 ?>
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
-    <title>Survey Results :: UB CSE Peer Evaluation System</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <title>CSE Evaluation Survey System - Survey Results</title>
 </head>
-<body>
-<header>
-    <div class="w3-container">
-          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
-          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
+<body class="text-center">
+<!-- Header -->
+<main>
+  <div class="container-fluid">
+    <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
+      <div class="col-sm-auto text-center">
+        <h4 class="text-white display-1">UB CSE Evalution System<br>Survey Results</h4>
+      </div>
     </div>
-    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
-      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
-      <a href="courses.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-white">Courses</a>
-      <form action="logout.php" method ="post"><input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" /><input class="w3-bar-item w3-button w3-mobile w3-right w3-border-right w3-border-left w3-border-white" type="submit" value="Logout"></form>
-      <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
+
+    <div class="row justify-content-md-center mt-5 mx-4">
+      <div class="col-sm-auto text-center">
+        <h4><?php echo $course_name.' ('.$course_code.')';?><br><?php echo $survey_name.' Results'; ?></h4>
+      </div>
     </div>
-</header>
-<div class="main-content">
-    <div class="w3-container w3-center">
-        <h2>Download Survey Results</h2>
-        <a href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw" target="_blank"><button class="w3-button w3-blue">Download Raw Survey Results</button></a>
-        <a href="resultsDownload.php?survey=<?php echo $sid; ?>&type=normalized" target="_blank"><button class="w3-button w3-blue">Download Normalized Survey Results</button></a>
-        <a href="resultsDownload.php?survey=<?php echo $sid; ?>&type=average" target="_blank"><button class="w3-button w3-blue">Download Average Normalized Survey Results</button></a>
-    </div>
-    <hr />
-    <div class="w3-container w3-center">
-        <h2>Raw Survey Results</h2>
-    </div>
-    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
-        <tr>
-        <th>Reviewer Email (Name)</th>
-        <th>Reviewee Email (Name)</th>
-        <?php
-        foreach ($topics as $topic_id => $question) {
-          echo '<th>'.$question.'</th>';
-        }
-        ?>
-        </tr>
-        <?php
-          foreach ($emails as $email => $name) {
-            foreach ($scores[$email] as $reviewer => $scored) {
-              echo '<tr><td>' . htmlspecialchars($reviewer) . '<br />(' . htmlspecialchars($emails[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br />(' . htmlspecialchars($name) . ')' . '</td>';
-              foreach ($topics as $topic_id => $question) {
-                if (isset($scored[$topic_id])) {
-                  echo '<td>'.$scored[$topic_id].'</td>';
-                } else {
-                  echo '<td>--</td>';
+  </div>
+  <div class="container-fluid">
+    <div class="row justify-content-md-center mt-5 mx-4">
+      <ul id="results-present" class="nav nav-pills nav-fill" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="raw-pill" data-bs-toggle="tab" data-bs-target="#raw" role="tab" aria-controls="raw" aria-selected="true">Raw Results</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="full-normalized-pill" data-bs-toggle="tab" data-bs-target="#full-normalized" role="tab" aria-controls="raw-normalized" aria-selected="false">Normalized Results</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="avg-normalized-pill" data-bs-toggle="tab" data-bs-target="#avg-normalized" role="tab" aria-controls="avg-normalized" aria-selected="false">Final Averages</a>
+        </li>
+      </ul>
+      <div id="results-tabs" class="tab-content">
+        <div class="tab-pane active show" id="raw" role="tabpanel" aria-labelledby="raw-pill">
+          <div class="row justify-content-center">
+            <div class="col-sm-auto">
+              <a class="btn btn-primary" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw" target="_blank">Download Raw Results</a>
+            </div>
+          </div>
+          <div class="row justify-content-center mt-1">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Reviewer Name (Email)</th>
+                  <th scope="col">Reviewee Name (Email)</th>
+                  <?php
+                  foreach ($topics as $topic_id => $question) {
+                    echo '<th scope="col">'.$question.'</th>';
+                  }
+                  ?>
+                </tr>
+              </thead>
+              <tbody>
+              <?php
+                foreach ($emails as $email => $name) {
+                  foreach ($scores[$email] as $reviewer => $scored) {
+                    echo '<tr><td>' . htmlspecialchars($reviewer) . '<br>(' . htmlspecialchars($emails[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
+                    foreach ($topics as $topic_id => $question) {
+                      if (isset($scored[$topic_id])) {
+                        echo '<td>'.$scored[$topic_id].'</td>';
+                      } else {
+                        echo '<td>--</td>';
+                      }
+                    }
+                    echo '</tr>';
+                  }
                 }
-              }
-              echo '</tr>';
-            }
-          }
-        ?>
-    </table>
-    <hr />
-    <div class="w3-container w3-center">
-        <h2>Average Normalized Survey Results</h2>
-    </div>
-    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
-        <tr>
-        <th>Email (Name)</th>
-        <th>Average Normalized Score</th>
-        </tr>
-        <?php
-          foreach ($normalized as $email => $norm) {
-            echo '<tr><td>' . htmlspecialchars($email) . '<br />(' . htmlspecialchars($emails[$email]) . ')' . '</td>';
-            if ($norm === NO_SCORE_MARKER) {
-              echo '<td>--</td></tr>';
-            } else {
-              echo '<td>' . $norm . '</td></tr>';
-            }
-          }
-          ?>
-    </table>
+              ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-pane" id="full-normalized" role="tabpanel" aria-labelledby="full-normalized-pill">
+          <div class="row justify-content-center">
+            <div class="col-sm-auto">
+              <a class="btn btn-primary" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=normalized" target="_blank">Download Full Normalized Results</a>
+            </div>
+          </div>
+          <div class="row justify-content-center mt-1">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Reviewer Name (Email)</th>
+                  <th scope="col">Reviewee Name (Email)</th>
+                  <?php
+                  foreach ($topics as $topic_id => $question) {
+                    echo '<th scope="col">'.$question.'</th>';
+                  }
+                  ?>
+                  <th scope="col">Normalized Result</th>
+                </tr>
+              </thead>
+              <tbody>
+              <?php
+                foreach ($emails as $email => $name) {
+                  foreach ($scores[$email] as $reviewer => $scored) {
+                    echo '<tr><td>' . htmlspecialchars($reviewer) . '<br>(' . htmlspecialchars($emails[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
+                    foreach ($topics as $topic_id => $question) {
+                      if (isset($scored[$topic_id])) {
+                        echo '<td>'.$scored[$topic_id].'</td>';
+                      } else {
+                        echo '<td>--</td>';
+                      }
+                    }
+                    echo '<td>'.$scored['normalized'].'</td>';
+                    echo '</tr>';
+                  }
+                }
+              ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-pane" id="avg-normalized" role="tabpanel" aria-labelledby="avg-normalized-pill">
+          <div class="row justify-content-center">
+            <div class="col-sm-auto">
+              <a class="btn btn-primary" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=average" target="_blank">Download Final Results</a>
+            </div>
+          </div>
+          <div class="row justify-content-center mt-1">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Name (Email)</th>
+                  <th scope="col">Average Normalized Score</th>
+                </tr>
+              </thead>
+              <tbody>
+              <?php
+                foreach ($normalized as $email => $norm) {
+                  echo '<tr><td>' . htmlspecialchars($emails[$email]) . '<br>(' . htmlspecialchars($email) . ')' . '</td>';
+                  if ($norm === NO_SCORE_MARKER) {
+                    echo '<td>--</td></tr>';
+                  } else {
+                    echo '<td>' . $norm . '</td></tr>';
+                  }
+                }
+              ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  </div>
 </div>
+</main>
 </body>
 </html>

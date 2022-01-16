@@ -68,35 +68,37 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 // try to look up info about the requested survey
 $survey_info = array();
 
-$stmt = $con->prepare('SELECT course_id, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
+$stmt = $con->prepare('SELECT course_id, name, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
 $stmt->bind_param('i', $sid);
 $stmt->execute();
 $result = $stmt->get_result();
-
 $survey_info = $result->fetch_all(MYSQLI_ASSOC);
 
-// reply not found on no match
-if ($result->num_rows == 0)
-{
+// reply forbidden if course does not exist or if the survey is ambiguous
+if ($result->num_rows != 1) {
   http_response_code(404);
-  echo "404: Not found.";
+  echo "403: Forbidden.";
   exit();
 }
+$survey_name = $survey_info[0]['name'];
 
 // make sure the survey is for a course the current instructor actually teaches
-$stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
+$stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE id=? AND instructor_id=?');
 $stmt->bind_param('ii', $survey_info[0]['course_id'], $instructor->id);
 $stmt->execute();
 $result = $stmt->get_result();
-$data = $result->fetch_all(MYSQLI_ASSOC);
+$course_info = $result->fetch_all(MYSQLI_ASSOC);
 
-// reply forbidden if instructor did not create survey
-if ($result->num_rows == 0)
-{
+// reply forbidden if instructor did not create survey or if survey was ambiguous
+if ($result->num_rows != 1) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();
 }
+$course_name = $course_info[0]['name'];
+$course_code = $course_info[0]['code'];
+$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+$course_year = $course_info[0]['year'];
 
 // now perform the possible pairing modification functions
 // first set some flags
@@ -131,7 +133,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $pairing_mode = trim($_POST['pairing-mode']);
   if (empty($pairing_mode)) {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-  } else if ($pairing_mode != '1' and $pairing_mode != '2') {
+  } else if ($pairing_mode != '1' && $pairing_mode != '2' && $pairing_mode != '3') {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
   }
 
@@ -161,10 +163,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
       if ($pairing_mode == '1') {
         $pairings = parse_review_pairs($file_handle, $con);
-      } else {
+      } else if ($pairing_mode == '2') {
         $pairings = parse_review_teams($file_handle, $con);
+      } else {
+        $pairings = parse_review_managed_teams($file_handle, $con);
       }
-
       // Clean up our file handling
       fclose($file_handle);
 
@@ -201,8 +204,7 @@ while ($row = $result->fetch_assoc())
 $stmt = $con->prepare('SELECT name FROM students WHERE email=?');
 
 $size = count($pairings);
-for ($i = 0; $i < $size; $i++)
-{
+for ($i = 0; $i < $size; $i++) {
   $stmt->bind_param('s', $pairings[$i]['reviewer_email']);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -236,6 +238,11 @@ for ($i = 0; $i < $size; $i++)
       </div>
     </div>
 
+    <div class="row justify-content-md-center mt-5 mx-1">
+      <div class="col-sm-auto text-center">
+        <h4><?php echo $course_name.' ('.$course_code.')';?><br><?php echo $survey_name.' Pairings'; ?></h4>
+      </div>
+    </div>
     <?php
       // indicate any error messages
       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -264,8 +271,7 @@ for ($i = 0; $i < $size; $i++)
           </thead>
           <tbody>
         <?php
-          foreach ($pairings as $pair)
-          {
+          foreach ($pairings as $pair) {
             echo '<tr><td>' . htmlspecialchars($pair['reviewer_name']) . ' (' . htmlspecialchars($pair['reviewer_email']) . ')</td><td>' . htmlspecialchars($pair['teammate_name']) . ' (' . htmlspecialchars($pair['teammate_email']) . ')</td></tr>';
           }
         ?>

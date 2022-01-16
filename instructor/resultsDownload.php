@@ -197,7 +197,8 @@ if ($_GET['type'] === 'raw') {
   $header = array("Reviewer","Reviewee");
   foreach ($topics as $topic_id => $question) {
     array_push($header,$question);
-  } 
+  }
+  array_push($header, 'Normalized Result');
   fputcsv($out, $header);
   foreach ($emails as $email => $name) {
     foreach ($scores[$email] as $reviewer => $scored) {
@@ -211,6 +212,7 @@ if ($_GET['type'] === 'raw') {
           array_push($line, '--');
         }
       }
+      array_push($line, $scored['normalized']);
       fputcsv($out, $line);
     }
   }

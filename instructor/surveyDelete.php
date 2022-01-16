@@ -25,11 +25,9 @@ $instructor->check_session($con, 0);
 
 // check for the query string or post parameter
 $sid = NULL;
-if($_SERVER['REQUEST_METHOD'] == 'GET')
-{
+if($_SERVER['REQUEST_METHOD'] == 'GET') {
   // respond not found on no query string parameter
-  if (!isset($_GET['survey']))
-  {
+  if (!isset($_GET['survey'])) {
     http_response_code(404);   
     echo "404: Not found.";
     exit();
@@ -38,26 +36,21 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')
   // make sure the query string is an integer, reply 404 otherwise
   $sid = intval($_GET['survey']);
 
-  if ($sid === 0)
-  {
+  if ($sid === 0) {
     http_response_code(404);   
     echo "404: Not found.";
     exit();
   }
-}
-else
-{
+} else {
   // respond bad request if bad post parameters
-  if (!isset($_POST['survey']) or !isset($_POST['csrf-token']))
-  {
+  if (!isset($_POST['survey']) or !isset($_POST['csrf-token'])) {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
     exit();
   }
   
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']))
-  {
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token'])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
     exit();
@@ -66,8 +59,7 @@ else
   // make sure the post survey id is an integer, reply 400 otherwise
   $sid = intval($_POST['survey']);
 
-  if ($sid === 0)
-  {
+  if ($sid === 0) {
     http_response_code(400);
     echo "Bad Request: Invalid parameters.";
     exit();
@@ -78,35 +70,37 @@ else
 // try to look up info about the requested survey
 $survey_info = array();
 
-$stmt = $con->prepare('SELECT course_id, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
+$stmt = $con->prepare('SELECT course_id, name, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
 $stmt->bind_param('i', $sid);
 $stmt->execute();
 $result = $stmt->get_result();
-
 $survey_info = $result->fetch_all(MYSQLI_ASSOC);
 
-// reply not found on no match
-if ($result->num_rows == 0)
-{
-  http_response_code(404);   
-  echo "404: Not found.";
-  exit();
-}
-
-// make sure the survey is for a course the current instructor actually teaches
-$stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $survey_info[0]['course_id'], $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
-$data = $result->fetch_all(MYSQLI_ASSOC);
-
-// reply forbidden if instructor did not create survey
-if ($result->num_rows == 0)
-{
-  http_response_code(403);   
+// reply forbidden if course does not exist or if the survey is ambiguous
+if ($result->num_rows != 1) {
+  http_response_code(404);
   echo "403: Forbidden.";
   exit();
 }
+$survey_name = $survey_info[0]['name'];
+
+// make sure the survey is for a course the current instructor actually teaches
+$stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE id=? AND instructor_id=?');
+$stmt->bind_param('ii', $survey_info[0]['course_id'], $instructor->id);
+$stmt->execute();
+$result = $stmt->get_result();
+$course_info = $result->fetch_all(MYSQLI_ASSOC);
+
+// reply forbidden if instructor did not create survey or if survey was ambiguous
+if ($result->num_rows != 1) {
+  http_response_code(403);
+  echo "403: Forbidden.";
+  exit();
+}
+$course_name = $course_info[0]['name'];
+$course_code = $course_info[0]['code'];
+$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+$course_year = $course_info[0]['year'];
 
 // now perform the possible deletion function
 // first set some flags
@@ -162,6 +156,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         <h4 class="text-white display-1">UB CSE Evalution System<br>Delete Existing Survey</h4>
       </div>
     </div>
+    <div class="row justify-content-md-center mt-5 mx-4">
+      <div class="col-sm-auto text-center">
+        <h4><?php echo $course_name.' ('.$course_code.')';?><br><?php echo $survey_name.' Results'; ?></h4>
+      </div>
+    </div>
+  </div>
+  <div clas="container-fluid">
     <form class="mt-5 mx-4" action="surveyDelete.php?survey=<?php echo $sid; ?>" id="delete-survey" method="post">
       <div class="form-inline justify-content-center align-items-center">
         <p class="text-danger fs-3"><?php if(isset($errorMsg["agreement"])) {echo $errorMsg["agreement"];} ?></p>
@@ -173,10 +174,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         <input type="hidden" name="survey" value="<?php echo $sid; ?>"></input>
         <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
         <input type="submit" class="btn btn-danger" value="Delete Survey"></input>
-</div>
-        </form>
-        </div>
-          </main>
+      </div>
+    </form>
+  </div>
+</main>
 </body>
 </html>
 
