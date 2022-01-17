@@ -101,11 +101,11 @@ if (!isset($_SESSION["rubric"])) {
       </div>
     </div>
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
-    <div class="row justify-content-md-center mt-5 mx-1">
+    <div class="row justify-content-start mx-1">
       <div class="col">
         <button class="btn btn-outline-secondary">+ Add Criterion</button>
       </div>
-      <div class="col offset-10">
+      <div class="col offset-5">
         <input class="btn btn-success" type="submit" value="Submit Rubic"></input>
       </div>
     </div>
