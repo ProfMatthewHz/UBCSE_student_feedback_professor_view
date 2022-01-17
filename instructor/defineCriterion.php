@@ -59,14 +59,18 @@ if (!isset($_SESSION["rubric"])) {
     </div>
 
     <form class="mt-5 mx-1" id="define-rubric" method="post">
-      <div id="criterion1" class="border-top border-bottom">
-        <div class="row mx-1">
+      <div id="criterion1" class="border-top border-bottom criterion">
+        <div class="row justify-content-between mx-1">
           <div class="col text-start align-top">
             <span style="font-size:small;color:DarkGrey">Criterion #1:</span>
           </div>
+          <div class="col align-top">
+             <button type="button" class="btn btn-outline-danger" onclick="addCriterion()">
+              <span style="font-size:small;">-Remove Criterion</span></button>
+          </div>
         </div>
         <div class="row mx-1">
-          <div class="col-auto form-floating">
+          <div class="col-7 form-floating">
             <input type="text" id="criterion1-question" class="form-control <?php if(isset($errorMsg["criterion1-question"])) {echo "is-invalid ";} ?>" name="criterion1-question" required value="<?php if (key_exists('criterion1-question', $question_names)) {echo htmlspecialchars($question_names['criterion1-question']);} ?>"></input>
             <label for="criterion1-question"><?php if(isset($errorMsg["criterion1-question"])) {echo $errorMsg["criterion1-question"]; } else { echo "Description of Trait:";} ?></label>
           </div>
@@ -101,9 +105,9 @@ if (!isset($_SESSION["rubric"])) {
       </div>
     </div>
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
-    <div class="row justify-content-start mx-1">
+    <div class="row justify-content-start mx-1 mt-2">
       <div class="col">
-        <button class="btn btn-outline-secondary">+ Add Criterion</button>
+        <button type="button" class="btn btn-outline-secondary" onclick="addCriterion()">+ Add Criterion</button>
       </div>
       <div class="col offset-5">
         <input class="btn btn-success" type="submit" value="Submit Rubic"></input>
