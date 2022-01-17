@@ -46,40 +46,37 @@ $errorMsg = array();
     </div>
     <form class="mt-5 mx-4" id="add-rubric" method="post">
       <div class="form-inline justify-content-center align-items-center">
-        <div class="form-floating my-3">
+        <div class="form-floating mb-3">
           <input type="text" id="rubric-name" class="form-control <?php if(isset($errorMsg["rubric-name"])) {echo "is-invalid ";} ?>" name="rubric-name" required value="<?php if (isset($rubric_name)) {echo htmlspecialchars($rubric_name);} ?>"></input>
           <label for="course-code">Rubric Name:</label>
         </div>
-        <div class="form-floating my-3">
+        <div class="form-floating mb-3">
           <input type="number" min="3" max="5" id="rubric-levels" class="form-control <?php if(isset($errorMsg["rubric-levels"])) {echo "is-invalid ";} ?>" name="rubric-levels" required value="<?php if (isset($rubric_levels)) {echo htmlspecialchars($rubric_levels);} ?>"></input>
           <label for="rubric-levels">Rubric Levels:</label>
         </div>
-        <div class="container">
-          <div id="rubric-level1" class="row justify-content-start border">
+        <div id="rubric-level1" class="justify-content-start row border">
+          <div class="row">
             <div class="col align-top">
               <span style="font-size:small;color:DarkGrey">Best level:</span>
             </div>
-            <div class="col-11">
-              <div class="container">
-                <div class="row">
-                  <div class="col-sm-8">
-                    <div class="form-floating my-3">
-                      <input id="level1-name" type="text" class="form-control <?php if(isset($errorMsg["level1-name"])) {echo "is-invalid ";} ?>" name="level1-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
-                      <label for="level1-name">Name:</label>
-                    </div>
-                  </div>
-                  <div class="col-sm-4 gl-3">
-                    <div class="form-floating ml-5 my-3">
-                      <input id="level1-value" type="number" class="form-control <?php if(isset($errorMsg["level1-value"])) {echo "is-invalid ";} ?>" name="level1-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '4'; } ?>"></input>
-                      <label for="level1-value">Points:</label>
-                    </div>
-                  </div>
-                </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-8">
+              <div class="form-floating my-3">
+                <input id="level1-name" type="text" class="form-control <?php if(isset($errorMsg["level1-name"])) {echo "is-invalid ";} ?>" name="level1-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
+                <label for="level1-name">Name:</label>
+              </div>
+            </div>
+            <div class="col-sm-4 gl-3">
+              <div class="form-floating ml-5 my-3">
+                <input id="level1-value" type="number" class="form-control <?php if(isset($errorMsg["level1-value"])) {echo "is-invalid ";} ?>" name="level1-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '4'; } ?>"></input>
+                <label for="level1-value">Points:</label>
               </div>
             </div>
           </div>
+        </div>
 
-          <div id="rubric-level2" class="row justify-content-start border">
+          <div id="rubric-level2" class="row border">
             <div class="col align-top">
               <span style="font-size:small;color:DarkGrey">2nd best level:</span>
             </div>
@@ -103,7 +100,7 @@ $errorMsg = array();
             </div>
           </div>
 
-          <div id="rubric-level3" class="row justify-content-start border">
+          <div id="rubric-level3" class="row border">
             <div class="col align-top">
               <span style="font-size:small;color:DarkGrey">Middle level:</span>
             </div>
@@ -127,7 +124,7 @@ $errorMsg = array();
             </div>
           </div>
 
-          <div id="rubric-level3" class="row justify-content-start border">
+          <div id="rubric-level3" class="row border">
             <div class="col align-top">
               <span style="font-size:small;color:DarkGrey">2nd worst level:</span>
             </div>
@@ -151,7 +148,7 @@ $errorMsg = array();
             </div>
           </div>
 
-          <div id="rubric-level3" class="row justify-content-start border">
+          <div id="rubric-level3" class="row border">
             <div class="col align-top">
               <span style="font-size:small;color:DarkGrey">Worst level:</span>
             </div>
