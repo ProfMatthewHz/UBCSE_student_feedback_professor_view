@@ -70,10 +70,10 @@ if (!isset($_SESSION["rubric"])) {
           </div>
         </div>
         <div class="row mx-1">
-          <div class="col-7 form-floating">
+          <div class="col-3"><div class="form-floating">
             <input type="text" id="criterion1-question" class="form-control <?php if(isset($errorMsg["criterion1-question"])) {echo "is-invalid ";} ?>" name="criterion1-question" required value="<?php if (key_exists('criterion1-question', $question_names)) {echo htmlspecialchars($question_names['criterion1-question']);} ?>"></input>
             <label for="criterion1-question"><?php if(isset($errorMsg["criterion1-question"])) {echo $errorMsg["criterion1-question"]; } else { echo "Description of Trait:";} ?></label>
-          </div>
+          </div></div>
         </div>
         <div class="row pt-1 mx-1 mb-3 align-items-center">
         <?
