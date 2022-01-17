@@ -71,27 +71,27 @@ if (!isset($_SESSION["rubric"])) {
             <label for="criterion1-question"><?php if(isset($errorMsg["criterion1-question"])) {echo $errorMsg["criterion1-question"]; } else { echo "Description of Trait:";} ?></label>
           </div>
         </div>
-        <div class="row pt-1 mx-1 align-items-center">
+        <div class="row pt-1 mx-1 mb-3 align-items-center">
         <?
           $end_str = '">';
           foreach ($_SESSION["rubric"]["levels"]["names"] as $key => $name) { 
             echo '<div class="col ';
             echo $end_str;
             echo '<div class="form-floating">
-              <textarea id="criterion1-'.$name.'" class="form-control ';
-              if (isset($errorMsg["criterion1-'.$name.'"])) {
+              <textarea id="criterion1-'.$key.'" class="form-control ';
+              if (isset($errorMsg["criterion1-'.$key.'"])) {
                 echo "is-invalid ";
               }
-              echo '" name="criterion1-'.$name.'" required value="';
-              if (key_exists('criterion1-'.$name, $answer_names)) {
-                echo htmlspecialchars($answer_names['criterion1-'.$name]);
+              echo '" name="criterion1-'.$key.'" required value="';
+              if (key_exists('criterion1-'.$key, $answer_names)) {
+                echo htmlspecialchars($answer_names['criterion1-'.$key]);
               }
-              echo '"></input>
-              <label for="criterion1-'.$name.'">';
-              if (isset($errorMsg["criterion1-'.$name.'"])) {
-                echo $errorMsg["criterion1-'.$name.'"]; 
+              echo '"></textarea>
+              <label for="criterion1-'.$key.'">';
+              if (isset($errorMsg["criterion1-'.$key.'"])) {
+                echo $errorMsg["criterion1-'.$key.'"]; 
               } else { 
-                echo "Response for '.$name.':";
+                echo 'Response for '.$name.':';
               }
               echo '</label></div></div>';
             // Update formatting so that all but first score use size correctly
