@@ -71,7 +71,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     for (let idx in keys) {
       loopId = name+'-'+keys[idx];
       htmlStr = htmlStr + '<div class="col' +endStr+'<div class="form-floating"><textarea id="'+loopId+'" class="form-control" name="'+loopId+'" required value=""></textarea>';
-      htmlStr = htmlStr + '<label for="'+loopId+'">Response for '+names[idx]+':</label></div></div>';
+      htmlStr = htmlStr + '<label id="'+loopId+'-lab" for="'+loopId+'">Response for '+names[idx]+':</label></div></div>';
       // Update formatting so that all but first score use size correctly
       end_str = ' ms-auto">';
     }
@@ -95,14 +95,14 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     criterionList.appendChild(criterion);
   }
   function removeCriterion(button) {
-    let criteriaDivs = document.querySelectorAll("criterion");
+    let criteriaDivs = document.querySelectorAll(".criterion");
     let criterionToRemove = button.parentElement.parentElement.parentElement;
     let removedNum = Number(criterionToRemove.id.substring(9));
     criterionToRemove.remove();
     const keys = <?php echo $level_keys_for_js ?>;
-    for (let i = removedNum + 1; i < criteriaDivs.length; i++) {
+    for (let i = removedNum + 1; i <= criteriaDivs.length; i++) {
       const prev = i-1;
-      let criterion = criteriaDivs[i];
+      let criterion = criteriaDivs[prev];
       criterion.id = "criterion" + prev;
       let numSpan = document.getElementById("criterion" + i + "-num");
       numSpan.innerHTML = 'Criterion #' + prev;
