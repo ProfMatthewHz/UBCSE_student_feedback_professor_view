@@ -42,10 +42,45 @@ if (!isset($_SESSION["rubric"])) {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <title>CSE Evaluation Survey System - Add Criteria</title>
   <script>
+  function makeCritTopRow(num) {
+    let retVal = document.createElement("div");
+    retVal.className = "row justify-content-between mx-1";
+    retVal.innerHTML = '<div class="col text-start align-top"><span style="font-size:small;color:DarkGrey">Criterion #' + num + ':</span></div><div class="col"><button type="button" class="btn btn-outline-danger" onclick="removeCriterion(this)"><span style="font-size:small;">-Remove Criterion</span></button></div>"';
+    return retVal;
+  }
+  function makeCritNameRow(name) {
+    let realName = name + "-question";
+    let retVal = document.createElement("div");
+    retVal.className = "row mx-1";
+    retVal.innerHTML = '<div class="col-3"><div class="form-floating"><input type="text" id="'+realName+'" class="form-control" name="'+realName+'" required value=""><label for="'+realName+'">Description of Trait:"</label></div></div></div>';
+    return retVal;
+  }
+  function makeCritLevelRow(name) {
+    let retVal = document.createElement("div");
+    retVal.className = "row pt-1 mx-1 mb-3 align-items-center";
+    let endStr = '">';
+
+    retVal.innerHTML = '<div class="col-3"><div class="form-floating"><input type="text" id="'+realName+'" class="form-control" name="'+realName+'" required value=""><label for="'+realName+'">Description of Trait:"</label></div></div></div>';
+    return retVal;
+  }
+
+  function addCriterion() {
+    let criteriaDivs = document.getAllElementsByClass("criterion");
+    let criterionNum = criteriaDivs.length + 1;
+    let criterion = document.createElement("div");
+    criterion.id = "criterion" + criterionNum;
+    criterion.className = "border-top border-bottom criterion";
+    let topRow = makeCritTopRow(criterionNum)
+    criterion.appendChild(topRow);
+    let midRow = makeCritNameRow(criterion.id);
+    criterion.appendChild(midRow);    
+    let rubricForm = document.getElementById("define-rubric");
+    rubricForm.appendChild(criterion);
+  }
   function removeCriterion(button) {
-    let criteriaDivs = document.getAllElementsByClass("criteria");
-    let criteriaToRemove = button.parentElement.parentElement.parentElement;
-    
+    let criteriaDivs = document.getAllElementsByClass("criterion");
+    let criterionToRemove = button.parentElement.parentElement.parentElement;
+    criterionToRemove.remove();
   }
   </script>
 </head>
