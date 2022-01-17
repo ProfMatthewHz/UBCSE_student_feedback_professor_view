@@ -1,12 +1,12 @@
 <?php
 
 function check_level_response($crit, $level_name, $text, &$errorMsg) {
-  if (!isset($_POST[$crit.$level_name])) {
+  if (!isset($_POST[$crit."-".$level_name])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
     exit();
   }
-  $ret_val = trim($_POST[$crit.$level_name]);
+  $ret_val = trim($_POST[$crit."-".$level_name]);
   if (empty($ret_val)) {
     $errorMsg[$crit.$level_name] = "Response for ".$text." cannot be empty";
   }
@@ -69,7 +69,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $errorMsg[$crit_id.'-question'] = "Each criterion needs a description";
     }
     foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
-      $crit_data[$level_name] = check_level_response($crit_id, $level_name, $test, $errorMsg);
+      $crit_data[$level_name] = check_level_response($crit_id, $level_name, $text, $errorMsg);
     }
     $criteria[] = $crit_data;
     $crit_num = $crit_num + 1;
@@ -119,7 +119,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     let realName = name + "-question";
     let labId = name + "-q-lab";
     let retVal = document.createElement("div");
-    retVal.className = "row mx-1 justify-content-center";
+    retVal.className = "row mx-1 justify-content-start";
     retVal.innerHTML = '<div class="col-7"><div class="form-floating"><input type="text" id="'+realName+'" class="form-control" name="'+realName+'" required value=""><label id="'+labId+'" for="'+realName+'">Description of Trait:</label></div></div></div>';
     return retVal;
   }
@@ -196,7 +196,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
         if (!empty($criterion["topic"])) {
           echo 'document.getElementById("criterion'.$crit_num.'-question").value="'.$criterion["topic"].'";';
         }
-        if (isset($errorMsg["criterion'.$crit_num.'-question"])) {
+        if (isset($errorMsg['criterion'.$crit_num.'-question'])) {
           echo 'document.getElementById("criterion'.$crit_num.'-question").classList.add("is-invalid");';
           echo 'document.getElementById("criterion'.$crit_num.'-q-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-question'].'";';
         }
