@@ -55,12 +55,11 @@ $errorMsg = array();
           <label for="rubric-levels">Rubric Levels:</label>
         </div>
         <div class="container">
-
           <div id="rubric-level1" class="row justify-content-start border">
-            <div class="col-xs-1 align-top">
+            <div class="col align-top">
               <span style="font-size:small;color:DarkGrey">Best level:</span>
             </div>
-            <div class="col-xs-11">
+            <div class="col-11">
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
@@ -81,10 +80,10 @@ $errorMsg = array();
           </div>
 
           <div id="rubric-level2" class="row justify-content-start border">
-            <div class="col-xs-1 align-top">
+            <div class="col align-top">
               <span style="font-size:small;color:DarkGrey">2nd best level:</span>
             </div>
-            <div class="col-xs-11">
+            <div class="col-11">
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
@@ -105,10 +104,10 @@ $errorMsg = array();
           </div>
 
           <div id="rubric-level3" class="row justify-content-start border">
-            <div class="col-xs-1 align-top">
+            <div class="col align-top">
               <span style="font-size:small;color:DarkGrey">Middle level:</span>
             </div>
-            <div class="col-xs-11">
+            <div class="col-11">
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
@@ -129,10 +128,10 @@ $errorMsg = array();
           </div>
 
           <div id="rubric-level3" class="row justify-content-start border">
-            <div class="col-xs-1 align-top">
+            <div class="col align-top">
               <span style="font-size:small;color:DarkGrey">2nd worst level:</span>
             </div>
-            <div class="col-xs-11">
+            <div class="col-11">
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
@@ -153,10 +152,10 @@ $errorMsg = array();
           </div>
 
           <div id="rubric-level3" class="row justify-content-start border">
-            <div class="col-xs-1 align-top">
+            <div class="col align-top">
               <span style="font-size:small;color:DarkGrey">Worst level:</span>
             </div>
-            <div class="col-xs-11">
+            <div class="col-11">
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
