@@ -1,5 +1,23 @@
 <?php
 
+function check_level_name($level_names, $key, &$errorMsg) {
+  if (empty($level_names[$key])) {
+    $errorMsg[$key] = "Level MUST have a name";
+  } else {
+    foreach ($level_names as $level => $name) {
+      if ( ($level != $key) && ($level_names[$level] == $level_names[$key]) ) {
+        $errorMsg[$key] = "Each level must have a UNIQUE name";
+      }
+    }
+  }
+}
+
+function check_level_value($level_values, $key, &$errorMsg) {
+  if (!is_numeric($level_values[$key])) {
+    $errorMsg[$key] = "Value MUST be a number";
+  }
+}
+
 //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
@@ -24,14 +42,89 @@ $instructor->check_session($con, 0);
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
+// Stores data we will be relying upon later
+$levels = array("level1", "level2", "level3", "level4", "level5");
+$level_names = array();
+$level_values = array();
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
-  if (!isset($_POST['rubric-name']) || !isset($_POST['rubric-levels'])) {
+  if (!isset($_POST['rubric-name']) || !isset($_POST['rubric-level']) || 
+      !isset($_POST['level1-name']) || !isset($_POST['level1-value']) ||
+      !isset($_POST['level5-name']) || !isset($_POST['level5-value'])) {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
     exit();
+  }
+
+  // check CSRF token
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
+    http_response_code(403);
+    echo "Forbidden: Incorrect parameters.";
+    exit();
+  }
+
+  // Get all the data that was posted
+  $rubric_name = trim($_POST['rubric-name']);
+  $rubric_level = $_POST['rubric-level'];
+
+  foreach ($levels as $level) {
+    $name_key = $level.'-name';
+    if (isset($_POST[$name_key])) {
+      $level_names[$name_key] = trim($_POST[$name_key]);
+    } else {
+      $level_names[$name_key] = "";
+    }
+
+    $value_key = $level.'-value';
+    if (isset($_POST[$value_key])) {
+      $level_values[$value_key] = trim($_POST[$value_key]);
+    } else {
+      $level_values[$value_key] = "";
+    }   
+  }
+
+  // Check the level was legal
+  if ($rubric_level != '3' && $rubric_level != '4' && $rubric_level != '5') {
+    $errorMsg['rubric-level'] = "Choose a Level";
+  }
+
+  // Check that the names & values that are used are valid
+  check_level_name($level_names, "level1-name", $errorMsg);
+  check_level_name($level_names, "level5-name", $errorMsg);
+  check_level_value($level_values, "level1-value", $errorMsg);
+  check_level_value($level_values, "level5-value", $errorMsg);
+
+  if ( ($rubric_level == '3') || ($rubric_level == '5') ) {
+    check_level_name($level_names, "level3-name", $errorMsg);
+    check_level_value($level_values, "level3-value", $errorMsg);
+  }
+  if ( ($rubric_level == '4') || ($rubric_level == '5') ) {
+    check_level_name($level_names, "level2-name", $errorMsg);
+    check_level_value($level_values, "level2-value", $errorMsg);
+    check_level_name($level_names, "level4-name", $errorMsg);
+    check_level_value($level_values, "level4-value", $errorMsg);
+  }
+
+  // Finally, verify that this is a unique rubric name
+  if (empty($rubric_name)) {
+    $errorMsg['rubric-name'] = "Rubric MUST have a name";
+  } else {
+    $stmt = $con->prepare('SELECT id FROM rubrics WHERE description=?');
+    $stmt->bind_param('s', $rubric_name);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+
+    // only add if not a duplicate
+    if ($result->num_rows != 0) {
+      $errorMsg['rubric-name'] = "Rubric with that name already exists";
+    }
+  }
+  if (count($errorMsg) == 0) {
+    http_response_code(302);
+    header("Location: ".INSTRUCTOR_HOME."surveys.php");
   }
 }
 ?>
@@ -80,7 +173,7 @@ function makeLevelVisible(levelNum) {
   </script>
   <title>CSE Evaluation Survey System - Add Rubric</title>
 </head>
-<body class="text-center">
+<body class="text-center" onload="handleLevelChange()">
 <!-- Header -->
 <main>
   <div class="container-fluid">
@@ -97,8 +190,7 @@ function makeLevelVisible(levelNum) {
         </div>
 
         <div class="form-floating ms-1 mb-3">
-          <select class="form-select" id="rubric-level" name="rubric-level" required onchange="handleLevelChange();">
-            <option value="-1" disabled <?php if (!isset($rubric_level)) {echo 'selected';} ?>>Levels Used</option>
+          <select class="form-select <?php if(isset($errorMsg["rubric-level"])) {echo "is-invalid ";} ?>" id="rubric-level" name="rubric-level" required onchange="handleLevelChange();">
             <option value="3" <?php if (isset($rubric_level) && $rubric_level == 3) {echo 'selected';} ?>>Highest-Middle-Lowest</option>
             <option value="4" <?php if (isset($rubric_level) && $rubric_level == 4) {echo 'selected';} ?>>Highest-High-Low-Lowest</option>
             <option value="5" <?php if (isset($rubric_level) && $rubric_level == 5) {echo 'selected';} ?>>Highest-High-Middle-Low-Lowest</option>
@@ -115,13 +207,13 @@ function makeLevelVisible(levelNum) {
           <div class="row mx-1">
             <div class="col-sm-8">
               <div class="form-floating mt-1 mb-3">
-                <input id="level1-name" type="text" class="form-control <?php if(isset($errorMsg["level1-name"])) {echo "is-invalid ";} ?>" name="level1-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
+                <input id="level1-name" type="text" class="form-control <?php if(isset($errorMsg["level1-name"])) {echo "is-invalid ";} ?>" name="level1-name" required value="<?php if (key_exists('level1-name', $level_names)) {echo htmlspecialchars($level_names['level1-name']);} ?>"></input>
                 <label for="level1-name">Name:</label>
               </div>
             </div>
             <div class="col-sm-4 gl-3">
               <div class="form-floating mt-1 mb-3">
-                <input id="level1-value" type="number" class="form-control <?php if(isset($errorMsg["level1-value"])) {echo "is-invalid ";} ?>" name="level1-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '4'; } ?>"></input>
+                <input id="level1-value" type="number" class="form-control <?php if(isset($errorMsg["level1-value"])) {echo "is-invalid ";} ?>" name="level1-value" required value="<?php if (key_exists('level1-value', $level_values)) {echo htmlspecialchars($level_values['level1-value']);} else { echo '4'; } ?>"></input>
                 <label for="level1-value">Points:</label>
               </div>
             </div>
@@ -137,13 +229,13 @@ function makeLevelVisible(levelNum) {
           <div class="row mx-1">
             <div class="col-sm-8">
               <div class="form-floating mt-1 mb-3">
-                <input id="level2-name" type="text" class="form-control <?php if(isset($errorMsg["level2-name"])) {echo "is-invalid ";} ?>" name="level2-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
+                <input id="level2-name" type="text" class="form-control <?php if(isset($errorMsg["level2-name"])) {echo "is-invalid ";} ?>" name="level2-name" required value="<?php if (key_exists('level2-name', $level_names)) {echo htmlspecialchars($level_names['level2-name']);} ?>"></input>
                 <label for="level2-name">Name:</label>
               </div>
             </div>
             <div class="col-sm-4 gl-3">
               <div class="form-floating mt-1 mb-3">
-                <input id="level2-value" type="number" class="form-control <?php if(isset($errorMsg["level2-value"])) {echo "is-invalid ";} ?>" name="level2-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '3'; } ?>"></input>
+                <input id="level2-value" type="number" class="form-control <?php if(isset($errorMsg["level2-value"])) {echo "is-invalid ";} ?>" name="level2-value" required value="<?php if (key_exists('level2-value', $level_values)) {echo htmlspecialchars($level_values['level2-value']);} else { echo '3'; } ?>"></input>
                 <label for="level2-value">Points:</label>
               </div>
             </div>
@@ -159,13 +251,13 @@ function makeLevelVisible(levelNum) {
           <div class="row mx-1">
             <div class="col-sm-8">
               <div class="form-floating mt-1 mb-3">
-                <input id="level3-name" type="text" class="form-control <?php if(isset($errorMsg["level3-name"])) {echo "is-invalid ";} ?>" name="level3-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
+                <input id="level3-name" type="text" class="form-control <?php if(isset($errorMsg["level3-name"])) {echo "is-invalid ";} ?>" name="level3-name" required value="<?php if (key_exists('level3-name', $level_names)) {echo htmlspecialchars($level_names['level3-name']);} ?>"></input>
                 <label for="level3-name">Name:</label>
               </div>
             </div>
             <div class="col-sm-4 gl-3">
               <div class="form-floating mt-1 mb-3">
-                <input id="level3-value" type="number" class="form-control <?php if(isset($errorMsg["level3-value"])) {echo "is-invalid ";} ?>" name="level3-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '2'; } ?>"></input>
+                <input id="level3-value" type="number" class="form-control <?php if(isset($errorMsg["level3-value"])) {echo "is-invalid ";} ?>" name="level3-value" required value="<?php if (key_exists('level3-value', $level_values)) {echo htmlspecialchars($level_values['level3-value']);} else { echo '2'; } ?>"></input>
                 <label for="level3-value">Points:</label>
               </div>
             </div>
@@ -181,13 +273,13 @@ function makeLevelVisible(levelNum) {
           <div class="row mx-1">
             <div class="col-sm-8">
               <div class="form-floating mt-1 mb-3">
-                <input id="level4-name" type="text" class="form-control <?php if(isset($errorMsg["level4-name"])) {echo "is-invalid ";} ?>" name="level4-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
+                <input id="level4-name" type="text" class="form-control <?php if(isset($errorMsg["level4-name"])) {echo "is-invalid ";} ?>" name="level4-name" required value="<?php if (key_exists('level4-name', $level_names)) {echo htmlspecialchars($level_names['level4-name']);} ?>"></input>
                 <label for="level4-name">Name :</label>
               </div>
             </div>
             <div class="col-sm-4 gl-3">
               <div class="form-floating mt-1 mb-3">
-                <input id="level4-value" type="number" class="form-control <?php if(isset($errorMsg["level4-value"])) {echo "is-invalid ";} ?>" name="level4-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '1'; } ?>"></input>
+                <input id="level4-value" type="number" class="form-control <?php if(isset($errorMsg["level4-value"])) {echo "is-invalid ";} ?>" name="level4-value" required value="<?php if (key_exists('level4-value', $level_values)) {echo htmlspecialchars($level_values['level4-value']);} else { echo '1'; } ?>"></input>
                 <label for="level4-value">Points:</label>
               </div>
             </div>
@@ -203,13 +295,13 @@ function makeLevelVisible(levelNum) {
           <div class="row mx-1">
             <div class="col-sm-8">
               <div class="form-floating mt-1 mb-3">
-                <input id="level5-name" type="text" class="form-control <?php if(isset($errorMsg["level5-name"])) {echo "is-invalid ";} ?>" name="level5-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
+                <input id="level5-name" type="text" class="form-control <?php if(isset($errorMsg["level5-name"])) {echo "is-invalid ";} ?>" name="level5-name" required value="<?php if (key_exists('level5-name', $level_names)) {echo htmlspecialchars($level_names['level5-name']);} ?>"></input>
                 <label for="level5-name">Name:</label>
               </div>
             </div>
             <div class="col-sm-4 gl-3">
               <div class="form-floating mt-1 mb-3">
-                <input id="level5-value" type="number" class="form-control <?php if(isset($errorMsg["level5-value"])) {echo "is-invalid ";} ?>" name="level5-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '0'; } ?>"></input>
+                <input id="level5-value" type="number" class="form-control <?php if(isset($errorMsg["level5-value"])) {echo "is-invalid ";} ?>" name="level5-value" required value="<?php if (key_exists('level5-value', $level_values)) {echo htmlspecialchars($level_values['level5-value']);} else { echo '0'; } ?>"></input>
                 <label for="level5-value">Points:</label>
               </div>
             </div>

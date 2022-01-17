@@ -76,36 +76,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $semester = SEMESTER_MAP[$semester];
 
   $course_year = trim($_POST['course-year']);
-  if (empty($course_year))
-  {
+  if (empty($course_year)) {
     $errorMsg['course-year'] = 'Course year cannot be blank.';
-  }
-  else if(!ctype_digit($course_year) || strlen($course_year) != 4)
-  {
+  } else if(!ctype_digit($course_year) || strlen($course_year) != 4) {
     $errorMsg["course-year"] = "Please enter a valid 4-digit year.";
   }
 
   // now validate the roster file
-  if ($_FILES['roster-file']['error'] == UPLOAD_ERR_INI_SIZE)
-  {
+  if ($_FILES['roster-file']['error'] == UPLOAD_ERR_INI_SIZE) {
     $errorMsg['roster-file'] = 'The selected file is too large.';
-  }
-  else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_PARTIAL)
-  {
+  } else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_PARTIAL) {
     $errorMsg['roster-file'] = 'The selected file was only paritally uploaded. Please try again.';
-  }
-  else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_NO_FILE)
-  {
+  } else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_NO_FILE) {
     $errorMsg['roster-file'] = 'A roster file must be provided.';
-  }
-  else if ($_FILES['roster-file']['error'] != UPLOAD_ERR_OK)
-  {
+  } else if ($_FILES['roster-file']['error'] != UPLOAD_ERR_OK) {
     $errorMsg['roster-file'] = 'An error occured when uploading the file. Please try again.';
   }
   // start parsing the file
-  else
-  {
-
+  else{
     $file_handle = @fopen($_FILES['roster-file']['tmp_name'], "r");
 
     // catch errors or continue parsing the file
