@@ -23,7 +23,8 @@ $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
 $errorMsg = array();
-
+$question_names = array();
+$answer_names = array();
 // Verify we have already defined the rubric basics
 if (!isset($_SESSION["rubric"])) {
   http_response_code(400);

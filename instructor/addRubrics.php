@@ -152,7 +152,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION["rubric"] = array("name" => $rubric_name);
     $_SESSION["rubric"]["levels"] = array("names" => $level_names, "values" => $level_values);
     http_response_code(302);
-    header("Location: ".INSTRUCTOR_HOME."surveys.php");
+    header("Location: ".INSTRUCTOR_HOME."defineCriterion.php");
   }
 }
 ?>
