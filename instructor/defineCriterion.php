@@ -65,7 +65,7 @@ if (!isset($_SESSION["rubric"])) {
             <span style="font-size:small;color:DarkGrey">Criterion #1:</span>
           </div>
         </div>
-        <div class="row mt-5 mx-1">;
+        <div class="row mx-1">
           <div class="col-auto form-floating">
             <input type="text" id="criterion1-question" class="form-control <?php if(isset($errorMsg["criterion1-question"])) {echo "is-invalid ";} ?>" name="criterion1-question" required value="<?php if (key_exists('criterion1-question', $question_names)) {echo htmlspecialchars($question_names['criterion1-question']);} ?>"></input>
             <label for="criterion1-question"><?php if(isset($errorMsg["criterion1-question"])) {echo $errorMsg["criterion1-question"]; } else { echo "Description of Trait:";} ?></label>
@@ -78,13 +78,22 @@ if (!isset($_SESSION["rubric"])) {
             echo '<div class="col ';
             echo $end_str;
             echo '<div class="form-floating">
-              <textarea id="criterion1-'.$name.'" class="form-control <?php if(isset($errorMsg["criterion1-'.$name.'"])) {echo "is-invalid ";} ?>" name="criterion1-'.$name.'" required value="';
+              <textarea id="criterion1-'.$name.'" class="form-control ';
+              if (isset($errorMsg["criterion1-'.$name.'"])) {
+                echo "is-invalid ";
+              }
+              echo '" name="criterion1-'.$name.'" required value="';
               if (key_exists('criterion1-'.$name, $answer_names)) {
                 echo htmlspecialchars($answer_names['criterion1-'.$name]);
-                }
-                echo '"></input>
-              <label for="criterion1-'.$name.'"><?php if(isset($errorMsg["criterion1-'.$name.'"])) {echo $errorMsg["criterion1-'.$name.'"]; } else { echo "Response for '.$name.':";} ?></label>';
-              echo '</div></div>';
+              }
+              echo '"></input>
+              <label for="criterion1-'.$name.'">';
+              if (isset($errorMsg["criterion1-'.$name.'"])) {
+                echo $errorMsg["criterion1-'.$name.'"]; 
+              } else { 
+                echo "Response for '.$name.':";
+              }
+              echo '</label></div></div>';
             // Update formatting so that all but first score use size correctly
             $end_str = 'ms-auto">';
           }
