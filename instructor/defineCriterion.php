@@ -99,20 +99,18 @@ if (!isset($_SESSION["rubric"])) {
           }
         ?>
       </div>
-      <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
-      <div class="row justify-content-md-center mt-5 mx-1">
-        <div class="col">
-          <button class="btn btn-outline-secondary">+ Add Criterion</button>
-        </div>
-        <div class="col offset-10">
-        <input class="btn btn-success" type="submit" value="Submit Rubic"></input>
-        </div>
+    </div>
+    <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
+    <div class="row justify-content-md-center mt-5 mx-1">
+      <div class="col">
+        <button class="btn btn-outline-secondary">+ Add Criterion</button>
       </div>
-    </form>
-    
+      <div class="col offset-10">
+        <input class="btn btn-success" type="submit" value="Submit Rubic"></input>
       </div>
     </div>
-  </div>
+    </form>
+      </div>
 </main>
 </body>
 </html>
