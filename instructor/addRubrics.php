@@ -92,9 +92,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="form-floating ms-1 mb-3">
           <select class="form-select" id="rubric-level" name="rubric-level" required onchange="handleLevelChange();">
             <option value="-1" disabled <?php if (!isset($rubric_level)) {echo 'selected';} ?>>Levels Used</option>
-            <option value="3" <?php if ($isset($rubric_level) && $rubric_level == 3) {echo 'selected';} ?>>Highest-Middle-Lowest</option>
-            <option value="4" <?php if ($isset($rubric_level) && $rubric_level == 4) {echo 'selected';} ?>>Highest-High-Low-Lowest</option>
-            <option value="5" <?php if ($isset($rubric_level) && $rubric_level == 5) {echo 'selected';} ?>>Highest-High-Middle-Low-Lowest</option>
+            <option value="3" <?php if (isset($rubric_level) && $rubric_level == 3) {echo 'selected';} ?>>Highest-Middle-Lowest</option>
+            <option value="4" <?php if (isset($rubric_level) && $rubric_level == 4) {echo 'selected';} ?>>Highest-High-Low-Lowest</option>
+            <option value="5" <?php if (isset($rubric_level) && $rubric_level == 5) {echo 'selected';} ?>>Highest-High-Middle-Low-Lowest</option>
           </select>
           <label for="rubric-level"><?php if(isset($errorMsg["rubric-level"])) {echo $errorMsg["rubric-level"]; } else { echo "Types of Levels Rubric Uses:";} ?></label>
         </div>
