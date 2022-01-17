@@ -337,9 +337,9 @@ function makeLevelVisible(levelNum) {
         </div>
       </div>
 
-      <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
+      <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
 
-      <input class="btn btn-success" type="submit" value="Define Criteria" />
+      <input class="btn btn-success" type="submit" value="Define Criteria"></input>
     </form>
 </div>
 </main>
