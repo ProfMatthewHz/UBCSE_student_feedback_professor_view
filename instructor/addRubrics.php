@@ -44,30 +44,37 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <script>
+  function makeLevelHidden(levelNum) {
+    let regionElem = document.getElementById("rubric-level" + levelNum);
+    let nameElem = document.getElementById("level" + levelNum + "-name");
+    let valueElem = document.getElementById("level" + levelNum + "-value");
+    regionElem.style.display = 'none';
+    nameElem.toggleAttribute('required', false);
+    valueElem.toggleAttribute('required', false);
+  } 
+function makeLevelVisible(levelNum) {
+    let regionElem = document.getElementById("rubric-level" + levelNum);
+    let nameElem = document.getElementById("level" + levelNum + "-name");
+    let valueElem = document.getElementById("level" + levelNum + "-value");
+    regionElem.style.display = 'block';
+    nameElem.toggleAttribute('required', true);
+    valueElem.toggleAttribute('required', true)
+  } 
   function handleLevelChange() {
     let selectObject = document.getElementById("rubric-level");
     let numLevels = selectObject.value;
     if (numLevels == "3") {
-      let highObject = document.getElementById("rubric-level2");
-      highObject.style.display = 'none';
-      let lowObject = document.getElementById("rubric-level4");
-      lowObject.style.display = 'none';
-      let midObject = document.getElementById("rubric-level3");
-      midObject.style.display = 'block';
+      makeLevelHidden("2");
+      makeLevelHidden("4");
+      makeLevelVisible("3");
     } else if (numLevels == "4") {
-      let highObject = document.getElementById("rubric-level2");
-      highObject.style.display = 'block';
-      let lowObject = document.getElementById("rubric-level4");
-      lowObject.style.display = 'block';
-      let midObject = document.getElementById("rubric-level3");
-      midObject.style.display = 'none';
+      makeLevelVisible("2");
+      makeLevelVisible("4");
+      makeLevelHidden("3");
     } else {
-      let highObject = document.getElementById("rubric-level2");
-      highObject.style.display = 'block';
-      let lowObject = document.getElementById("rubric-level4");
-      lowObject.style.display = 'block';
-      let midObject = document.getElementById("rubric-level3");
-      midObject.style.display = 'block';     
+      makeLevelVisible("2");
+      makeLevelVisible("4");
+      makeLevelVisible("3");
     }
   }
   </script>
@@ -99,7 +106,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           <label for="rubric-level"><?php if(isset($errorMsg["rubric-level"])) {echo $errorMsg["rubric-level"]; } else { echo "Types of Levels Rubric Uses:";} ?></label>
         </div>
 
-        <div id="rubric-level1" class="border-top border-bottom ms-1 mb-3">
+        <div id="rubric-level1" class="border-top border-bottom">
           <div class="row mx-1">
             <div class="col text-start align-top">
               <span style="font-size:small;color:DarkGrey">Highest level:</span>
@@ -121,7 +128,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           </div>
         </div>
 
-        <div id="rubric-level2" class="border-top border-bottom ms-1 mb-3">
+        <div id="rubric-level2" class="border-top border-bottom">
           <div class="row mx-1">
             <div class="col text-start align-top">
               <span style="font-size:small;color:DarkGrey">High level:</span>
@@ -143,7 +150,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           </div>
         </div>
 
-        <div id="rubric-level3" class="border-top border-bottom ms-1 mb-3">
+        <div id="rubric-level3" class="border-top border-bottom">
           <div class="row mx-1">
             <div class="col text-start align-top">
               <span style="font-size:small;color:DarkGrey">Middle level:</span>
@@ -165,7 +172,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           </div>
         </div>
 
-        <div id="rubric-level4" class="border-top border-bottom ms-1 mb-3">
+        <div id="rubric-level4" class="border-top border-bottom">
           <div class="row mx-1">
             <div class="col text-start align-top">
               <span style="font-size:small;color:DarkGrey">Low level:</span>
@@ -187,7 +194,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           </div>
         </div>
 
-        <div id="rubric-level2" class="border-top border-bottom ms-1 mb-3">
+        <div id="rubric-level2" class="border-top border-bottom">
           <div class="row mx-1">
             <div class="col text-start align-top">
               <span style="font-size:small;color:DarkGrey">Lowest level:</span>
