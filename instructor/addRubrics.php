@@ -2,7 +2,7 @@
 
 function get_data_posted(&$data_array, $level, $suffix) {
   $key = $level.$suffix;
-  if (!isset($_POST[$key])) {
+  if (isset($_POST[$key])) {
     $data_array[$key] = trim($_POST[$key]);
   } else {
     $data_array[$key] = "";
@@ -33,7 +33,7 @@ function check_value_monotonic($level_values, &$errorMsg) {
     if (!key_exists($level, $errorMsg)) {
       $val = floatval($value);
       if ($val > $prev_level) {
-        $errorMsg[$level] = "Higher levels CANNOT have lower value";
+        $errorMsg[$level] = "Lower level CANNOT have higher value";
       }
       $prev_level = $val;
     }
