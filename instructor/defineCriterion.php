@@ -1,5 +1,18 @@
 <?php
 
+function check_level_response($crit, $level_name, $text, &$errorMsg) {
+  if (!isset($_POST[$crit.$level_name])) {
+    http_response_code(403);
+    echo "Forbidden: Incorrect parameters.";
+    exit();
+  }
+  $ret_val = trim($_POST[$crit.$level_name]);
+  if (empty($ret_val)) {
+    $errorMsg[$crit.$level_name] = "Response for ".$text." cannot be empty";
+  }
+  return $ret_val;
+}
+
 //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
@@ -26,14 +39,65 @@ $errorMsg = array();
 $question_names = array();
 $answer_names = array();
 
-
-
 // Verify we have already defined the rubric basics
 if (!isset($_SESSION["rubric"])) {
   http_response_code(400);
   echo "Bad Request: Missing parmeters.";
   exit();
 }
+
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+  // make sure minimum set of values exist
+  if (!isset($_POST['criterion1-question'])) {
+    http_response_code(400);
+    echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+  // check CSRF token
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token'])) {
+    http_response_code(403);
+    echo "Forbidden: Incorrect parameters.";
+    exit();
+  }
+  $crit_num = 1;
+  $criteria = array();
+  $crit_id = "criterion".$crit_num;
+  while (key_exists($crit_id.'-question', $_POST)) {
+    $crit_data = array();
+    
+    $crit_data["topic"] = trim($_POST[$crit_id.'-question']);
+    if (empty($crit_data["topic"])) {
+      $errorMsg[$crit_id.'-question'] = "Each criterion needs a description";
+    }
+    foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
+      $crit_data[$level_name] = check_level_response($crit_id, $level_name, $test, $errorMsg);
+    }
+    $criteria[] = $crit_data;
+    $crit_num = $crit_num + 1;
+    $crit_id = "criterion".$crit_num;
+  }
+  for ($i = 1; $i < $crit_num; $i++) {
+    $trait = $criteria[$i-1]["topic"];
+    if (!empty($trait)) {
+      for ($j = 1; $j < $crit_num; $j++) {
+        if ( ($i != $j) && ($trait == $criteria[$j-1]["topic"]) ) {
+          $errorMsg["criterion".$i.'-question'] = "Each criterion needs UNIQUE description";
+        }
+      }
+    }
+  }
+  if (count($errorMsg) == 0) {
+    // Upload the rubric
+
+
+    // And go back to the main page.
+    unset($_SESSION["rubric"]);
+    http_response_code(302);
+    header("Location: ".INSTRUCTOR_HOME."surveys.php");
+  }
+}
+
 $level_keys_for_js = json_encode(array_keys($_SESSION["rubric"]["levels"]["names"]));
 $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["names"]));
 ?>
@@ -57,8 +121,8 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     let realName = name + "-question";
     let labId = name + "-q-lab";
     let retVal = document.createElement("div");
-    retVal.className = "row mx-1";
-    retVal.innerHTML = '<div class="col-3"><div class="form-floating"><input type="text" id="'+realName+'" class="form-control" name="'+realName+'" required value=""><label id="'+labId+'" for="'+realName+'">Description of Trait:"</label></div></div></div>';
+    retVal.className = "row mx-1 justify-content-center";
+    retVal.innerHTML = '<div class="col-7"><div class="form-floating"><input type="text" id="'+realName+'" class="form-control" name="'+realName+'" required value=""><label id="'+labId+'" for="'+realName+'">Description of Trait:</label></div></div></div>';
     return retVal;
   }
   function makeCritLevelRow(name) {
@@ -112,18 +176,49 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
       questionLab.id = "criterion" + prev + "-q-lab";
       questionLab.for = "criterion" + prev + "-question";
       questionInp.id = "criterion" + prev + "-question";
+      questionInp.name = questionInp.id;
       for (let key of keys) {
         let questionInp = document.getElementById("criterion" + i + "-"+key);
         let questionLab = document.getElementById("criterion" + i + "-"+key+"-lab");
         questionLab.id = "criterion" + prev + "-" + key + "-lab";
         questionLab.for = "criterion" + prev + "-" + key;
         questionInp.id = "criterion" + prev + "-" + key;
+        questionInp.name = questionInp.id;
       }
     }
   }
+  function initialize() {
+    <?php
+    if (count($criteria) == 0) {
+      echo 'addCriteria();\n';
+    } else {
+      $crit_num = 1;
+      foreach ($criteria as $criterion) {
+        echo 'addCriteria();\n';
+        if (!empty($criterion["topic"])) {
+          echo 'document.getElementById("criterion'.$crit_num.'-question").value="'.$criterion["topic"].'";\n';
+        }
+        if (isset($errorMsg["criterion'.$crit_num.'-question"])) {
+          echo 'document.getElementById("criterion'.$crit_num.'-question").classList.add("is-invalid");\n';
+          echo 'document.getElementById("criterion'.$crit_num.'-q-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-question'].'";\n';
+        }
+        foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
+          if (!empty($criterion[$level_name])) {
+            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").value="'.$criterion[$level_name].'";\n';
+          }
+          if (isset($errorMsg['criterion'.$crit_num.'-'.$level_name])) {
+            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").classList.add("is-invalid");\n';
+            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-'.$level_name].'";\n';
+          }
+        }
+        $crit_num = $crit_num + 1;
+      }
+    }
+    ?>
+  }
   </script>
 </head>
-<body class="text-center">
+<body class="text-center" onload="initialize();">
 <!-- Header -->
 <main>
   <div class="container-fluid">
@@ -141,62 +236,18 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
 
     <form class="mt-5 mx-1" id="define-rubric" method="post">
       <div id="crit-list">
-      <div id="criterion1" class="border-top border-bottom criterion">
-        <div class="row justify-content-between mx-1 mt-1">
-          <div class="col text-start align-top">
-            <span id="criterion1-num" style="font-size:small;color:DarkGrey">Criterion #1:</span>
-          </div>
-          <div class="col">
-             <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCriterion(this)">-Remove Criterion</button>
-          </div>
+      </div>
+      <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
+      <div class="row justify-content-start mx-1 mt-2">
+        <div class="col">
+          <button type="button" class="btn btn-outline-secondary" onclick="addCriterion()">+ Add Criterion</button>
         </div>
-        <div class="row mx-1">
-          <div class="col-3"><div class="form-floating">
-            <input type="text" id="criterion1-question" class="form-control <?php if(isset($errorMsg["criterion1-question"])) {echo "is-invalid ";} ?>" name="criterion1-question" required value="<?php if (key_exists('criterion1-question', $question_names)) {echo htmlspecialchars($question_names['criterion1-question']);} ?>"></input>
-            <label id="criterion1-q-lab" for="criterion1-question"><?php if(isset($errorMsg["criterion1-question"])) {echo $errorMsg["criterion1-question"]; } else { echo "Description of Trait:";} ?></label>
-          </div></div>
+        <div class="col offset-5">
+          <input class="btn btn-success" type="submit" value="Submit Rubic"></input>
         </div>
-        <div class="row pt-1 mx-1 mb-3 align-items-center">
-        <?
-          $end_str = '">';
-          foreach ($_SESSION["rubric"]["levels"]["names"] as $key => $name) { 
-            echo '<div class="col ';
-            echo $end_str;
-            echo '<div class="form-floating">
-              <textarea id="criterion1-'.$key.'" class="form-control ';
-              if (isset($errorMsg["criterion1-'.$key.'"])) {
-                echo "is-invalid ";
-              }
-              echo '" name="criterion1-'.$key.'" required value="';
-              if (key_exists('criterion1-'.$key, $answer_names)) {
-                echo htmlspecialchars($answer_names['criterion1-'.$key]);
-              }
-              echo '"></textarea>
-              <label id="criterion1-'.$key.'-lab" for="criterion1-'.$key.'">';
-              if (isset($errorMsg["criterion1-'.$key.'"])) {
-                echo $errorMsg["criterion1-'.$key.'"]; 
-              } else { 
-                echo 'Response for '.$name.':';
-              }
-              echo '</label></div></div>';
-            // Update formatting so that all but first score use size correctly
-            $end_str = 'ms-auto">';
-          }
-        ?>
       </div>
-    </div>
-    </div>
-    <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
-    <div class="row justify-content-start mx-1 mt-2">
-      <div class="col">
-        <button type="button" class="btn btn-outline-secondary" onclick="addCriterion()">+ Add Criterion</button>
-      </div>
-      <div class="col offset-5">
-        <input class="btn btn-success" type="submit" value="Submit Rubic"></input>
-      </div>
-    </div>
     </form>
-      </div>
+  </div>
 </main>
 </body>
 </html>

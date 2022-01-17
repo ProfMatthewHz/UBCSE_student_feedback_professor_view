@@ -21,7 +21,7 @@ CREATE TABLE `surveys` (
  `course_id` int(11) NOT NULL,
  `start_date` datetime NOT NULL,
  `expiration_date` datetime NOT NULL,
- `name` varchar(30),
+ `name` CHARACTER SET utf8 NOT NULL,
  `rubric_id` int(11) NOT NULL,
  PRIMARY KEY (`id`),
  UNIQUE KEY `id` (`id`),
@@ -84,22 +84,6 @@ CREATE TABLE `reviewers` (
  CONSTRAINT `reviewers_teammate_constraint` FOREIGN KEY (`teammate_email`) REFERENCES `students` (`email`)
 ) ENGINE=InnoDB;
 
-
--- scores TABLE
--- each row represents the scores submitted. These scores are for the evaluation the row connects to
--- in the eval table using the eval_id field
-CREATE TABLE `scores` (
- `evals_id` int(11) NOT NULL,
- `score1` int(11) NOT NULL,
- `score2` int(11) NOT NULL,
- `score3` int(11) NOT NULL,
- `score4` int(11) NOT NULL,
- `score5` int(11) NOT NULL,
- PRIMARY KEY (`evals_id`),
- UNIQUE KEY `evals_id` (`evals_id`),
- CONSTRAINT `scores_evals_id_constraint` FOREIGN KEY (`evals_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB;
-
 -- student_login TABLE
 -- each row represents a student being able to login to the system. this is used to support the 2-step login approach
 -- that relies on UBIT to provide the necessary requirements under FERPA ;)
@@ -113,40 +97,41 @@ CREATE TABLE `student_login` (
  CONSTRAINT `student_login_email_constraint` FOREIGN KEY (`email`) REFERENCES `students` (`email`)
 ) ENGINE=InnoDB;
 
--- FUTURE EXPANSION OPTION
 -- these tables were created so that we can allow faculty to tailor the questions & answers with each survey
 -- FIXME: MHz is uncertain if they get used
 CREATE TABLE `rubrics` (
- `id` int(11) NOT NULL AUTO_INCREMENT,
- `description` varchar(500) NOT NULL,
- PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
-CREATE TABLE `rubric_questions` (
- `id` int(11) NOT NULL AUTO_INCREMENT,
- `rubric_id` int(11) NOT NULL,
- `question` text NOT NULL,
- PRIMARY KEY (`id`),
- KEY `fk_rubric` (`rubric_id`),
- CONSTRAINT `rubric_questions_ibfk_1` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB;
+  `id` int(11) NOT NULL,
+  `description` varchar(500) NOT NULL,
+  PRIMARY KEY (`id`);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `rubric_responses` (
- `id` int(11) NOT NULL AUTO_INCREMENT,
- `question_id` int(11) NOT NULL,
- `response` text NOT NULL,
- PRIMARY KEY (`id`),
- KEY `fk_questions` (`question_id`),
- CONSTRAINT `rubric_responses_ibfk_1` FOREIGN KEY (`question_id`) REFERENCES `rubric_questions` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB;
+  `id` int(11) NOT NULL,
+  `topic_id` int(11) NOT NULL,
+  `score_id` int(11) NOT NULL,
+  `response` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `rubric_scores` (
+  `id` int(11) NOT NULL,
+  `rubric_id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `score` tinyint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `rubric_topics` (
+  `id` int(11) NOT NULL,
+  `rubric_id` int(11) NOT NULL,
+  `question` text NOT NULL,
+  PRIMARY KEY (`id`),
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- this is a replacement for the scores table which allows for variable numbers of questions
 -- it would be
 CREATE TABLE `scores2` (
- `id` int(11) NOT NULL AUTO_INCREMENT,
- `evals_id` int(11) NOT NULL,
- `score` int(11) NOT NULL,
- `question_number` int(11) NOT NULL,
+ `eval_id` int(11) NOT NULL,
+ `topic_id` int(11) NOT NULL,
+ `score_id` int(11) DEFAULT NULL
  PRIMARY KEY (`id`),
  KEY `fk_evals` (`evals_id`),
  KEY `quest_num` (`question_number`),
