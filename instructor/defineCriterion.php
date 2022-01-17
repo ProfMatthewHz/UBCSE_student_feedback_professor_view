@@ -36,8 +36,7 @@ $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
 $errorMsg = array();
-$question_names = array();
-$answer_names = array();
+$criteria = array();
 
 // Verify we have already defined the rubric basics
 if (!isset($_SESSION["rubric"])) {
@@ -61,7 +60,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
   $crit_num = 1;
-  $criteria = array();
   $crit_id = "criterion".$crit_num;
   while (key_exists($crit_id.'-question', $_POST)) {
     $crit_data = array();
