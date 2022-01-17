@@ -25,12 +25,17 @@ $instructor->check_session($con, 0);
 $errorMsg = array();
 $question_names = array();
 $answer_names = array();
+
+
+
 // Verify we have already defined the rubric basics
 if (!isset($_SESSION["rubric"])) {
   http_response_code(400);
   echo "Bad Request: Missing parmeters.";
   exit();
 }
+$level_keys_for_js = json_encode(array_keys($_SESSION["rubric"]["levels"]["names"]));
+$level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["names"]));
 ?>
 <!doctype html>
 <html lang="en">
@@ -59,13 +64,22 @@ if (!isset($_SESSION["rubric"])) {
     let retVal = document.createElement("div");
     retVal.className = "row pt-1 mx-1 mb-3 align-items-center";
     let endStr = '">';
-
-    retVal.innerHTML = '<div class="col-3"><div class="form-floating"><input type="text" id="'+realName+'" class="form-control" name="'+realName+'" required value=""><label for="'+realName+'">Description of Trait:"</label></div></div></div>';
+    const keys = <?php echo $level_keys_for_js ?>;
+    const names = <?php echo $level_names_for_js ?>;
+    let htmlStr = "";
+    for (let idx in keys) {
+      loopId = name+'-'+keys[idx];
+      htmlStr = htmlStr + '<div class="col' +$end_str+'<div class="form-floating"><textarea id="'+loopId+'" class="form-control" name="'+loopId+'" required value=""></textarea>';
+      htmlStr = htmlStr + '<label for="'+loopId+'">Response for '+names[idx]+':</label></div></div>';
+      // Update formatting so that all but first score use size correctly
+      end_str = ' ms-auto">';
+    }
+    retVal.innerHTML = htmlStr;
     return retVal;
   }
 
   function addCriterion() {
-    let criteriaDivs = document.getAllElementsByClass("criterion");
+    let criteriaDivs = document.getElementsByClassName("criterion");
     let criterionNum = criteriaDivs.length + 1;
     let criterion = document.createElement("div");
     criterion.id = "criterion" + criterionNum;
@@ -73,12 +87,14 @@ if (!isset($_SESSION["rubric"])) {
     let topRow = makeCritTopRow(criterionNum)
     criterion.appendChild(topRow);
     let midRow = makeCritNameRow(criterion.id);
-    criterion.appendChild(midRow);    
-    let rubricForm = document.getElementById("define-rubric");
-    rubricForm.appendChild(criterion);
+    criterion.appendChild(midRow);
+    let lastRow = makeCritLevelRow(criterion.id);
+    criterion.appendChild(lastRow);
+    let criterionList = document.getElementById("crit-list");
+    criterionList.appendChild(criterion);
   }
   function removeCriterion(button) {
-    let criteriaDivs = document.getAllElementsByClass("criterion");
+    let criteriaDivs = document.getElementsByClassName("criterion");
     let criterionToRemove = button.parentElement.parentElement.parentElement;
     criterionToRemove.remove();
   }
@@ -101,6 +117,7 @@ if (!isset($_SESSION["rubric"])) {
     </div>
 
     <form class="mt-5 mx-1" id="define-rubric" method="post">
+      <div id="crit-list">
       <div id="criterion1" class="border-top border-bottom criterion">
         <div class="row justify-content-between mx-1">
           <div class="col text-start align-top">
@@ -145,6 +162,7 @@ if (!isset($_SESSION["rubric"])) {
           }
         ?>
       </div>
+    </div>
     </div>
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
     <div class="row justify-content-start mx-1 mt-2">
