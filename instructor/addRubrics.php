@@ -2,7 +2,7 @@
 
 function get_data_posted(&$data_array, $level, $suffix) {
   $key = $level.$suffix;
-  if (!empty($_POST[$key])) {
+  if (!isset($_POST[$key])) {
     $data_array[$key] = trim($_POST[$key]);
   } else {
     $data_array[$key] = "";
