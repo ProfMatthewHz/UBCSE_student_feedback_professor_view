@@ -188,25 +188,25 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
   function initialize() {
     <?php
     if (count($criteria) == 0) {
-      echo 'addCriteria();\n';
+      echo 'addCriterion();';
     } else {
       $crit_num = 1;
       foreach ($criteria as $criterion) {
-        echo 'addCriteria();\n';
+        echo 'addCriterion();';
         if (!empty($criterion["topic"])) {
-          echo 'document.getElementById("criterion'.$crit_num.'-question").value="'.$criterion["topic"].'";\n';
+          echo 'document.getElementById("criterion'.$crit_num.'-question").value="'.$criterion["topic"].'";';
         }
         if (isset($errorMsg["criterion'.$crit_num.'-question"])) {
-          echo 'document.getElementById("criterion'.$crit_num.'-question").classList.add("is-invalid");\n';
-          echo 'document.getElementById("criterion'.$crit_num.'-q-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-question'].'";\n';
+          echo 'document.getElementById("criterion'.$crit_num.'-question").classList.add("is-invalid");';
+          echo 'document.getElementById("criterion'.$crit_num.'-q-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-question'].'";';
         }
         foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
           if (!empty($criterion[$level_name])) {
-            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").value="'.$criterion[$level_name].'";\n';
+            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").value="'.$criterion[$level_name].'";';
           }
           if (isset($errorMsg['criterion'.$crit_num.'-'.$level_name])) {
-            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").classList.add("is-invalid");\n';
-            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-'.$level_name].'";\n';
+            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").classList.add("is-invalid");';
+            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-'.$level_name].'";';
           }
         }
         $crit_num = $crit_num + 1;
