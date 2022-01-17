@@ -49,15 +49,16 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
   <script>
   function makeCritTopRow(num) {
     let retVal = document.createElement("div");
-    retVal.className = "row justify-content-between mx-1";
-    retVal.innerHTML = '<div class="col text-start align-top"><span style="font-size:small;color:DarkGrey">Criterion #' + num + ':</span></div><div class="col"><button type="button" class="btn btn-outline-danger" onclick="removeCriterion(this)"><span style="font-size:small;">-Remove Criterion</span></button></div>"';
+    retVal.className = "row justify-content-between mx-1 mt-1";
+    retVal.innerHTML = '<div class="col text-start align-top"><span id="criterion' + num + '-num" style="font-size:small;color:DarkGrey">Criterion #' + num + ':</span></div><div class="col"><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCriterion(this)">-Remove Criterion</button></div>"';
     return retVal;
   }
   function makeCritNameRow(name) {
     let realName = name + "-question";
+    let labId = name + "-q-lab";
     let retVal = document.createElement("div");
     retVal.className = "row mx-1";
-    retVal.innerHTML = '<div class="col-3"><div class="form-floating"><input type="text" id="'+realName+'" class="form-control" name="'+realName+'" required value=""><label for="'+realName+'">Description of Trait:"</label></div></div></div>';
+    retVal.innerHTML = '<div class="col-3"><div class="form-floating"><input type="text" id="'+realName+'" class="form-control" name="'+realName+'" required value=""><label id="'+labId+'" for="'+realName+'">Description of Trait:"</label></div></div></div>';
     return retVal;
   }
   function makeCritLevelRow(name) {
@@ -69,7 +70,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     let htmlStr = "";
     for (let idx in keys) {
       loopId = name+'-'+keys[idx];
-      htmlStr = htmlStr + '<div class="col' +$end_str+'<div class="form-floating"><textarea id="'+loopId+'" class="form-control" name="'+loopId+'" required value=""></textarea>';
+      htmlStr = htmlStr + '<div class="col' +endStr+'<div class="form-floating"><textarea id="'+loopId+'" class="form-control" name="'+loopId+'" required value=""></textarea>';
       htmlStr = htmlStr + '<label for="'+loopId+'">Response for '+names[idx]+':</label></div></div>';
       // Update formatting so that all but first score use size correctly
       end_str = ' ms-auto">';
@@ -79,7 +80,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
   }
 
   function addCriterion() {
-    let criteriaDivs = document.getElementsByClassName("criterion");
+    let criteriaDivs = document.querySelectorAll(".criterion");
     let criterionNum = criteriaDivs.length + 1;
     let criterion = document.createElement("div");
     criterion.id = "criterion" + criterionNum;
@@ -94,9 +95,31 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     criterionList.appendChild(criterion);
   }
   function removeCriterion(button) {
-    let criteriaDivs = document.getElementsByClassName("criterion");
+    let criteriaDivs = document.querySelectorAll("criterion");
     let criterionToRemove = button.parentElement.parentElement.parentElement;
+    let removedNum = Number(criterionToRemove.id.substring(9));
     criterionToRemove.remove();
+    const keys = <?php echo $level_keys_for_js ?>;
+    for (let i = removedNum + 1; i < criteriaDivs.length; i++) {
+      const prev = i-1;
+      let criterion = criteriaDivs[i];
+      criterion.id = "criterion" + prev;
+      let numSpan = document.getElementById("criterion" + i + "-num");
+      numSpan.innerHTML = 'Criterion #' + prev;
+      numSpan.id = "criterion" + prev + "-num";
+      let questionInp = document.getElementById("criterion" + i + "-question");
+      let questionLab = document.getElementById("criterion" + i + "-q-lab");
+      questionLab.id = "criterion" + prev + "-q-lab";
+      questionLab.for = "criterion" + prev + "-question";
+      questionInp.id = "criterion" + prev + "-question";
+      for (let key of keys) {
+        let questionInp = document.getElementById("criterion" + i + "-"+key);
+        let questionLab = document.getElementById("criterion" + i + "-"+key+"-lab");
+        questionLab.id = "criterion" + prev + "-" + key + "-lab";
+        questionLab.for = "criterion" + prev + "-" + key;
+        questionInp.id = "criterion" + prev + "-" + key;
+      }
+    }
   }
   </script>
 </head>
@@ -119,19 +142,18 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     <form class="mt-5 mx-1" id="define-rubric" method="post">
       <div id="crit-list">
       <div id="criterion1" class="border-top border-bottom criterion">
-        <div class="row justify-content-between mx-1">
+        <div class="row justify-content-between mx-1 mt-1">
           <div class="col text-start align-top">
-            <span style="font-size:small;color:DarkGrey">Criterion #1:</span>
+            <span id="criterion1-num" style="font-size:small;color:DarkGrey">Criterion #1:</span>
           </div>
           <div class="col">
-             <button type="button" class="btn btn-outline-danger" onclick="removeCriterion(this)">
-              <span style="font-size:small;">-Remove Criterion</span></button>
+             <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCriterion(this)">-Remove Criterion</button>
           </div>
         </div>
         <div class="row mx-1">
           <div class="col-3"><div class="form-floating">
             <input type="text" id="criterion1-question" class="form-control <?php if(isset($errorMsg["criterion1-question"])) {echo "is-invalid ";} ?>" name="criterion1-question" required value="<?php if (key_exists('criterion1-question', $question_names)) {echo htmlspecialchars($question_names['criterion1-question']);} ?>"></input>
-            <label for="criterion1-question"><?php if(isset($errorMsg["criterion1-question"])) {echo $errorMsg["criterion1-question"]; } else { echo "Description of Trait:";} ?></label>
+            <label id="criterion1-q-lab" for="criterion1-question"><?php if(isset($errorMsg["criterion1-question"])) {echo $errorMsg["criterion1-question"]; } else { echo "Description of Trait:";} ?></label>
           </div></div>
         </div>
         <div class="row pt-1 mx-1 mb-3 align-items-center">
@@ -150,7 +172,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
                 echo htmlspecialchars($answer_names['criterion1-'.$key]);
               }
               echo '"></textarea>
-              <label for="criterion1-'.$key.'">';
+              <label id="criterion1-'.$key.'-lab" for="criterion1-'.$key.'">';
               if (isset($errorMsg["criterion1-'.$key.'"])) {
                 echo $errorMsg["criterion1-'.$key.'"]; 
               } else { 
