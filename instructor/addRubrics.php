@@ -46,11 +46,11 @@ $errorMsg = array();
     </div>
     <form class="mt-5 mx-4" id="add-rubric" method="post">
       <div class="form-inline justify-content-center align-items-center">
-        <div class="form-floating mb-3">
+        <div class="form-floating my-3">
           <input type="text" id="rubric-name" class="form-control <?php if(isset($errorMsg["rubric-name"])) {echo "is-invalid ";} ?>" name="rubric-name" required value="<?php if (isset($rubric_name)) {echo htmlspecialchars($rubric_name);} ?>"></input>
           <label for="course-code">Rubric Name:</label>
         </div>
-        <div class="form-floating mb-3">
+        <div class="form-floating my-3">
           <input type="number" min="3" max="5" id="rubric-levels" class="form-control <?php if(isset($errorMsg["rubric-levels"])) {echo "is-invalid ";} ?>" name="rubric-levels" required value="<?php if (isset($rubric_levels)) {echo htmlspecialchars($rubric_levels);} ?>"></input>
           <label for="rubric-levels">Rubric Levels:</label>
         </div>
@@ -63,13 +63,13 @@ $errorMsg = array();
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
-                    <div class="form-floating mb-3">
+                    <div class="form-floating my-3">
                       <input id="level1-name" type="text" class="form-control <?php if(isset($errorMsg["level1-name"])) {echo "is-invalid ";} ?>" name="level1-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
                       <label for="level1-name">Name:</label>
                     </div>
                   </div>
                   <div class="col-sm-4 gl-3">
-                    <div class="form-floating ml-5 mb-3">
+                    <div class="form-floating ml-5 my-3">
                       <input id="level1-value" type="number" class="form-control <?php if(isset($errorMsg["level1-value"])) {echo "is-invalid ";} ?>" name="level1-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '4'; } ?>"></input>
                       <label for="level1-value">Points:</label>
                     </div>
@@ -87,13 +87,13 @@ $errorMsg = array();
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
-                    <div class="form-floating mb-3">
+                    <div class="form-floating my-3">
                       <input id="level2-name" type="text" class="form-control <?php if(isset($errorMsg["level2-name"])) {echo "is-invalid ";} ?>" name="level2-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
                       <label for="level2-name">Name:</label>
                     </div>
                   </div>
                   <div class="col-sm-4 gl-3">
-                    <div class="form-floating ml-5 mb-3">
+                    <div class="form-floating ml-5 my-3">
                       <input id="level2-value" type="number" class="form-control <?php if(isset($errorMsg["level2-value"])) {echo "is-invalid ";} ?>" name="level2-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '3'; } ?>"></input>
                       <label for="level2-value">Points:</label>
                     </div>
@@ -111,13 +111,13 @@ $errorMsg = array();
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
-                    <div class="form-floating mb-3">
+                    <div class="form-floating my-3">
                       <input id="level3-name" type="text" class="form-control <?php if(isset($errorMsg["level3-name"])) {echo "is-invalid ";} ?>" name="level3-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
                       <label for="level3-name">Name:</label>
                     </div>
                   </div>
                   <div class="col-sm-4 gl-3">
-                    <div class="form-floating ml-5 mb-3">
+                    <div class="form-floating ml-5 my-3">
                       <input id="level3-value" type="number" class="form-control <?php if(isset($errorMsg["level3-value"])) {echo "is-invalid ";} ?>" name="level3-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '2'; } ?>"></input>
                       <label for="level3-value">Points:</label>
                     </div>
@@ -135,13 +135,13 @@ $errorMsg = array();
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
-                    <div class="form-floating mb-3">
+                    <div class="form-floating my-3">
                       <input id="level4-name" type="text" class="form-control <?php if(isset($errorMsg["level4-name"])) {echo "is-invalid ";} ?>" name="level4-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
                       <label for="level4-name">Name :</label>
                     </div>
                   </div>
                   <div class="col-sm-4 gl-3">
-                    <div class="form-floating ml-5 mb-3">
+                    <div class="form-floating ml-5 my-3">
                       <input id="level4-value" type="number" class="form-control <?php if(isset($errorMsg["level4-value"])) {echo "is-invalid ";} ?>" name="level4-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '1'; } ?>"></input>
                       <label for="level4-value">Points:</label>
                     </div>
@@ -159,13 +159,13 @@ $errorMsg = array();
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
-                    <div class="form-floating mb-3">
+                    <div class="form-floating my-3">
                       <input id="level5-name" type="text" class="form-control <?php if(isset($errorMsg["level5-name"])) {echo "is-invalid ";} ?>" name="level5-name" required value="<?php if (isset($level1_name)) {echo htmlspecialchars($level1_name);} ?>"></input>
                       <label for="level5-name">Name:</label>
                     </div>
                   </div>
                   <div class="col-sm-4 gl-3">
-                    <div class="form-floating ml-5 mb-3">
+                    <div class="form-floating ml-5 my-3">
                       <input id="level5-value" type="number" class="form-control <?php if(isset($errorMsg["level5-value"])) {echo "is-invalid ";} ?>" name="level5-value" required value="<?php if (isset($level1_value)) {echo htmlspecialchars($level1_value);} else { echo '0'; } ?>"></input>
                       <label for="level5-value">Points:</label>
                     </div>
