@@ -68,6 +68,7 @@ $errorMsg = array();
 $level_names = array();
 $level_values = array();
 
+unset($_SESSION["rubric"]);
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
@@ -147,6 +148,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
   if (count($errorMsg) == 0) {
+    // Set the session variables so the data carries to the criterion page
+    $_SESSION["rubric"] = array("name" => $rubric_name);
+    $_SESSION["rubric"]["levels"] = array("names" => $level_names, "values" => $level_values);
     http_response_code(302);
     header("Location: ".INSTRUCTOR_HOME."surveys.php");
   }

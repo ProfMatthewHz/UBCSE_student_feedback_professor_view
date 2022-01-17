@@ -118,7 +118,6 @@ CREATE TABLE `student_login` (
 -- FIXME: MHz is uncertain if they get used
 CREATE TABLE `rubrics` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
- `name` varchar(255) NOT NULL,
  `description` varchar(500) NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
