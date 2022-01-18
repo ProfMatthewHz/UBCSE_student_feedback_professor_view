@@ -14,6 +14,7 @@ require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
 require_once "lib/rubricQueries.php";
+require_once "lib/rubricTable.php";
 
 //query information about the requester
 $con = connectToDatabase();
