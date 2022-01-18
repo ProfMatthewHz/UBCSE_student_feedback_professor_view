@@ -162,7 +162,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
       </div>
     </div>
   </div>
-  <div clas="container-fluid">
+  <div class="container-fluid">
     <form class="mt-5 mx-4" action="surveyDelete.php?survey=<?php echo $sid; ?>" id="delete-survey" method="post">
       <div class="row justify-content-center align-items-center">
         <p class="text-danger fs-3"><?php if(isset($errorMsg["agreement"])) {echo $errorMsg["agreement"];} ?></p>
@@ -182,6 +182,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         </div>
       </div>
     </form>
+    <hr>
+		<div class="row mx-1 mt-2 justify-content-center">
+        <div class="col-auto">
+					<a href="surveys.php" class="btn btn-outline-info" role="button" aria-disabled="false">Return to Instructor Home</a>
+        </div>
+      </div>
   </div>
 </main>
 </body>

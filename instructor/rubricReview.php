@@ -82,6 +82,12 @@ $rubrics = selectRubrics($con);
 		<div id="rubric-table" class="row pt-1 mx-1 align-items-center text-center border border-3 border-dark">
 		<div class="col"><i>Selected rubric will appear here</i></div>
 		</div>
+		<hr>
+		<div class="row mx-1 mt-2 justify-content-center">
+        <div class="col-auto">
+					<a href="surveys.php" class="btn btn-outline-info" role="button" aria-disabled="false">Return to Instructor Home</a>
+        </div>
+      </div>
 	</div>
 	</main>
 </body>

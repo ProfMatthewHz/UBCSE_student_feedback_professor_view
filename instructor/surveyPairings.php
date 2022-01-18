@@ -318,6 +318,12 @@ for ($i = 0; $i < $size; $i++) {
   </div></div>
       </form>
     <?php endif; ?>
+    <hr>
+		<div class="row mx-1 mt-2 justify-content-center">
+        <div class="col-auto">
+					<a href="surveys.php" class="btn btn-outline-info" role="button" aria-disabled="false">Return to Instructor Home</a>
+        </div>
+      </div>
   </div>
   </main>
   </body>
