@@ -139,8 +139,8 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
   <script>
   function makeCritTopRow(num) {
     let retVal = document.createElement("div");
-    retVal.className = "row mx-1 mt-1";
-    retVal.innerHTML = '<div class="col text-start align-top"><span id="criterion' + num + '-num" style="font-size:small;color:DarkGrey">Criterion #' + num + ':</span></div><div class="col ms-auto justify-content-end"><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCriterion(this)">-Remove Criterion</button></div>"';
+    retVal.className = "row justify-content-between mx-1 mt-1";
+    retVal.innerHTML = '<div class="col text-start align-top"><span id="criterion' + num + '-num" style="font-size:small;color:DarkGrey">Criterion #' + num + ':</span></div><div class="col ms-auto"><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCriterion(this)">-Remove Criterion</button></div>"';
     return retVal;
   }
   function makeCritNameRow(name) {
@@ -264,11 +264,11 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
       <div id="crit-list">
       </div>
       <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
-      <div class="row justify-content-start mx-1 mt-2">
+      <div class="row justify-content-between mx-1 mt-2">
         <div class="col">
           <button type="button" class="btn btn-outline-secondary" onclick="addCriterion()">+ Add Criterion</button>
         </div>
-        <div class="col ms-auto justify-content-end">
+        <div class="col ms-auto">
           <input class="btn btn-success" type="submit" value="Submit Rubic"></input>
         </div>
       </div>

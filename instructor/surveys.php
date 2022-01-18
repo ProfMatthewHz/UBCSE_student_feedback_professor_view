@@ -139,11 +139,11 @@ foreach ($terms as $name => &$term_courses) {
         <h4 class="text-white display-1">UB CSE Evalution System<br>Instructor Overview</h4>
       </div>
     </div>
-    <div class="row mt-5 mx-4">
+    <div class="row mt-5 mx-4 justify-content-between">
     <div class="col">
         <a href="addRubrics.php" class="btn btn-outline-success fs-4">+ Add Rubric</a>
       </div>
-      <div class="col ms-auto justify-content-end">
+      <div class="col ms-auto">
         <a href="addCourses.php" class="btn btn-success fs-4">+ Add Class</a>
       </div>
     </div>
