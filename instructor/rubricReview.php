@@ -80,6 +80,7 @@ $rubrics = selectRubrics($con);
      	</div>
   	</div>
 		<div id="rubric-table" class="row pt-1 mx-1 align-items-center text-center border border-3 border-dark">
+		<div class="col"><i>Selected rubric will appear here</i></div>
 		</div>
 	</div>
 	</main>
