@@ -141,7 +141,7 @@ foreach ($terms as $name => &$term_courses) {
     </div>
     <div class="row mt-5 mx-4">
     <div class="col">
-        <a href="reviewRubrics.php" class="btn btn-outline-secondary fs-4">View Existing Rubrics</a>
+        <a href="rubricReview.php" class="btn btn-outline-secondary fs-4">View Existing Rubrics</a>
       </div>
       <div class="col ms-auto">
         <a href="addCourses.php" class="btn btn-success fs-4">+ Add Class</a>
