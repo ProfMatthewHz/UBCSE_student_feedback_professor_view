@@ -107,6 +107,7 @@ if (($_SERVER['REQUEST_METHOD'] != 'POST') && isset($_SESSION["confirm"])) {
     }
     http_response_code(302);
     header("Location: ".INSTRUCTOR_HOME."rubricConfirm.php");
+    exit();
   }
 }
 
