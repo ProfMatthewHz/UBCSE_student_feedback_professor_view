@@ -293,10 +293,10 @@ for ($i = 0; $i < $size; $i++) {
       <div class="row justify-content-md-center mt-5 mx-4">
         <div class="form-floating mb-3">
             <select class="form-select <?php if(isset($errorMsg["pairing-mode"])) {echo "is-invalid ";} ?>" id="pairing-mode" name="pairing-mode">
-              <option value="-1" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Pairing Mode</option>
-              <option value="1" <?php if (!$pairing_mode) {echo 'selected';} ?>>Raw</option>
-              <option value="2" <?php if ($pairing_mode == 2) {echo 'selected';} ?>>Team</option>
-              <option value="3" <?php if ($pairing_mode == 3) {echo 'selected';} ?>>Manager + Team</option>
+              <option value="-1" disabled <?php if (!isset($pairing_mode)) {echo 'selected';} ?>>Select Pairing Mode</option>
+              <option value="1" <?php if (isset($pairing_mode) && ($pairing_mode == 1)) {echo 'selected';} ?>>Raw</option>
+              <option value="2" <?php if (isset($pairing_mode) && ($pairing_mode == 2)) {echo 'selected';} ?>>Team</option>
+              <option value="3" <?php if (isset($pairing_mode) && ($pairing_mode == 3)) {echo 'selected';} ?>>Manager + Team</option>
             </select>
             <label for="pairing-mode"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"]; } else { echo "Pairing Mode:";} ?></label>
         </div>
