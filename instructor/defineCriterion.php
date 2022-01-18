@@ -27,6 +27,7 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
+require_once "lib/rubricQueries.php";
 
 //query information about the requester
 $con = connectToDatabase();
@@ -88,6 +89,33 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (count($errorMsg) == 0) {
     // Upload the rubric
 
+    // Add the rubric to the database and keep track of the id it was assigned. 
+    $rubric_id = insertRubric($con, $_SESSION["rubric"]["name"]);
+
+    // Now add the different scores/levels and keep track of each of them for later use
+    $levels = count($_SESSION["rubric"]["levels"]["names"]);
+    $level_ids = array();
+    $level_ids["level1-name"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level1-name"], $_SESSION["rubric"]["levels"]["values"]["level1-value"]);
+    if ($levels == 4 || $levels == 5) {
+      $level_ids["level2-name"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level2-name"], $_SESSION["rubric"]["levels"]["values"]["level2-value"]);
+    }
+    if ($levels == 3 || $levels == 5) {
+      $level_ids["level3-name"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level3-name"], $_SESSION["rubric"]["levels"]["values"]["level3-value"]);
+    }
+    if ($levels == 4 || $levels == 5) {
+      $level_ids["level4-name"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level4-name"], $_SESSION["rubric"]["levels"]["values"]["level4-value"]);
+    }
+    $level_ids["level5-name"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level5-name"], $_SESSION["rubric"]["levels"]["values"]["level5-value"]);
+
+    // Finally we insert the name of each criterion as a rubric topic and all of its responses.
+    foreach ($criteria as $crit_data) {
+      $topic_id = insertRubricTopic($con, $rubric_id, $crit_data["topic"]);
+      foreach ($level_ids as $key => $level_id) {
+        insertRubricReponse($con, $topic_id, $level_id, $crit_data[$key]);
+      }
+    }
+
+    // Finally, we insert each response to every question
 
     // And go back to the main page.
     unset($_SESSION["rubric"]);
@@ -111,8 +139,8 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
   <script>
   function makeCritTopRow(num) {
     let retVal = document.createElement("div");
-    retVal.className = "row justify-content-between mx-1 mt-1";
-    retVal.innerHTML = '<div class="col text-start align-top"><span id="criterion' + num + '-num" style="font-size:small;color:DarkGrey">Criterion #' + num + ':</span></div><div class="col"><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCriterion(this)">-Remove Criterion</button></div>"';
+    retVal.className = "row mx-1 mt-1";
+    retVal.innerHTML = '<div class="col text-start align-top"><span id="criterion' + num + '-num" style="font-size:small;color:DarkGrey">Criterion #' + num + ':</span></div><div class="col ms-auto"><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCriterion(this)">-Remove Criterion</button></div>"';
     return retVal;
   }
   function makeCritNameRow(name) {

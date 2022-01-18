@@ -22,7 +22,7 @@ function check_level_name($level_names, $key, &$errorMsg) {
 }
 
 function check_level_value($level_values, $key, &$errorMsg) {
-  if (!is_numeric($level_values[$key])) {
+  if (!is_int($level_values[$key])) {
     $errorMsg[$key] = "Value MUST be a number";
   }
 }
@@ -31,7 +31,7 @@ function check_value_monotonic($level_values, &$errorMsg) {
   $prev_level = PHP_INT_MAX;
   foreach ($level_values as $level => $value) {
     if (!key_exists($level, $errorMsg)) {
-      $val = floatval($value);
+      $val = intval($value);
       if ($val > $prev_level) {
         $errorMsg[$level] = "Lower level CANNOT have higher value";
       }
