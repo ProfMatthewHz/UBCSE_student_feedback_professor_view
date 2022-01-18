@@ -102,16 +102,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo emitRubricTable($_SESSION["confirm"]["topics"], $_SESSION["confirm"]["scores"]);
       ?>
   	</div>
-    <div class="row mt-5 mx-4">
-      <form id="confirm-rubric" method="post">
+    <form id="confirm-rubric" method="post">
+      <div class="row mt-5 mx-4">
         <div class="col">
           <input class="btn btn-success btn-lg" name="save-rubric" type="submit" value="Save Rubic"></input>
         </div>
         <div class="col ms-auto">
           <input class="btn btn-outline-danger btn-lg" name="revise-rubric" type="submit" value="Revise Rubic"></input>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
 </main>
 </body>

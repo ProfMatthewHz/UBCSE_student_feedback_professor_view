@@ -45,12 +45,10 @@ if (!isset($_SESSION["rubric"])) {
   header("Location: ".INSTRUCTOR_HOME."rubricAdd.php");
   exit();
 }
-
-// Avoid problems in the verification screen from double-submitting a rubric
-unset($_SESSION["confirm"]);
-
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
-
+// Check if we are revising a previous submission
+if (($_SERVER['REQUEST_METHOD'] != 'POST') && isset($_SESSION["confirm"])) {
+  $criteria = $_SESSION["confirm"]["topics"];
+} else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // make sure minimum set of values exist
   if (!isset($_POST['criterion1-question'])) {
     http_response_code(400);
@@ -111,6 +109,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     header("Location: ".INSTRUCTOR_HOME."rubricConfirm.php");
   }
 }
+
+// Avoid problems in the verification screen from double-submitting a rubric
+unset($_SESSION["confirm"]);
 
 $level_keys_for_js = json_encode(array_keys($_SESSION["rubric"]["levels"]["names"]));
 $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["names"]));
