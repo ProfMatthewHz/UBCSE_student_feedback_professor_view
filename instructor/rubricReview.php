@@ -34,18 +34,23 @@ $rubrics = selectRubrics($con);
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <title>CSE Evaluation Survey System - Rubric Review</title>
 	<script>
+		function ajaxPostRequest(path, data, callback){
+				let request = new XMLHttpRequest();
+				request.onreadystatechange = function(){
+						if (this.readyState===4&&this.status ===200){
+								callback(this.response);
+						}
+				};
+				request.open("POST", path);
+				request.send(data);
+		}
+		function showTable(response) {
+			let table_html = JSON.parse(response);
+			document.getElementById("rubric-table").innerHTML = table_html;
+		}
 		function updateRubric() {
 			let rubric_id = document.getElementById("rubric-select").value;
-			fetch('getRubricTable.php',
-							{
-								method: 'POST',
-								headers: {
-									'Content-Type': 'application/json',
-								},
-								body: JSON.stringify({rubric : rubric_id})
-							})
-			.then(response => response.json())
-			.then(data => { document.getElementById("rubric-table").innerHTML = data; })
+			ajaxPostRequest('getRubricTable.php', {rubric : rubric_id}, showTable);
 		}
 	</script>
 </head>
@@ -62,7 +67,7 @@ $rubrics = selectRubrics($con);
       <div class="col-sm-auto">
         <div class="form-floating mb-3">
           <select id="rubric-select" class="form-select form-select-lg" onchange="updateRubric();">
-            <option value="-1" disabled>Select Rubric to Review:</option>
+            <option value="-1" disabled selected>Select Rubric to Review:</option>
 						<?php
 						foreach ($rubrics as $id=>$name) {
 							echo '<option value="'.$id.'">'.$name.'</option>';
