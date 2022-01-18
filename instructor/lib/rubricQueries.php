@@ -68,7 +68,7 @@ function selectRubricScores($con, $rubric_id) {
 
 function selectTopicResponses($con, $topic_id) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT score_id, response FROM rubric_topics WHERE topic_id=?');
+  $stmt = $con->prepare('SELECT score_id, response FROM rubric_responses WHERE topic_id=?');
   $stmt->bind_param('i', $topic_id);
   $stmt->execute();
   $result = $stmt->get_result();

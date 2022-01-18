@@ -42,6 +42,7 @@ $rubrics = selectRubrics($con);
 						}
 				};
 				request.open("POST", path);
+				request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 				request.send(data);
 		}
 		function showTable(response) {

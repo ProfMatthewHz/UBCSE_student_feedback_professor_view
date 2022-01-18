@@ -22,7 +22,7 @@ function check_level_name($level_names, $key, &$errorMsg) {
 }
 
 function check_level_value($level_values, $key, &$errorMsg) {
-  if (!is_int($level_values[$key])) {
+  if (!ctype_digit($level_values[$key])) {
     $errorMsg[$key] = "Value MUST be a number";
   }
 }

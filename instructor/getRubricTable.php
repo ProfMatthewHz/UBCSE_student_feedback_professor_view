@@ -28,7 +28,7 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
   echo "Bad Request: Missing parmeters.";
   exit();
 }
-if (!isset($_POST["rubric"]) || !is_int($_POST["rubric"])) {
+if (!isset($_POST["rubric"]) || !ctype_digit($_POST["rubric"])) {
   http_response_code(400);
   echo "Bad request: parameters provided do not match what is required";
   exit();
