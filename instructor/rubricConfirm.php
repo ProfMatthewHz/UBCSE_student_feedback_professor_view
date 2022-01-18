@@ -71,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     unset($_SESSION["confirm"]);
     http_response_code(302);
     header("Location: ".INSTRUCTOR_HOME."surveys.php");
+    exit();
   }
 }
 ?>

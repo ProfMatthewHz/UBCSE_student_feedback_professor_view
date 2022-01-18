@@ -206,13 +206,13 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
   function initialize() {
     <?php
     if (count($criteria) == 0) {
-      echo 'addCriterion();';
+      echo 'addCriterion(); /* 0 len */';
     } else {
       $crit_num = 1;
       foreach ($criteria as $criterion) {
         echo 'addCriterion();';
-        if (!empty($criterion["topic"])) {
-          echo 'document.getElementById("criterion'.$crit_num.'-question").value="'.$criterion["topic"].'";';
+        if (!empty($criterion["question"])) {
+          echo 'document.getElementById("criterion'.$crit_num.'-question").value="'.$criterion["question"].'";';
         }
         if (isset($errorMsg['criterion'.$crit_num.'-question'])) {
           echo 'document.getElementById("criterion'.$crit_num.'-question").classList.add("is-invalid");';
