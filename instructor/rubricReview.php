@@ -79,7 +79,7 @@ $rubrics = selectRubrics($con);
 				</div>
      	</div>
   	</div>
-		<div id="rubric-table" class="row pt-1 mx-1 align-items-center text-center border-3 border-dark">
+		<div id="rubric-table" class="row pt-1 mx-1 align-items-center text-center border border-3 border-dark">
 		</div>
 	</div>
 	</main>
