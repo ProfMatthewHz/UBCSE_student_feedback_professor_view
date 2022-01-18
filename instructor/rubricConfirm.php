@@ -97,19 +97,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h4>Confirm <?php echo $_SESSION["rubric"]["name"]; ?></h4>
       </div>
     </div>
-    <div class="row mt-5 mx-4">
-      <div class="col">
-        <input class="btn btn-success btn-lg" name="save-rubric" type="submit" value="Save Rubic"></input>
-      </div>
-      <div class="col ms-auto">
-        <input class="btn btn-outline-danger btn-lg" name="revise-rubric" type="submit" value="Revise Rubic"></input>
-      </div>
-    </div>
 		<div id="rubric-table" class="row pt-1 mx-1 align-items-center text-center border border-3 border-dark">
       <?php
         echo emitRubricTable($_SESSION["confirm"]["topics"], $_SESSION["confirm"]["scores"]);
       ?>
-	</div>
-	</main>
+  	</div>
+    <div class="row mt-5 mx-4">
+      <form id="confirm-rubric" method="post">
+        <div class="col">
+          <input class="btn btn-success btn-lg" name="save-rubric" type="submit" value="Save Rubic"></input>
+        </div>
+        <div class="col ms-auto">
+          <input class="btn btn-outline-danger btn-lg" name="revise-rubric" type="submit" value="Revise Rubic"></input>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
 </body>
 </html>
