@@ -32,7 +32,22 @@ $rubrics = selectRubrics($con);
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-    <title>CSE Evaluation Survey System - Rubric Review</title>
+  <title>CSE Evaluation Survey System - Rubric Review</title>
+	<script>
+		function updateRubric() {
+			let rubric_id = document.getElementById("rubric-select").value;
+			fetch('getRubricTable.php',
+							{
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json',
+								},
+								body: JSON.stringify({rubric : rubric_id})
+							})
+			.then(response => response.json())
+			.then(data => { document.getElementById("rubric-table").innerHTML = data; })
+		}
+	</script>
 </head>
 <body class="text-center">
 <!-- Header -->
@@ -46,7 +61,7 @@ $rubrics = selectRubrics($con);
     <div class="row justify-content-md-center mt-5 mx-4">
       <div class="col-sm-auto">
         <div class="form-floating mb-3">
-          <select id="rubric-select" class="form-select form-select-lg">
+          <select id="rubric-select" class="form-select form-select-lg" onchange="updateRubric();">
             <option value="-1" disabled>Select Rubric to Review:</option>
 						<?php
 						foreach ($rubrics as $id=>$name) {
@@ -58,6 +73,9 @@ $rubrics = selectRubrics($con);
 				</div>
      	</div>
   	</div>
+		<div id="rubric-table" class="row pt-1 mx-1 align-items-center text-center border-bottom border-3 border-dark">
+		</div>
+	</div>
 	</main>
 </body>
 </html>
