@@ -206,7 +206,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
   function initialize() {
     <?php
     if (count($criteria) == 0) {
-      echo 'addCriterion(); /* 0 len */';
+      echo 'addCriterion();';
     } else {
       $crit_num = 1;
       foreach ($criteria as $criterion) {
@@ -219,8 +219,8 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
           echo 'document.getElementById("criterion'.$crit_num.'-q-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-question'].'";';
         }
         foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
-          if (!empty($criterion[$level_name])) {
-            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").value="'.$criterion[$level_name].'";';
+          if (!empty($criterion["responses"][$level_name])) {
+            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").value="'.$criterion["responses"][$level_name].'";';
           }
           if (isset($errorMsg['criterion'.$crit_num.'-'.$level_name])) {
             echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").classList.add("is-invalid");';
