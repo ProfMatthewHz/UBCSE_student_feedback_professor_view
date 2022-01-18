@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
     <div class="row justify-content-md-center mt-5 mx-1">
       <div class="col-sm-auto text-center">
-        <h4>Confirm <?php echo $_SESSION["rubric"]["name"]; ?></h4>
+        <h4>Verifying rubric<br><?php echo $_SESSION["rubric"]["name"]; ?></h4>
       </div>
     </div>
 		<div id="rubric-table" class="row pt-1 mx-1 align-items-center text-center border border-3 border-dark">
@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       ?>
   	</div>
     <form id="confirm-rubric" method="post">
-      <div class="row mt-5 mx-4">
+      <div class="row mt-2 mx-4">
         <div class="col">
           <input class="btn btn-success btn-lg" name="save-rubric" type="submit" value="Save Rubic"></input>
         </div>
