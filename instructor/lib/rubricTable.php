@@ -2,8 +2,8 @@
   function emitRubricTable($topics, $scores) {
     echo '<div class="col-2"><b>Criterion</b></div>';
     foreach ($scores as $score_id => $score_data) {
-      $score_name = $score_data[0];
-      $score_points = $score_data[1];
+      $score_name = $score_data["name"];
+      $score_points = $score_data["score"];
       echo '<div class="col-2 ms-auto"><b>'.$score_name.' ('.$score_points.' pts)</b></div>';
     }
     echo '</div>';
