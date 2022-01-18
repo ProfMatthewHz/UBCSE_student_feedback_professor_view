@@ -141,13 +141,13 @@ foreach ($terms as $name => &$term_courses) {
     </div>
     <div class="row mt-5 mx-4">
     <div class="col">
-        <a href="rubricReview.php" class="btn btn-outline-secondary fs-4">View Existing Rubrics</a>
+        <a href="rubricReview.php" class="btn btn-outline-secondary btn-lg">View Existing Rubrics</a>
       </div>
       <div class="col ms-auto">
-        <a href="addCourses.php" class="btn btn-success fs-4">+ Add Class</a>
+        <a href="courseAdd.php" class="btn btn-success btn-lg">+ Add Class</a>
       </div>
       <div class="col ms-auto">
-        <a href="addRubrics.php" class="btn btn-outline-secondary fs-4">+ Add Rubric</a>
+        <a href="rubricAdd.php" class="btn btn-outline-secondary btn-lg">+ Add Rubric</a>
       </div>
     </div>
     <div class="row justify-content-md-center mt-5 mx-4">

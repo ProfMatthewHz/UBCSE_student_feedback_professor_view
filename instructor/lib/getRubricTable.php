@@ -9,12 +9,12 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 //bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
-require_once "../lib/fileParse.php";
-require_once "lib/rubricQueries.php";
-require_once "lib/rubricTable.php";
+require_once "../../lib/database.php";
+require_once "../../lib/constants.php";
+require_once "../../lib/infoClasses.php";
+require_once "../../lib/fileParse.php";
+require_once "rubricQueries.php";
+require_once "rubricTable.php";
 
 //query information about the requester
 $con = connectToDatabase();

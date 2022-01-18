@@ -8,7 +8,7 @@
     }
     $ret_val = $ret_val.'</div>';
     $shaded = true;
-    foreach ($topics as $topic_id => $topic_data) {
+    foreach ($topics as $topic_data) {
         if ($shaded) {
           $bg_color = "#e1e1e1";
         } else {

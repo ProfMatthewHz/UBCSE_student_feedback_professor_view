@@ -94,7 +94,7 @@ function selectTopics($con, $rubric_id) {
     $topic_data["question"] = $question;
     $topic_responses = selectTopicResponses($con, $topic_id);
     $topic_data["responses"] = $topic_responses;
-    $ret_val[$topic_id] = $topic_data;
+    $ret_val[] = $topic_data;
   }
   $stmt->close();
   return $ret_val;

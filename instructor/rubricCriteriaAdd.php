@@ -41,10 +41,13 @@ $criteria = array();
 
 // Verify we have already defined the rubric basics
 if (!isset($_SESSION["rubric"])) {
-  http_response_code(400);
-  echo "Bad Request: Missing parmeters.";
+  http_response_code(302);
+  header("Location: ".INSTRUCTOR_HOME."rubricAdd.php");
   exit();
 }
+
+// Avoid problems in the verification screen from double-submitting a rubric
+unset($_SESSION["confirm"]);
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -60,67 +63,52 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "Forbidden: Incorrect parameters.";
     exit();
   }
+
+  // Process data so that it is available in a manner that parallels how rubric queries prepares a rubric.
   $crit_num = 1;
   $crit_id = "criterion".$crit_num;
   while (key_exists($crit_id.'-question', $_POST)) {
     $crit_data = array();
     
-    $crit_data["topic"] = trim($_POST[$crit_id.'-question']);
-    if (empty($crit_data["topic"])) {
+    $crit_data["question"] = trim($_POST[$crit_id.'-question']);
+    if (empty($crit_data["question"])) {
       $errorMsg[$crit_id.'-question'] = "Each criterion needs a description";
     }
+    $crit_data["responses"] = array();
     foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
-      $crit_data[$level_name] = check_level_response($crit_id, $level_name, $text, $errorMsg);
+      $crit_data["responses"][$level_name] = check_level_response($crit_id, $level_name, $text, $errorMsg);
     }
     $criteria[] = $crit_data;
     $crit_num = $crit_num + 1;
     $crit_id = "criterion".$crit_num;
   }
   for ($i = 1; $i < $crit_num; $i++) {
-    $trait = $criteria[$i-1]["topic"];
+    $trait = $criteria[$i-1]["question"];
     if (!empty($trait)) {
       for ($j = 1; $j < $crit_num; $j++) {
-        if ( ($i != $j) && ($trait == $criteria[$j-1]["topic"]) ) {
+        if ( ($i != $j) && ($trait == $criteria[$j-1]["question"]) ) {
           $errorMsg["criterion".$i.'-question'] = "Each criterion needs UNIQUE description";
         }
       }
     }
   }
   if (count($errorMsg) == 0) {
-    // Upload the rubric
+    // Prepare the rubric for cofirmation
+    $_SESSION["confirm"] = array();
 
-    // Add the rubric to the database and keep track of the id it was assigned. 
-    $rubric_id = insertRubric($con, $_SESSION["rubric"]["name"]);
-
-    // Now add the different scores/levels and keep track of each of them for later use
-    $levels = count($_SESSION["rubric"]["levels"]["names"]);
-    $level_ids = array();
-    $level_ids["level1-name"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level1-name"], $_SESSION["rubric"]["levels"]["values"]["level1-value"]);
-    if ($levels == 4 || $levels == 5) {
-      $level_ids["level2-name"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level2-name"], $_SESSION["rubric"]["levels"]["values"]["level2-value"]);
-    }
-    if ($levels == 3 || $levels == 5) {
-      $level_ids["level3-name"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level3-name"], $_SESSION["rubric"]["levels"]["values"]["level3-value"]);
-    }
-    if ($levels == 4 || $levels == 5) {
-      $level_ids["level4-name"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level4-name"], $_SESSION["rubric"]["levels"]["values"]["level4-value"]);
-    }
-    $level_ids["level5-name"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level5-name"], $_SESSION["rubric"]["levels"]["values"]["level5-value"]);
-
-    // Finally we insert the name of each criterion as a rubric topic and all of its responses.
-    foreach ($criteria as $crit_data) {
-      $topic_id = insertRubricTopic($con, $rubric_id, $crit_data["topic"]);
-      foreach ($level_ids as $key => $level_id) {
-        insertRubricReponse($con, $topic_id, $level_id, $crit_data[$key]);
-      }
+    // Prepare the score data for confirmation
+    $_SESSION["confirm"]["scores"] = array();
+    foreach ($_SESSION["rubric"]["levels"]["names"] as $level => $name) {
+      $_SESSION["confirm"]["scores"][$level] = array("name" => $name, "score" => $_SESSION["rubric"]["levels"]["values"][$level]);
     }
 
-    // Finally, we insert each response to every question
-
-    // And go back to the main page.
-    unset($_SESSION["rubric"]);
+    // Prepare the topics & their reponses for confirmation
+    $_SESSION["confirm"]["topics"] = array();
+    foreach ($_SESSION["rubric"]["levels"]["names"] as $level => $name) {
+      $_SESSION["confirm"]["topics"] = $criteria;
+    }
     http_response_code(302);
-    header("Location: ".INSTRUCTOR_HOME."surveys.php");
+    header("Location: ".INSTRUCTOR_HOME."rubricConfirm.php");
   }
 }
 
@@ -269,7 +257,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
           <button type="button" class="btn btn-outline-secondary" onclick="addCriterion()">+ Add Criterion</button>
         </div>
         <div class="col ms-auto">
-          <input class="btn btn-success" type="submit" value="Submit Rubic"></input>
+          <input class="btn btn-success" type="submit" value="Verify Rubic"></input>
         </div>
       </div>
     </form>

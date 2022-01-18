@@ -42,7 +42,7 @@ function emit_course($widgetId, $course_info) {
             echo '<div class="row justify-content-center"><p><i>No surveys created yet</i></p></div>';
           }
           if ($course_info['mutable']) {
-            echo '<div class="row justify-content-center"><div class="col-auto"><a href="addSurveys.php" class="btn btn-outline-success">+ Add Survey</a></div></div>';
+            echo '<div class="row justify-content-center"><div class="col-auto"><a href="surveyAdd.php" class="btn btn-outline-success">+ Add Survey</a></div></div>';
           }
   echo
   '     </div></div>
