@@ -50,7 +50,7 @@ $rubrics = selectRubrics($con);
 		}
 		function updateRubric() {
 			let rubric_id = document.getElementById("rubric-select").value;
-			ajaxPostRequest('getRubricTable.php', {rubric : rubric_id}, showTable);
+			ajaxPostRequest('getRubricTable.php', "rubric="+rubric_id, showTable);
 		}
 	</script>
 </head>

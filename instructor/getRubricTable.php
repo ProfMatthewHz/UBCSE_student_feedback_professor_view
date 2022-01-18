@@ -23,7 +23,7 @@ $con = connectToDatabase();
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
+if($_SERVER['REQUEST_METHOD'] != 'POST') {
   http_response_code(400);
   echo "Bad Request: Missing parmeters.";
   exit();
