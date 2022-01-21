@@ -98,7 +98,7 @@ foreach ($terms as $name => &$term_courses) {
         if ($data_total[0]['total'] != 0) {
           $percentage = floor(($data_total[0]['completed'] / $data_total[0]['total']) * 100);
         }
-        $survey_info['completion'] = $percentage . '% of reviews completed';
+        $survey_info['completion'] = $percentage . '% completed';
 
         // determine status of survey. then adjust dates to more friendly format
         $s = new DateTime($survey_info['start_date']);

@@ -205,7 +205,6 @@ $topics['normalized'] = 'Normalized Score';
             <table class="table table-striped table-hover">
               <thead>
                 <tr>
-                  <th scope="col">Reviewer Name (Email)</th>
                   <th scope="col">Reviewee Name (Email)</th>
                   <?php
                   foreach ($topics as $topic_id => $question) {
@@ -219,19 +218,23 @@ $topics['normalized'] = 'Normalized Score';
               <tbody>
               <?php
                 foreach ($emails as $email => $name) {
-                  foreach ($scores[$email] as $reviewer => $scored) {
-                    echo '<tr><td>' . htmlspecialchars($reviewer) . '<br>(' . htmlspecialchars($emails[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
-                    foreach ($topics as $topic_id => $question) {
-                      if ($topic_id != 'normalized') {
-                        if (isset($scored[$topic_id])) {
-                          echo '<td>'.$scored[$topic_id].'</td>';
-                        } else {
-                          echo '<td>--</td>';
-                        }
+                  echo '<tr><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
+                  foreach ($topics as $topic_id => $question) {
+                    $reviewers = 0;
+                    $sum = 0;
+                    foreach ($scores[$email] as $reviewer => $scored) {
+                      if (isset($scored[$topic_id])) {
+                        $sum = $sum + $scored[$topic_id];
+                        $reviewers = $reviewers + 1;
                       }
                     }
-                    echo '</tr>';
+                    if ($reviewers == 0) {
+                      echo '<td>--</td>';
+                    } else {
+                      echo '<td>'.($sum/$reviewers).'</td>';
+                    }
                   }
+                  echo '</tr>';
                 }
               ?>
               </tbody>
