@@ -304,7 +304,7 @@ $topics['normalized'] = 'Normalized Score';
                   if ($norm_array["overall"] === NO_SCORE_MARKER) {
                     echo '<td>--</td></tr>';
                   } else {
-                    echo '<td>' . $$norm_array["overall"]  . '</td></tr>';
+                    echo '<td>' . $norm_array["overall"]  . '</td></tr>';
                   }
                 }
               ?>
