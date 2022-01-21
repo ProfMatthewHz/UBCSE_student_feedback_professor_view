@@ -116,7 +116,7 @@ if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
 			<div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
 				<div class="col-sm-auto text-center">
 					<h1 class="text-white display-1"><?php echo $course?> <?php echo $survey_name?> Evaluation</h1><br>
-					<p class="text-white lead">Evaluating: <?php echo $name?></p>
+					<p class="text-white display-4">Evaluating: <?php echo $name?></p>
 				</div>
 			</div>
 			<div class="row justify-content-md-center mt-4 mx-1 border border-dark border-2">

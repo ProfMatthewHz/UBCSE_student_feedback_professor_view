@@ -82,6 +82,14 @@ $end_time = NULL;
 $pairing_mode = NULL;
 $survey_name = NULL;
 
+// check for the query string or post parameter
+if($_SERVER['REQUEST_METHOD'] == 'GET') {
+  // respond not found on no query string parameter
+  if (isset($_GET['course'])) {
+    $course_id = intval($_GET['course']);
+  }
+}
+
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
@@ -105,14 +113,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $survey_name = trim($_POST['survey-name']);
 
   // check course is not empty
-  $course_id = trim($_POST['course-id']);
+  $course_id = $_POST['course-id'];
   $course_id = intval($course_id);
   if ($course_id === 0) {
     $errorMsg['course-id'] = "Please choose a valid course.";
   }
 
   // check rubric is not empty
-  $rubric_id = trim($_POST['rubric-id']);
+  $rubric_id = $_POST['rubric-id'];
   $rubric_id = intval($rubric_id);
   if ($rubric_id === 0) {
     $errorMsg['rubric-id'] = "Please choose a valid rubric.";
@@ -236,8 +244,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $pairings = parse_review_pairs($file_handle, $con);
       } else if ($pairing_mode == '2') {
         $pairings = parse_review_teams($file_handle, $con);
-      } else {
+      } else if ($pairing_mode == '3') {
         $pairings = parse_review_managed_teams($file_handle, $con);
+      } else if ($pairing_mode == '4') {
+        $pairings = parse_review_many_to_one($file_handle, $con);
       }
 
       // Clean up our file handling
@@ -282,6 +292,30 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <title>CSE Evaluation Survey System - Add Survey</title>
+  <script>
+    function handlePairingChange() {
+      let selectObject = document.getElementById("pairing-mode");
+      let numLevels = selectObject.value;
+      let formatObject = document.getElementById("fileFormat");
+      switch(numLevels) {
+        case 1:
+          formatObject.innerHTML = "One row per review. Each row has 2 column: reviewer email address, reviewee email address";
+          break;
+        case 2:
+          formatObject.innerHTML = "One row per team. Each row contains the email addresses for all team members. Blank columns are ignored";
+          break;
+        case 3:
+          formatObject.innerHTML = "One row per team. Each row contains the email addresses for all team members with the manager's email address listed last. Blank columns are ignored";
+          break;
+        case 4:
+          formatObject.innerHTML = "One row per individual being reviewed. Each row contains the email addresses for all of the reviewers. The person being reviewed should be the final email address on the row";
+          break;
+        default:
+          formatObject.innerHTML = "CSV file format needed for the pairing mode shown here";
+          break;
+      }
+    }
+  </script>
 </head>
 <body class="text-center">
 <!-- Header -->
@@ -296,7 +330,7 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
     <div class="form-inline justify-content-center align-items-center">
       <div class="form-floating mb-3">
           <select class="form-select <?php if(isset($errorMsg["course-id"])) {echo "is-invalid ";} ?>" id="course-id" name="course-id">
-            <option value="-1" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
+            <option value="-1" disabled <?php if (isset($course_id)) {echo 'selected';} ?>>Select Course</option>
             <?php
             foreach ($courses as $course) {
               if ($course_id == $course['id']) {
@@ -345,16 +379,17 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
           <label for="rubric-id"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"]; } else { echo "Rubric:";} ?></label>
       </div>
       <div class="form-floating mb-3">
-          <select class="form-select <?php if(isset($errorMsg["pairing-mode"])) {echo "is-invalid ";} ?>" id="pairing-mode" name="pairing-mode">
-            <option value="-1" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Pairing Mode</option>
-            <option value="1" <?php if (!$pairing_mode) {echo 'selected';} ?>>Raw</option>
+          <select class="form-select <?php if(isset($errorMsg["pairing-mode"])) {echo "is-invalid ";} ?>" id="pairing-mode" name="pairing-mode" onload="handlePairingChange();" onchange="handlePairingChange();">
+            <option value="-1" disabled <?php if (!$pairing_mode) {echo 'selected';} ?>>Select Pairing Mode</option>
+            <option value="1" <?php if ($pairing_mode == 1) {echo 'selected';} ?>>Individual Review</option>
             <option value="2" <?php if ($pairing_mode == 2) {echo 'selected';} ?>>Team</option>
-            <option value="3" <?php if ($pairing_mode == 3) {echo 'selected';} ?>>Manager + Team</option>
+            <option value="3" <?php if ($pairing_mode == 3) {echo 'selected';} ?>>Team + Manager</option>
+            <option value="4" <?php if ($pairing_mode == 4) {echo 'selected';} ?>>Many-to-1</option>
           </select>
           <label for="pairing-mode"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"]; } else { echo "Pairing Mode:";} ?></label>
       </div>
 
-      <span style="font-size:small;color:DarkGrey">Each row of file should contain email addresses of one pair or one team. PMs must be last email address in row.</span>
+      <span id="fileFormat" style="font-size:small;color:DarkGrey">Each row of file should contain email addresses of one pair or one team. PMs must be last email address in row.</span>
       <div class="form-floating mt-0 mb-3">
         <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
         <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>

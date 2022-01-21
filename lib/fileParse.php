@@ -104,6 +104,7 @@ function parse_review_managed_teams($file_handle, $db_connection) {
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
     $team_members = array();
     $team_size = 0;
+    unset($manager);
 
     $line_num = $line_num + 1;
 
@@ -114,42 +115,96 @@ function parse_review_managed_teams($file_handle, $db_connection) {
     $line_text = array_map("trim", $line_text);
 
     $line_fields = count($line_text) - 1;
-
+    
     // Make sure the current line's data are valid
-    for ($j = 0; $j < $line_fields; $j++) {
+    for ($j = $line_fields - 1; $j >= 0; $j--) {
       if (!empty($line_text[$j])) {
         if (!email_already_exists($line_text[$j], $db_connection)) {
           $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
           return $ret_val;
+        } else if (!isset($manager)) {
+          $manager = $line_text[$line_fields];
         } else {
           $team_members[] = $line_text[$j];
           $team_size = $team_size + 1;
         }
       }
     }
+    // Skip over any lines that are entirely blank
+    if (isset($manager)) {
+      if ($team_size == 0) {
+        $ret_val['error'] = 'CSV file at line '. $line_num . ' only lists a manager: ' . $manager;
+        return $ret_val;
+      }
 
-    $manager = $line_text[$line_fields];
-    if (!email_already_exists($manager, $db_connection)) {
-      $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $manager;
-      return $ret_val;
-    }
-
-    // Now that we know data are valid, create & add all possible team pairings
-    for ($j = 0; $j < $team_size; $j++) {
-      if (!empty($team_members[$j])) {
+      // Now that we know data are valid, create & add all possible team pairings
+      for ($j = 0; $j < $team_size; $j++) {
         $managed = array();
         $managed[0] = $manager;
         $managed[1] = $team_members[$j];
         $ret_val[] = $managed;
 
         for ($k = 0; $k < $team_size; $k++) {
-          if (!empty($team_members[$k])) {
-            $pairing = array();
-            $pairing[0] = $team_members[$j];
-            $pairing[1] = $team_members[$k];
-            $ret_val[] = $pairing;
-          }
+          $pairing = array();
+          $pairing[0] = $team_members[$j];
+          $pairing[1] = $team_members[$k];
+          $ret_val[] = $pairing;
         }
+      }
+    }
+  }
+
+  return $ret_val;
+}
+
+
+function parse_review_many_to_one($file_handle, $db_connection) {
+  // return array
+  $ret_val = array();
+
+  $line_num = 0;
+  while (($line_text = fgetcsv($file_handle)) !== FALSE) {
+    $team_members = array();
+    $team_size = 0;
+    unset($reviewee);
+
+    $line_num = $line_num + 1;
+
+    // Force the input into ASCII format
+    $line_text = array_map("force_ascii", $line_text);
+
+    // Clean up white space oddities
+    $line_text = array_map("trim", $line_text);
+
+    $line_fields = count($line_text) - 1;
+    
+    // Make sure the current line's data are valid
+    for ($j = $line_fields - 1; $j >= 0; $j--) {
+      if (!empty($line_text[$j])) {
+        if (!email_already_exists($line_text[$j], $db_connection)) {
+          $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
+          return $ret_val;
+        } else if (!isset($reviewee)) {
+          $reviewee = $line_text[$line_fields];
+        } else {
+          $team_members[] = $line_text[$j];
+          $team_size = $team_size + 1;
+        }
+      }
+    }
+    // Skip over any lines that are entirely blank
+    if (isset($reviewee)) {
+      if ($team_size == 0) {
+        $ret_val['error'] = 'CSV file at line '. $line_num . ' only lists the person being reviewed: ' . $reviewee;
+        return $ret_val;
+      }
+
+      // Now that we know data are valid, create & add all possible team pairings
+      for ($j = 0; $j < $team_size; $j++) {
+        $managed = array();
+        $managed[0] = $team_members[$j];
+        $managed[0] = $reviewee;
+        $ret_val[] = $managed;
       }
     }
   }

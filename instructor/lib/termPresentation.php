@@ -1,5 +1,5 @@
 <?php
-function emit_course($widgetId, $course_info) {
+function emit_course($widgetId, $course_id, $course_info) {
   echo 
 ' <div class="accordion ms-1" id="'.$widgetId.'">
     <div class="accordion-item shadow">
@@ -14,6 +14,7 @@ function emit_course($widgetId, $course_info) {
             '<div class="row justify-content-evenly">
               <div class="col"><b>Survey Name</b></div>
               <div class="col-6"><b>Dates Available</b></div>
+              <div class="col"><b>Completion Rates</b></div>
               <div class="col"><b>Actions</b></div>
             </div>';
           }
@@ -21,6 +22,7 @@ function emit_course($widgetId, $course_info) {
             echo '<div class="row justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
                     <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                    <div class="col">Not yet active</div>
                     <div class="col"><a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                   </div>';
           }
@@ -28,6 +30,7 @@ function emit_course($widgetId, $course_info) {
             echo '<div class="row justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
                     <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                    <div class="col">'.$survey['completion'].'</div>
                     <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                   </div>';
           }
@@ -35,6 +38,7 @@ function emit_course($widgetId, $course_info) {
             echo '<div class="row justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
                     <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                    <div class="col">'.$survey['completion'].'</div>
                     <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                   </div>';
           }
@@ -42,7 +46,7 @@ function emit_course($widgetId, $course_info) {
             echo '<div class="row justify-content-center"><p><i>No surveys created yet</i></p></div>';
           }
           if ($course_info['mutable']) {
-            echo '<div class="row justify-content-center"><div class="col-auto"><a href="surveyAdd.php" class="btn btn-outline-success">+ Add Survey</a></div></div>';
+            echo '<div class="row justify-content-center"><div class="col-auto"><a href="surveyAdd.php?course='.$course_id.'" class="btn btn-outline-success">+ Add Survey</a></div></div>';
           }
   echo
   '     </div></div>
@@ -63,7 +67,7 @@ function emit_term($counter, $name, $course_list) {
   $counterTwo = 0;
   foreach ($course_list as $id => $course) {
     $widgetId = $counter."part".$counterTwo;
-    emit_course($widgetId, $course);
+    emit_course($widgetId, $id, $course);
     $counterTwo++;
   }
   echo

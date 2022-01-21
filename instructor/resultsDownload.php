@@ -96,7 +96,7 @@ $totals = array();
 // Array mapping email addresses to names
 $emails = array();
 // Array mapping email address to normalized results
-$normalized = array();
+$averages = array();
 
 $stmt = $con->prepare('SELECT reviewer_email, students.name, SUM(rubric_scores.score) total_score, COUNT(DISTINCT teammate_email) expected, COUNT(DISTINCT evals.id) actual
                        FROM reviewers INNER JOIN students ON reviewers.reviewer_email=students.email LEFT JOIN evals ON evals.reviewers_id=reviewers.id LEFT JOIN scores2 ON scores2.eval_id=evals.id LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id WHERE survey_id=? GROUP BY reviewer_email, students.name');
@@ -138,16 +138,19 @@ foreach ($emails as $email => $name) {
   }
 }
 $stmt_scores->close();
+$topics = getSurveyTopics($con, $sid);
 
 foreach ($emails as $email => $name) {
   $sum_normalized = 0;
   $reviews = 0;
+  $personal_average = array();
   foreach ($scores[$email] as $reviewer => $scored) {
     // Verify that this reviewer completed all of their 
     if (isset($totals[$reviewer]) && ($totals[$reviewer] != NO_SCORE_MARKER)) {
       $sum = 0;
       foreach ($scored as $id => $score) {
         $sum = $sum + $score;
+        $personal_average[$id] =  $personal_average[$id] + $score;
       }
       $scores[$email][$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
       $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
@@ -156,45 +159,43 @@ foreach ($emails as $email => $name) {
       $scores[$email][$reviewer]['normalized'] = NO_SCORE_MARKER;
     }
   }
-  if ($reviews == 0) {
-    $normalized[$email] = NO_SCORE_MARKER;
-  } else {
-    $normalized[$email] = $sum_normalized / $reviews;
-  }
-}
-$topics = getSurveyTopics($con, $sid);
-
-// now generate the raw scores output
-if ($_GET['type'] === 'raw') {
-  header('Content-Type: text/csv; charset=UTF-8');
-  header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-results.csv"');
-  $out = fopen('php://output', 'w');
-  $header = array("Reviewer","Reviewee");
-  foreach ($topics as $topic_id => $question) {
-    array_push($header,$question);
-  } 
-  fputcsv($out, $header);
-  foreach ($emails as $email => $name) {
-    foreach ($scores[$email] as $reviewer => $scored) {
-      $line = array();
-      array_push($line, $reviewer);
-      array_push($line, $email);
-      foreach ($topics as $topic_id => $question) {
-        if (isset($scored[$topic_id])) {
-          array_push($line, $scored[$topic_id]);
-        } else {
-          array_push($line, '--');
-        }
-      }
-      fputcsv($out, $line);
+  foreach (array_keys($topics) as $topic_id) {
+    if ($reviews == 0) {
+      $averages[$email][$topic_id] = NO_SCORE_MARKER;
+    } else {
+      $averages[$email][$topic_id] = $personal_average[$topic_id] / $reviews;
     }
   }
+  if ($reviews == 0) {
+    $averages[$email]["overall"] = NO_SCORE_MARKER;
+  } else {
+    $averages[$email]["overall"] = $sum_normalized / $reviews;
+  }
+}
+
+// now generate the raw scores output
+if ($_GET['type'] === 'individual') {
+  header('Content-Type: text/csv; charset=UTF-8');
+  header('Content-Disposition: attachment; filename="survey-' . $sid . '-individual-results.csv"');
+  $out = fopen('php://output', 'w');
+  $header = array("Reviewee");
+  foreach ($topics as $topic_id => $question) {
+    array_push($header,$question);
+  }
+  fputcsv($out, $header);
+  foreach ($emails as $email => $name) {
+    $line = array($email);
+    foreach ($topics as $topic_id => $question) {
+      $line[] = $averages[$email][$topic_id];
+    }
+    fputcsv($out, $line);
+  }
   fclose($out);
-} else if ($_GET['type'] === 'normalized') {
+} else if ($_GET['type'] === 'raw-full') {
   $topics['normalized'] = 'Normalized Score';
   // generate the correct headers for the file download
   header('Content-Type: text/csv; charset=UTF-8');
-  header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-results.csv"');
+  header('Content-Disposition: attachment; filename="survey-' . $sid . '-raw-results.csv"');
   $out = fopen('php://output', 'w');
   $header = array("Reviewer","Reviewee");
   foreach ($topics as $topic_id => $question) {
@@ -223,13 +224,13 @@ if ($_GET['type'] === 'raw') {
   header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-averages.csv"');
   $out = fopen('php://output', 'w');
   fputcsv($out, array("Reviewee","Average Normalized Score"));
-  foreach ($normalized as $email => $norm) {
+  foreach ($averages as $email => $avg_results) {
     $line = array();
     array_push($line, $email);
-    if ($norm === NO_SCORE_MARKER) {
+    if ($avg_results["overall"] === NO_SCORE_MARKER) {
       array_push($line, '--');
     } else {
-      array_push($line, $norm);
+      array_push($line, $avg_results["overall"]);
     }
     fputcsv($out, $line);
   }

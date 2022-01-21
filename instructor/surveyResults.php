@@ -184,21 +184,21 @@ $topics['normalized'] = 'Normalized Score';
   <div class="container-fluid">
     <div class="row justify-content-md-center mt-5 mx-4">
       <ul id="results-present" class="nav nav-pills nav-fill" role="tablist">
-        <li class="nav-item">
-          <a class="nav-link active" id="raw-pill" data-bs-toggle="tab" data-bs-target="#raw" role="tab" aria-controls="raw" aria-selected="true">Raw Results</a>
+      <li class="nav-item">
+          <a class="nav-link active" id="full-normalized-pill" data-bs-toggle="tab" data-bs-target="#full-normalized" role="tab" aria-controls="raw-normalized" aria-selected="true">Raw Surveys</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="full-normalized-pill" data-bs-toggle="tab" data-bs-target="#full-normalized" role="tab" aria-controls="raw-normalized" aria-selected="false">Normalized Results</a>
+          <a class="nav-link" id="raw-pill" data-bs-toggle="tab" data-bs-target="#raw" role="tab" aria-controls="raw" aria-selected="false">Individual Averages</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="avg-normalized-pill" data-bs-toggle="tab" data-bs-target="#avg-normalized" role="tab" aria-controls="avg-normalized" aria-selected="false">Final Averages</a>
+          <a class="nav-link" id="avg-normalized-pill" data-bs-toggle="tab" data-bs-target="#avg-normalized" role="tab" aria-controls="avg-normalized" aria-selected="false">Normalized Results</a>
         </li>
       </ul>
       <div id="results-tabs" class="tab-content border mt-2">
-        <div class="tab-pane active show mt-2" id="raw" role="tabpanel" aria-labelledby="raw-pill">
+        <div class="tab-pane mt-2" id="raw" role="tabpanel" aria-labelledby="raw-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw" target="_blank">Download Raw Results</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=individual" target="_blank">Download Individual Averages</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">
@@ -238,10 +238,10 @@ $topics['normalized'] = 'Normalized Score';
             </table>
           </div>
         </div>
-        <div class="tab-pane mt-2" id="full-normalized" role="tabpanel" aria-labelledby="full-normalized-pill">
+        <div class="tab-pane active show mt-2" id="full-normalized" role="tabpanel" aria-labelledby="full-normalized-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=normalized" target="_blank">Download Full Normalized Results</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw-full" target="_blank">Download Raw Survey Results</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">
