@@ -298,16 +298,16 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
       let numLevels = selectObject.value;
       let formatObject = document.getElementById("fileFormat");
       switch(numLevels) {
-        case 1:
+        case '1':
           formatObject.innerHTML = "One row per review. Each row has 2 column: reviewer email address, reviewee email address";
           break;
-        case 2:
+        case '2':
           formatObject.innerHTML = "One row per team. Each row contains the email addresses for all team members. Blank columns are ignored";
           break;
-        case 3:
+        case '3':
           formatObject.innerHTML = "One row per team. Each row contains the email addresses for all team members with the manager's email address listed last. Blank columns are ignored";
           break;
-        case 4:
+        case '4':
           formatObject.innerHTML = "One row per individual being reviewed. Each row contains the email addresses for all of the reviewers. The person being reviewed should be the final email address on the row";
           break;
         default:
