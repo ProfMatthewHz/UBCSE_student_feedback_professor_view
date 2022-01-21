@@ -40,7 +40,7 @@ if (!isset($_GET['type']))
 }
 
 // make sure the type query is one of the valid types. if not, respond not found
-if ($_GET['type'] !== 'raw' && $_GET['type'] !== 'normalized' && $_GET['type'] !== 'average')
+if ($_GET['type'] !== 'raw-full' && $_GET['type'] !== 'individual' && $_GET['type'] !== 'average')
 {
   http_response_code(404);
   echo "404: Not found.";
