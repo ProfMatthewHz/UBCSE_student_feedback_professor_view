@@ -86,7 +86,7 @@ $totals = array();
 // Array mapping email addresses to names
 $emails = array();
 // Array mapping email address to normalized results
-$normalized = array();
+$averages = array();
 
 $stmt = $con->prepare('SELECT reviewer_email, students.name, SUM(rubric_scores.score) total_score, COUNT(DISTINCT teammate_email) expected, COUNT(DISTINCT evals.id) actual
                        FROM reviewers INNER JOIN students ON reviewers.reviewer_email=students.email LEFT JOIN evals ON evals.reviewers_id=reviewers.id LEFT JOIN scores2 ON scores2.eval_id=evals.id LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id WHERE survey_id=? GROUP BY reviewer_email, students.name');
@@ -129,15 +129,18 @@ foreach ($emails as $email => $name) {
 }
 $stmt_scores->close();
 
+$topics = getSurveyTopics($con, $sid);
 foreach ($emails as $email => $name) {
   $sum_normalized = 0;
   $reviews = 0;
+  $personal_average = array();
   foreach ($scores[$email] as $reviewer => $scored) {
     // Verify that this reviewer completed all of their 
     if (isset($totals[$reviewer]) && ($totals[$reviewer] != NO_SCORE_MARKER)) {
       $sum = 0;
       foreach ($scored as $id => $score) {
         $sum = $sum + $score;
+        $personal_average[$id] =  $personal_average[$id] + $score;
       }
       $scores[$email][$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
       $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
@@ -146,13 +149,19 @@ foreach ($emails as $email => $name) {
       $scores[$email][$reviewer]['normalized'] = NO_SCORE_MARKER;
     }
   }
+  foreach (array_keys($topics) as $topic_id) {
+    if ($reviews == 0) {
+      $averages[$email][$topic_id] = NO_SCORE_MARKER;
+    } else {
+      $averages[$email][$topic_id] = $personal_average[$topic_id] / $reviews;
+    }
+  }
   if ($reviews == 0) {
-    $normalized[$email] = NO_SCORE_MARKER;
+    $averages[$email]["overall"] = NO_SCORE_MARKER;
   } else {
-    $normalized[$email] = $sum_normalized / $reviews;
+    $averages[$email]["overall"] = $sum_normalized / $reviews;
   }
 }
-$topics = getSurveyTopics($con, $sid);
 $topics['normalized'] = 'Normalized Score';
 ?>
 <!doctype html>
@@ -220,18 +229,8 @@ $topics['normalized'] = 'Normalized Score';
                 foreach ($emails as $email => $name) {
                   echo '<tr><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
                   foreach ($topics as $topic_id => $question) {
-                    $reviewers = 0;
-                    $sum = 0;
-                    foreach ($scores[$email] as $reviewer => $scored) {
-                      if (isset($scored[$topic_id])) {
-                        $sum = $sum + $scored[$topic_id];
-                        $reviewers = $reviewers + 1;
-                      }
-                    }
-                    if ($reviewers == 0) {
-                      echo '<td>--</td>';
-                    } else {
-                      echo '<td>'.($sum/$reviewers).'</td>';
+                    if ($topic_id != 'normalized') {
+                      echo '<td>'.$averages[$email][$topic_id].'</td>';
                     }
                   }
                   echo '</tr>';
@@ -296,12 +295,12 @@ $topics['normalized'] = 'Normalized Score';
               </thead>
               <tbody>
               <?php
-                foreach ($normalized as $email => $norm) {
+                foreach ($averages as $email => $norm_array) {
                   echo '<tr><td>' . htmlspecialchars($emails[$email]) . '<br>(' . htmlspecialchars($email) . ')' . '</td>';
-                  if ($norm === NO_SCORE_MARKER) {
+                  if ($norm["overall"] === NO_SCORE_MARKER) {
                     echo '<td>--</td></tr>';
                   } else {
-                    echo '<td>' . $norm . '</td></tr>';
+                    echo '<td>' . $$norm["overall"]  . '</td></tr>';
                   }
                 }
               ?>
