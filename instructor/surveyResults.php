@@ -138,13 +138,13 @@ foreach ($emails as $email => $name) {
     $personal_average[$topic_id] = 0;
   }
   foreach ($scores[$email] as $reviewer => $scored) {
+    $sum = 0;
+    foreach ($scored as $id => $score) {
+      $sum = $sum + $score;
+      $personal_average[$id] =  $personal_average[$id] + $score;
+    }
     // Verify that this reviewer completed all of their 
     if (isset($totals[$reviewer]) && ($totals[$reviewer] != NO_SCORE_MARKER)) {
-      $sum = 0;
-      foreach ($scored as $id => $score) {
-        $sum = $sum + $score;
-        $personal_average[$id] =  $personal_average[$id] + $score;
-      }
       $scores[$email][$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
       $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
       $reviews = $reviews + 1;
