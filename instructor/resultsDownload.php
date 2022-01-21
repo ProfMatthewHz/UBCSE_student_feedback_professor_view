@@ -150,7 +150,11 @@ foreach ($emails as $email => $name) {
       $sum = 0;
       foreach ($scored as $id => $score) {
         $sum = $sum + $score;
-        $personal_average[$id] =  $personal_average[$id] + $score;
+        if (isset($personal_average[$id])) {
+          $personal_average[$id] =  $personal_average[$id] + $score;
+        } else {
+          $personal_average[$id] =  $score;
+        }
       }
       $scores[$email][$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
       $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
