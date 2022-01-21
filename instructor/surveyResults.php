@@ -301,10 +301,10 @@ $topics['normalized'] = 'Normalized Score';
               <?php
                 foreach ($averages as $email => $norm_array) {
                   echo '<tr><td>' . htmlspecialchars($emails[$email]) . '<br>(' . htmlspecialchars($email) . ')' . '</td>';
-                  if ($norm["overall"] === NO_SCORE_MARKER) {
+                  if ($norm_array["overall"] === NO_SCORE_MARKER) {
                     echo '<td>--</td></tr>';
                   } else {
-                    echo '<td>' . $$norm["overall"]  . '</td></tr>';
+                    echo '<td>' . $$norm_array["overall"]  . '</td></tr>';
                   }
                 }
               ?>
