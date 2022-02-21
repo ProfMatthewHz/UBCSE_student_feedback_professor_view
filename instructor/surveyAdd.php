@@ -211,7 +211,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $pairing_mode = trim($_POST['pairing-mode']);
   if (empty($pairing_mode)) {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-  } else if ($pairing_mode != '1' && $pairing_mode != '2' && $pairing_mode != '3') {
+  } else if ($pairing_mode != '1' && $pairing_mode != '2' && $pairing_mode != '3' && $pairing_mode != '4') {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
   }
 
