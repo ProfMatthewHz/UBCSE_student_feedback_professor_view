@@ -203,7 +203,7 @@ function parse_review_many_to_one($file_handle, $db_connection) {
       for ($j = 0; $j < $team_size; $j++) {
         $managed = array();
         $managed[0] = $team_members[$j];
-        $managed[0] = $reviewee;
+        $managed[1] = $reviewee;
         $ret_val[] = $managed;
       }
     }
