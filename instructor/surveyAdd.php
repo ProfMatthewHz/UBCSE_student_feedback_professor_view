@@ -211,10 +211,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $pairing_mode = trim($_POST['pairing-mode']);
   if (empty($pairing_mode)) {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-  } else if ($pairing_mode != '1' && $pairing_mode != '2' && $pairing_mode != '3' && $pairing_mode != '4') {
-    $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-  }
-
+  } 
+  
   // validate the uploaded file
   if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE)
   {
@@ -248,6 +246,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $pairings = parse_review_managed_teams($file_handle, $con);
       } else if ($pairing_mode == '4') {
         $pairings = parse_review_many_to_one($file_handle, $con);
+      } else {
+        $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
       }
 
       // Clean up our file handling
