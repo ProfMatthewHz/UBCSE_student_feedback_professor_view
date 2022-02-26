@@ -117,7 +117,7 @@ function parse_review_managed_teams($file_handle, $db_connection) {
     $line_fields = count($line_text) - 1;
     
     // Make sure the current line's data are valid
-    for ($j = $line_fields - 1; $j >= 0; $j--) {
+    for ($j = $line_fields; $j >= 0; $j--) {
       if (!empty($line_text[$j])) {
         if (!email_already_exists($line_text[$j], $db_connection)) {
           $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
@@ -179,7 +179,7 @@ function parse_review_many_to_one($file_handle, $db_connection) {
     $line_fields = count($line_text) - 1;
     
     // Make sure the current line's data are valid
-    for ($j = $line_fields - 1; $j >= 0; $j--) {
+    for ($j = $line_fields; $j >= 0; $j--) {
       if (!empty($line_text[$j])) {
         if (!email_already_exists($line_text[$j], $db_connection)) {
           $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
