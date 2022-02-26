@@ -83,7 +83,7 @@ function parse_review_teams($file_handle, $db_connection) {
     // Now that we know data are valid, create & add all possible team pairings
     for ($j = 0; $j < $line_fields; $j++) {
       for ($k = 0; $k < $line_fields; $k++) {
-        if (!empty($line_text[$j]) && !empty($line_text[$k])) {
+        if ((!empty($line_text[$j])) && (!empty($line_text[$k]))) {
           $pairing = array();
           $pairing[0] = $line_text[$j];
           $pairing[1] = $line_text[$k];
@@ -123,7 +123,7 @@ function parse_review_managed_teams($file_handle, $db_connection) {
           $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
           return $ret_val;
         } else if (!isset($manager)) {
-          $manager = $line_text[$line_fields];
+          $manager = $line_text[$j];
         } else {
           $team_members[] = $line_text[$j];
           $team_size = $team_size + 1;
@@ -185,7 +185,7 @@ function parse_review_many_to_one($file_handle, $db_connection) {
           $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
           return $ret_val;
         } else if (!isset($reviewee)) {
-          $reviewee = $line_text[$line_fields];
+          $reviewee = $line_text[$j];
         } else {
           $team_members[] = $line_text[$j];
           $team_size = $team_size + 1;
