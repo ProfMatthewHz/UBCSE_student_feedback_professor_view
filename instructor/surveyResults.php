@@ -83,27 +83,61 @@ $course_year = $course_info[0]['year'];
 $scores = array();
 // Array mapping email to total number of points
 $totals = array();
-// Array mapping email addresses to names
-$emails = array();
+// Array mapping email addresses to names of teammates
+$teammates = array();
 // Array mapping email address to normalized results
 $averages = array();
+// Array mapping email address to names of reviewers
+$reviewers = array();
 
-$stmt = $con->prepare('SELECT reviewer_email, students.name, SUM(rubric_scores.score) total_score, COUNT(DISTINCT teammate_email) expected, COUNT(DISTINCT evals.id) actual
-                       FROM reviewers INNER JOIN students ON reviewers.reviewer_email=students.email LEFT JOIN evals ON evals.reviewers_id=reviewers.id LEFT JOIN scores2 ON scores2.eval_id=evals.id LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id WHERE survey_id=? GROUP BY reviewer_email, students.name');
+$stmt = $con->prepare('SELECT reviewer_email, SUM(rubric_scores.score) total_score, COUNT(DISTINCT teammate_email) expected, COUNT(DISTINCT evals.id) actual
+                       FROM reviewers
+                       LEFT JOIN evals ON evals.reviewers_id=reviewers.id 
+                       LEFT JOIN scores2 ON scores2.eval_id=evals.id 
+                       LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id 
+                       WHERE survey_id=? 
+                       GROUP BY reviewer_email');
 $stmt->bind_param('i', $sid);
 $stmt->execute();
 $result = $stmt->get_result();
 while ($row = $result->fetch_array(MYSQLI_NUM)) {
   $email_addr = $row[0];
-  $emails[$email_addr] = $row[1];
-  $scores[$email_addr] = array();
   // If the reviewer completed this survey
-  if ($row[3] == $row[4]) {
+  if ($row[2] == $row[3]) {
     // Initialize the total number of points
-    $totals[$email_addr] = $row[2] / $row[3];
+    $totals[$email_addr] = $row[1] / $row[2];
   }
 }
 $stmt->close();
+
+// Get the info for everyone who will be evaluated
+$stmt = $con->prepare('SELECT DISTINCT teammate_email, students.name
+                       FROM reviewers 
+                       INNER JOIN students ON reviewers.teammate_email=students.email 
+                       WHERE survey_id=?');
+$stmt->bind_param('i', $sid);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_array(MYSQLI_NUM)) {
+  $email_addr = $row[0];
+  $teammates[$email_addr] = $row[1];
+  $scores[$email_addr] = array();
+}
+$stmt->close();
+
+// Get the info for everyone who will be evaluated
+$stmt = $con->prepare('SELECT DISTINCT reviewer_email, students.name
+                       FROM reviewers 
+                       INNER JOIN students ON reviewers.reviewer_email=students.email 
+                       WHERE survey_id=?');
+$stmt->bind_param('i', $sid);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_array(MYSQLI_NUM)) {
+  $email_addr = $row[0];
+  $reviewers[$email_addr] = $row[1];
+}
+$stmt->close();  
 
 // Get information completed by the reviewer -- how many were reviewed and the total points
 $stmt_scores = $con->prepare('SELECT reviewer_email, teammate_email, topic_id, score 
@@ -112,7 +146,7 @@ $stmt_scores = $con->prepare('SELECT reviewer_email, teammate_email, topic_id, s
                               LEFT JOIN scores2 ON evals.id=scores2.eval_id
                               LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
                               WHERE survey_id=? AND teammate_email=?');
-foreach ($emails as $email => $name) {
+foreach ($teammates as $email => $name) {
   $stmt_scores->bind_param('is',$sid, $email);
   $stmt_scores->execute();
   $result = $stmt_scores->get_result();
@@ -130,7 +164,7 @@ foreach ($emails as $email => $name) {
 $stmt_scores->close();
 
 $topics = getSurveyTopics($con, $sid);
-foreach ($emails as $email => $name) {
+foreach ($teammates as $email => $name) {
   $sum_normalized = 0;
   $reviews = 0;
   $norm_reviews = 0;
@@ -231,7 +265,7 @@ $topics['normalized'] = 'Normalized Score';
               </thead>
               <tbody>
               <?php
-                foreach ($emails as $email => $name) {
+                foreach ($teammates as $email => $name) {
                   echo '<tr><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
                   foreach ($topics as $topic_id => $question) {
                     if ($topic_id != 'normalized') {
@@ -266,9 +300,9 @@ $topics['normalized'] = 'Normalized Score';
               </thead>
               <tbody>
               <?php
-                foreach ($emails as $email => $name) {
+                foreach ($teammates as $email => $name) {
                   foreach ($scores[$email] as $reviewer => $scored) {
-                    echo '<tr><td>' . htmlspecialchars($reviewer) . '<br>(' . htmlspecialchars($emails[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
+                    echo '<tr><td>' . htmlspecialchars($reviewer) . '<br>(' . htmlspecialchars($reviewers[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
                     foreach ($topics as $topic_id => $question) {
                       if (isset($scored[$topic_id])) {
                         echo '<td>'.$scored[$topic_id].'</td>';
@@ -301,7 +335,7 @@ $topics['normalized'] = 'Normalized Score';
               <tbody>
               <?php
                 foreach ($averages as $email => $norm_array) {
-                  echo '<tr><td>' . htmlspecialchars($emails[$email]) . '<br>(' . htmlspecialchars($email) . ')' . '</td>';
+                  echo '<tr><td>' . htmlspecialchars($teammates[$email]) . '<br>(' . htmlspecialchars($email) . ')' . '</td>';
                   if ($norm_array["overall"] === NO_SCORE_MARKER) {
                     echo '<td>--</td></tr>';
                   } else {
