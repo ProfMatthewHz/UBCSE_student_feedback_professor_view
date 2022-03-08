@@ -94,24 +94,46 @@ $scores = array();
 // Array mapping email to total number of points
 $totals = array();
 // Array mapping email addresses to names
-$emails = array();
+$teammates = array();
 // Array mapping email address to normalized results
 $averages = array();
+// Array mapping email address to names of reviewers
+$reviewers = array();
 
 $stmt = $con->prepare('SELECT reviewer_email, students.name, SUM(rubric_scores.score) total_score, COUNT(DISTINCT teammate_email) expected, COUNT(DISTINCT evals.id) actual
-                       FROM reviewers INNER JOIN students ON reviewers.reviewer_email=students.email LEFT JOIN evals ON evals.reviewers_id=reviewers.id LEFT JOIN scores2 ON scores2.eval_id=evals.id LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id WHERE survey_id=? GROUP BY reviewer_email, students.name');
+                       FROM reviewers
+                       INNER JOIN students ON reviewers.reviewer_email=students.email 
+                       LEFT JOIN evals ON evals.reviewers_id=reviewers.id 
+                       LEFT JOIN scores2 ON scores2.eval_id=evals.id 
+                       LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id 
+                       WHERE survey_id=? 
+                       GROUP BY reviewer_email, students.name');
 $stmt->bind_param('i', $sid);
 $stmt->execute();
 $result = $stmt->get_result();
 while ($row = $result->fetch_array(MYSQLI_NUM)) {
   $email_addr = $row[0];
-  $emails[$email_addr] = $row[1];
-  $scores[$email_addr] = array();
+  $reviewers[$email_addr] = $row[1];
   // If the reviewer completed this survey
   if ($row[3] == $row[4]) {
     // Initialize the total number of points
     $totals[$email_addr] = $row[2] / $row[3];
   }
+}
+$stmt->close();
+
+// Get the info for everyone who will be evaluated
+$stmt = $con->prepare('SELECT DISTINCT teammate_email, students.name
+                       FROM reviewers 
+                       INNER JOIN students ON reviewers.teammate_email=students.email 
+                       WHERE survey_id=?');
+$stmt->bind_param('i', $sid);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_array(MYSQLI_NUM)) {
+  $email_addr = $row[0];
+  $teammates[$email_addr] = $row[1];
+  $scores[$email_addr] = array();
 }
 $stmt->close();
 
@@ -122,7 +144,7 @@ $stmt_scores = $con->prepare('SELECT reviewer_email, teammate_email, topic_id, s
                               LEFT JOIN scores2 ON evals.id=scores2.eval_id
                               LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
                               WHERE survey_id=? AND teammate_email=?');
-foreach ($emails as $email => $name) {
+foreach ($teammates as $email => $name) {
   $stmt_scores->bind_param('is',$sid, $email);
   $stmt_scores->execute();
   $result = $stmt_scores->get_result();
@@ -140,7 +162,7 @@ foreach ($emails as $email => $name) {
 $stmt_scores->close();
 $topics = getSurveyTopics($con, $sid);
 
-foreach ($emails as $email => $name) {
+foreach ($teammates as $email => $name) {
   $sum_normalized = 0;
   $reviews = 0;
   $norm_reviews = 0;
@@ -188,7 +210,7 @@ if ($_GET['type'] === 'individual') {
     array_push($header,$question);
   }
   fputcsv($out, $header);
-  foreach ($emails as $email => $name) {
+  foreach ($teammates as $email => $name) {
     $line = array($email);
     foreach ($topics as $topic_id => $question) {
       $line[] = $averages[$email][$topic_id];
@@ -207,7 +229,7 @@ if ($_GET['type'] === 'individual') {
     array_push($header,$question);
   }
   fputcsv($out, $header);
-  foreach ($emails as $email => $name) {
+  foreach ($teammates as $email => $name) {
     foreach ($scores[$email] as $reviewer => $scored) {
       $line = array();
       array_push($line, $reviewer);
