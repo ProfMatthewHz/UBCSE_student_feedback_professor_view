@@ -41,8 +41,9 @@ if (!empty($_SERVER['uid'])) {
 
   // check if the email matches and store error messages or get the instructor id
   if ($result->num_rows == 0) {
-    http_response_code(400);
-    echo "Access Error: User is unknown. Talk to Matthew to get this fixed.";
+    // This user is not an instructor -- optimistically redirect them to the student-side of the system
+    $loc_string = "Location: ".SITE_HOME."/index.php";
+    header($loc_string);
     exit();
   }
   $id = $data[0]['id'];
