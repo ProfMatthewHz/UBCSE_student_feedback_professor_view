@@ -61,7 +61,6 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     echo "Bad Request: Invalid parameters.";
     exit();
   }
-
 }
 
 // try to look up info about the requested survey
@@ -113,7 +112,7 @@ if ($current_date > $stored_start_date) {
 }
 
 // now perform the validation and parsing
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // make sure values exist
   if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || !isset($_POST['csrf-token'])) {
     http_response_code(400);
@@ -148,35 +147,35 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   } else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK)  {
     $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
   } else {
-   // start parsing the file
-   $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
+    // start parsing the file
+    $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
 
-   // catch errors or continue parsing the file
-   if (!$file_handle) {
-     $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
-   } else {
-     if ($pairing_mode == '1') {
-       $pairings = parse_review_pairs($file_handle, $con);
-     } else if ($pairing_mode == '2') {
-       $pairings = parse_review_teams($file_handle, $con);
-     } else if ($pairing_mode == '3') {
-       $pairings = parse_review_managed_teams($file_handle, $con);
-     } else if ($pairing_mode == '4') {
-       $pairings = parse_review_many_to_one($file_handle, $con);
-     } else {
-       $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-     }
+    // catch errors or continue parsing the file
+    if (!$file_handle) {
+      $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
+    } else {
+      if ($pairing_mode == '1') {
+        $pairings = parse_review_pairs($file_handle, $con);
+      } else if ($pairing_mode == '2') {
+        $pairings = parse_review_teams($file_handle, $con);
+      } else if ($pairing_mode == '3') {
+        $pairings = parse_review_managed_teams($file_handle, $con);
+      } else if ($pairing_mode == '4') {
+        $pairings = parse_review_many_to_one($file_handle, $con);
+      } else {
+        $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
+      }
 
-     // Clean up our file handling
-     fclose($file_handle);
+      // Clean up our file handling
+      fclose($file_handle);
 
-    // Delete the old pairings from the database and then add the new pairings to the database if no other error message were set so far
-    if (empty($errorMsg)) {
-      $stmt = $con->prepare('DELETE FROM reviewers WHERE survey_id=?');
-      $stmt->bind_param('i', $sid);
-      $stmt->execute();
-
-      add_pairings($pairings, $sid, $con);
+      // Delete the old pairings from the database and then add the new pairings to the database if no other error message were set so far
+      if (empty($errorMsg)) {
+        $stmt = $con->prepare('DELETE FROM reviewers WHERE survey_id=?');
+        $stmt->bind_param('i', $sid);
+        $stmt->execute();
+        add_pairings($pairings, $sid, $con);
+      }
     }
   }
 }
@@ -226,7 +225,8 @@ for ($i = 0; $i < $size; $i++) {
   <?php emitUpdateFileDescriptionFn(); ?>
 </head>
 <body class="text-center">
-<!-- Header -->
+</body>
+</html>
 <main>
   <div class="container-fluid">
     <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
