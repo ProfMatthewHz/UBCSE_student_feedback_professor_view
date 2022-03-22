@@ -38,4 +38,18 @@ function emitSurveyTypeSelect($errorMsg, $pairing_mode) {
   }
   echo '<label for="pairing-mode">'.$message.'</label>';
 }
+
+function getPairingResults($con, $pairing_mode, $file_handle) {
+  if ($pairing_mode == '1') {
+    return parse_review_pairs($file_handle, $con);
+  } else if ($pairing_mode == '2') {
+    return parse_review_teams($file_handle, $con);
+  } else if ($pairing_mode == '3') {
+    return parse_review_managed_teams($file_handle, $con);
+  } else if ($pairing_mode == '4') {
+    return parse_review_many_to_one($file_handle, $con);
+  } else {
+    return null;
+  }
+}
 ?>

@@ -14,7 +14,7 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
-require_once "lib/surveyFields.php";
+require_once "lib/pairingFunctions.php";
 
 
 // set timezone
@@ -228,24 +228,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     // start parsing the file
     $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
 
-
     // catch errors or continue parsing the file
     if (!$file_handle) {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
-    }
-    else {
-      if ($pairing_mode == '1') {
-        $pairings = parse_review_pairs($file_handle, $con);
-      } else if ($pairing_mode == '2') {
-        $pairings = parse_review_teams($file_handle, $con);
-      } else if ($pairing_mode == '3') {
-        $pairings = parse_review_managed_teams($file_handle, $con);
-      } else if ($pairing_mode == '4') {
-        $pairings = parse_review_many_to_one($file_handle, $con);
-      } else {
+    } else {
+      $pairings = getPairingResults($con, $pairing_mode, $file_handle);
+      if (empty($pairings)) {
         $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
       }
-
+      
       // Clean up our file handling
       fclose($file_handle);
 
