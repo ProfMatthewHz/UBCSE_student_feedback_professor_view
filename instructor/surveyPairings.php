@@ -14,11 +14,10 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
-
+require_once "lib/surveyFields.php";
 
 // set timezone
 date_default_timezone_set('America/New_York');
-
 
 // query information about the requester
 $con = connectToDatabase();
@@ -129,14 +128,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  // check the pairing mode
-  $pairing_mode = trim($_POST['pairing-mode']);
-  if (empty($pairing_mode)) {
-    $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-  } else if ($pairing_mode != '1' && $pairing_mode != '2' && $pairing_mode != '3') {
-    $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-  }
-
   // now check for the agreement checkbox
   if (!isset($_POST['agreement'])) {
     $errorMsg['agreement'] = 'Please read the statement next to the checkbox and check it if you agree.';
@@ -144,6 +135,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg['agreement'] = 'Please read the statement next to the checkbox and check it if you agree.';
   }
 
+  // check the pairing mode
+  $pairing_mode = trim($_POST['pairing-mode']);
+  
   // validate the uploaded file
   if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE) {
     $errorMsg['pairing-file'] = 'The selected file is too large.';
@@ -151,40 +145,43 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg['pairing-file'] = 'The selected file was only paritally uploaded. Please try again.';
   } else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_NO_FILE) {
     $errorMsg['pairing-file'] = 'A pairing file must be provided.';
-  } else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK) {
+  } else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK)  {
     $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
   } else {
-    // start parsing the file
-    $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
+   // start parsing the file
+   $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
 
-    // catch errors or continue parsing the file
-    if (!$file_handle) {
-      $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
-    } else {
-      if ($pairing_mode == '1') {
-        $pairings = parse_review_pairs($file_handle, $con);
-      } else if ($pairing_mode == '2') {
-        $pairings = parse_review_teams($file_handle, $con);
-      } else {
-        $pairings = parse_review_managed_teams($file_handle, $con);
-      }
-      // Clean up our file handling
-      fclose($file_handle);
+   // catch errors or continue parsing the file
+   if (!$file_handle) {
+     $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
+   } else {
+     if ($pairing_mode == '1') {
+       $pairings = parse_review_pairs($file_handle, $con);
+     } else if ($pairing_mode == '2') {
+       $pairings = parse_review_teams($file_handle, $con);
+     } else if ($pairing_mode == '3') {
+       $pairings = parse_review_managed_teams($file_handle, $con);
+     } else if ($pairing_mode == '4') {
+       $pairings = parse_review_many_to_one($file_handle, $con);
+     } else {
+       $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
+     }
 
-      // Delete the old pairings from the database and then add the new pairings to the database if no other error message were set so far
-      if (empty($errorMsg)) {
-        $stmt = $con->prepare('DELETE FROM reviewers WHERE survey_id=?');
-        $stmt->bind_param('i', $sid);
-        $stmt->execute();
+     // Clean up our file handling
+     fclose($file_handle);
 
-        add_pairings($pairings, $sid, $con);
-      }
+    // Delete the old pairings from the database and then add the new pairings to the database if no other error message were set so far
+    if (empty($errorMsg)) {
+      $stmt = $con->prepare('DELETE FROM reviewers WHERE survey_id=?');
+      $stmt->bind_param('i', $sid);
+      $stmt->execute();
+
+      add_pairings($pairings, $sid, $con);
     }
   }
 }
 
 // finally, store information about survey pairings as array of array
-$pairings = array();
 
 // get information about the pairings
 $stmt = $con->prepare('SELECT reviewer_email, teammate_email FROM reviewers WHERE survey_id=? ORDER BY id');
@@ -192,8 +189,7 @@ $stmt->bind_param('i', $sid);
 $stmt->execute();
 $result = $stmt->get_result();
 
-while ($row = $result->fetch_assoc())
-{
+while ($row = $result->fetch_assoc()) {
   $pair_info = array();
   $pair_info['reviewer_email'] = $row['reviewer_email'];
   $pair_info['teammate_email'] = $row['teammate_email'];
@@ -226,7 +222,8 @@ for ($i = 0; $i < $size; $i++) {
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-  <title>CSE Evaluation Survey System - Survey Pairings</title>
+  <title>CSE Evaluation Survey System - Modify Survey</title>
+  <?php emitUpdateFileDescriptionFn(); ?>
 </head>
 <body class="text-center">
 <!-- Header -->
@@ -234,13 +231,13 @@ for ($i = 0; $i < $size; $i++) {
   <div class="container-fluid">
     <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
       <div class="col-sm-auto text-center">
-        <h4 class="text-white display-1">UB CSE Evalution System<br>Survey Pairings</h4>
+        <h4 class="text-white display-1">UB CSE Evalution System<br>Modify Survey</h4>
       </div>
     </div>
 
     <div class="row justify-content-md-center mt-5 mx-1">
       <div class="col-sm-auto text-center">
-        <h4><?php echo $course_name.' ('.$course_code.')';?><br><?php echo $survey_name.' Pairings'; ?></h4>
+        <h4><?php echo $course_name.' ('.$course_code.')';?><br><?php echo $survey_name.' Plan'; ?></h4>
       </div>
     </div>
     <?php
@@ -285,22 +282,16 @@ for ($i = 0; $i < $size; $i++) {
   <div class="container-sm">
     <div class="row justify-content-md-center mt-5 mx-4">
       <div class="col-auto">
-          <h4>Modify Survey Pairings</h4>
+          <h4>Modify Survey</h4>
       </div>
     </div>
     <form action="surveyPairings.php?survey=<?php echo $sid; ?>" method ="post" enctype="multipart/form-data">
       <div class="cointainer-sm">
       <div class="row justify-content-md-center mt-5 mx-4">
         <div class="form-floating mb-3">
-            <select class="form-select <?php if(isset($errorMsg["pairing-mode"])) {echo "is-invalid ";} ?>" id="pairing-mode" name="pairing-mode">
-              <option value="-1" disabled <?php if (!isset($pairing_mode)) {echo 'selected';} ?>>Select Pairing Mode</option>
-              <option value="1" <?php if (isset($pairing_mode) && ($pairing_mode == 1)) {echo 'selected';} ?>>Raw</option>
-              <option value="2" <?php if (isset($pairing_mode) && ($pairing_mode == 2)) {echo 'selected';} ?>>Team</option>
-              <option value="3" <?php if (isset($pairing_mode) && ($pairing_mode == 3)) {echo 'selected';} ?>>Manager + Team</option>
-            </select>
-            <label for="pairing-mode"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"]; } else { echo "Pairing Mode:";} ?></label>
+          <?php emitSurveyTypeSelect($errorMsg, $pairing_mode); ?>
         </div>
-        <span style="font-size:small;color:DarkGrey">Each row of file should contain email addresses of one pair or one team. PMs must be last email address in row.</span>
+        <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
         <div class="form-floating mt-0 mb-3">
           <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
           <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>
@@ -310,9 +301,7 @@ for ($i = 0; $i < $size; $i++) {
           <label class="form-check-label" for="agreement">
           I understand that modifying survey pairings will overwrite all previously supplied pairings for this survey.</label>
         </div>
-
         <input type="hidden" name="survey" value="<?php echo $sid; ?>" />
-
         <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
         <input type="submit" class="btn btn-danger" value="Modify Survey Pairings"></input>
   </div></div>

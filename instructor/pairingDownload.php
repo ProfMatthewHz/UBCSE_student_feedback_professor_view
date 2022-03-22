@@ -53,8 +53,7 @@ $result = $stmt->get_result();
 $survey_info = $result->fetch_all(MYSQLI_ASSOC);
 
 // reply not found on no match
-if ($result->num_rows == 0)
-{
+if ($result->num_rows == 0) {
   http_response_code(404);   
   echo "404: Not found.";
   exit();
@@ -68,14 +67,13 @@ $result = $stmt->get_result();
 $data = $result->fetch_all(MYSQLI_ASSOC);
 
 // reply forbidden if instructor did not create survey
-if ($result->num_rows == 0)
-{
+if ($result->num_rows == 0) {
   http_response_code(403);   
   echo "403: Forbidden.";
   exit();
 }
 
-// finally, store information about survey pairings in a string
+// Finally, get the pairings for review
 $pairings = "reviewer_email,reviewee_email\n";
 
 // get information about the pairings
@@ -84,8 +82,7 @@ $stmt->bind_param('i', $sid);
 $stmt->execute();
 $result = $stmt->get_result();
 
-while ($row = $result->fetch_assoc())
-{
+while ($row = $result->fetch_assoc()) {
   $pairings .= $row['reviewer_email'] . "," . $row['teammate_email'] . "\n";
 }
 

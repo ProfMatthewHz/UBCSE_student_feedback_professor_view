@@ -14,6 +14,8 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
+require_once "lib/surveyFields.php";
+
 
 // set timezone
 date_default_timezone_set('America/New_York');
@@ -214,19 +216,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   } 
   
   // validate the uploaded file
-  if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE)
-  {
+  if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE) {
     $errorMsg['pairing-file'] = 'The selected file is too large.';
-  }
-  else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_PARTIAL)
-  {
+  } else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_PARTIAL) {
     $errorMsg['pairing-file'] = 'The selected file was only paritally uploaded. Please try again.';
-  }
-  else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_NO_FILE)
-  {
+  } else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_NO_FILE) {
     $errorMsg['pairing-file'] = 'A pairing file must be provided.';
-  }
-  else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK)  {
+  } else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK)  {
     $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
   } else {
     // start parsing the file
@@ -292,30 +288,7 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <title>CSE Evaluation Survey System - Add Survey</title>
-  <script>
-    function handlePairingChange() {
-      let selectObject = document.getElementById("pairing-mode");
-      let numLevels = selectObject.value;
-      let formatObject = document.getElementById("fileFormat");
-      switch(numLevels) {
-        case '1':
-          formatObject.innerHTML = "One row per review. Each row has 2 column: reviewer email address, reviewee email address";
-          break;
-        case '2':
-          formatObject.innerHTML = "One row per team. Each row contains the email addresses for all team members. Blank columns are ignored";
-          break;
-        case '3':
-          formatObject.innerHTML = "One row per team. Each row contains the email addresses for all team members with the manager's email address listed last. Blank columns are ignored";
-          break;
-        case '4':
-          formatObject.innerHTML = "One row per individual being reviewed. Each row contains the email addresses for all of the reviewers. The person being reviewed should be the final email address on the row";
-          break;
-        default:
-          formatObject.innerHTML = "CSV file format needed for the pairing mode shown here";
-          break;
-      }
-    }
-  </script>
+  <?php emitUpdateFileDescriptionFn(); ?>
 </head>
 <body class="text-center">
 <!-- Header -->
@@ -379,17 +352,9 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
           <label for="rubric-id"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"]; } else { echo "Rubric:";} ?></label>
       </div>
       <div class="form-floating mb-3">
-          <select class="form-select <?php if(isset($errorMsg["pairing-mode"])) {echo "is-invalid ";} ?>" id="pairing-mode" name="pairing-mode" onload="handlePairingChange();" onchange="handlePairingChange();">
-            <option value="-1" disabled <?php if (!$pairing_mode) {echo 'selected';} ?>>Select Pairing Mode</option>
-            <option value="1" <?php if ($pairing_mode == 1) {echo 'selected';} ?>>Individual Review</option>
-            <option value="2" <?php if ($pairing_mode == 2) {echo 'selected';} ?>>Team</option>
-            <option value="3" <?php if ($pairing_mode == 3) {echo 'selected';} ?>>Team + Manager</option>
-            <option value="4" <?php if ($pairing_mode == 4) {echo 'selected';} ?>>Many-to-1</option>
-          </select>
-          <label for="pairing-mode"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"]; } else { echo "Pairing Mode:";} ?></label>
+        <?php emitSurveyTypeSelect($errorMsg, $pairing_mode); ?>
       </div>
-
-      <span id="fileFormat" style="font-size:small;color:DarkGrey">Each row of file should contain email addresses of one pair or one team. PMs must be last email address in row.</span>
+      <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
       <div class="form-floating mt-0 mb-3">
         <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
         <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>

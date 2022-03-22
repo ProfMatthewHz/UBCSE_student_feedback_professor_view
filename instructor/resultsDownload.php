@@ -40,8 +40,7 @@ if (!isset($_GET['type']))
 }
 
 // make sure the type query is one of the valid types. if not, respond not found
-if ($_GET['type'] !== 'raw-full' && $_GET['type'] !== 'individual' && $_GET['type'] !== 'average')
-{
+if ($_GET['type'] !== 'raw-full' && $_GET['type'] !== 'individual' && $_GET['type'] !== 'average') {
   http_response_code(404);
   echo "404: Not found.";
   exit();
@@ -50,8 +49,7 @@ if ($_GET['type'] !== 'raw-full' && $_GET['type'] !== 'individual' && $_GET['typ
 // make sure the query string is an integer, reply 404 otherwise
 $sid = intval($_GET['survey']);
 
-if ($sid === 0)
-{
+if ($sid === 0) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
