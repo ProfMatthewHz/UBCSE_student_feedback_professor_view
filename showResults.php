@@ -61,7 +61,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
             </div>
             <div class="row pt-1 mx-1 align-items-center text-center border-bottom border-3 border-dark">
                 <?php
-                    emitAveragesTable($topics, $answers, $scores, $members);
+                    emitAveragesTable($topics, $answers, $scores, $reviewers);
                 ?>
             </div>
             <div class="row pt-1 mx-1">
