@@ -11,6 +11,29 @@
     return $retVal;
   }
 
+  function getReviewPoints($db_connection, $review_id, $topics, $answers) {
+    $query_str = 'SELECT topic_id, score FROM scores2 INNER JOIN rubric_scores ON scores2.score_id=rubric_scores.id INNER JOIN evals ON scores2.eval_id=evals.id WHERE evals.reviewers_id=?';
+    $retVal = array();
+    // Prepare the next selection statement
+    $stmt = $db_connection->prepare($query_str);
+    $stmt->bind_param('i', $review_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      $topic_id = $row[0];
+      $score = $row[1];
+      if (!array_key_exists($topic_id, $topics)) {
+        // This is not a valid survey for this student
+        echo "ERROR: Survey submission was invalid. Talk to your instructor about this error.";
+        http_response_code(400);
+        exit();
+      }
+      $retVal[$topic_id] = $score;
+    }
+    $stmt->close();
+    return $retVal;
+  }
+
   function getReviewScores($db_connection, $review_id, $topics, $answers) {
     $query_str = 'SELECT topic_id, score_id FROM scores2 INNER JOIN evals ON scores2.eval_id=evals.id WHERE evals.reviewers_id=?';
     $retVal = array();
