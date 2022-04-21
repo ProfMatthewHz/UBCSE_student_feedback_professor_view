@@ -32,7 +32,7 @@
     $retVal = array();
     $query_str = 'SELECT evals.id
                   FROM reviewers
-                  INNER JOIN evals ON evals.reviewer_id = reviewers.id
+                  INNER JOIN evals ON evals.reviewers_id = reviewers.id
                   WHERE reviewers.survey_id =? AND reviewers.teammate_email=?';
     $stmt_group = $db_connection->prepare($query_str);
     $stmt_group->bind_param('is',$survey_id,$email);
