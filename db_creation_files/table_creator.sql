@@ -84,21 +84,7 @@ CREATE TABLE `reviewers` (
  CONSTRAINT `reviewers_teammate_constraint` FOREIGN KEY (`teammate_email`) REFERENCES `students` (`email`)
 ) ENGINE=InnoDB;
 
--- student_login TABLE
--- each row represents a student being able to login to the system. this is used to support the 2-step login approach
--- that relies on UBIT to provide the necessary requirements under FERPA ;)
-CREATE TABLE `student_login` (
- `id` int(11) NOT NULL AUTO_INCREMENT,
- `email` varchar(50) NOT NULL,
- `password` varchar(50) NOT NULL,
- `expiration_time` int(50) NOT NULL,
- PRIMARY KEY (`id`),
- UNIQUE KEY `email` (`email`,`password`),
- CONSTRAINT `student_login_email_constraint` FOREIGN KEY (`email`) REFERENCES `students` (`email`)
-) ENGINE=InnoDB;
-
 -- these tables were created so that we can allow faculty to tailor the questions & answers with each survey
--- FIXME: MHz is uncertain if they get used
 CREATE TABLE `rubrics` (
   `id` int(11) NOT NULL,
   `description` varchar(500) NOT NULL,
