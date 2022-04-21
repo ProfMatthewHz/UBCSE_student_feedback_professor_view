@@ -28,6 +28,23 @@
     return handleSurveyQuery($db_connection, $survey_id, $email, $query_str);
   }
 
+  function initializeReviewerData($db_connection, $survey_id, $email) {
+    $retVal = array();
+    $query_str = 'SELECT evals.id
+                  FROM reviewers
+                  INNER JOIN evals ON evals.reviewer_id = reviewers.id
+                  WHERE reviewers.survey_id =? AND reviewers.teammate_email=?';
+    $stmt_group = $db_connection->prepare($query_str);
+    $stmt_group->bind_param('is',$survey_id,$email);
+    $stmt_group->execute();
+    $result = $stmt_group->get_result();
+    while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      $retVal[] = $row[0];
+    }
+    $stmt_group->close();
+    return $retVal;
+  }
+
   function initializeRevieweeData($db_connection, $survey_id, $email) {
     $retVal = array();
     $query_str = 'SELECT reviewers.id, students.name FROM reviewers
