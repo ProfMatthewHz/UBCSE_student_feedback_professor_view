@@ -1,6 +1,7 @@
 <?php
 require "lib/constants.php";
 require "lib/database.php";
+require "lib/resultsTable.php";
 require "lib/scoreQueries.php";
 //error logging
 error_reporting(-1); // reports all errors
@@ -25,7 +26,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
 
   // Store the scores submitted for each teammate
   $scores = array();
-  foreach ($members as $reviewer_id => $name) {
+  foreach ($reviewers as $reviewer_id) {
     $scores[$name] = getReviewPoints($con, $reviewer_id, $topics, $answers);
   }
   unset($_SESSION['surveys_id']);
