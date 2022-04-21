@@ -1,5 +1,8 @@
 <?php
 require "lib/constants.php";
+require "lib/database.php";
+require "lib/scoreQueries.php";
+require "lib/resultsTable.php";
 //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
@@ -12,8 +15,6 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
     header("Location: " . SITE_HOME . "index.php");
     exit();
 } else {
-  require "lib/database.php";
-  require "lib/scoreQueries.php";
   $con = connectToDatabase();
   $course = $_SESSION['course_name'];
   $survey_name = $_SESSION['survey_name'];

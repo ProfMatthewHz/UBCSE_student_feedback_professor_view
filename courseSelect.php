@@ -33,13 +33,10 @@
   $stmt_past->store_result();
   while ($stmt_past->fetch()){
     $e = new DateTime($expire);
-    if ($assigned == $submitted) {
-      $display_name = '('.$class_name.') '.$survey_name.' is available for review after closing on '.$e->format('M d').' at '.$e->format('g:i a');
-      $past_surveys[htmlspecialchars($display_name)] = $survey_id;
-    } else {
-      $display_name = '('.$class_name.') '.$survey_name.' was due by '.$e->format('M d').' at '.$e->format('g:H a');
-      $past_surveys[htmlspecialchars($display_name)] = null;
-    }
+    $display_name = '('.$class_name.') '.$survey_name.' closed on '.$e->format('M d').' at '.$e->format('g:i a');
+    $fully_submitted = ($submitted == $assigned);
+    $value = array($display_name, $fully_submitted);
+    $past_surveys[$survey_id] = $value;
   }
   $stmt_past->close();
 
@@ -121,11 +118,12 @@
               <?php
               if(count($past_surveys) > 0) {
                 foreach ($past_surveys as $key => $value) {
-                  echo('<p>');
-                  if (empty($value)) {
-                    echo ($key);
+                  echo('<p>'.$value[0]);
+                  echo ('<a href="'.SITE_HOME.'showEvals.php?survey='.$key.'">My Results</a>');
+                  if ($value[1]) {
+                    echo (' | <a href="'.SITE_HOME.'startReview.php?survey='.$key.'">My Submissions</a>');
                   } else {
-                    echo ('<a href="'.SITE_HOME.'startReview.php?survey='.$value.'">'.$key.'</a>');
+                    echo (' | No evals submitted');
                   }
                   echo('</p>');
                 }
