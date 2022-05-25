@@ -14,7 +14,6 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
-require_once "lib/surveyFields.php";
 
 // set timezone
 date_default_timezone_set('America/New_York');
