@@ -48,7 +48,8 @@
   function initializeRevieweeData($db_connection, $survey_id, $email) {
     $retVal = array();
     $query_str = 'SELECT reviewers.id, students.name FROM reviewers
-                  INNER JOIN students ON reviewers.teammate_email = students.email WHERE reviewers.survey_id =? AND reviewers.reviewer_email=?';
+                  INNER JOIN students ON reviewers.teammate_email = students.email 
+                  WHERE reviewers.survey_id =? AND reviewers.reviewer_email=?';
     $stmt_group = $db_connection->prepare($query_str);
     $stmt_group->bind_param('is',$survey_id,$email);
     $stmt_group->execute();
@@ -62,7 +63,11 @@
 
   function getSurveyTopics($db_connection, $survey_id) {
     $retVal = array();
-    $query_str = 'SELECT rubric_topics.id, question FROM rubric_topics INNER JOIN surveys ON surveys.rubric_id = rubric_topics.rubric_id WHERE surveys.id = ? ORDER BY rubric_topics.id';
+    $query_str = 'SELECT rubric_topics.id, question 
+                  FROM rubric_topics 
+                  INNER JOIN surveys ON surveys.rubric_id = rubric_topics.rubric_id
+                  WHERE surveys.id = ?
+                  ORDER BY rubric_topics.id';
     $stmt_topics = $db_connection->prepare($query_str);
     $stmt_topics->bind_param('i', $survey_id);
     $stmt_topics->execute();
@@ -76,7 +81,10 @@
 
   function getSurveyResponses($db_connection, $topic_id) {
     $retVal = array();
-    $query_str = 'SELECT score_id, response FROM rubric_responses WHERE topic_id = ? ORDER BY score_id';
+    $query_str = 'SELECT score_id, response 
+                  FROM rubric_responses 
+                  WHERE topic_id = ? 
+                  ORDER BY score_id';
     $stmt_responses = $db_connection->prepare($query_str);
     $stmt_responses->bind_param('i', $topic_id);
     $stmt_responses->execute();
@@ -90,7 +98,11 @@
 
   function getSurveyScores($db_connection, $survey_id) {
     $retVal = array();
-    $query_str = 'SELECT rubric_scores.id, score FROM rubric_scores INNER JOIN surveys ON surveys.rubric_id = rubric_scores.rubric_id WHERE surveys.id = ? ORDER BY rubric_scores.score';
+    $query_str = 'SELECT rubric_scores.id, score
+                  FROM rubric_scores
+                  INNER JOIN surveys ON surveys.rubric_id = rubric_scores.rubric_i
+                  WHERE surveys.id = ?
+                  ORDER BY rubric_scores.score';
     $stmt_scores = $db_connection->prepare($query_str);
     $stmt_scores->bind_param('i', $survey_id);
     $stmt_scores->execute();

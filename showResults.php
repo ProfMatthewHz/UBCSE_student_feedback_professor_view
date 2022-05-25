@@ -53,7 +53,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
 			<div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
 				<div class="col-sm-auto text-center">
                     <h1 class="text-white display-1"><?php echo $course?> <?php echo $survey_name?> Evaluation</h1><br>
-					<p class="text-white lead">Evaluation Results</p>
+					<p class="text-white lead">Average on Others Evaluations</p>
 				</div>
 			</div>
             <div class="row mt-5 mx-1">

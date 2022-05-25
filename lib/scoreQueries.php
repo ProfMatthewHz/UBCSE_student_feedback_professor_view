@@ -1,7 +1,10 @@
 <?php
   function getEvalScores($db_connection, $eval_id) {
+    $query_str = 'SELECT topic_id, score_id 
+                  FROM scores2
+                  WHERE eval_id=? AND score_id IS NOT NULL';
     $retVal = array();
-    $stmt = $db_connection->prepare('SELECT topic_id, score_id FROM scores2 WHERE eval_id=? AND score_id IS NOT NULL');
+    $stmt = $db_connection->prepare($query_str);
     $stmt->bind_param('i', $eval_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -12,7 +15,11 @@
   }
 
   function getReviewPoints($db_connection, $review_id, $topics, $answers) {
-    $query_str = 'SELECT topic_id, score FROM scores2 INNER JOIN rubric_scores ON scores2.score_id=rubric_scores.id INNER JOIN evals ON scores2.eval_id=evals.id WHERE evals.reviewers_id=?';
+    $query_str = 'SELECT topic_id, score 
+                  FROM scores2 
+                  INNER JOIN rubric_scores ON scores2.score_id=rubric_scores.id 
+                  INNER JOIN evals ON scores2.eval_id=evals.id 
+                  WHERE evals.reviewers_id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
@@ -35,7 +42,10 @@
   }
 
   function getReviewScores($db_connection, $review_id, $topics, $answers) {
-    $query_str = 'SELECT topic_id, score_id FROM scores2 INNER JOIN evals ON scores2.eval_id=evals.id WHERE evals.reviewers_id=?';
+    $query_str = 'SELECT topic_id, score_id 
+                  FROM scores2 
+                  INNER JOIN evals ON scores2.eval_id=evals.id 
+                  WHERE evals.reviewers_id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);

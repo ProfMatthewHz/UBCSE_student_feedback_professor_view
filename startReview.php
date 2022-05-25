@@ -41,7 +41,6 @@
   foreach ($_SESSION['topics'] as $topic_id => $topic) {
     $_SESSION['answers'][$topic_id] = getSurveyResponses($con, $topic_id);
   }
-	$_SESSION['scores'] = getSurveyScores($con, $survey);
 
   // Now redirect the user to the peer evaluation form
   header("Location: ".SITE_HOME."/evalReview.php");

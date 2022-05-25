@@ -119,7 +119,7 @@
               if(count($past_surveys) > 0) {
                 foreach ($past_surveys as $key => $value) {
                   echo('<p><i>'.$value[0].'</i> ');
-                  echo ('<a href="'.SITE_HOME.'startResults.php?survey='.$key.'">My Results</a>');
+                  echo ('<a href="'.SITE_HOME.'startResults.php?survey='.$key.'">My Averages</a>');
                   if ($value[1]) {
                     echo (' | <a href="'.SITE_HOME.'startReview.php?survey='.$key.'">My Submissions</a>');
                   } else {
