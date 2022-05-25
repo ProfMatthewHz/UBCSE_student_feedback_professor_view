@@ -9,6 +9,25 @@ function emit_course($widgetId, $course_id, $course_info) {
       </h2>
       <div id="collapse'.$widgetId.'" class="accordion-collapse collapse" aria-labelledby="header'.$widgetId.'">
         <div class="accordion-body"><div class="container">';
+        if ($course_info['mutable']) {
+          echo '<div class="row justify-content-end pb-3"><div class="col-auto"><button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#rosterUpdate'.$widgetId.'">Update Roster</button></div></div>';
+          echo '<div class="modal fade" id="rosterUpdate'.$widgetId.'" tabindex="-1" role="dialog" aria-labelledby="updateRosterLabel'.$widgetId.'" aria-hidden="true">';
+          echo '<div class="modal-dialog" role="document">';
+          echo '<div class="modal-content">';
+          echo '<div class="modal-header">';
+          echo '<h5 class="modal-title" id="updateRosterLabel'.$widgetId.'">Update Roster for '.$course_info["code"].' '.$course_info["name"].'</h5>';
+          echo '<button type="button" id="modalClose'.$widgetId.'" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+          echo '<div class="modal-body">';
+          echo '<span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>';
+          echo '<div class="form-floating mt-0 mb-3">';
+          echo '<input type="file" id="roster-file'.$widgetId.'" class="form-control" name="roster-file"></input>';
+          echo '<label for="roster-file'.$widgetId.'" id="roster-file-label'.$widgetId.'" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);">Roster (CSV File):</label>';
+          echo '</div>';
+          echo '<button type="button" class="btn btn-success" onclick="updateRoster('.$widgetId.')" value="Update Roster" />';
+          echo '</div>';
+          echo '</div>';
+          echo '</div></div></div>';
+        }
           if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) != 0) {
             echo
             '<div class="row justify-content-evenly">
@@ -46,7 +65,7 @@ function emit_course($widgetId, $course_id, $course_info) {
             echo '<div class="row justify-content-center"><p><i>No surveys created yet</i></p></div>';
           }
           if ($course_info['mutable']) {
-            echo '<div class="row justify-content-center"><div class="col-auto"><a href="surveyAdd.php?course='.$course_id.'" class="btn btn-outline-success">+ Add Survey</a></div></div>';
+            echo '<div class="row justify-content-center pt-3"><div class="col-auto"><a href="surveyAdd.php?course='.$course_id.'" class="btn btn-outline-success">+ Add Survey</a></div></div>';
           }
   echo
   '     </div></div>
