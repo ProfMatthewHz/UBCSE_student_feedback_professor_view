@@ -27,7 +27,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
   // Store the scores submitted for each teammate
   $scores = array();
   foreach ($members as $reviewer_id => $name) {
-    $scores[$name] = getReviewScores($con, $reviewer_id, $topics, $answers);
+    $scores[$reviewer_id] = getReviewScores($con, $reviewer_id, $topics, $answers);
   }
   unset($_SESSION['surveys_id']);
   unset($_SESSION['course_name']);

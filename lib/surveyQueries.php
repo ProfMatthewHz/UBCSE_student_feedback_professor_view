@@ -47,7 +47,8 @@
 
   function initializeRevieweeData($db_connection, $survey_id, $email) {
     $retVal = array();
-    $query_str = 'SELECT reviewers.id, students.name FROM reviewers
+    $query_str = 'SELECT reviewers.id, students.name 
+                  FROM reviewers
                   INNER JOIN students ON reviewers.teammate_email = students.email 
                   WHERE reviewers.survey_id =? AND reviewers.reviewer_email=?';
     $stmt_group = $db_connection->prepare($query_str);
