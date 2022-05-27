@@ -71,8 +71,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
   // We can open the file, so lets start setting up the header
   header("Content-Type: application/json; charset=UTF-8");
-  header("Expires: ".date("D, d M Y H:i:s ", time() + 600)."GMT");
-  header("Last-Modified: ". date("D, d M Y H:i:s ", $lastModified)."GMT");
   // Now lets dump the data we found
   $myJSON = json_encode($results);
   echo $myJSON;

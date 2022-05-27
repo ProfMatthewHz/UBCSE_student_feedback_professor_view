@@ -9,25 +9,18 @@ function emit_course($widgetId, $course_id, $course_info) {
       </h2>
       <div id="collapse'.$widgetId.'" class="accordion-collapse collapse" aria-labelledby="header'.$widgetId.'">
         <div class="accordion-body"><div class="container">';
-        if ($course_info['mutable']) {
-          echo '<div class="row justify-content-end pb-3"><div class="col-auto"><button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#rosterUpdate'.$widgetId.'">Update Roster</button></div></div>';
-          echo '<div class="modal fade" id="rosterUpdate'.$widgetId.'" tabindex="-1" role="dialog" aria-labelledby="updateRosterLabel'.$widgetId.'" aria-hidden="true">';
-          echo '<div class="modal-dialog" role="document">';
-          echo '<div class="modal-content">';
-          echo '<div class="modal-header">';
-          echo '<h5 class="modal-title" id="updateRosterLabel'.$widgetId.'">Update Roster for '.$course_info["code"].' '.$course_info["name"].'</h5>';
-          echo '<button type="button" id="modalClose'.$widgetId.'" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-          echo '<div class="modal-body">';
-          echo '<span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>';
-          echo '<div class="form-floating mt-0 mb-3">';
-          echo '<input type="file" id="roster-file'.$widgetId.'" class="form-control" name="roster-file"></input>';
-          echo '<label for="roster-file'.$widgetId.'" id="roster-file-label'.$widgetId.'" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);">Roster (CSV File):</label>';
-          echo '</div>';
-          echo '<button type="button" class="btn btn-success" onclick="updateRoster('.$widgetId.')" value="Update Roster" />';
-          echo '</div>';
-          echo '</div>';
-          echo '</div></div></div>';
-        }
+         if ($course_info['mutable']) {
+            echo '<div class="row justify-content-end pb-3"><div class="col-auto"><button type="button" class="btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#rosterUpdate'.$widgetId.'" aria-expanded="false" aria-controls="rosterUpdate'.$widgetId.'">Update Roster</button></div></div>';
+            echo '<div class="row justify-content-end pb-3"><div class="col-auto">';
+            echo '<div class="collapse" id="rosterUpdate'.$widgetId.'"><div class="card card-body">';
+            echo '<span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>';
+            echo '<div class="input-group input-group-sm">';
+            echo '<input type="file" id="roster-file'.$widgetId.'" class="form-control" name="roster-file'.$widgetId.'"></input>';
+            echo '<label for="roster-file'.$widgetId.'" id="roster-file-label'.$widgetId.'"></label></div>';
+            echo '<button type="button" class="btn btn-success" onclick="updateRoster('."'".$widgetId."'".')">Update</button>';
+            echo '</div></div>';
+            echo '</div></div></div>';
+          } 
           if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) != 0) {
             echo
             '<div class="row justify-content-evenly">

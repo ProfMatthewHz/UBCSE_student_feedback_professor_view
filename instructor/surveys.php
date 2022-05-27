@@ -137,10 +137,8 @@ foreach ($terms as $name => &$term_courses) {
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            alert("Roster successfully uploaded");
-            document.getElementById("modalClose"+course_id).click();
+            document.getElementById("roster-file-label"+course_id).innerHTML = "Success!";
           } else {
-            document.getElementById("modalClose"+course_id).classList.add("is-invalid");
             document.getElementById("roster-file-label"+course_id).innerHTML = data.error;
           }
         });
