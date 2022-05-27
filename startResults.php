@@ -39,7 +39,7 @@
   $_SESSION['topics'] = getSurveyTopics($con, $survey);
 	$_SESSION['answers'] = array();
   foreach ($_SESSION['topics'] as $topic_id => $topic) {
-    $_SESSION['answers'][$topic_id] = getSurveyResponses($con, $topic_id, false);
+    $_SESSION['answers'][$topic_id] = getSurveyResponses($con, $topic_id, true);
   }
 
   // Now redirect the user to the peer evaluation form
