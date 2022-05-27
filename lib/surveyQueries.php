@@ -93,7 +93,7 @@
     $result = $stmt_responses->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
       if ($include_score) {
-        $retVal[$row[0]] = $row[1].' (out of '.$row[2].')';
+        $retVal[$row[0]] = $row[1].' (top answer worth '.$row[2].')';
       } else {
         $retVal[$row[0]] = $row[1];
       }
