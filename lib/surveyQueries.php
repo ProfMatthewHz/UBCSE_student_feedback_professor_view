@@ -80,10 +80,11 @@
     return $retVal;
   }
 
-  function getSurveyResponses($db_connection, $topic_id) {
+  function getSurveyResponses($db_connection, $topic_id, $include_score) {
     $retVal = array();
-    $query_str = 'SELECT score_id, response 
-                  FROM rubric_responses 
+    $query_str = 'SELECT score_id, response, score
+                  FROM rubric_responses
+                  INNER JOIN rubric_scores ON rubric_scores.id = rubric_responses.score_id
                   WHERE topic_id = ? 
                   ORDER BY score_id';
     $stmt_responses = $db_connection->prepare($query_str);
@@ -91,7 +92,11 @@
     $stmt_responses->execute();
     $result = $stmt_responses->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
-      $retVal[$row[0]] = $row[1];
+      if ($include_score) {
+        $retVal[$row[0]] = $row[1].' (out of '.$row[2].')';
+      } else {
+        $retVal[$row[0]] = $row[1];
+      }
     }
     $stmt_responses->close();
     return $retVal;
