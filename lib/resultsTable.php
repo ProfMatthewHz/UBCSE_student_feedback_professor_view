@@ -13,9 +13,9 @@ function emitAveragesTable($topics, $answers, $scores, $members) {
     foreach ($topics as $topic_id => $topic) {
         $sum = 0;
         $count = 0;
-        foreach ($scores as $name => $submits) {
-            if (isset($submits[$topic_id])) {
-              $sum += $submits[$topic_id];
+        foreach ($scores as $submit) {
+            if (isset($submit[$topic_id])) {
+              $sum += $submit[$topic_id];
               $count++;
             }
         }
