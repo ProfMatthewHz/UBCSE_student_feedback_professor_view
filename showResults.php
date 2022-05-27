@@ -19,7 +19,6 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
   $course = $_SESSION['course_name'];
   $survey_name = $_SESSION['survey_name'];
   $survey_id = $_SESSION['survey_id'];
-  $num_reviewers = count($_SESSION['reviewers']);
   $topics = $_SESSION['topics'];
   $answers = $_SESSION['answers'];
   $reviewers = $_SESSION['reviewers'];

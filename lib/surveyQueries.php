@@ -30,7 +30,7 @@
 
   function initializeReviewerData($db_connection, $survey_id, $email) {
     $retVal = array();
-    $query_str = 'SELECT evals.id
+    $query_str = 'SELECT reviewers_id
                   FROM reviewers
                   INNER JOIN evals ON evals.reviewers_id = reviewers.id
                   WHERE reviewers.survey_id =? AND reviewers.teammate_email=?';
