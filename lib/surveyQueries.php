@@ -33,9 +33,9 @@
     $query_str = 'SELECT reviewers_id
                   FROM reviewers
                   INNER JOIN evals ON evals.reviewers_id = reviewers.id
-                  WHERE reviewers.survey_id =? AND reviewers.teammate_email=?';
+                  WHERE reviewers.survey_id =? AND reviewers.teammate_email=? AND reviewers.reviewer_email<>?';
     $stmt_group = $db_connection->prepare($query_str);
-    $stmt_group->bind_param('is',$survey_id,$email);
+    $stmt_group->bind_param('iss',$survey_id,$email, $email);
     $stmt_group->execute();
     $result = $stmt_group->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
