@@ -6,7 +6,7 @@ function emitAveragesTable($topics, $answers, $scores, $members) {
     echo '</div>';
     echo '<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:#e1e1e1">';
     foreach ($topics as $topic_id => $topic) {
-        echo '<div class="col-2 ms-auto"><b>'.end($answers[$topic_id][0]).'</b></div>';
+        echo '<div class="col-2 ms-auto"><b>'.end($answers[$topic_id])[0].'</b></div>';
     }
     echo '</div>';
     echo '<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:#f8f8f8"">';
@@ -21,7 +21,7 @@ function emitAveragesTable($topics, $answers, $scores, $members) {
         }
         if ($count > 0) {
             $average = $sum / $count;
-            echo '<div class="col-2 ms-auto text-center"><span class="font-weight-bold">'.$average.'</span> (out of '.$answers[$topic_id][1].'</div>';
+            echo '<div class="col-2 ms-auto text-center"><span class="font-weight-bold">'.$average.'</span> (out of '.end($answers[$topic_id])[1].'</div>';
         } else {
             echo '<div class="col-2 ms-auto text-center">--</div>';
         }
