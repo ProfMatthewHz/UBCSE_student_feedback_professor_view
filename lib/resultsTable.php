@@ -21,7 +21,7 @@ function emitAveragesTable($topics, $answers, $scores, $members) {
         }
         if ($count > 0) {
             $average = $sum / $count;
-            echo '<div class="col-2 ms-auto text-center"><span class="font-weight-bold">'.$average.'</span> (out of '.end($answers[$topic_id])[1].'</div>';
+            echo '<div class="col-2 ms-auto text-center"><span class="font-weight-bold">'.$average.'</span> (out of '.end($answers[$topic_id])[1].')</div>';
         } else {
             echo '<div class="col-2 ms-auto text-center">--</div>';
         }
