@@ -129,16 +129,6 @@ foreach ($terms as $name => &$term_courses) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <script>
-    let modal = document.getElementById("rosterUpdateModal");
-    modal.addEventListener('show.bs.modal', function (event) {
-      // Get the course name from the button that was clicked
-      let course_name = event.relatedTarget.getAttribute('data-bs-coursename')
-      let modTitle = document.getElementById("rosterUpdateModalLabel");
-      modTitle.innerHTML = "Update " + course_name + " Roster";
-      let modFile = document.getElementById("roster-file");
-      modFile.value ='';
-      modFile.value = null;
-    });
     function updateRoster() {
       // Create the fake form we are uploading
       let formData = new FormData();
@@ -235,5 +225,16 @@ foreach ($terms as $name => &$term_courses) {
     </div>
   </div>
 </main>
+<script>
+  let modal = document.getElementById("rosterUpdateModal");
+  modal.addEventListener('show.bs.modal', function (event) {
+      // Get the course name from the button that was clicked
+      let course_name = event.relatedTarget.getAttribute('data-bs-coursename')
+      let modTitle = document.getElementById("rosterUpdateModalLabel");
+      modTitle.innerHTML = "Update " + course_name + " Roster";
+      let modFile = document.getElementById("roster-file");
+      modFile.value ='';
+      modFile.value = null;
+  });
 </body>
 </html>
