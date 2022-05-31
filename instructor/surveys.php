@@ -129,17 +129,24 @@ foreach ($terms as $name => &$term_courses) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <script>
-    function updateRoster(course_id) {
+    function updateModal(course_name) {
+      let modTitle = document.getElementById("rosterUpdateModalLabel");
+      modTitle.innerHTML = "Update " + course_name + " Roster";
+      let modFile = document.getElementById("roster-file");
+      modFile.value ='';
+      modFile.value = null;
+    }
+    function updateRoster() {
       // Create the fake form we are uploading
       let formData = new FormData();
-      formData.append("roster-file", document.getElementById("roster-file"+course_id).files[0]);
+      formData.append("roster-file", document.getElementById("roster-file").files[0]);
       fetch('rosterUpdate.php', {method: "POST", body: formData})
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            document.getElementById("roster-file-label"+course_id).innerHTML = "Success!";
+            document.getElementById("roster-file-label").innerHTML = "Success!";
           } else {
-            document.getElementById("roster-file-label"+course_id).innerHTML = data.error;
+            document.getElementById("roster-file-label").innerHTML = data.error;
           }
         });
     }
@@ -150,6 +157,50 @@ foreach ($terms as $name => &$term_courses) {
 <!-- Header -->
 <main>
   <div class="container-fluid">
+    <div class="modal fade" id="rosterUpdateModal" tabindex="-1" aria-labelledby="rosterUpdateModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rosterUpdateModalLabel">Update course roster</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+          <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
+          <div class="input-group input-group-sm">
+          <input type="file" id="roster-file" class="form-control" name="roster-file"></input>
+          <label for="roster-file" id="roster-file-label"></label></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="updateRoster()">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="deadlineExtendModal" tabindex="-1" aria-labelledby="deadlineExtendModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rosterUpdateModalLabel">Extend deadline</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-floating mb-3">
+              <input type="date" id="end-date" name="end-date" class="form-control <?php if(isset($errorMsg["end-date"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_date) {echo htmlspecialchars($start_date);} else {echo date("Y-m-d");} ?>"></input>
+              <label for="end-date"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"]; } else { echo "End Date:";} ?></label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="time" id="end-time" name="end-time" class="form-control <?php if(isset($errorMsg["end-time"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_time) {echo htmlspecialchars($start_time);} else {echo "00:00";} ?>"></input>
+              <label for="end-time"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"]; } else { echo "End Time:";} ?></label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="updateRoster()">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
       <div class="col-sm-auto text-center">
         <h4 class="text-white display-1">UB CSE Evalution System<br>Instructor Overview</h4>
