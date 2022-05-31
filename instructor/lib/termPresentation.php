@@ -10,9 +10,9 @@ function emit_course($widgetId, $course_id, $course_info) {
       <div id="collapse'.$widgetId.'" class="accordion-collapse collapse" aria-labelledby="header'.$widgetId.'">
         <div class="accordion-body"><div class="container">';
          if ($course_info['mutable']) {
-          echo '<div class="row justify-content-end pb-3"><div class="col-auto"><button type="button" class="btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#rosterUpdateModal" onclick="updateModal('."'".$course_info["name"]."'".');">Update Roster</button></div></div>';
-          } 
-          if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) != 0) {
+          echo '<div class="row justify-content-end pb-3"><div class="col-auto"><button type="button" class="btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#rosterUpdateModal" data-bs-coursename="'.$course_info["name"].'">Update Roster</button></div></div>';
+         } 
+         if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) != 0) {
             echo
             '<div class="row justify-content-evenly">
               <div class="col"><b>Survey Name</b></div>
@@ -25,16 +25,21 @@ function emit_course($widgetId, $course_id, $course_info) {
             echo '<div class="row justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
                     <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
-                    <div class="col">Not yet active</div>
-                    <div class="col"><a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
+                    <div class="col">Not yet active</div><div class="col">';
+            if ($course_info['mutable']) {
+              echo '<a type="button" class="btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#deadlineExtendModal" onclick="updateModal('."'".$course_info["name"]."'".');">Extend Deadline</button>';
+            }
+             echo '<a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                   </div>';
           }
           foreach ($course_info['active'] as $survey) {
             echo '<div class="row justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
                     <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
-                    <div class="col">'.$survey['completion'].'</div>
-                    <div class="col"><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
+                    <div class="col">'.$survey['completion'].'</div><div class="col">';
+            if ($course_info['mutable']) {
+            }
+            echo '<a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                   </div>';
           }
           foreach ($course_info['expired'] as $survey) {

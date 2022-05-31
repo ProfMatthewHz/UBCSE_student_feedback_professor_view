@@ -129,13 +129,16 @@ foreach ($terms as $name => &$term_courses) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <script>
-    function updateModal(course_name) {
+    let modal = document.getElementById("rosterUpdateModal");
+    modal.addEventListener('show.bs.modal', function (event) {
+      // Get the course name from the button that was clicked
+      let course_name = event.relatedTarget.getAttribute('data-bs-coursename')
       let modTitle = document.getElementById("rosterUpdateModalLabel");
       modTitle.innerHTML = "Update " + course_name + " Roster";
       let modFile = document.getElementById("roster-file");
       modFile.value ='';
       modFile.value = null;
-    }
+    });
     function updateRoster() {
       // Create the fake form we are uploading
       let formData = new FormData();
@@ -145,6 +148,8 @@ foreach ($terms as $name => &$term_courses) {
         .then(data => {
           if (data.success) {
             document.getElementById("roster-file-label").innerHTML = "Success!";
+            // Show success message for 5 seconds before modal closes
+            setTimeout(() => { $('#rosterUpdateModal').modal('hide');}, 5000);
           } else {
             document.getElementById("roster-file-label").innerHTML = data.error;
           }
@@ -181,17 +186,17 @@ foreach ($terms as $name => &$term_courses) {
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="rosterUpdateModalLabel">Extend deadline</h5>
+            <h5 class="modal-title" id="deadlineExtendModalLabel">Extend deadline</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="form-floating mb-3">
-              <input type="date" id="end-date" name="end-date" class="form-control <?php if(isset($errorMsg["end-date"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_date) {echo htmlspecialchars($start_date);} else {echo date("Y-m-d");} ?>"></input>
-              <label for="end-date"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"]; } else { echo "End Date:";} ?></label>
+              <input type="date" id="end-date" name="end-date" class="form-control" required></input>
+              <label for="end-date"></label>
             </div>
             <div class="form-floating mb-3">
-              <input type="time" id="end-time" name="end-time" class="form-control <?php if(isset($errorMsg["end-time"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_time) {echo htmlspecialchars($start_time);} else {echo "00:00";} ?>"></input>
-              <label for="end-time"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"]; } else { echo "End Time:";} ?></label>
+              <input type="time" id="end-time" name="end-time" class="form-control" required></input>
+              <label for="end-time"></label>
             </div>
           </div>
           <div class="modal-footer">
