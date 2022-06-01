@@ -313,7 +313,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           <select class="form-select <?php if(isset($errorMsg["rubric-id"])) {echo "is-invalid ";} ?>" id="rubric-id" name="rubric-id" <?php if (!$full_perms) { echo "disabled"; }?>>
             <?php
             if (!$full_perms) {
-              echo '<option value="' . $rubric_id . '" selected>' . htmlspecialchars($rubrics[$rubric_id]['description']) . '</option>';
+              echo '<option value="' . $rubric_id . '" selected>' . htmlspecialchars($rubrics[$rubric_id]) . '</option>';
             } else {
               foreach ($rubrics as $r_id => $r_desc) {
                 if ($rubric_id == $r_id) {
