@@ -26,7 +26,7 @@ function emit_course($widgetId, $course_id, $course_info) {
                     <div class="col">'.$survey['name'].'</div>
                     <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
                     <div class="col">Not yet active</div><div class="col">';
-            echo '<a href="surveyExtend.php?survey='.$survey['id'].'">Update</a> | ';
+            echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Update</a> | ';
             echo '<a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                   </div>';
           }
@@ -36,7 +36,7 @@ function emit_course($widgetId, $course_id, $course_info) {
                     <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
                     <div class="col">'.$survey['completion'].'</div><div class="col">';
             if ($course_info['mutable']) {
-              echo '<a href="surveyExtend.php?survey='.$survey['id'].'">Extend Deadline</a> | ';
+              echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Extend Deadline</a> | ';
             }
             echo '<a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                   </div>';
@@ -47,7 +47,7 @@ function emit_course($widgetId, $course_id, $course_info) {
                     <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
                     <div class="col">'.$survey['completion'].'</div><div class="col">';
             if ($course_info['mutable']) {
-              echo '<a href="surveyExtend.php?survey='.$survey['id'].'">Extend Deadline</a> | ';
+              echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Extend Deadline</a> | ';
             }
             echo '<a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div></div>';
           }
