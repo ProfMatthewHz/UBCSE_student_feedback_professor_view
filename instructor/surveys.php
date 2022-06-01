@@ -172,30 +172,6 @@ foreach ($terms as $name => &$term_courses) {
         </div>
       </div>
     </div>
-    <div class="modal fade" id="deadlineExtendModal" tabindex="-1" aria-labelledby="deadlineExtendModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="deadlineExtendModalLabel">Extend deadline</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="form-floating mb-3">
-              <input type="date" id="end-date" name="end-date" class="form-control" required></input>
-              <label for="end-date"></label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="time" id="end-time" name="end-time" class="form-control" required></input>
-              <label for="end-time"></label>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="updateRoster()">Update</button>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
       <div class="col-sm-auto text-center">
         <h4 class="text-white display-1">UB CSE Evalution System<br>Instructor Overview</h4>
@@ -226,8 +202,8 @@ foreach ($terms as $name => &$term_courses) {
   </div>
 </main>
 <script>
-  let modal = document.getElementById("rosterUpdateModal");
-  modal.addEventListener('show.bs.modal', function (event) {
+  let rosterModal = document.getElementById("rosterUpdateModal");
+  rosterModal.addEventListener('show.bs.modal', function (event) {
       // Get the course name from the button that was clicked
       let course_name = event.relatedTarget.getAttribute('data-bs-coursename')
       let modTitle = document.getElementById("rosterUpdateModalLabel");
@@ -236,5 +212,6 @@ foreach ($terms as $name => &$term_courses) {
       modFile.value ='';
       modFile.value = null;
   });
+</script>
 </body>
 </html>
