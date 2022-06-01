@@ -56,7 +56,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'GET') && isset($_GET['survey'])) {
 $rubrics = selectRubrics($con);
 
 // Get the survey's current data 
-$stmt = $con->prepare('SELECT surveys.*, course.code, course.name, course.semester, course.year FROM surveys INNER JOIN course on surveys.course_id=course.course_id WHERE surveys.id=? AND course.instructor_id=?');
+$stmt = $con->prepare('SELECT surveys.*, course.code, course.name, course.semester, course.year FROM surveys INNER JOIN course on surveys.course_id=course.id WHERE surveys.id=? AND course.instructor_id=?');
 $stmt->bind_param('ii', $survey_id, $instructor->id);
 $stmt->execute();
 $result = $stmt->get_result();
