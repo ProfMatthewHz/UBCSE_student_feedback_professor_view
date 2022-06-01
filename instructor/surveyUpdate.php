@@ -83,7 +83,7 @@ $start_date = $s->format('Y-m-d');
 $start_time = $s->format('H:i');
 $end_date = $e->format('Y-m-d');
 $end_time = $e->format('H:i');
-$full_perms = $now > $s;
+$full_perms = $now < $s;
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -315,11 +315,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!$full_perms) {
               echo '<option value="' . $rubric_id . '" selected>' . htmlspecialchars($rubrics[$rubric_id]['description']) . '</option>';
             } else {
-              foreach ($rubrics as $rubric) {
-                if ($rubric_id == $rubric['id']) {
-                  echo '<option value="' . $rubric['id'] . '" selected>' . htmlspecialchars($rubric['description']) . '</option>';
+              foreach ($rubrics as $r_id => $r_desc) {
+                if ($rubric_id == $r_id) {
+                  echo '<option value="' . $rubric_id . '" selected>' . htmlspecialchars($r_desc) . '</option>';
                 } else {
-                  echo '<option value="' . $rubric['id'] . '" >' . htmlspecialchars($rubric['description']) . '</option>';
+                  echo '<option value="' . $r_id . '" >' . htmlspecialchars($r_desc) . '</option>';
                 }
               }
             }
