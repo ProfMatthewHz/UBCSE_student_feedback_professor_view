@@ -89,6 +89,10 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   // respond not found on no query string parameter
   if (isset($_GET['course'])) {
     $course_id = intval($_GET['course']);
+  } else {
+    http_response_code(400);
+    echo "Bad Request: Missing parameters.";
+    exit();
   }
 }
 
@@ -320,11 +324,11 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
           <label for="start-time"><?php if(isset($errorMsg["start-time"])) {echo $errorMsg["start-time"]; } else { echo "Start Time:";} ?></label>
       </div>
       <div class="form-floating mb-3">
-          <input type="date" id="end-date" name="end-date" class="form-control <?php if(isset($errorMsg["end-date"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_date) {echo htmlspecialchars($start_date);} else {echo date("Y-m-d");} ?>"></input>
+          <input type="date" id="end-date" name="end-date" class="form-control <?php if(isset($errorMsg["end-date"])) {echo "is-invalid ";} ?>" required value="<?php if ($end_date) {echo htmlspecialchars($end_date);} else {echo date("Y-m-d");} ?>"></input>
           <label for="end-date"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"]; } else { echo "End Date:";} ?></label>
       </div>
       <div class="form-floating mb-3">
-          <input type="time" id="end-time" name="end-time" class="form-control <?php if(isset($errorMsg["end-time"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_time) {echo htmlspecialchars($start_time);} else {echo "00:00";} ?>"></input>
+          <input type="time" id="end-time" name="end-time" class="form-control <?php if(isset($errorMsg["end-time"])) {echo "is-invalid ";} ?>" required value="<?php if ($end_time) {echo htmlspecialchars($end_time);} else {echo "00:00";} ?>"></input>
           <label for="end-time"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"]; } else { echo "End Time:";} ?></label>
       </div>
       <div class="form-floating mb-3">
