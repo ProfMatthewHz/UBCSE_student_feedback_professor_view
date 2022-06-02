@@ -104,9 +104,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // While everything will be sent on the post request, we will not always update the database with that info
   if ($full_perms) {
-    // get the name of this survey
-    $survey_name = trim($_POST['survey-name']);
-
     // check rubric is not empty
     $rubric_id = $_POST['rubric-id'];
     $rubric_id = intval($rubric_id);
@@ -137,7 +134,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       }
     }
   }
+  // get the name of this survey
+  $survey_name = trim($_POST['survey-name']);
 
+  // Get the end date of the survey
   $end_date = trim($_POST['end-date']);
   if (empty($end_date)) {
     $errorMsg['end-date'] = "Please choose a end date.";
@@ -190,7 +190,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
       // redirect to survey page with sucess message
       $_SESSION['survey-update'] = "Successfully added updated";
-
+      $stmt->close();
       http_response_code(302);
       header("Location: surveys.php");
       exit();
@@ -216,7 +216,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $stmt = $con->prepare('UPDATE surveys SET name = ?, expiration_date = ? WHERE id = ?');
       $stmt->bind_param('ssi', $survey_name, $edate, $survey_id);
       $stmt->execute();
-
+      $stmt->close();
       // redirect to survey page with sucess message
       $_SESSION['survey-update'] = "Successfully added updated";
 
