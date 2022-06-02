@@ -214,7 +214,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errorMsg)) {
       $edate = $end_date . ' ' . $end_time;
       $stmt = $con->prepare('UPDATE surveys SET name = ?, expiration_date = ? WHERE id = ?');
-      $stmt->bind_param('si', $survey_name, $edate, $survey_id);
+      $stmt->bind_param('ssi', $survey_name, $edate, $survey_id);
       $stmt->execute();
 
       // redirect to survey page with sucess message
