@@ -296,7 +296,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           <label for="rubric-id">Rubric:</label>
       </div>
 
-      <input type="hidden" name="survey_id" value="<?php echo $survey_id; ?>" />
+      <input type="hidden" name="survey-id" value="<?php echo $survey_id; ?>" />
 
       <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
 
