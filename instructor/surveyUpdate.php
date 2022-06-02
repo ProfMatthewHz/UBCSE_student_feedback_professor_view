@@ -88,9 +88,8 @@ $full_perms = $now < $s;
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
-  if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || !isset($_POST['start-date']) || !isset($_POST['start-time']) || !isset($_POST['end-date']) || !isset($_POST['end-time']) || !isset($_POST['csrf-token']) ||
-      !isset($_POST['course-id']) || !isset($_POST['survey-name']) || !isset($_POST['rubric-id']))
-  {
+  if (!isset($_POST['start-date']) || !isset($_POST['start-time']) || !isset($_POST['end-date']) || !isset($_POST['end-time']) || !isset($_POST['csrf-token']) ||
+      !isset($_POST['survey-name'])) {
     http_response_code(400);
     echo "Bad Request: Missing parameters.";
     exit();
@@ -104,53 +103,46 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  // get the name of this survey
-  $survey_name = trim($_POST['survey-name']);
+  // While everything will be sent on the post request, we will not always update the database with that info
+  if ($full_perms) {
+    // get the name of this survey
+    $survey_name = trim($_POST['survey-name']);
 
-  // check course is not empty
-  $course_id = $_POST['course-id'];
-  $course_id = intval($course_id);
-  if ($course_id === 0) {
-    $errorMsg['course-id'] = "Please choose a valid course.";
-  }
-
-  // check rubric is not empty
-  $rubric_id = $_POST['rubric-id'];
-  $rubric_id = intval($rubric_id);
-  if ($rubric_id === 0) {
-    $errorMsg['rubric-id'] = "Please choose a valid rubric.";
-  }
-
-  $stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
-  $stmt->bind_param('ii', $course_id, $instructor->id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = $result->fetch_all(MYSQLI_ASSOC);
-
-  // reply forbidden if instructor did not create survey
-  if ($result->num_rows == 0) {
-    $errorMsg['course-id'] = "Please choose a valid course.";
-  }
-
-  $start_date = trim($_POST['start-date']);
-  $end_date = trim($_POST['end-date']);
-  if (empty($start_date)) {
-    $errorMsg['start-date'] = "Please choose a start date.";
-  }
-  if (empty($end_date)) {
-    $errorMsg['end-date'] = "Please choose a end date.";
-  }
-
-  // check the date's validity
-  if (!isset($errorMsg['start-date']) and !isset($errorMsg['end-date']))
-  {
-    $start = DateTime::createFromFormat('Y-m-d', $start_date);
-    if (!$start) {
-      $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
-    } else if ($start->format('Y-m-d') != $start_date) {
-      $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
+    // check rubric is not empty
+    $rubric_id = $_POST['rubric-id'];
+    $rubric_id = intval($rubric_id);
+    if (!array_key_exists($rubric_id, $rubrics)) {
+      $errorMsg['rubric-id'] = "Please choose a valid rubric.";
     }
 
+    $start_date = trim($_POST['start-date']);
+    if (empty($start_date)) {
+      $errorMsg['start-date'] = "Please choose a start date.";
+    } else {
+      $start = DateTime::createFromFormat('Y-m-d', $start_date);
+      if (!$start) {
+        $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
+      } else if ($start->format('Y-m-d') != $start_date) {
+        $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
+      }
+    }
+    $start_time = trim($_POST['start-time']);
+    if (empty($start_time)) {
+      $errorMsg['start-time'] = "Please choose a start time.";
+    } else {
+      $start = DateTime::createFromFormat('H:i', $start_time);
+      if (!$start) {
+        $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
+      } else if ($start->format('H:i') != $start_time) {
+        $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
+      }
+    }
+  }
+
+  $end_date = trim($_POST['end-date']);
+  if (empty($end_date)) {
+    $errorMsg['end-date'] = "Please choose a end date.";
+  } else {
     $end = DateTime::createFromFormat('Y-m-d', $end_date);
     if (!$end) {
       $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
@@ -159,24 +151,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 
-  $start_time = trim($_POST['start-time']);
   $end_time = trim($_POST['end-time']);
-
-  if (empty($start_time)) {
-    $errorMsg['start-time'] = "Please choose a start time.";
-  }
   if (empty($end_time)) {
     $errorMsg['end-time'] = "Please choose a end time.";
-  }
-
-  if (!isset($errorMsg['start-time']) && !isset($errorMsg['end-time'])) {
-    $start = DateTime::createFromFormat('H:i', $start_time);
-    if (!$start) {
-      $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
-    } else if ($start->format('H:i') != $start_time) {
-      $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
-    }
-
+  } else {
     $end = DateTime::createFromFormat('H:i', $end_time);
     if (!$end) {
       $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
@@ -185,77 +163,67 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 
-  // check dates and times
-  if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
-    $s = new DateTime($start_date . ' ' . $start_time);
-    $e = new DateTime($end_date . ' ' . $end_time);
-    $today = new DateTime();
+  if ($full_perms) {
+    // check dates and times
+    if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
+      $s = new DateTime($start_date . ' ' . $start_time);
+      $e = new DateTime($end_date . ' ' . $end_time);
+      $today = new DateTime();
 
-    if ($e < $s) {
-      $errorMsg['end-date'] = "End date and time cannot be before start date and time.";
-      $errorMsg['end-time'] = "End date and time cannot be before start date and time.";
-      $errorMsg['start-date'] = "End date and time cannot be before start date and time.";
-      $errorMsg['start-time'] = "End date and time cannot be before start date and time.";
-    } else if ($e < $today) {
-      $errorMsg['end-date'] = "End date and time must occur in the future.";
-      $errorMsg['end-time'] = "End date and time must occur in the future.";
+      if ($e < $s) {
+        $errorMsg['end-date'] = "End date and time cannot be before start date and time.";
+        $errorMsg['end-time'] = "End date and time cannot be before start date and time.";
+        $errorMsg['start-date'] = "End date and time cannot be before start date and time.";
+        $errorMsg['start-time'] = "End date and time cannot be before start date and time.";
+      } else if ($e < $today) {
+        $errorMsg['end-date'] = "End date and time must occur in the future.";
+        $errorMsg['end-time'] = "End date and time must occur in the future.";
+      }
     }
-  }
 
-  // check the pairing mode
-  $pairing_mode = trim($_POST['pairing-mode']);
-  if (empty($pairing_mode)) {
-    $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-  } 
-  
-  // validate the uploaded file
-  if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE) {
-    $errorMsg['pairing-file'] = 'The selected file is too large.';
-  } else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_PARTIAL) {
-    $errorMsg['pairing-file'] = 'The selected file was only paritally uploaded. Please try again.';
-  } else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_NO_FILE) {
-    $errorMsg['pairing-file'] = 'A pairing file must be provided.';
-  } else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK)  {
-    $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
+    // Update the survey details in the database
+    if (empty($errorMsg)) {
+      $sdate = $start_date . ' ' . $start_time;
+      $edate = $end_date . ' ' . $end_time;
+      $stmt = $con->prepare('UPDATE surveys SET name = ?, start_date = ?, expiration_date = ?, rubric_id = ? WHERE id = ?');
+      $stmt->bind_param('sssii', $survey_name, $sdate, $edate, $rubric_id, $survey_id);
+      $stmt->execute();
+
+      // redirect to survey page with sucess message
+      $_SESSION['survey-update'] = "Successfully added updated";
+
+      http_response_code(302);
+      header("Location: surveys.php");
+      exit();
+    }
   } else {
-    // start parsing the file
-    $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
-
-    // catch errors or continue parsing the file
-    if (!$file_handle) {
-      $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
-    } else {
-      $pairings = getPairingResults($con, $pairing_mode, $file_handle);
-      if (empty($pairings)) {
-        $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
+    if (!isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
+      $orig_end = $e;
+      $e = new DateTime($end_date . ' ' . $end_time);
+      $today = new DateTime();
+      if ($orig_end > $e) {
+        $errorMsg['end-date'] = "Survey end date and time cannot be moved earlier.";
+        $errorMsg['end-time'] = "Survey end date and time cannot be moved earlier.";
+        $end_date = $orig_end->format('Y-m-d');
+        $end_time = $orig_end->format('H:i');
+      } else if (($e > $orig_end) && ($e < $today)) {
+        $errorMsg['end-date'] = "End date and time must occur in the future.";
+        $errorMsg['end-time'] = "End date and time must occur in the future.";
       }
-      
-      // Clean up our file handling
-      fclose($file_handle);
+    }
+    // Update the survey details in the database
+    if (empty($errorMsg)) {
+      $edate = $end_date . ' ' . $end_time;
+      $stmt = $con->prepare('UPDATE surveys SET expiration_date = ? WHERE id = ?');
+      $stmt->bind_param('si', $edate, $survey_id);
+      $stmt->execute();
 
-      // check for any errors
-      if (isset($pairings['error'])) {
-        $errorMsg['pairing-file'] = $pairings['error'];
-      } else {
-        // finally add the pairings to the database if no other error message were set so far
-        // first add the survey details to the database
-        if (empty($errorMsg)) {
-          $sdate = $start_date . ' ' . $start_time;
-          $edate = $end_date . ' ' . $end_time;
-          $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, ?, ?)');
-          $stmt->bind_param('isssi', $course_id, $survey_name, $sdate, $edate, $rubric_id);
-          $stmt->execute();
+      // redirect to survey page with sucess message
+      $_SESSION['survey-update'] = "Successfully added updated";
 
-          add_pairings($pairings, $con->insert_id, $con);
-
-          // redirect to survey page with sucess message
-          $_SESSION['survey-add'] = "Successfully added survey.";
-
-          http_response_code(302);
-          header("Location: surveys.php");
-          exit();
-        }
-      }
+      http_response_code(302);
+      header("Location: surveys.php");
+      exit();
     }
   }
 }
@@ -287,10 +255,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo '<option value="' . $course_id . '" selected>' . htmlspecialchars($course_code) . ' ' . htmlspecialchars($course_name) . ' - ' . htmlspecialchars($course_term) . ' ' . htmlspecialchars($course_year) . '</option>';
             ?>
           </select>
-          <label for="course-id"><?php if(isset($errorMsg["course-id"])) {echo $errorMsg["course-id"]; } else { echo "Course:";} ?></label>
+          <label for="course-id">Course:</label>
       </div>
       <div class="form-floating mb-3">
-          <input type="text" id="survey-name" class="form-control" name="survey-name" required <?php if ($survey_name) {echo 'value="' . htmlspecialchars($survey_name) . '"';} if (!$full_perms) { echo "readonly"; }?>></input>
+          <input type="text" id="survey-name" class="form-control" name="survey-name" required <?php if ($survey_name) {echo 'value="' . htmlspecialchars($survey_name) . '"';} ?>></input>
           <label for="survey-name">Survey Name:</label>
       </div>
       <div class="form-floating mb-3">
@@ -325,14 +293,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             ?>
           </select>
-          <label for="rubric-id"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"]; } else { echo "Rubric:";} ?></label>
+          <label for="rubric-id">Rubric:</label>
       </div>
 
       <input type="hidden" name="survey_id" value="<?php echo $survey_id; ?>" />
 
       <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
 
-      <input type="submit" class="btn btn-success" value="Create Survey">
+      <input type="submit" class="btn btn-success" value="Update Survey">
     </div>
 </form>
 <hr>
