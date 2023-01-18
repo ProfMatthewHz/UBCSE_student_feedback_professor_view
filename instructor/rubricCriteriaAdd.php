@@ -72,13 +72,8 @@ if (($_SERVER['REQUEST_METHOD'] != 'POST') && isset($_SESSION["confirm"])) {
     if (empty($crit_data["question"])) {
       $errorMsg[$crit_id.'-question'] = "Each criterion needs a description";
     }
-    if (empty($_POST[$crit_id.'-type'])) {
-      http_response_code(400);
-      echo "Bad Request: Missing parmeters.";
-      exit();
-    }
     // Translate the posted type to the values we actually use
-    if ($_POST[$crit_id.'-type'] == '0') {
+    if (empty($_POST[$crit_id.'-type'])) {
       $crit_data["type"] = 'multiple_choice';
       // When this is a multiple choice question, record each of the different responses
       $crit_data["responses"] = array();
@@ -155,7 +150,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     let labId = name + "-type-lab";
     let retVal = document.createElement("div");
     retVal.className = "row mx-1 justify-content-start";
-    retVal.innerHTML = '<div class="col-md-auto"><input type="checkbox" id="'+realName+'"class="form-check-input" name ="'+realName+'" onclick="showHideLevels(this)"><label id="'+labId+'" class="form-check-label" for="'+realName+'">Use freeform response</label></div>';
+    retVal.innerHTML = '<div class="col-md-auto"><input type="checkbox" id="'+realName+'"class="form-check-input" name="'+realName+'" onclick="showHideLevels(this)"><label id="'+labId+'" class="form-check-label" for="'+realName+'">Use freeform response</label></div>';
     return retVal;
   }
   function makeCritLevelRow(name) {
