@@ -228,6 +228,8 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
       checkboxLab.for = "criterion" + prev + "-type";
       checkboxInp.id = "criterion" + prev + "-type";
       checkboxInp.name = checkboxLab.id;
+      let levelsDiv = document.getElementById("criterion" + i + "-levels");
+      levelsDic.id = "criterion" + prev + "-levels";
       for (let key of keys) {
         let questionInp = document.getElementById("criterion" + i + "-"+key);
         let questionLab = document.getElementById("criterion" + i + "-"+key+"-lab");
