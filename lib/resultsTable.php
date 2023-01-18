@@ -8,14 +8,14 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
         echo '<div class="col-2 ms-auto"><b>'.$topic.'</b></div>';
     }
     echo '</div>';
-    echo '<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:#e1e1e1">';
-    foreach ($mc_topics as $topic_id => $topic) {
-        echo '<div class="col-2 ms-auto"><b>'.end($mc_answers[$topic_id])[0].'</b></div>';
-    }
-    foreach ($ff_topics as $topic_id => $topic) {
-        echo '<div class="col-2 ms-auto"></div>';
-    }
-    echo '</div>';
+    // echo '<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:#e1e1e1">';
+    // foreach ($mc_topics as $topic_id => $topic) {
+    //     echo '<div class="col-2 ms-auto"><b>'.end($mc_answers[$topic_id])[0].'</b></div>';
+    // }
+    // foreach ($ff_topics as $topic_id => $topic) {
+    //     echo '<div class="col-2 ms-auto"></div>';
+    // }
+    // echo '</div>';
     echo '<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:#f8f8f8"">';
     foreach ($mc_topics as $topic_id => $topic) {
         $sum = 0;
