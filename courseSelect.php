@@ -34,8 +34,9 @@
   while ($stmt_past->fetch()){
     $e = new DateTime($expire);
     $display_name = '('.$class_name.') '.$survey_name.' closed on '.$e->format('M d').' at '.$e->format('g:i a');
+    $started = ($submitted > 0);
     $fully_submitted = ($submitted == $assigned);
-    $value = array($display_name, $fully_submitted);
+    $value = array($display_name, $fully_submitted, $started);
     $past_surveys[$survey_id] = $value;
   }
   $stmt_past->close();
@@ -122,8 +123,10 @@
                   echo ('<a href="'.SITE_HOME.'startResults.php?survey='.$key.'">My Averages</a>');
                   if ($value[1]) {
                     echo (' | <a href="'.SITE_HOME.'startReview.php?survey='.$key.'">My Submissions</a>');
+                  } else if ($value[2]) {
+                    echo (' | Evaluation Not Completed');
                   } else {
-                    echo (' | No evals submitted');
+                    echo (' | Nothing submitted');
                   }
                   echo('</p>');
                 }
