@@ -197,7 +197,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     let midRow = makeCritNameRow(criterion.id);
     criterion.appendChild(midRow);
     let checkBoxRow = makeCritCheckBoxRow(criterion.id);
-    criterion.appendChild(midRow);
+    criterion.appendChild(checkBoxRow);
     let lastRow = makeCritLevelRow(criterion.id);
     criterion.appendChild(lastRow);
     let criterionList = document.getElementById("crit-list");
