@@ -183,7 +183,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     if (button.checked) {
       levels.style.display = "none";
     } else {
-      levels.style.display = "initial";
+      levels.style.display = null;
     }
   }
   function addCriterion() {
