@@ -59,26 +59,24 @@ function getRevieweeData($con, $survey_id) {
 function getSurveyScores($con, $survey_id, $teammates) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT reviewer_email, teammate_email, topic_id, score 
-                                FROM reviewers
-                                LEFT JOIN evals on evals.reviewers_id=reviewers.id 
-                                LEFT JOIN scores2 ON evals.id=scores2.eval_id
-                                LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
-                                WHERE survey_id=? AND teammate_email=?');
+                         FROM reviewers
+                         LEFT JOIN evals on evals.reviewers_id=reviewers.id 
+                         LEFT JOIN scores2 ON evals.id=scores2.eval_id
+                         LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
+                         WHERE survey_id=? AND teammate_email=?');
   foreach (array_keys($teammates) as $email) {
     $stmt->bind_param('is',$survey_id, $email);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      if (!isset($ret_val[$email])) {
+        $ret_val[$email] = array();
+      }
       if (isset($row[2])) {
-        if (!isset($ret_val[$email])) {
-          $ret_val[$email] = array();
-        }
         if (!isset($ret_val[$email][$row[0]])) {
           $ret_val[$email][$row[0]] = array();
         }
-        if (isset($row[2])) {
-          $ret_val[$email][$row[0]][$row[2]] = $row[3];
-        }
+        $ret_val[$email][$row[0]][$row[2]] = $row[3];
       }
     }
   }
