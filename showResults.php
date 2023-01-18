@@ -22,7 +22,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
   $mc_topics = $_SESSION['mc_topics'];
   $mc_answers = $_SESSION['mc_answers'];
   $ff_topics = $_SESSION['ff_topics'];
-  $reviewers = $_SESSION['group_members'];
+  $reviewers = $_SESSION['reviewers'];
 
   // Store the scores submitted for each teammate
   $scores = array();
@@ -34,10 +34,10 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
   unset($_SESSION['surveys_id']);
   unset($_SESSION['course_name']);
   unset($_SESSION['survey_name']);
-  unset($_SESSION['group_members']);
   unset($_SESSION['mc_topics']);
   unset($_SESSION['mc_answers']);
   unset($_SESSION['ff_topics']);
+  unset($_SESSION['reviewers']);
 }
 ?>
 <!DOCTYPE HTML>
