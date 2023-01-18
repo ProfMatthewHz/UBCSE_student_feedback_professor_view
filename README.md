@@ -1,1 +1,1 @@
-# CSE-442
+# Peer- and self-evaluation tool
