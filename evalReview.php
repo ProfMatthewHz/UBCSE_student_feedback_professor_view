@@ -29,7 +29,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
   $scores = array();
   $texts = array();
   foreach ($members as $reviewer_id => $name) {
-    $scores[$reviewer_id] = getReviewScores($con, $reviewer_id, $topics);
+    $scores[$reviewer_id] = getReviewScores($con, $reviewer_id, $mc_topics);
     $texts[$reviewer_id] = getReviewText($con, $reviewer_id, $ff_topics);
   }
   unset($_SESSION['surveys_id']);
