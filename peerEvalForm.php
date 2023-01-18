@@ -175,11 +175,11 @@ if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
 					echo '   <div class="col-12 bg-primary text-white"><b>Enter any feedback on '.$name.'\'s '.$topic.'</b></div>';
 					echo '</div>';
 					echo '<div class="row pt-1 mx-1 align-items-center">';
-					echo '<div class="col-12"><textarea class="form-control" name="Q'.$topic_id.'" id="Q'.$topic_id.'" rows="3" placeholder="Provide any feedback here" ';
+					echo '<div class="col-12"><textarea class="form-control" name="Q'.$topic_id.'" id="Q'.$topic_id.'" rows="3" placeholder="Provide any feedback here"';
 					if (array_key_exists($topic_id, $student_texts)) {
-						echo 'value="'.$student_texts[$topic_id].'"';
+						echo ' value="'.$student_texts[$topic_id].'"';
 					}
-					echo 'ms-auto></div></div>';
+					echo '></textarea></div></div>';
 				}
 				?>
 				<hr>
