@@ -173,13 +173,23 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
   }
   function showHideLevels(button) {
     let criterion = button.parentElement.parentElement.parentElement;
-    let hideNum = Number(criterion.id.substring(9));
-    let levels = document.getElementById("criterion"+hideNum+"-levels");
+    let critNum = Number(criterion.id.substring(9));
+    let levels = document.getElementById("criterion"+critNum+"-levels");
+    let requireChoices;
     if (button.checked) {
       levels.style.display = "none";
+      requireChoices = false;
     } else {
       levels.style.display = null;
+      requireChoices = true;
     }
+    const keys = <?php echo $level_keys_for_js ?>;
+    for (let key of keys) {
+        let questionInp = document.getElementById("criterion" + critNum + "-"+key);
+        let questionLab = document.getElementById("criterion" + critNum + "-"+key+"-lab");
+        questionInp.required = requireChoices;
+        questionLab.required = requireChoices;
+      }
   }
   function addCriterion() {
     let criteriaDivs = document.querySelectorAll(".criterion");
