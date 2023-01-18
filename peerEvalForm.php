@@ -39,6 +39,7 @@ $stmt->store_result();
 if (!$stmt->fetch()) {
 	unset($eval_id);
 	$student_scores=array();
+	$student_texts=array();
 } else {
 	// Get any existing scores
 	$student_scores=getEvalScores($con, $eval_id);
