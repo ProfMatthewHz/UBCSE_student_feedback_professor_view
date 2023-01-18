@@ -272,7 +272,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
           }
         } else {
           echo 'document.getElementById("criterion'.$crit_num.'-type").checked = true;';
-          echo 'showHideLevels(document.getElementById("criterion'.$crit_num.'-type"))';
+          echo 'showHideLevels(document.getElementById("criterion'.$crit_num.'-type"));';
         }
         $crit_num = $crit_num + 1;
       }
