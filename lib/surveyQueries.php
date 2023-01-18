@@ -64,10 +64,11 @@
 
   function getSurveyTopics($db_connection, $survey_id) {
     $retVal = array();
-    $query_str = 'SELECT rubric_topics.id, question 
+    $query_str = 'SELECT rubric_topics.id, question, question_response
                   FROM rubric_topics 
                   INNER JOIN surveys ON surveys.rubric_id = rubric_topics.rubric_id
                   WHERE surveys.id = ?
+                  AND rubric_topics.question_response = "multiple_choice"
                   ORDER BY rubric_topics.id';
     $stmt_topics = $db_connection->prepare($query_str);
     $stmt_topics->bind_param('i', $survey_id);

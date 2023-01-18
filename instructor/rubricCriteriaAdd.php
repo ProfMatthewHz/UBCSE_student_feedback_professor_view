@@ -72,9 +72,21 @@ if (($_SERVER['REQUEST_METHOD'] != 'POST') && isset($_SESSION["confirm"])) {
     if (empty($crit_data["question"])) {
       $errorMsg[$crit_id.'-question'] = "Each criterion needs a description";
     }
-    $crit_data["responses"] = array();
-    foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
-      $crit_data["responses"][$level_name] = check_level_response($crit_id, $level_name, $text, $errorMsg);
+    if (empty($_POST[$crit_id.'-type'])) {
+      http_response_code(400);
+      echo "Bad Request: Missing parmeters.";
+      exit();
+    }
+    // Translate the posted type to the values we actually use
+    if ($_POST[$crit_id.'-type'] == '0') {
+      $crit_data["type"] = 'multiple_choice';
+      // When this is a multiple choice question, record each of the different responses
+      $crit_data["responses"] = array();
+      foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
+        $crit_data["responses"][$level_name] = check_level_response($crit_id, $level_name, $text, $errorMsg);
+      }
+    } else {
+      $crit_data["type"] = 'free_response';
     }
     $criteria[] = $crit_data;
     $crit_num = $crit_num + 1;
@@ -101,10 +113,7 @@ if (($_SERVER['REQUEST_METHOD'] != 'POST') && isset($_SESSION["confirm"])) {
     }
 
     // Prepare the topics & their reponses for confirmation
-    $_SESSION["confirm"]["topics"] = array();
-    foreach ($_SESSION["rubric"]["levels"]["names"] as $level => $name) {
-      $_SESSION["confirm"]["topics"] = $criteria;
-    }
+    $_SESSION["confirm"]["topics"] = $criteria;
     http_response_code(302);
     header("Location: ".INSTRUCTOR_HOME."rubricConfirm.php");
     exit();
@@ -130,7 +139,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
   function makeCritTopRow(num) {
     let retVal = document.createElement("div");
     retVal.className = "row mx-1 mt-1";
-    retVal.innerHTML = '<div class="col text-start align-top"><span id="criterion' + num + '-num" style="font-size:small;color:DarkGrey">Criterion #' + num + ':</span></div><div class="col ms-auto"><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCriterion(this)">-Remove Criterion</button></div>"';
+    retVal.innerHTML = '<div class="col text-start align-top"><span id="criterion' + num + '-num" style="font-size:small;color:DarkGrey">Criterion #' + num + ':</span></div><div class="col ms-auto"><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCriterion(this)">-Remove Criterion</button></div>';
     return retVal;
   }
   function makeCritNameRow(name) {
@@ -141,9 +150,18 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     retVal.innerHTML = '<div class="col-7"><div class="form-floating"><input type="text" id="'+realName+'" class="form-control" name="'+realName+'" required value=""><label id="'+labId+'" for="'+realName+'">Description of Trait:</label></div></div></div>';
     return retVal;
   }
+  function makeCritCheckBoxRow(name) {
+    let realNane = name + "-type";
+    let labId = name + "-type-lab";
+    let retVal = document.createElement("div");
+    retVal.className = "row mx-1 justify-content-start";
+    retVal.innerHTML = '<div class="col-7 form-check"><input type="checkbox" id="'+realName+'"class="form-check-input" name ="'+realName+'" onclick="showHideLevels(this)"><label id="'+labId+'" class="form-check-label" for="'+realName+'">Use freeform response</label></div>';
+    return retVal;
+  }
   function makeCritLevelRow(name) {
     let retVal = document.createElement("div");
     retVal.className = "row pt-1 mx-1 mb-3 align-items-center";
+    retVal.id = name + "-levels";
     let endStr = '">';
     const keys = <?php echo $level_keys_for_js ?>;
     const names = <?php echo $level_names_for_js ?>;
@@ -158,7 +176,16 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     retVal.innerHTML = htmlStr;
     return retVal;
   }
-
+  function showHideLevels(button) {
+    let criterion = button.parentElement.parentElement.parentElement;
+    let hideNum = Number(button.id.substring(9));
+    let levels = document.getElementById("criterion"+hideNum+"-levels");
+    if (button.checked) {
+      levels.style.display = "none";
+    } else {
+      levels.style.display = "initial";
+    }
+  }
   function addCriterion() {
     let criteriaDivs = document.querySelectorAll(".criterion");
     let criterionNum = criteriaDivs.length + 1;
@@ -168,6 +195,8 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     let topRow = makeCritTopRow(criterionNum)
     criterion.appendChild(topRow);
     let midRow = makeCritNameRow(criterion.id);
+    criterion.appendChild(midRow);
+    let checkBoxRow = makeCritCheckBoxRow(criterion.id);
     criterion.appendChild(midRow);
     let lastRow = makeCritLevelRow(criterion.id);
     criterion.appendChild(lastRow);
@@ -193,6 +222,12 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
       questionLab.for = "criterion" + prev + "-question";
       questionInp.id = "criterion" + prev + "-question";
       questionInp.name = questionInp.id;
+      let checkboxInp = document.getElementById("criterion" + i + "-type");
+      let checkboxLab = document.getElementById("criterion" + i + "-type-lab");
+      checkboxLab.id = "criterion" + prev + "-type-lab";
+      checkboxLab.for = "criterion" + prev + "-type";
+      checkboxInp.id = "criterion" + prev + "-type";
+      checkboxInp.name = checkboxLab.id;
       for (let key of keys) {
         let questionInp = document.getElementById("criterion" + i + "-"+key);
         let questionLab = document.getElementById("criterion" + i + "-"+key+"-lab");
@@ -218,14 +253,19 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
           echo 'document.getElementById("criterion'.$crit_num.'-question").classList.add("is-invalid");';
           echo 'document.getElementById("criterion'.$crit_num.'-q-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-question'].'";';
         }
-        foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
-          if (!empty($criterion["responses"][$level_name])) {
-            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").value="'.$criterion["responses"][$level_name].'";';
+        if ($criterion["type"] == "multiple_choice") {
+          foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
+            if (!empty($criterion["responses"][$level_name])) {
+              echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").value="'.$criterion["responses"][$level_name].'";';
+            }
+            if (isset($errorMsg['criterion'.$crit_num.'-'.$level_name])) {
+              echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").classList.add("is-invalid");';
+              echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-'.$level_name].'";';
+            }
           }
-          if (isset($errorMsg['criterion'.$crit_num.'-'.$level_name])) {
-            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").classList.add("is-invalid");';
-            echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-'.$level_name].'";';
-          }
+        } else {
+          echo 'document.getElementById("criterion'.$crit_num.'-type").checked = true;';
+          echo 'showHideLevels(document.getElementById("criterion'.$crit_num.'-type"))';
         }
         $crit_num = $crit_num + 1;
       }

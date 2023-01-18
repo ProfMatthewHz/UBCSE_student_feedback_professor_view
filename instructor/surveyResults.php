@@ -14,6 +14,7 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/surveyQueries.php";
+require_once "lib/surveyQueries.php";
 
 
 // query information about the requester
@@ -41,27 +42,13 @@ if ($sid === 0) {
   exit();
 }
 
-// try to look up info about the requested survey
-$survey_info = array();
-
-$stmt = $con->prepare('SELECT course_id, name, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
-$survey_info = $result->fetch_all(MYSQLI_ASSOC);
-
-// reply not found on no match
-if ($result->num_rows != 1) {
-  http_response_code(404);
-  echo "404: Not found.";
-  exit();
-}
-$survey_name = $survey_info[0]['name'];
-
+// Look up info about the requested survey
+$survey_info = getSurveyRubric($con, $sid);
+$survey_name = $survey_info['name'];
 
 // make sure the survey is for a course the current instructor actually teaches
 $stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $survey_info[0]['course_id'], $instructor->id);
+$stmt->bind_param('ii', $survey_info['course_id'], $instructor->id);
 $stmt->execute();
 $result = $stmt->get_result();
 $course_info = $result->fetch_all(MYSQLI_ASSOC);
@@ -83,75 +70,22 @@ $course_year = $course_info[0]['year'];
 $scores = array();
 // Array mapping email to total number of points
 $totals = array();
-// Array mapping email addresses to names of teammates
-$teammates = array();
 // Array mapping email address to normalized results
 $averages = array();
 // Array mapping email address to names of reviewers
 $reviewers = array();
 
-$stmt = $con->prepare('SELECT reviewer_email, students.name, SUM(rubric_scores.score) total_score, COUNT(DISTINCT teammate_email) expected, COUNT(DISTINCT evals.id) actual
-                       FROM reviewers
-                       INNER JOIN students ON reviewers.reviewer_email=students.email 
-                       LEFT JOIN evals ON evals.reviewers_id=reviewers.id 
-                       LEFT JOIN scores2 ON scores2.eval_id=evals.id 
-                       LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id 
-                       WHERE survey_id=? 
-                       GROUP BY reviewer_email, students.name');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
-while ($row = $result->fetch_array(MYSQLI_NUM)) {
-  $email_addr = $row[0];
-  $reviewers[$email_addr] = $row[1];
-  // If the reviewer completed this survey
-  if ($row[3] == $row[4]) {
-    // Initialize the total number of points
-    $totals[$email_addr] = $row[2] / $row[3];
-  }
-}
-$stmt->close();
+// Get the per-reviewer data
+getReviewerData($con, $sid, $reviewers, $totals);
 
 // Get the info for everyone who will be evaluated
-$stmt = $con->prepare('SELECT DISTINCT teammate_email, students.name
-                       FROM reviewers 
-                       INNER JOIN students ON reviewers.teammate_email=students.email 
-                       WHERE survey_id=?');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
-while ($row = $result->fetch_array(MYSQLI_NUM)) {
-  $email_addr = $row[0];
-  $teammates[$email_addr] = $row[1];
-  $scores[$email_addr] = array();
-}
-$stmt->close();
+$teammates = getRevieweeData($con, $sid);
 
 // Get information completed by the reviewer -- how many were reviewed and the total points
-$stmt_scores = $con->prepare('SELECT reviewer_email, teammate_email, topic_id, score 
-                              FROM reviewers
-                              LEFT JOIN evals on evals.reviewers_id=reviewers.id 
-                              LEFT JOIN scores2 ON evals.id=scores2.eval_id
-                              LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
-                              WHERE survey_id=? AND teammate_email=?');
-foreach ($teammates as $email => $name) {
-  $stmt_scores->bind_param('is',$sid, $email);
-  $stmt_scores->execute();
-  $result = $stmt_scores->get_result();
-  while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    if (isset($row[2])) {
-      if (!isset($scores[$email][$row[0]])) {
-        $scores[$email][$row[0]] = array();
-      }
-      if (isset($row[2])) {
-        $scores[$email][$row[0]][$row[2]] = $row[3];
-      }
-    }
-  }
-}
-$stmt_scores->close();
+$scores = getSurveyScores($con, $teammates);
 
 $topics = getSurveyTopics($con, $sid);
+
 foreach ($teammates as $email => $name) {
   $sum_normalized = 0;
   $reviews = 0;

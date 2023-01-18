@@ -106,11 +106,14 @@ CREATE TABLE `rubric_scores` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `rubric_topics` (
-  `id` int(11) NOT NULL,
-  `rubric_id` int(11) NOT NULL,
-  `question` text NOT NULL,
-  PRIMARY KEY (`id`),
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `rubric_id` int(11) NOT NULL,
+ `question` text NOT NULL,
+ `question_response` enum('multiple_choice','text') NOT NULL DEFAULT 'multiple_choice',
+ PRIMARY KEY (`id`),
+ KEY `fk_rubric` (`rubric_id`),
+ CONSTRAINT `rubric_topics_rubrics_id_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1
 
 -- this is a replacement for the scores table which allows for variable numbers of questions
 -- it would be

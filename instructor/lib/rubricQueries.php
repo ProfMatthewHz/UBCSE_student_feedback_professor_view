@@ -17,9 +17,9 @@ function insertRubricScore($con, $rubric_id, $name, $score) {
   return $ret_val;  
 }
 
-function insertRubricTopic($con, $rubric_id, $question) {
-  $stmt = $con->prepare('INSERT INTO rubric_topics (rubric_id, question) VALUES(?,?)');
-  $stmt->bind_param('is', $rubric_id, $question);
+function insertRubricTopic($con, $rubric_id, $question, $question_type) {
+  $stmt = $con->prepare('INSERT INTO rubric_topics (rubric_id, question, ?) VALUES(?,?,?)');
+  $stmt->bind_param('is', $rubric_id, $question, $question_type);
   $stmt->execute();
   $ret_val = $stmt->insert_id;
   $stmt->close();
@@ -83,7 +83,7 @@ function selectTopicResponses($con, $topic_id) {
 
 function selectTopics($con, $rubric_id) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT id, question FROM rubric_topics WHERE rubric_id=?');
+  $stmt = $con->prepare('SELECT id, question, question_response FROM rubric_topics WHERE rubric_id=?');
   $stmt->bind_param('i', $rubric_id);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -91,9 +91,11 @@ function selectTopics($con, $rubric_id) {
     $topic_data = array();
     $topic_id = $row[0];
     $question = $row[1];
+    $question_type = $row[2];
     $topic_data["question"] = $question;
     $topic_responses = selectTopicResponses($con, $topic_id);
     $topic_data["responses"] = $topic_responses;
+    $topic_data["type"] = $question_type;
     $ret_val[] = $topic_data;
   }
   $stmt->close();

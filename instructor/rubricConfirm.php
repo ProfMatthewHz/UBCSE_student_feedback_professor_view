@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Add the rubric to the database and keep track of the id it was assigned. 
     $rubric_id = insertRubric($con, $_SESSION["rubric"]["name"]);
 
+
     // Now add the different scores/levels and keep track of each of them for later use
     $levels = count($_SESSION["rubric"]["levels"]["names"]);
     $level_ids = array();
@@ -59,11 +60,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     $level_ids["level5"] = insertRubricScore($con, $rubric_id, $_SESSION["rubric"]["levels"]["names"]["level5"], $_SESSION["rubric"]["levels"]["values"]["level5"]);
 
-    // Finally we insert the name of each criterion as a rubric topic and all of its responses.
+    // Finally we insert the name of each criterion as a rubric topic and, if appropriate, all of its responses.
     foreach ($_SESSION["confirm"]["topics"] as $crit_data) {
-      $topic_id = insertRubricTopic($con, $rubric_id, $crit_data["question"]);
-      foreach ($level_ids as $key => $level_id) {
-        insertRubricReponse($con, $topic_id, $level_id, $crit_data["responses"][$key]);
+      $topic_id = insertRubricTopic($con, $rubric_id, $crit_data["question"], $crit_data["type"]);
+      if ($crit_data["type"] == "multiple_choice") {
+        foreach ($level_ids as $key => $level_id) {
+          insertRubricReponse($con, $topic_id, $level_id, $crit_data["responses"][$key]);
+        }
       }
     }
     // And go back to the main page.

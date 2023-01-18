@@ -14,6 +14,7 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "lib/pairingFunctions.php";
+require_once "lib/surveyQueries.php";
 require_once "../lib/fileParse.php";
 
 // set timezone
@@ -63,26 +64,13 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   }
 }
 
-// try to look up info about the requested survey
-$survey_info = array();
-
-$stmt = $con->prepare('SELECT course_id, name, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
-$survey_info = $result->fetch_all(MYSQLI_ASSOC);
-
-// reply forbidden if course does not exist or if the survey is ambiguous
-if ($result->num_rows != 1) {
-  http_response_code(404);
-  echo "403: Forbidden.";
-  exit();
-}
-$survey_name = $survey_info[0]['name'];
+// Look up info about the requested survey
+$survey_info = getSurveyRubric($con, $sid);
+$survey_name = $survey_info['name'];
 
 // make sure the survey is for a course the current instructor actually teaches
 $stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $survey_info[0]['course_id'], $instructor->id);
+$stmt->bind_param('ii', $survey_info['course_id'], $instructor->id);
 $stmt->execute();
 $result = $stmt->get_result();
 $course_info = $result->fetch_all(MYSQLI_ASSOC);
@@ -104,7 +92,7 @@ $errorMsg = array();
 $pairing_mode = NULL;
 
 // check if the survey's pairings can be modified
-$stored_start_date = new DateTime($survey_info[0]['start_date']);
+$stored_start_date = new DateTime($survey_info['start_date']);
 $current_date = new DateTime();
 
 if ($current_date > $stored_start_date) {
