@@ -151,7 +151,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     return retVal;
   }
   function makeCritCheckBoxRow(name) {
-    let realNane = name + "-type";
+    let realName = name + "-type";
     let labId = name + "-type-lab";
     let retVal = document.createElement("div");
     retVal.className = "row mx-1 justify-content-start";
