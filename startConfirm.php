@@ -39,11 +39,14 @@
   $_SESSION['group_members'] = initializeRevieweeData($con, $survey, $email);
 
   // Get the questions and responses for this survey. For now, this will be hard coded.
-  $_SESSION['topics'] = getMultipleChoiceSurveyTopics($con, $survey);
-	$_SESSION['answers'] = array();
-  foreach ($_SESSION['topics'] as $topic_id => $topic) {
-    $_SESSION['answers'][$topic_id] = getSurveyResponses($con, $topic_id, false);
+  $_SESSION['mc_topics'] = getSurveyMultipleChoiceTopics($con, $survey);
+	$_SESSION['mc_answers'] = array();
+  foreach ($_SESSION['mc_topics'] as $topic_id => $topic) {
+    $_SESSION['mc_answers'][$topic_id] = getSurveyMultipleChoiceResponses($con, $topic_id, false);
   }
+
+  // Get the freeform questions and responses for this survey.
+  $_SESSION['ff_topics'] = getSurveyFreeformTopics($con, $survey);
 
   // Now redirect the user to the peer evaluation form
   $loc_string = "Location: ".SITE_HOME."/evalConfirm.php";

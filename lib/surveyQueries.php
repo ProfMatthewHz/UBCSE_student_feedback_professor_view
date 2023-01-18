@@ -29,7 +29,7 @@
   }
 
   function initializeReviewerData($db_connection, $survey_id, $email) {
-    $retVal = array();
+    $ret_val = array();
     $query_str = 'SELECT reviewers_id
                   FROM reviewers
                   INNER JOIN evals ON evals.reviewers_id = reviewers.id
@@ -39,14 +39,14 @@
     $stmt_group->execute();
     $result = $stmt_group->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
-      $retVal[] = $row[0];
+      $ret_val[] = $row[0];
     }
     $stmt_group->close();
-    return $retVal;
+    return $ret_val;
   }
 
   function initializeRevieweeData($db_connection, $survey_id, $email) {
-    $retVal = array();
+    $ret_val = array();
     $query_str = 'SELECT reviewers.id, students.name 
                   FROM reviewers
                   INNER JOIN students ON reviewers.teammate_email = students.email 
@@ -56,15 +56,15 @@
     $stmt_group->execute();
     $result = $stmt_group->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
-      $retVal[$row[0]] = $row[1];
+      $ret_val[$row[0]] = $row[1];
     }
     $stmt_group->close();
-    return $retVal;
+    return $ret_val;
   }
 
-  function getMultipleChoiceSurveyTopics($db_connection, $survey_id) {
-    $retVal = array();
-    $query_str = 'SELECT rubric_topics.id, question, question_response
+  function getSurveyMultipleChoiceTopics($db_connection, $survey_id) {
+    $ret_val = array();
+    $query_str = 'SELECT rubric_topics.id, question
                   FROM rubric_topics 
                   INNER JOIN surveys ON surveys.rubric_id = rubric_topics.rubric_id
                   WHERE surveys.id = ?
@@ -75,14 +75,33 @@
     $stmt_topics->execute();
     $result = $stmt_topics->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
-      $retVal[$row[0]] = strtoupper($row[1]);
+      $ret_val[$row[0]] = strtoupper($row[1]);
     }
     $stmt_topics->close();
-    return $retVal;
+    return $ret_val;
   }
 
-  function getSurveyResponses($db_connection, $topic_id, $include_score) {
-    $retVal = array();
+  function getSurveyFreeformTopics($db_connection, $survey_id) {
+    $ret_val = array();
+    $query_str = 'SELECT rubric_topics.id, question
+                  FROM rubric_topics 
+                  INNER JOIN surveys ON surveys.rubric_id = rubric_topics.rubric_id
+                  WHERE surveys.id = ?
+                  AND rubric_topics.question_response = "text"
+                  ORDER BY rubric_topics.id';
+    $stmt_topics = $db_connection->prepare($query_str);
+    $stmt_topics->bind_param('i', $survey_id);
+    $stmt_topics->execute();
+    $result = $stmt_topics->get_result();
+    while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      $ret_val[$row[0]] = strtoupper($row[1]);
+    }
+    $stmt_topics->close();
+    return $ret_val;
+  }
+
+  function getSurveyMultipleChoiceResponses($db_connection, $topic_id, $include_score) {
+    $ret_val = array();
     $query_str = 'SELECT score_id, response, score
                   FROM rubric_responses
                   INNER JOIN rubric_scores ON rubric_scores.id = rubric_responses.score_id
@@ -94,29 +113,12 @@
     $result = $stmt_responses->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
       if ($include_score) {
-        $retVal[$row[0]] = array($row[1], $row[2]);
+        $ret_val[$row[0]] = array($row[1], $row[2]);
       } else {
-        $retVal[$row[0]] = $row[1];
+        $ret_val[$row[0]] = $row[1];
       }
     }
     $stmt_responses->close();
-    return $retVal;
-  }
-
-  function getSurveyScores($db_connection, $survey_id) {
-    $retVal = array();
-    $query_str = 'SELECT rubric_scores.id, score
-                  FROM rubric_scores
-                  INNER JOIN surveys ON surveys.rubric_id = rubric_scores.rubric_i
-                  WHERE surveys.id = ?
-                  ORDER BY rubric_scores.score';
-    $stmt_scores = $db_connection->prepare($query_str);
-    $stmt_scores->bind_param('i', $survey_id);
-    $stmt_scores->execute();
-    $result = $stmt_scores->get_result();
-    while ($row = $result->fetch_array(MYSQLI_NUM)) {
-      $retVal[$row[0]] = $row[1];
-    }
-    return $retVal;
+    return $ret_val;
   }
 ?>

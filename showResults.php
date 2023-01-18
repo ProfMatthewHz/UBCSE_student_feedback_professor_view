@@ -11,7 +11,7 @@ session_start();
 
 if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course_name']) || 
     !isset($_SESSION['survey_name']) || !isset($_SESSION['reviewers']) ||
-    !isset($_SESSION['topics']) || !isset($_SESSION['answers'])) {
+    !isset($_SESSION['mc_topics']) || !isset($_SESSION['mc_answers']) || !isset($_SESSION['ff_topics'])) {
     header("Location: " . SITE_HOME . "index.php");
     exit();
 } else {
@@ -19,21 +19,25 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
   $course = $_SESSION['course_name'];
   $survey_name = $_SESSION['survey_name'];
   $survey_id = $_SESSION['survey_id'];
-  $topics = $_SESSION['topics'];
-  $answers = $_SESSION['answers'];
+  $mc_topics = $_SESSION['mc_topics'];
+  $mc_answers = $_SESSION['mc_answers'];
+  $ff_topics = $_SESSION['ff_topics'];
   $reviewers = $_SESSION['reviewers'];
 
   // Store the scores submitted for each teammate
   $scores = array();
+  $texts = array();
   foreach ($reviewers as $reviewer_id) {
-    $scores[] = getReviewPoints($con, $reviewer_id, $topics, $answers);
+    $scores[] = getReviewPoints($con, $reviewer_id, $mc_topics);
+    $texts[] = getReviewText($con, $reviewer_id, $ff_topics);
   }
   unset($_SESSION['surveys_id']);
   unset($_SESSION['course_name']);
   unset($_SESSION['survey_name']);
   unset($_SESSION['reviewers']);
-  unset($_SESSION['topics']);
-  unset($_SESSION['answers']);
+  unset($_SESSION['mc_topics']);
+  unset($_SESSION['mc_answers']);
+  unset($_SESSION['ff_topics']);
 }
 ?>
 <!DOCTYPE HTML>
@@ -60,7 +64,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
             </div>
             <div class="row pt-1 mx-1 align-items-center text-center border-bottom border-3 border-dark">
                 <?php
-                    emitAveragesTable($topics, $answers, $scores, $reviewers);
+                    emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores);
                 ?>
             </div>
             <div class="row pt-1 mx-1">

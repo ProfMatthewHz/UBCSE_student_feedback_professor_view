@@ -115,15 +115,28 @@ CREATE TABLE `rubric_topics` (
  CONSTRAINT `rubric_topics_rubrics_id_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1
 
--- this is a replacement for the scores table which allows for variable numbers of questions
--- it would be
+-- this is the table which holds all for multiple choice question responses
 CREATE TABLE `scores2` (
  `eval_id` int(11) NOT NULL,
  `topic_id` int(11) NOT NULL,
- `score_id` int(11) DEFAULT NULL
- PRIMARY KEY (`id`),
- KEY `fk_evals` (`evals_id`),
- KEY `quest_num` (`question_number`),
- CONSTRAINT `scores2_ibfk_1` FOREIGN KEY (`evals_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
- CONSTRAINT `scores2_ibfk2_1` FOREIGN KEY (`question_number`) REFERENCES `rubric_questions` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB;
+ `score_id` int(11) DEFAULT NULL,
+ PRIMARY KEY (`eval_id`,`topic_id`),
+ KEY `fk_eval` (`eval_id`),
+ KEY `scores2_topic_id_constraint` (`topic_id`),
+ KEY `scores2_score_id_constraint` (`score_id`),
+ CONSTRAINT `scores2_eval_id_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `scores2_score_id_constraint` FOREIGN KEY (`score_id`) REFERENCES `rubric_scores` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `scores2_topic_id_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+-- this is the table which holds all freeform responses
+CREATE TABLE `freeform` (
+ `eval_id` int(11) NOT NULL,
+ `topic_id` int(11) NOT NULL,
+ `response` TEXT DEFAULT NULL,
+ PRIMARY KEY (`eval_id`,`topic_id`),
+ KEY `fk_eval` (`eval_id`),
+ KEY `freeform_topic_id_constraint` (`topic_id`),
+ CONSTRAINT `freeform_eval_id_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `freeform_topic_id_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1

@@ -7,7 +7,7 @@ session_start();
 require "lib/constants.php";
 if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course_name']) || 
 		!isset($_SESSION['survey_name']) || !isset($_SESSION['group_members']) || !isset($_SESSION['group_member_number']) ||
-    !isset($_SESSION['topics']) || !isset($_SESSION['answers'])) {
+    !isset($_SESSION['mc_topics']) || !isset($_SESSION['mc_answers']) || !isset($_SESSION['ff_topics'])) {
 	header("Location: " . SITE_HOME . "index.php");
 	exit();
 }
@@ -27,7 +27,8 @@ $progress_pct = round((($_SESSION['group_member_number']+1) * 100) / $num_of_gro
 $progress_text = ($_SESSION['group_member_number']+1).' of '.$num_of_group_members;
 $reviewers_id = $group_ids[$_SESSION['group_member_number']];
 $name =  htmlspecialchars($_SESSION['group_members'][$reviewers_id]);
-$topic_ids = array_keys($_SESSION['topics']);
+$mc_topic_ids = array_keys($_SESSION['mc_topics']);
+$ff_topic_ids = array_keys($_SESSION['ff_topics']);
 
 //fetch eval id, if it exists
 $stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
@@ -41,17 +42,28 @@ if (!$stmt->fetch()) {
 } else {
 	// Get any existing scores
 	$student_scores=getEvalScores($con, $eval_id);
+	$student_texts=getEvalTexts($con, $eval_id);
 }
 
 //When submit button is pressed
 if ( !empty($_POST) && isset($_POST)) {
-	if (count($_POST) != count($_SESSION['topics'])) {
-		echo "Bad Request: Expected ".count($_SESSION['topics'])." items, but posted ".count($_POST);
+	$actual = count($_SESSION['mc_topics']) + count($_SESSION['ff_topics']);
+	if (count($_POST) != $actual) {
+		echo "Bad Request: Expected ".$actual." items, but posted ".count($_POST);
 		http_response_code(400);
 		exit();
 	}
-	// Verify we have a response for each of the topics (cause I'm paranoid)
-	foreach ($topic_ids as $topic_id) {
+	// Verify we have a response for each of the multiple choice topics (cause I'm paranoid)
+	foreach ($mc_topic_ids as $topic_id) {
+		$radio_name = 'Q'.$topic_id;
+		if (!isset($_POST[$radio_name])) {
+			echo "Bad Request: Missing POST parameter: ".$radio_name;
+			http_response_code(400);
+			exit();
+		}
+	}
+	// And Verify we have a response for each of the multiple choice topics (cause I'm paranoid)
+	foreach ($ff_topic_ids as $topic_id) {
 		$radio_name = 'Q'.$topic_id;
 		if (!isset($_POST[$radio_name])) {
 			echo "Bad Request: Missing POST parameter: ".$radio_name;
@@ -67,11 +79,9 @@ if ( !empty($_POST) && isset($_POST)) {
 		$eval_id = $stmt->insert_id;
 		$stmt->close();
 	}
-	// Next two lines are a hack while we use the 2 score tables
-	$student_reviews = array();
-	$insert_review = (count($student_scores) != count($_SESSION['topics']));
-	// Now add or update the scores in our modern scores table
-	foreach ($topic_ids as $topic_id) {
+
+	// Add or update the scores in our multiple choice scores table
+	foreach ($mc_topic_ids as $topic_id) {
 		$radio_name = 'Q'.$topic_id;
 		$score_id = intval($_POST[$radio_name]);
 		// Check if this key existed previously
@@ -81,6 +91,19 @@ if ( !empty($_POST) && isset($_POST)) {
 		} else {
 			// Insert a new score if it had not existed
 			insertNewScore($con, $eval_id, $topic_id, $score_id);
+		}
+	}
+	// Add or update the scores in our freeform table
+	foreach ($ff_topic_ids as $topic_id) {
+		$textbox_name = 'Q'.$topic_id;
+		$text = $_POST[$radio_name];
+		// Check if this key existed previously
+		if (array_key_exists($topic_id, $student_texts)) {
+			// Update the existing score if it exists
+			updateExistingText($con, $eval_id, $topic_id, $text);
+		} else {
+			// Insert a new score if it had not existed
+			insertNewText($con, $eval_id, $topic_id, $text);
 		}
 	}
 	//move to next student in group
@@ -126,13 +149,13 @@ if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
 			</div>
 			<form id="peerEval" method='post'>
 				<?php
-				foreach ($_SESSION['topics'] as $topic_id => $topic) {
+				foreach ($_SESSION['mc_topics'] as $topic_id => $topic) {
 					echo '<div class="row mt-5 mx-1">';
 					echo '   <div class="col-12 bg-primary text-white"><b>Select the best description of '.$name.'\'s '.$topic.'</b></div>';
 					echo '</div>';
 					echo '<div class="row pt-1 mx-1 align-items-center">';
 					$end_str = '">';
-					foreach ($_SESSION['answers'][$topic_id] as $score_id => $response) {
+					foreach ($_SESSION['mc_answers'][$topic_id] as $score_id => $response) {
 						echo '<div class="col ';
 						echo $end_str;
 						echo '<input type="radio" class="btn-check" name="Q'.$topic_id.'" id="Q'.$topic_id.$score_id.'" autocomplete="off" required value="'.$score_id.'"';
@@ -145,6 +168,17 @@ if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
 						$end_str = 'ms-auto">';
 					}
 					echo '</div>';
+				}
+				foreach ($_SESSION['ff_topics'] as $topic_id => $topic) {
+					echo '<div class="row mt-5 mx-1">';
+					echo '   <div class="col-12 bg-primary text-white"><b>Enter any feedback on '.$name.'\'s '.$topic.'</b></div>';
+					echo '</div>';
+					echo '<div class="row pt-1 mx-1 align-items-center">';
+					echo '<div class="col-12"><textarea class="form-control" name="Q'.$topic_id.'" id="Q'.$topic_id.'" rows="3" placeholder="Provide any feedback here" ';
+					if (array_key_exists($topic_id, $student_texts)) {
+						echo 'value="'.$student_texts[$topic_id].'"';
+					}
+					echo 'ms-auto></div></div>';
 				}
 				?>
 				<hr>

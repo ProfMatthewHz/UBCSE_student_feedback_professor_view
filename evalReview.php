@@ -11,7 +11,7 @@ session_start();
 
 if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course_name']) || 
     !isset($_SESSION['survey_name']) || !isset($_SESSION['group_members']) ||
-    !isset($_SESSION['topics']) || !isset($_SESSION['answers'])) {
+    !isset($_SESSION['mc_topics']) || !isset($_SESSION['mc_answers']) || !isset($_SESSION['ff_topics'])) {
     header("Location: " . SITE_HOME . "index.php");
     exit();
 } else {
@@ -20,22 +20,26 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
   $survey_name = $_SESSION['survey_name'];
   $survey_id = $_SESSION['survey_id'];
   $num_of_group_members = count($_SESSION['group_members']);
-  $topics = $_SESSION['topics'];
-  $answers = $_SESSION['answers'];
+  $mc_topics = $_SESSION['mc_topics'];
+  $mc_answers = $_SESSION['mc_answers'];
+  $ff_topics = $_SESSION['ff_topics'];
   $members = $_SESSION['group_members'];
 
   // Store the scores submitted for each teammate
   $scores = array();
+  $texts = array();
   foreach ($members as $reviewer_id => $name) {
-    $scores[$reviewer_id] = getReviewScores($con, $reviewer_id, $topics, $answers);
+    $scores[$reviewer_id] = getReviewScores($con, $reviewer_id, $topics);
+    $texts[$reviewer_id] = getReviewText($con, $reviewer_id, $ff_topics);
   }
   unset($_SESSION['surveys_id']);
   unset($_SESSION['course_name']);
   unset($_SESSION['survey_name']);
   unset($_SESSION['group_members']);
   unset($_SESSION['group_member_number']);
-  unset($_SESSION['topics']);
-  unset($_SESSION['answers']);
+  unset($_SESSION['mc_topics']);
+  unset($_SESSION['mc_answers']);
+  unset($_SESSION['ff_topics']);
 }
 ?>
 <!DOCTYPE HTML>
@@ -62,7 +66,7 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SES
             </div>
             <div class="row pt-1 mx-1 align-items-center text-center border-bottom border-3 border-dark">
                 <?php
-                    emitResultsTable($topics, $answers, $scores, $members);
+                    emitResultsTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores, $members);
                 ?>
             </div>
             <div class="row pt-1 mx-1">
