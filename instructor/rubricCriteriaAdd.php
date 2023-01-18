@@ -74,14 +74,14 @@ if (($_SERVER['REQUEST_METHOD'] != 'POST') && isset($_SESSION["confirm"])) {
     }
     // Translate the posted type to the values we actually use
     if (empty($_POST[$crit_id.'-type'])) {
-      $crit_data["type"] = 'multiple_choice';
+      $crit_data["type"] = MC_QUESTION_TYPE;
       // When this is a multiple choice question, record each of the different responses
       $crit_data["responses"] = array();
       foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
         $crit_data["responses"][$level_name] = check_level_response($crit_id, $level_name, $text, $errorMsg);
       }
     } else {
-      $crit_data["type"] = 'free_response';
+      $crit_data["type"] = FREEFORM_QUESTION_TYPE;
     }
     $criteria[] = $crit_data;
     $crit_num = $crit_num + 1;
@@ -260,7 +260,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
           echo 'document.getElementById("criterion'.$crit_num.'-question").classList.add("is-invalid");';
           echo 'document.getElementById("criterion'.$crit_num.'-q-lab").innerHTML = "'.$errorMsg['criterion'.$crit_num.'-question'].'";';
         }
-        if ($criterion["type"] == "multiple_choice") {
+        if ($criterion["type"] == MC_QUESTION_TYPE) {
           foreach ($_SESSION["rubric"]["levels"]["names"] as $level_name => $text) {
             if (!empty($criterion["responses"][$level_name])) {
               echo 'document.getElementById("criterion'.$crit_num.'-'.$level_name.'").value="'.$criterion["responses"][$level_name].'";';

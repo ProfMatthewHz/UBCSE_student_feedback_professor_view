@@ -30,7 +30,7 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
             $average = $sum / $count;
             echo '<div class="col-2 ms-auto text-center"><b>'.$average.'</b> (out of '.end($mc_answers[$topic_id])[1].')</div>';
         } else {
-            echo '<div class="col-2 ms-auto text-center">--</div>';
+            echo '<div class="col-2 ms-auto text-center">'.NO_SCORE_MARKER.'</div>';
         }
     }
     foreach ($ff_topics as $topic_id => $topic) {
@@ -48,7 +48,7 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
         if ($count > 0) {
             echo '<div class="col-2 ms-auto text-center"><b>'.$text.'</b></div>';
         } else {
-            echo '<div class="col-2 ms-auto text-center">--</div>';
+            echo '<div class="col-2 ms-auto text-center">'.NO_SCORE_MARKER.'</div>';
         }
     }
     echo '</div>';

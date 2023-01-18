@@ -229,7 +229,7 @@ $topics['normalized'] = 'Normalized Score';
                       if (isset($scored[$topic_id])) {
                         echo '<td>'.$scored[$topic_id].'</td>';
                       } else {
-                        echo '<td>--</td>';
+                        echo '<td>'.NO_SCORE_MARKER.'</td>';
                       }
                     }
                     echo '</tr>';
@@ -259,7 +259,7 @@ $topics['normalized'] = 'Normalized Score';
                 foreach ($averages as $email => $norm_array) {
                   echo '<tr><td>' . htmlspecialchars($teammates[$email]) . '<br>(' . htmlspecialchars($email) . ')' . '</td>';
                   if ($norm_array["overall"] === NO_SCORE_MARKER) {
-                    echo '<td>--</td></tr>';
+                    echo '<td>'.NO_SCORE_MARKER.'</td></tr>';
                   } else {
                     echo '<td>' . $norm_array["overall"]  . '</td></tr>';
                   }

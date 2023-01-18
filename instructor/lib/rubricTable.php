@@ -17,7 +17,7 @@
         $name = $topic_data["question"];
         $ret_val = $ret_val.'<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:'.$bg_color.'">';
         $ret_val = $ret_val.'  <div class="col-2 text-center"><b>'.$name.'</b></div>';
-        if ($topic_data["type"] == "multiple_choice") {
+        if ($topic_data["type"] == MC_QUESTION_TYPE) {
           $responses = $topic_data["responses"];
           foreach (array_keys($scores) as $score_id) {
             $response_text = $responses[$score_id];

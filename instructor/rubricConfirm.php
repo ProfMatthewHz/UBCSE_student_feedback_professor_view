@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Finally we insert the name of each criterion as a rubric topic and, if appropriate, all of its responses.
     foreach ($_SESSION["confirm"]["topics"] as $crit_data) {
       $topic_id = insertRubricTopic($con, $rubric_id, $crit_data["question"], $crit_data["type"]);
-      if ($crit_data["type"] == "multiple_choice") {
+      if ($crit_data["type"] == MC_QUESTION_TYPE) {
         foreach ($level_ids as $key => $level_id) {
           insertRubricReponse($con, $topic_id, $level_id, $crit_data["responses"][$key]);
         }

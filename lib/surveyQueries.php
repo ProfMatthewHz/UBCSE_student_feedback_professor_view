@@ -68,7 +68,7 @@
                   FROM rubric_topics 
                   INNER JOIN surveys ON surveys.rubric_id = rubric_topics.rubric_id
                   WHERE surveys.id = ?
-                  AND rubric_topics.question_response = "multiple_choice"
+                  AND rubric_topics.question_response = "'.MC_QUESTION_TYPE.'"
                   ORDER BY rubric_topics.id';
     $stmt_topics = $db_connection->prepare($query_str);
     $stmt_topics->bind_param('i', $survey_id);
@@ -87,7 +87,7 @@
                   FROM rubric_topics 
                   INNER JOIN surveys ON surveys.rubric_id = rubric_topics.rubric_id
                   WHERE surveys.id = ?
-                  AND rubric_topics.question_response = "text"
+                  AND rubric_topics.question_response = "'.FREEFORM_QUESTION_TYPE.'"
                   ORDER BY rubric_topics.id';
     $stmt_topics = $db_connection->prepare($query_str);
     $stmt_topics->bind_param('i', $survey_id);
