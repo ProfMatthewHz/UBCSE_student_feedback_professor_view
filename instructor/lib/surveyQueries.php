@@ -1,6 +1,6 @@
 <?
 function getSurveyRubric($con, $survey_id) {
-  $stmt = $con->prepare('SELECT course_id, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
+  $stmt = $con->prepare('SELECT course_id, start_date, expiration_date, name, rubric_id FROM surveys WHERE id=?');
   $stmt->bind_param('i', $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();
