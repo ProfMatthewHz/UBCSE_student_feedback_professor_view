@@ -18,7 +18,7 @@ function insertRubricScore($con, $rubric_id, $name, $score) {
 }
 
 function insertRubricTopic($con, $rubric_id, $question, $question_type) {
-  $stmt = $con->prepare('INSERT INTO rubric_topics (rubric_id, question, ?) VALUES(?,?,?)');
+  $stmt = $con->prepare('INSERT INTO rubric_topics (rubric_id, question, question_response) VALUES(?,?,?)');
   $stmt->bind_param('is', $rubric_id, $question, $question_type);
   $stmt->execute();
   $ret_val = $stmt->insert_id;
