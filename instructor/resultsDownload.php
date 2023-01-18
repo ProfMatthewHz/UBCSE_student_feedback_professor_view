@@ -92,7 +92,7 @@ $teammates = getRevieweeData($con, $sid);
 // Get information completed by the reviewer -- how many were reviewed and the total points
 $scores = getSurveyScores($con, $teammates);
 
-$topics = getSurveyTopics($con, $sid);
+$topics = getMultipleChoiceSurveyTopics($con, $sid);
 
 foreach ($teammates as $email => $name) {
   $sum_normalized = 0;

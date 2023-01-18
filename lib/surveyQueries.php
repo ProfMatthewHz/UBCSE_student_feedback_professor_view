@@ -62,7 +62,7 @@
     return $retVal;
   }
 
-  function getSurveyTopics($db_connection, $survey_id) {
+  function getMultipleChoiceSurveyTopics($db_connection, $survey_id) {
     $retVal = array();
     $query_str = 'SELECT rubric_topics.id, question, question_response
                   FROM rubric_topics 
