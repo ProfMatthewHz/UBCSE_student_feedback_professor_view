@@ -41,7 +41,7 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
               if ($count != 0) {
                 $text .= "<br>";
               }
-              $text .= $submit[$topic_id];
+              $text .= htmlspecialchars($submit[$topic_id]);
               $count++;
             }
         }
@@ -76,7 +76,7 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
             echo '<div class="col-2 ms-auto">'.$mc_answers[$topic_id][$scores[$reviewer_id][$topic_id]].'</div>';
         }
         foreach ($ff_topics as $topic_id => $topic) {
-            echo '<div class="col-2 ms-auto">'.$ff_answers[$reviewer_id][$topic_id].'</div>';
+            echo '<div class="col-2 ms-auto">'.htmlspecialchars($ff_answers[$reviewer_id][$topic_id]).'</div>';
         }
         echo '</div>';
         $shaded = !$shaded;

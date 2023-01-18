@@ -65,8 +65,8 @@ if ( !empty($_POST) && isset($_POST)) {
 	}
 	// And Verify we have a response for each of the multiple choice topics (cause I'm paranoid)
 	foreach ($ff_topic_ids as $topic_id) {
-		$radio_name = 'Q'.$topic_id;
-		if (!isset($_POST[$radio_name])) {
+		$textbox_name = 'Q'.$topic_id;
+		if (!isset($_POST[$textbox_name])) {
 			echo "Bad Request: Missing POST parameter: ".$radio_name;
 			http_response_code(400);
 			exit();
@@ -97,7 +97,7 @@ if ( !empty($_POST) && isset($_POST)) {
 	// Add or update the scores in our freeform table
 	foreach ($ff_topic_ids as $topic_id) {
 		$textbox_name = 'Q'.$topic_id;
-		$text = $_POST[$radio_name];
+		$text = $_POST[$textbox_name];
 		// Check if this key existed previously
 		if (array_key_exists($topic_id, $student_texts)) {
 			// Update the existing score if it exists
@@ -175,11 +175,11 @@ if ($_SESSION['group_member_number']<($num_of_group_members - 1)) {
 					echo '   <div class="col-12 bg-primary text-white"><b>Enter any feedback on '.$name.'\'s '.$topic.'</b></div>';
 					echo '</div>';
 					echo '<div class="row pt-1 mx-1 align-items-center">';
-					echo '<div class="col-12"><textarea class="form-control" name="Q'.$topic_id.'" id="Q'.$topic_id.'" rows="3" placeholder="Provide any feedback here"';
+					echo '<div class="col-12"><textarea class="form-control" name="Q'.$topic_id.'" id="Q'.$topic_id.'" rows="3" placeholder="Provide any feedback here">';
 					if (array_key_exists($topic_id, $student_texts)) {
-						echo ' value="'.$student_texts[$topic_id].'"';
+						echo htmlspecialchars($student_texts[$topic_id]);
 					}
-					echo '></textarea></div></div>';
+					echo '</textarea></div></div>';
 				}
 				?>
 				<hr>
