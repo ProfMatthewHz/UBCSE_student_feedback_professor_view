@@ -155,7 +155,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     let labId = name + "-type-lab";
     let retVal = document.createElement("div");
     retVal.className = "row mx-1 justify-content-start";
-    retVal.innerHTML = '<div class="col-7 form-check"><input type="checkbox" id="'+realName+'"class="form-check-input" name ="'+realName+'" onclick="showHideLevels(this)"><label id="'+labId+'" class="form-check-label" for="'+realName+'">Use freeform response</label></div>';
+    retVal.innerHTML = '<div class="col-md-auto"><input type="checkbox" id="'+realName+'"class="form-check-input" name ="'+realName+'" onclick="showHideLevels(this)"><label id="'+labId+'" class="form-check-label" for="'+realName+'">Use freeform response</label></div>';
     return retVal;
   }
   function makeCritLevelRow(name) {
@@ -178,7 +178,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
   }
   function showHideLevels(button) {
     let criterion = button.parentElement.parentElement.parentElement;
-    let hideNum = Number(button.id.substring(9));
+    let hideNum = Number(criterion.id.substring(9));
     let levels = document.getElementById("criterion"+hideNum+"-levels");
     if (button.checked) {
       levels.style.display = "none";
