@@ -67,11 +67,7 @@ $errorMsg = array();
 $level_names = array();
 $level_values = array();
 
-// Overwrite any previous work we did
-unset($_SESSION["rubric"]);
-
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-
   // make sure values exist
   if (!isset($_POST['rubric-name']) || !isset($_POST['rubric-level']) || 
       !isset($_POST['level1-name']) || !isset($_POST['level1-value']) ||
@@ -150,7 +146,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     http_response_code(302);
     header("Location: ".INSTRUCTOR_HOME."rubricCriteriaAdd.php");
   }
+} else if (isset($_SESSION["rubric"])) {
+  // This is a GET request, but we have a rubric in the session which means we are modifying an existing rubric
+  $rubric_name = $_SESSION["rubric"]["name"]." copy";
+  $rubric_level = count($_SESSION["rubric"]["levels"]["values"]);
+  $level_values = $_SESSION["rubric"]["levels"]["values"];
+  $level_names = $_SESSION["rubric"]["levels"]["names"];
 }
+unset($_SESSION["rubric"]);
 ?>
 <!doctype html>
 <html lang="en">

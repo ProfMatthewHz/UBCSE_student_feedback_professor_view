@@ -20,7 +20,6 @@ require_once "lib/pairingFunctions.php";
 // set timezone
 date_default_timezone_set('America/New_York');
 
-
 // //query information about the requester
 $con = connectToDatabase();
 
@@ -256,14 +255,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, ?, ?)');
           $stmt->bind_param('isssi', $course_id, $survey_name, $sdate, $edate, $rubric_id);
           $stmt->execute();
-
           add_pairings($pairings, $con->insert_id, $con);
-
-          // redirect to survey page with sucess message
-          $_SESSION['survey-add'] = "Successfully added survey.";
-
           http_response_code(302);
-          header("Location: surveys.php");
+          header("Location: ".INSTRUCTOR_HOME."surveys.php");
           exit();
         }
       }

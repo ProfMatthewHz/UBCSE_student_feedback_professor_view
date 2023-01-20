@@ -107,15 +107,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       ?>
   	</div>
     <form id="confirm-rubric" method="post">
-      <div class="row mt-2 mx-4">
+      <div class="row mt-2 mx-1">
         <div class="col">
-          <input class="btn btn-success btn-lg" name="save-rubric" type="submit" value="Save Rubic"></input>
+          <input class="btn btn-outline-danger" name="revise-rubric" type="submit" value="Revise Rubic"></input>
         </div>
         <div class="col ms-auto">
-          <input class="btn btn-outline-danger btn-lg" name="revise-rubric" type="submit" value="Revise Rubic"></input>
+          <input class="btn btn-success" name="save-rubric" type="submit" value="Save Rubic"></input>
         </div>
       </div>
     </form>
+    <hr>
+    <div class="row mx-1 mt-2 justify-content-center">
+        <div class="col-auto">
+					<a href="surveys.php" class="btn btn-outline-info" role="button" aria-disabled="false">Return to Instructor Home</a>
+        </div>
+      </div>
+</div>
+
   </div>
 </main>
 </body>

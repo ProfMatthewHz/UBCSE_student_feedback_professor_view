@@ -310,6 +310,13 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
         </div>
       </div>
     </form>
+    <hr>
+    <div class="row mx-1 mt-2 justify-content-center">
+        <div class="col-auto">
+					<a href="surveys.php" class="btn btn-outline-info" role="button" aria-disabled="false">Return to Instructor Home</a>
+        </div>
+      </div>
+</div>
   </div>
 </main>
 </body>

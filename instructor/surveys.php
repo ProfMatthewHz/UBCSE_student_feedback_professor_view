@@ -23,6 +23,10 @@ $con = connectToDatabase();
 // try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
+  
+// Just to be certain, we will unset any session variables that we are using to track state within a process
+unset($_SESSION["rubric_reviewed"]);
+unset($_SESSION["rubric"]);
 
 // Find out the term that we are currently in
 $month = idate('m');

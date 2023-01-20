@@ -49,6 +49,19 @@ function selectRubrics($con) {
   return $ret_val;
 }
 
+function selectRubricName($con, $rubric_id) {
+  $stmt = $con->prepare('SELECT description FROM rubrics WHERE id=?');
+  $stmt->bind_param('i', $rubric_id);
+  $stmt->execute();
+  $ret_val = "No Such Rubric";
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $ret_val = $row[0];
+  }
+  $stmt->close();
+  return $ret_val;
+}
+
 function selectRubricScores($con, $rubric_id) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT id, name, score FROM rubric_scores WHERE rubric_id=?');
