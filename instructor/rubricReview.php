@@ -22,8 +22,30 @@ $con = connectToDatabase();
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
-$errorMsg = array();
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // check CSRF token
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token'])) {
+    http_response_code(403);
+    echo "Forbidden: Incorrect parameters.";
+    exit();
+  }
+	if (!isset($_SESSION["rubric_reviewed"])) {
+    http_response_code(400);
+    echo "Bad Request: Missing parmeters.";
+    exit();
+	}
+	$rubric_id = $_SESSION["rubric_reviewed"];
+	unset($_SESSION["rubric_reviewed"]);
+	$rubric_name = selectRubricName($con, $rubric_id);
+	$_SESSION["rubric"] = array("name" => $rubric_name);
+	$_SESSION["rubric"]["levels"] = array("names" => array(), "values" => array());
+	
+	$data = getRubricData($con, $rubric_id);
+}
+
 $rubrics = selectRubrics($con);
+// Just to be certain, we will unset the session variable that tracks the rubric we are currently reviewing
+unset($_SESSION["rubric_reviewed"]);
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -83,6 +105,15 @@ $rubrics = selectRubrics($con);
 		<div class="col"><i>Selected rubric will appear here</i></div>
 		</div>
 		<hr>
+
+    <form class="mt-5 mx-1" id="modify-rubric" method="post">
+		<input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
+      <div class="row mx-1 mt-2 justify-content-center">
+      <div class="col-auto">
+      <input class="btn btn-outline-secondary" type="submit" value="+ Copy Rubric"></input>
+</div></div>
+    </form>
+    <hr>
 		<div class="row mx-1 mt-2 justify-content-center">
         <div class="col-auto">
 					<a href="surveys.php" class="btn btn-outline-info" role="button" aria-disabled="false">Return to Instructor Home</a>
