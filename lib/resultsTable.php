@@ -28,7 +28,14 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
         }
         if ($count > 0) {
             $average = $sum / $count;
+            sort($scores);
+            if (count($scores) % 2 == 0) {
+                $median = ($scores[count($scores) / 2] + $scores[count($scores) / 2 - 1]) / 2;
+            } else {
+                $median = $scores[count($scores) / 2];
+            }
             echo '<div class="col-2 ms-auto text-center"><b>'.$average.'</b> (out of '.end($mc_answers[$topic_id])[1].')</div>';
+            echo '<!-- Median: <b>'.$median.'</b></div> -->';
         } else {
             echo '<div class="col-2 ms-auto text-center">'.NO_SCORE_MARKER.'</div>';
         }
