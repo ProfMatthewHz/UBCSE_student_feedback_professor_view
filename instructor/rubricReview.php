@@ -7,29 +7,29 @@ function create_levels_array($scores) {
 	foreach (array_values($scores) as $score) {
 		if ($cur_level == 0) {
 			$ret_val["names"]["level1"] = $score["name"];
-			$ret_val["values"]["level1"] = strval($score["value"]);
+			$ret_val["values"]["level1"] = $score["score"];
 		} else if ($cur_level == $max_level) {
 			$ret_val["names"]["level5"] = $score["name"];
-			$ret_val["values"]["level5"] = strval($score["value"]);
+			$ret_val["values"]["level5"] = $score["score"];
 		} else if ($cur_level == 1) {
 			if (($max_level == 3) || ($max_level == 4)) {
 				$ret_val["names"]["level2"] = $score["name"];
-				$ret_val["values"]["level2"] = strval($score["value"]);
+				$ret_val["values"]["level2"] = $score["score"];
 			} else {
 				$ret_val["names"]["level3"] = $score["name"];
-				$ret_val["values"]["level3"] = strval($score["value"]);
+				$ret_val["values"]["level3"] = $score["score"];
 			}
 		} else if ($cur_level == 2) {
 			if ($max_level == 3) {
 				$ret_val["names"]["level4"] = $score["name"];
-				$ret_val["values"]["level4"] = strval($score["value"]);
+				$ret_val["values"]["level4"] = $score["score"];
 			} else {
 				$ret_val["names"]["level3"] = $score["name"];
-				$ret_val["values"]["level3"] = strval($score["value"]);
+				$ret_val["values"]["level3"] = $score["score"];
 			}
 		} else if ($cur_level == 3) {
 			$ret_val["names"]["level4"] = $score["name"];
-			$ret_val["values"]["level4"] = strval($score["value"]);
+			$ret_val["values"]["level4"] = $score["score"];
 		}
 		$cur_level = $cur_level + 1;
 	}
