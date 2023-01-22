@@ -145,6 +145,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION["rubric"]["levels"] = array("names" => $level_names, "values" => $level_values);
     http_response_code(302);
     header("Location: ".INSTRUCTOR_HOME."rubricCriteriaAdd.php");
+    exit();
   }
 } else if (isset($_SESSION["rubric"])) {
   // This is a GET request, but we have a rubric in the session which means we are modifying an existing rubric
