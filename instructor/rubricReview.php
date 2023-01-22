@@ -92,7 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$_SESSION["rubric"]["levels"] = create_levels_array($scores);
 
 	$topics = selectRubricTopics($con, $rubric_id);
-	$_SESSION["confirm"] = create_topics_array($topics);
+	$topics_data = create_topics_array($topics);
+	$_SESSION["confirm"] = array("topics" => $topics_data);
 
 	http_response_code(302);
 	header("Location: ".INSTRUCTOR_HOME."rubricAdd.php");
