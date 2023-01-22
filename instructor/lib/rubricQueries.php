@@ -79,21 +79,6 @@ function selectRubricScores($con, $rubric_id) {
   return $ret_val;
 }
 
-function selectNamedResponses($con, $topic_id) {
-  $ret_val = array();
-  $stmt = $con->prepare('SELECT name, response FROM rubric_responses INNER JOIN rubric_scores ON rubric_scores.id=rubric_responses.score_id WHERE topic_id=?');
-  $stmt->bind_param('i', $topic_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    $score_name = $row[0];
-    $response = $row[1];
-    $ret_val[$score_name] = $response;
-  }
-  $stmt->close();
-  return $ret_val;
-}
-
 function selectTopicResponses($con, $topic_id) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT score_id, response FROM rubric_responses WHERE topic_id=? ORDER BY topic_id');
@@ -109,30 +94,9 @@ function selectTopicResponses($con, $topic_id) {
   return $ret_val;
 }
 
-function selectNamedRubricTopics($con, $rubric_id) {
-  $ret_val = array();
-  $stmt = $con->prepare('SELECT id, question, question_response FROM rubric_topics WHERE rubric_id=?');
-  $stmt->bind_param('i', $rubric_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    $topic_data = array();
-    $topic_id = $row[0];
-    $question = $row[1];
-    $question_type = $row[2];
-    $topic_data["question"] = $question;
-    $topic_responses = selectNamedResponses($con, $topic_id);
-    $topic_data["responses"] = $topic_responses;
-    $topic_data["type"] = $question_type;
-    $ret_val[] = $topic_data;
-  }
-  $stmt->close();
-  return $ret_val;
-}
-
 function selectRubricTopics($con, $rubric_id) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT id, question, question_response FROM rubric_topics WHERE rubric_id=?');
+  $stmt = $con->prepare('SELECT id, question, question_response FROM rubric_topics WHERE rubric_id=? ORDER BY id');
   $stmt->bind_param('i', $rubric_id);
   $stmt->execute();
   $result = $stmt->get_result();

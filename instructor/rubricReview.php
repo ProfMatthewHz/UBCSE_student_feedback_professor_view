@@ -42,7 +42,31 @@ function create_topics_array($topics) {
 		$topic_data = array();
 		$topic_data["question"] = $topic["question"];
 		$topic_data["type"] = $topic["type"];
-		$topic_data["responses"] = $topic["responses"];
+		$topic_data["responses"] = array();
+		$max_level = count($topic["responses"]) - 1;
+		$cur_level = 0;
+		foreach (array_values($topic["responses"]) as $response) {
+			if ($cur_level == 0) {
+				$topic_data["responses"]["level5"] = $response;
+			} else if ($cur_level == $max_level) {
+				$topic_data["responses"]["level1"] = $response;
+			} else if ($cur_level == 1) {
+				if (($max_level == 3) || ($max_level == 4)) {
+					$topic_data["responses"]["level4"] = $response;
+				} else {
+					$topic_data["responses"]["level3"] = $response;
+				}
+			} else if ($cur_level == 2) {
+				if ($max_level == 3) {
+					$topic_data["responses"]["level2"] = $response;
+				} else {
+					$topic_data["responses"]["level3"] = $response;
+				}
+			} else if ($cur_level == 3) {
+				$topic_data["responses"]["level2"] = $response;
+			}
+			$cur_level = $cur_level + 1;
+		}
 		$ret_val[] = $topic_data;
 	}
 	return $ret_val;
@@ -91,10 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$scores = selectRubricScores($con, $rubric_id);
 	$_SESSION["rubric"]["levels"] = create_levels_array($scores);
 
-	$topics = selectNamedRubricTopics($con, $rubric_id);
+	$topics = selectRubricTopics($con, $rubric_id);
 	$topics_data = create_topics_array($topics);
 	$_SESSION["confirm"] = array("topics" => $topics_data);
-
 	http_response_code(302);
 	header("Location: ".INSTRUCTOR_HOME."rubricAdd.php");
 	exit();
