@@ -7,29 +7,29 @@ function create_levels_array($scores) {
 	foreach (array_values($scores) as $score) {
 		if ($cur_level == 0) {
 			$ret_val["names"]["level1"] = $score["name"];
-			$ret_val["values"]["level1"] = $score["value"];
+			$ret_val["values"]["level1"] = strval($score["value"]);
 		} else if ($cur_level == $max_level) {
 			$ret_val["names"]["level5"] = $score["name"];
-			$ret_val["values"]["level5"] = $score["value"];
+			$ret_val["values"]["level5"] = strval($score["value"]);
 		} else if ($cur_level == 1) {
 			if (($max_level == 3) || ($max_level == 4)) {
 				$ret_val["names"]["level2"] = $score["name"];
-				$ret_val["values"]["level2"] = $score["value"];
+				$ret_val["values"]["level2"] = strval($score["value"]);
 			} else {
 				$ret_val["names"]["level3"] = $score["name"];
-				$ret_val["values"]["level3"] = $score["value"];
+				$ret_val["values"]["level3"] = strval($score["value"]);
 			}
 		} else if ($cur_level == 2) {
 			if ($max_level == 3) {
 				$ret_val["names"]["level4"] = $score["name"];
-				$ret_val["values"]["level4"] = $score["value"];
+				$ret_val["values"]["level4"] = strval($score["value"]);
 			} else {
 				$ret_val["names"]["level3"] = $score["name"];
-				$ret_val["values"]["level3"] = $score["value"];
+				$ret_val["values"]["level3"] = strval($score["value"]);
 			}
 		} else if ($cur_level == 3) {
 			$ret_val["names"]["level4"] = $score["name"];
-			$ret_val["values"]["level4"] = $score["value"];
+			$ret_val["values"]["level4"] = strval($score["value"]);
 		}
 		$cur_level = $cur_level + 1;
 	}
@@ -164,8 +164,7 @@ unset($_SESSION["rubric_reviewed"]);
 		<div class="col"><i>Selected rubric will appear here</i></div>
 		</div>
 		<hr>
-
-    <form class="mt-5 mx-1" id="duplicate-rubric" method="post">
+    <form class="mt-2 mx-1" id="duplicate-rubric" method="post">
 		<input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
       <div class="row mx-1 mt-2 justify-content-center">
       <div class="col-auto">
