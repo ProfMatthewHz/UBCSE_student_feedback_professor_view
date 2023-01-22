@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$scores = selectRubricScores($con, $rubric_id);
 	$_SESSION["rubric"]["levels"] = create_levels_array($scores);
 
-	$topics = selectRubricTopics($con, $rubric_id);
+	$topics = selectNamedRubricTopics($con, $rubric_id);
 	$topics_data = create_topics_array($topics);
 	$_SESSION["confirm"] = array("topics" => $topics_data);
 
