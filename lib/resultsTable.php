@@ -24,7 +24,7 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
             echo '<div class="col-2 ms-auto text-center"><b>'.$average.'</b> (out of '.end($mc_answers[$topic_id])[1].')</div>';
             sort($med_score);
             $mid_point = intdiv(count($med_score), 2);
-            if (count($med_score) % 2 == 0) {
+            if ((count($med_score) % 2 == 0) && ($med_score[$mid_point - 1] !=  $med_score[$mid_point])){
                 $low_med = $med_score[$mid_point - 1];
                 $hi_med = $med_score[$mid_point];
                 foreach ($mc_answers[$topic_id] as $response) {
