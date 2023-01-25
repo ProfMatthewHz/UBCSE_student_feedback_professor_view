@@ -22,7 +22,7 @@ function emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult) {
                         2 => "Team",
                         3 => "Team + Manager",
                         4 => "Many-to-1");
-  if (!isset($pairing_mode)) {
+  if (empty($pairing_mode)) {
     echo '<option value="-1" disabled selected">Select Pairing Mode</option>';
   }
   foreach ($survey_modes as $value => $name) {
