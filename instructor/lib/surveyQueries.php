@@ -46,13 +46,11 @@ function getSurveyTotals($con, $survey_id, $teammates) {
                          LEFT JOIN rubric_topics ON rubric_topics.id=scores2.topic_id
                          WHERE survey_id=? AND question_response <> "'.FREEFORM_QUESTION_TYPE.'"
                          GROUP BY reviewer_email');
-  foreach (array_keys($teammates) as $email) {
-    $stmt->bind_param('is',$survey_id, $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_array(MYSQLI_NUM)) {
-      $ret_val[$row[0]] = $row[1];
-    }
+  $stmt->bind_param('i',$survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $ret_val[$row[0]] = $row[1];
   }
   $stmt->close();
   return $ret_val;
