@@ -89,7 +89,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
   if (!isset($_POST['start-date']) || !isset($_POST['start-time']) || !isset($_POST['end-date']) || !isset($_POST['end-time']) || !isset($_POST['csrf-token']) ||
-      !isset($_POST['survey-name']) || !isset($_POST['pm-mult'])) {
+      !isset($_POST['survey-name'])) {
     http_response_code(400);
     echo "Bad Request: Missing parameters.";
     exit();
