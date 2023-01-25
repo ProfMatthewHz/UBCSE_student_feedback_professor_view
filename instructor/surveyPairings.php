@@ -272,6 +272,7 @@ for ($i = 0; $i < $size; $i++) {
         <div class="row">
           <?php emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult); ?>
         </div>
+  </div>
         <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
         <div class="form-floating mt-0 mb-3">
           <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
@@ -285,7 +286,7 @@ for ($i = 0; $i < $size; $i++) {
         <input type="hidden" name="survey" value="<?php echo $sid; ?>" />
         <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
         <input type="submit" class="btn btn-danger" value="Modify Survey Pairings"></input>
-  </div></div>
+    </div>
       </form>
     <?php endif; ?>
     <hr>
