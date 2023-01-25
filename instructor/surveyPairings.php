@@ -266,23 +266,23 @@ for ($i = 0; $i < $size; $i++) {
           <h4>Modify Survey</h4>
       </div>
     </div>
+  </div>
     <form action="surveyPairings.php?survey=<?php echo $sid; ?>" method ="post" enctype="multipart/form-data">
       <div class="cointainer-sm">
       <div class="row justify-content-md-center mt-5 mx-4">
-        <div class="row">
           <?php emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult); ?>
         </div>
-  </div>
         <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
         <div class="form-floating mt-0 mb-3">
           <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
           <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>
         </div>
+        <div class="row"><div class="col-sm-auto">
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="agreement" name="agreement" value="1">
           <label class="form-check-label" for="agreement">
           I understand that modifying survey pairings will overwrite all previously supplied pairings for this survey.</label>
-        </div>
+        </div></div></div>
         <input type="hidden" name="survey" value="<?php echo $sid; ?>" />
         <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
         <input type="submit" class="btn btn-danger" value="Modify Survey Pairings"></input>
