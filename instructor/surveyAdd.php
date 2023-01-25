@@ -344,9 +344,7 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
           </select>
           <label for="rubric-id"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"]; } else { echo "Rubric:";} ?></label>
       </div>
-      <div class="row">
-        <?php emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult); ?>
-      </div>
+      <?php emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult); ?>
       <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
       <div class="form-floating mt-0 mb-3">
         <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
