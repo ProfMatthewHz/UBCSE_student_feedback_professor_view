@@ -75,6 +75,7 @@ CREATE TABLE `reviewers` (
  `survey_id` int(11) NOT NULL,
  `reviewer_email` varchar(20) NOT NULL,
  `teammate_email` varchar(20) NOT NULL,
+ `eval_weight` int(11) NOT NULL DEFAULT 1,
  PRIMARY KEY (`id`),
  KEY `reviewers_survey_id` (`survey_id`),
  KEY `reviewers_reviewer_constraint` (`reviewer_email`),

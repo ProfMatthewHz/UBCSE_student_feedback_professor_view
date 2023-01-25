@@ -15,28 +15,64 @@ function getSurveyRubric($con, $survey_id) {
   return $ret_val[0];
 }
 
-function getReviewerData($con, $survey_id, &$reviewers, &$totals) {
-  $stmt = $con->prepare('SELECT reviewer_email, students.name, SUM(rubric_scores.score) total_score, COUNT(DISTINCT teammate_email) expected, COUNT(DISTINCT evals.id) actual
+
+
+function getCompletionData($con, $survey_id) {
+  $ret_val = array();
+  $stmt = $con->prepare('SELECT reviewer_email, COUNT(reviewers.id) expected, COUNT(evals.id) actual
                          FROM reviewers
-                         INNER JOIN students ON reviewers.reviewer_email=students.email 
-                         LEFT JOIN evals ON evals.reviewers_id=reviewers.id 
-                         LEFT JOIN scores2 ON scores2.eval_id=evals.id 
-                         LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id 
-                         WHERE survey_id=? 
+                         LEFT JOIN evals ON evals.reviewers_id=reviewers.id
+                         WHERE survey_id=?
                          GROUP BY reviewer_email, students.name');
   $stmt->bind_param('i', $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
     $email_addr = $row[0];
-    $reviewers[$email_addr] = $row[1];
-    // If the reviewer completed this survey
-    if ($row[3] == $row[4]) {
-      // Initialize the total number of points
-      $totals[$email_addr] = $row[2] / $row[3];
+    $completed = ($row[1] == $row[2]);
+    $ret_val[$email_addr] = $completed;
+  }
+  $stmt->close();
+  return $ret_val;
+}
+
+function getSurveyTotals($con, $survey_id, $teammates) {
+  $ret_val = array();
+  $stmt = $con->prepare('SELECT reviewer_email, SUM(score * eval_weight) 
+                         FROM reviewers
+                         LEFT JOIN evals on evals.reviewers_id=reviewers.id
+                         LEFT JOIN scores2 ON evals.id=scores2.eval_id
+                         LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
+                         LEFT JOIN rubric_topics ON rubric_topics.id=scores2.topic_id
+                         WHERE survey_id=? AND question_response <> "'.FREEFORM_QUESTION_TYPE.'"
+                         GROUP BY reviewer_email');
+  foreach (array_keys($teammates) as $email) {
+    $stmt->bind_param('is',$survey_id, $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      $ret_val[$row[0]] = $row[1];
     }
   }
   $stmt->close();
+  return $ret_val;
+}
+
+function getReviewerData($con, $survey_id) {
+  $ret_val = array();
+  $stmt = $con->prepare('SELECT DISTINCT reviewer_email, students.name
+                         FROM reviewers 
+                         INNER JOIN students ON reviewers.reviewer_email=students.email 
+                         WHERE survey_id=?');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $email_addr = $row[0];
+    $ret_val[$email_addr] = $row[1];
+  }
+  $stmt->close();
+  return $ret_val;
 }
 
 function getRevieweeData($con, $survey_id) {
@@ -56,28 +92,53 @@ function getRevieweeData($con, $survey_id) {
   return $ret_val;
 }
 
-function getSurveyScores($con, $survey_id, $teammates) {
+function getSurveyWeights($con, $survey_id, $teammates) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT reviewer_email, teammate_email, topic_id, score 
+  $stmt = $con->prepare('SELECT reviewer_email, eval_weight 
                          FROM reviewers
-                         LEFT JOIN evals on evals.reviewers_id=reviewers.id 
-                         LEFT JOIN scores2 ON evals.id=scores2.eval_id
-                         LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
                          WHERE survey_id=? AND teammate_email=?');
   foreach (array_keys($teammates) as $email) {
+    if (!isset($ret_val[$email])) {
+      $ret_val[$email] = array("total" => 0);
+    }
     $stmt->bind_param('is',$survey_id, $email);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
-      if (!isset($ret_val[$email])) {
-        $ret_val[$email] = array();
+      $reviewer = $row[0];
+      $weight = $row[1];
+      if (!isset($ret_val[$reviewer])) {
+        $ret_val[$reviewer] = array("total" => 0);
       }
-      if (isset($row[2])) {
-        if (!isset($ret_val[$email][$row[0]])) {
-          $ret_val[$email][$row[0]] = array();
-        }
-        $ret_val[$email][$row[0]][$row[2]] = $row[3];
+      // Record how much this review was weighted
+      $ret_val[$email][$reviewer] = $weight;
+      $ret_val[$reviewer]["total"] = $ret_val[$reviewer]["total"] + $weight;
+    }
+  }
+  $stmt->close();
+  return $ret_val;
+}
+
+function getSurveyScores($con, $survey_id, $teammates) {
+  $ret_val = array();
+  $stmt = $con->prepare('SELECT reviewer_email, topic_id, score 
+                         FROM reviewers
+                         LEFT JOIN evals on evals.reviewers_id=reviewers.id 
+                         LEFT JOIN scores2 ON evals.id=scores2.eval_id
+                         LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
+                         WHERE survey_id=? AND teammate_email=? AND topic_id IS NOT NULL');
+  foreach (array_keys($teammates) as $email) {
+    // Create the space for this teammate -- ASSUMES TEAMMATES ARE UNIQUE
+    $ret_val[$email] = array();
+    $stmt->bind_param('is',$survey_id, $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      // Create space the first time we see the teammate reviewed by the reviewer
+      if (!isset($ret_val[$email][$row[0]])) {
+        $ret_val[$email][$row[0]] = array();
       }
+      $ret_val[$email][$row[0]][$row[1]] = $row[2];
     }
   }
   $stmt->close();

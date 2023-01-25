@@ -1,62 +1,71 @@
 <?php
 function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores) {
     echo '<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:#f8f8f8">';
-    foreach ($mc_topics as $topic_id => $topic) {
-        echo '<div class="col-2 ms-auto"><b>'.$topic.'</b></div>';
-    }
-    foreach ($ff_topics as $topic_id => $topic) {
-        echo '<div class="col-2 ms-auto"><b>'.$topic.'</b></div>';
-    }
+    echo '  <div class="col-2"><b>Criterion</b></div>';
+    echo '  <div class="col-2 ms-auto"><b>Average Score</b></div>';
+    echo '  <div class="col-2 ms-auto"><b>Median</b></div>';
     echo '</div>';
-    // echo '<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:#e1e1e1">';
-    // foreach ($mc_topics as $topic_id => $topic) {
-    //     echo '<div class="col-2 ms-auto"><b>'.end($mc_answers[$topic_id])[0].'</b></div>';
-    // }
-    // foreach ($ff_topics as $topic_id => $topic) {
-    //     echo '<div class="col-2 ms-auto"></div>';
-    // }
-    // echo '</div>';
-    echo '<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:#f8f8f8"">';
+    $color = '#e1e1e1';
     foreach ($mc_topics as $topic_id => $topic) {
+        echo '<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:'.$color.'">';
+        echo '  <div class="col-2"><b>'.$topic.'</b></div>';
         $sum = 0;
         $count = 0;
+        $med_score = array();
         foreach ($scores as $submit) {
             if (isset($submit[$topic_id])) {
-              $sum += $submit[$topic_id];
-              $count++;
+                $sum += $submit[$topic_id];
+                $count++;
+                $med_score[] = $submit[$topic_id];
             }
         }
         if ($count > 0) {
             $average = $sum / $count;
-            sort($scores);
-            if (count($scores) % 2 == 0) {
-                $median = ($scores[count($scores) / 2] + $scores[count($scores) / 2 - 1]) / 2;
-            } else {
-                $median = $scores[count($scores) / 2];
-            }
             echo '<div class="col-2 ms-auto text-center"><b>'.$average.'</b> (out of '.end($mc_answers[$topic_id])[1].')</div>';
-            echo '<!-- Median: <b>'.$median.'</b></div> -->';
+            sort($med_score);
+            $mid_point = intdiv(count($med_score), 2);
+            if (count($scores) % 2 == 0) {
+                $low_med = $med_score[$mid_point];
+                $hi_med = $med_score[$mid_point + 1];
+                foreach ($mc_answers[$topic_id] as $response) {
+                    if ($response[1] == $low_med) {
+                        $low_text = $response[0];
+                    } else if ($response[1] == $hi_med) {
+                        $hi_text = $response[1];
+                    }
+                }
+                echo '<div class="col-2 ms-auto text-center">Between <b>'.$low_text.'</b><br>and<br>'.$hi_text.'</div>';
+            } else {
+                $median = $med_score[$mid_point];
+                foreach ($mc_answers[$topic_id] as $response) {
+                    if ($response[1] == $median) {
+                        $med_text = $response[0];
+                    }
+                }
+                echo '<div class="col-2 ms-auto text-center"><b>'.$med_text.'</b></div>';
+            }
         } else {
             echo '<div class="col-2 ms-auto text-center">'.NO_SCORE_MARKER.'</div>';
+            echo '<div class="col-2 ms-auto text-center">'.NO_SCORE_MARKER.'</div>';
         }
+        echo '</div>';
     }
     foreach ($ff_topics as $topic_id => $topic) {
-        $count = 0;
-        $text = '';
+        echo '<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:'.$color.'">';
+        echo '  <div class="col-2"><b>'.$topic.'</b></div>';
+        $empty = true;
+        $text = NO_SCORE_MARKER;
         foreach ($texts as $submit) {
             if (isset($submit[$topic_id])) {
-              if ($count != 0) {
-                $text .= "<br>";
+              if (!$empty) {
+                $text .= "<br>".htmlspecialchars($submit[$topic_id]);
+              } else {
+                $text = htmlspecialchars($submit[$topic_id]);
+                $empty = false;
               }
-              $text .= htmlspecialchars($submit[$topic_id]);
-              $count++;
             }
         }
-        if ($count > 0) {
-            echo '<div class="col-2 ms-auto text-center"><b>'.$text.'</b></div>';
-        } else {
-            echo '<div class="col-2 ms-auto text-center">'.NO_SCORE_MARKER.'</div>';
-        }
+        echo '<div class="col-4 ms-auto text-center"><b>'.$text.'</b></div>';
     }
     echo '</div>';
   }

@@ -82,6 +82,7 @@ $start_time = NULL;
 $end_time = NULL;
 $pairing_mode = NULL;
 $survey_name = NULL;
+$pm_mult = 1;
 
 // check for the query string or post parameter
 if($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -212,6 +213,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 
+  // Get the multiplier used for pm evaluations
+  $pm_mult = intval($_POST['pm-mult']);
+
   // check the pairing mode
   $pairing_mode = trim($_POST['pairing-mode']);
   if (empty($pairing_mode)) {
@@ -235,7 +239,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!$file_handle) {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
-      $pairings = getPairingResults($con, $pairing_mode, $file_handle);
+      $pairings = getPairingResults($con, $pairing_mode, $pm_mult, $file_handle);
       if (empty($pairings)) {
         $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
       }
@@ -340,8 +344,8 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
           </select>
           <label for="rubric-id"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"]; } else { echo "Rubric:";} ?></label>
       </div>
-      <div class="form-floating mb-3">
-        <?php emitSurveyTypeSelect($errorMsg, $pairing_mode); ?>
+      <div class="row mb-3">
+        <?php emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult); ?>
       </div>
       <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
       <div class="form-floating mt-0 mb-3">

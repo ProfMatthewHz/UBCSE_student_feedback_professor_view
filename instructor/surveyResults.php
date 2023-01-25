@@ -65,18 +65,11 @@ $course_term = SEMESTER_MAP_REVERSE[$course_info[0]['semester']];
 $course_year = $course_info[0]['year'];
 
 // TODO: Refactor this code so I do not need to duplicate it on download
-
-// This wil be an array of arrays organized by the person BEING REVIEWED.
-$scores = array();
-// Array mapping email to total number of points
-$totals = array();
 // Array mapping email address to normalized results
 $averages = array();
-// Array mapping email address to names of reviewers
-$reviewers = array();
 
 // Get the per-reviewer data
-getReviewerData($con, $sid, $reviewers, $totals);
+$survey_complete = getCompletionData($con, $sid);
 
 // Get the info for everyone who will be evaluated
 $teammates = getRevieweeData($con, $sid);
@@ -84,46 +77,57 @@ $teammates = getRevieweeData($con, $sid);
 // Get information completed by the reviewer -- how many were reviewed and the total points
 $scores = getSurveyScores($con, $sid, $teammates);
 
+// Get how much we should be weighting each of the reviews
+$weights = getSurveyWeights($con, $sid, $teammates);
+
+// Get the total number of points this reviewer provided on the surveys
+$totals = getSurveyTotals($con, $sid, $teammates);
+
 $topics = getSurveyMultipleChoiceTopics($con, $sid);
 
 foreach ($teammates as $email => $name) {
   $sum_normalized = 0;
-  $reviews = 0;
-  $norm_reviews = 0;
+  $review_weights = 0;
+  $norm_review_weights = 0;
   $personal_average = array();
   foreach (array_keys($topics) as $topic_id) {
     $personal_average[$topic_id] = 0;
   }
   foreach ($scores[$email] as $reviewer => $scored) {
+    $weight = $weights[$email][$reviewer];
     $sum = 0;
     foreach ($scored as $id => $score) {
-      $sum = $sum + $score;
-      $personal_average[$id] =  $personal_average[$id] + $score;
+      $weighted_score = $score * $weight;
+      $sum = $sum + $weighted_score;
+      $personal_average[$id] =  $personal_average[$id] + $weighted_score;
     }
-    $reviews = $reviews + 1;
+    $review_weights = $review_weights + $weight;
     // Verify that this reviewer completed all of their 
-    if (isset($totals[$reviewer]) && ($totals[$reviewer] != NO_SCORE_MARKER)) {
-      $scores[$email][$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
-      $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
-      $norm_reviews = $norm_reviews + 1;
+    if ($survey_complete[$reviewer]) {
+      // Normalize the sum by calculating the percentage of points this student received and then adjust for the weight of the evaluation
+      $normalized_sum = ($sum / $totals[$reviewer]) * ($weights[$reviewer]["total"]/$weight);
+      $scores[$email][$reviewer]['normalized'] = $normalized_sum;
+      $sum_normalized = $sum_normalized + ($normalized_sum * $weight);
+      $norm_review_weights = $norm_review_weights + $weight;
     } else {
       $scores[$email][$reviewer]['normalized'] = NO_SCORE_MARKER;
     }
   }
   foreach (array_keys($topics) as $topic_id) {
-    if ($reviews == 0) {
+    if ($review_weights == 0) {
       $averages[$email][$topic_id] = NO_SCORE_MARKER;
     } else {
-      $averages[$email][$topic_id] = $personal_average[$topic_id] / $reviews;
+      $averages[$email][$topic_id] = $personal_average[$topic_id] / $review_weights;
     }
   }
-  if ($norm_reviews == 0) {
+  if ($norm_review_weights == 0) {
     $averages[$email]["overall"] = NO_SCORE_MARKER;
   } else {
-    $averages[$email]["overall"] = $sum_normalized / $norm_reviews;
+    $averages[$email]["overall"] = $sum_normalized / $norm_review_weights;
   }
 }
 $topics['normalized'] = 'Normalized Score';
+$reviewers = getReviewerData($con, $sid);
 ?>
 <!doctype html>
 <html lang="en">

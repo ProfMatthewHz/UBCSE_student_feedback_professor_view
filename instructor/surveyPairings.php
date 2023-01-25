@@ -90,6 +90,7 @@ $course_year = $course_info[0]['year'];
 // first set some flags
 $errorMsg = array();
 $pairing_mode = NULL;
+$pm_mult = 1;
 
 // check if the survey's pairings can be modified
 $stored_start_date = new DateTime($survey_info['start_date']);
@@ -102,7 +103,7 @@ if ($current_date > $stored_start_date) {
 // now perform the validation and parsing
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // make sure values exist
-  if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || !isset($_POST['csrf-token'])) {
+  if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || !isset($_POST['csrf-token']) || !isset($_POST['pm-mult'])) {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
     exit();
@@ -142,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!$file_handle) {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
-      $pairings = getPairingResults($con, $pairing_mode, $file_handle);
+      $pairings = getPairingResults($con, $pairing_mode, $pm_mult, $file_handle);
       if (empty($pairings)) {
         $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
       }
@@ -269,8 +270,8 @@ for ($i = 0; $i < $size; $i++) {
     <form action="surveyPairings.php?survey=<?php echo $sid; ?>" method ="post" enctype="multipart/form-data">
       <div class="cointainer-sm">
       <div class="row justify-content-md-center mt-5 mx-4">
-        <div class="form-floating mb-3">
-          <?php emitSurveyTypeSelect($errorMsg, $pairing_mode); ?>
+        <div class="row mb-3">
+          <?php emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult); ?>
         </div>
         <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
         <div class="form-floating mt-0 mb-3">

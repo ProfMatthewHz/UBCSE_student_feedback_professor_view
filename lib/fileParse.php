@@ -47,6 +47,8 @@ function parse_review_pairs($file_handle, $db_connection) {
         $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[1];
         return $ret_val;
       } else {
+        // Default to a weighting of 1
+        $line_text[] = 1;
         // Fast than array_push when appending large numbers of data
         $ret_val[] = $line_text;
       }
@@ -87,6 +89,7 @@ function parse_review_teams($file_handle, $db_connection) {
           $pairing = array();
           $pairing[0] = $line_text[$j];
           $pairing[1] = $line_text[$k];
+          $pairing[2] = 1;
           $ret_val[] = $pairing;
         }
       }
@@ -96,7 +99,7 @@ function parse_review_teams($file_handle, $db_connection) {
   return $ret_val;
 }
 
-function parse_review_managed_teams($file_handle, $db_connection) {
+function parse_review_managed_teams($file_handle, $pm_mult, $db_connection) {
   // return array
   $ret_val = array();
 
@@ -142,12 +145,14 @@ function parse_review_managed_teams($file_handle, $db_connection) {
         $managed = array();
         $managed[0] = $manager;
         $managed[1] = $team_members[$j];
+        $managed[2] = $pm_mult;
         $ret_val[] = $managed;
 
         for ($k = 0; $k < $team_size; $k++) {
           $pairing = array();
           $pairing[0] = $team_members[$j];
           $pairing[1] = $team_members[$k];
+          $pairing[2] = 1;
           $ret_val[] = $pairing;
         }
       }
@@ -204,6 +209,7 @@ function parse_review_many_to_one($file_handle, $db_connection) {
         $managed = array();
         $managed[0] = $team_members[$j];
         $managed[1] = $reviewee;
+        $managed[2] = 1;
         $ret_val[] = $managed;
       }
     }
@@ -264,7 +270,7 @@ function email_already_exists($email_addr, $db_connection) {
 function add_pairings($emails, $survey_id, $db_connection) {
   // prepare SQL statements
   $stmt_check = $db_connection->prepare('SELECT id FROM reviewers WHERE survey_id=? AND reviewer_email=? AND teammate_email=?');
-  $stmt_add = $db_connection->prepare('INSERT INTO reviewers (survey_id, reviewer_email, teammate_email) VALUES (?, ?, ?)');
+  $stmt_add = $db_connection->prepare('INSERT INTO reviewers (survey_id, reviewer_email, teammate_email, eval_weight) VALUES (?, ?, ?, ?)');
 
   // loop over each pairing
   foreach ($emails as $pairing) {
@@ -276,7 +282,7 @@ function add_pairings($emails, $survey_id, $db_connection) {
 
     // add the pairing if it does not exist
     if ($result->num_rows == 0) {
-      $stmt_add->bind_param('iss', $survey_id, $pairing[0], $pairing[1]);
+      $stmt_add->bind_param('issi', $survey_id, $pairing[0], $pairing[1], $pairing[2]);
       $stmt_add->execute();
     }
   }
