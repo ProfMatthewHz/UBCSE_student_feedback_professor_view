@@ -34,7 +34,7 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
                         $hi_text = $response[0];
                     }
                 }
-                echo '<div class="col-2 ms-auto text-center">Between <b>'.$low_text.'</b><br>and<br>'.$hi_text.'</div>';
+                echo '<div class="col-2 ms-auto text-center">Between<br><b>'.$low_text.'</b><br>and<br><b>'.$hi_text.'</b></div>';
             } else {
                 $median = $med_score[$mid_point];
                 foreach ($mc_answers[$topic_id] as $response) {
