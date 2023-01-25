@@ -157,13 +157,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param('i', $sid);
         $stmt->execute();
         add_pairings($pairings, $sid, $con);
+        unset($pairings);
       }
     }
   }
 }
-
-// finally, store information about survey pairings as array of array
-
 // get information about the pairings
 $stmt = $con->prepare('SELECT reviewer_email, teammate_email FROM reviewers WHERE survey_id=? ORDER BY id');
 $stmt->bind_param('i', $sid);
@@ -270,13 +268,13 @@ for ($i = 0; $i < $size; $i++) {
       <div class="row justify-content-md-center mt-5 mx-4">
           <?php emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult); ?>
       </div>
-      <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
       <div class="row justify-content-md-center mt-5 mx-4"><div class="col-auto">
+      <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
       <div class="form-floating mt-0 mb-3">
         <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
         <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>
       </div></div></div>
-        <div class="row justify-content-md-center mt-5 mx-4"><div class="col-auto">
+        <div class="row justify-content-md-center mt-5 mx-4"><div class="col-ms-auto">
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="agreement" name="agreement" value="1">
           <label class="form-check-label" for="agreement">
