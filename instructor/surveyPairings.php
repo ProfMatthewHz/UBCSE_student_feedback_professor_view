@@ -277,7 +277,7 @@ for ($i = 0; $i < $size; $i++) {
           <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
           <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>
         </div>
-        <div class="row"><div class="col-sm-auto">
+        <div class="row"><div class="col-auto">
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="agreement" name="agreement" value="1">
           <label class="form-check-label" for="agreement">
@@ -285,7 +285,8 @@ for ($i = 0; $i < $size; $i++) {
         </div></div></div>
         <input type="hidden" name="survey" value="<?php echo $sid; ?>" />
         <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
-        <input type="submit" class="btn btn-danger" value="Modify Survey Pairings"></input>
+        <div class="row"><div class="col-auto">
+        <input type="submit" class="btn btn-danger" value="Modify Survey Pairings"></input></div></div>
     </div>
       </form>
     <?php endif; ?>
