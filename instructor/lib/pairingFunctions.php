@@ -44,7 +44,7 @@ function emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult) {
     $style = ' style="display:none"';
   }
   echo '<div class="form-floating col-2"'.$style.' id="mult_div">';
-  echo '<input type="number" class="form-control-sm" min="1" step="1" id="pm-mult" name="pm-mult" value="'.$pm_mult.'">';
+  echo '<input type="number" class="form-control" min="1" step="1" id="pm-mult" name="pm-mult" value="'.$pm_mult.'">';
   echo '<label for="pm-mult">PM Eval. Multiplier:</label>';
   echo '</div>';
 }

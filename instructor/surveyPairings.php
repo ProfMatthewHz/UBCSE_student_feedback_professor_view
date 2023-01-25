@@ -179,7 +179,6 @@ while ($row = $result->fetch_assoc()) {
 
 // now get the names for each pairing
 $stmt = $con->prepare('SELECT name FROM students WHERE email=?');
-
 $size = count($pairings);
 for ($i = 0; $i < $size; $i++) {
   $stmt->bind_param('s', $pairings[$i]['reviewer_email']);
