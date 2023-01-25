@@ -21,7 +21,7 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
         }
         if ($count > 0) {
             $average = $sum / $count;
-            echo '<div class="col-2 ms-auto text-center"><b>'.$average.'</b> (out of '.end($mc_answers[$topic_id])[1].')</div>';
+            echo '<div class="col-2 ms-auto align-self-center text-center"><b>'.$average.'</b> (out of '.end($mc_answers[$topic_id])[1].')</div>';
             sort($med_score);
             $mid_point = intdiv(count($med_score), 2);
             if ((count($med_score) % 2 == 0) && ($med_score[$mid_point - 1] !=  $med_score[$mid_point])){
