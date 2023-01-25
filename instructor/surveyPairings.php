@@ -270,7 +270,7 @@ for ($i = 0; $i < $size; $i++) {
     <form action="surveyPairings.php?survey=<?php echo $sid; ?>" method ="post" enctype="multipart/form-data">
       <div class="cointainer-sm">
       <div class="row justify-content-md-center mt-5 mx-4">
-        <div class="row mb-3">
+        <div class="row">
           <?php emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult); ?>
         </div>
         <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>

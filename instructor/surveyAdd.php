@@ -344,7 +344,7 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
           </select>
           <label for="rubric-id"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"]; } else { echo "Rubric:";} ?></label>
       </div>
-      <div class="row mb-3">
+      <div class="row">
         <?php emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult); ?>
       </div>
       <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>

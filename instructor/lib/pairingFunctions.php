@@ -16,7 +16,7 @@ function emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult) {
   if (isset($errorMsg["pairing-mode"])) {
     $class = $class." is-invalid";
   }
-  echo '<div class="form-floating col-ms-auto">';
+  echo '<div class="form-floating mb-3 col-ms-auto">';
   echo '<select class="'.$class.'" id="pairing-mode" name="pairing-mode" onload="handlePairingChange();" onchange="handlePairingChange();">';
   $survey_modes = array(1 => "Individual Review",
                         2 => "Team",
@@ -43,7 +43,7 @@ function emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult) {
   if ($pairing_mode != 3) {
     $style = ' style="display:none"';
   }
-  echo '<div class="form-floating col-2"'.$style.' name="mult_div">';
+  echo '<div class="form-floating col-2"'.$style.' id="mult_div">';
   echo '<input type="number" class="form-control" min="1" step="1" id="pm-mult" name="pm-mult" value="'.$pm_mult.'">';
   echo '<label for="pm-mult">PM Eval. Multiplier:</label>';
   echo '</div>';
