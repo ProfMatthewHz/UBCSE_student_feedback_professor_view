@@ -23,7 +23,7 @@ function getCompletionData($con, $survey_id) {
                          FROM reviewers
                          LEFT JOIN evals ON evals.reviewers_id=reviewers.id
                          WHERE survey_id=?
-                         GROUP BY reviewer_email, students.name');
+                         GROUP BY reviewer_email');
   $stmt->bind_param('i', $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();
