@@ -55,6 +55,8 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
         echo '  <div class="col-2"><b>'.$topic.'</b></div>';
         $empty = true;
         $text = NO_SCORE_MARKER;
+        // Randomly order the freeform answers so that whomever entered each one cannot be guesses (and the order changes each time)
+        shuffle($texts);
         foreach ($texts as $submit) {
             if (isset($submit[$topic_id])) {
               if (!$empty) {
