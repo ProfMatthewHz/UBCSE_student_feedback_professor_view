@@ -40,6 +40,26 @@
     $past_surveys[$survey_id] = $value;
   }
   $stmt_past->close();
+  $stmt_past = $con->prepare('SELECT DISTINCT course.name, surveys.name, surveys.id, surveys.expiration_date
+                              FROM surveys
+                              INNER JOIN course on course.id = surveys.course_id 
+                              INNER JOIN reviewers on reviewers.survey_id=surveys.id
+                              WHERE reviewers.teammate_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.expiration_date < NOW()
+                              ORDER BY surveys.expiration_date');
+  $stmt_past->bind_param('s', $email);
+  $stmt_past->execute();
+  $stmt_past->bind_result($class_name,$survey_name, $survey_id, $expire);
+  $stmt_past->store_result();
+  while ($stmt_past->fetch()){
+    // If this is a survey that the student was reviewing, but not a reviewer, we also need to add it.
+    if (!array_key_exists($survey_id, $past_surveys)) {
+      $e = new DateTime($expire);
+      $display_name = '('.$class_name.') '.$survey_name.' closed on '.$e->format('M d').' at '.$e->format('g:i a');
+      $value = array($display_name, false, false);
+      $past_surveys[$survey_id] = $value;
+    }
+  }
+  $stmt_past->close();
 
   // TECHNICAL DEBT TODO: Make this into a separate function
   $current_surveys = array();
