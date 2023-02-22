@@ -35,9 +35,25 @@ if(!empty($_SERVER['uid'])) {
     echo "Bad Request: Missing parameters.";
     exit();
   } else {
-    $_SERVER['uid'] = trim($_POST["UBIT"]);
+    $email = $_POST['UBIT']."@buffalo.edu";
+
+    $stmt = $con->prepare('SELECT student_id FROM students WHERE email=?');
+    $stmt->bind_param('s', $email);
+    $stmt->execute();
+    $stmt->bind_result($student_ID);
+    $stmt->store_result();
+    if ($stmt->num_rows == 0) {
+      http_response_code(400);
+      echo "Unknown email address entered. Talk to your professor to get you added as a site user.";
+      exit();
+    }
+    $stmt->fetch();
+    session_regenerate_id();
+    $_SESSION['loggedin'] = TRUE;
+    $_SESSION['email'] = $email;
+    $_SESSION['student_ID'] = $student_ID;
+    $stmt->close();
     header("Location: ".SITE_HOME."/courseSelect.php");
-    exit();
   }
 }
 ?>
