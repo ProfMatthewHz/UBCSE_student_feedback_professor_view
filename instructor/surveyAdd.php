@@ -326,7 +326,7 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
           <label for="end-date"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"]; } else { echo "End Date:";} ?></label>
       </div>
       <div class="form-floating mb-3">
-          <input type="time" id="end-time" name="end-time" class="form-control <?php if(isset($errorMsg["end-time"])) {echo "is-invalid ";} ?>" required value="<?php if ($end_time) {echo htmlspecialchars($end_time);} else {echo "00:00";} ?>"></input>
+          <input type="time" id="end-time" name="end-time" class="form-control <?php if(isset($errorMsg["end-time"])) {echo "is-invalid ";} ?>" required value="<?php if ($end_time) {echo htmlspecialchars($end_time);} else {echo "23:59";} ?>"></input>
           <label for="end-time"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"]; } else { echo "End Time:";} ?></label>
       </div>
       <div class="form-floating mb-3">
