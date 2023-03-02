@@ -59,6 +59,19 @@ CREATE TABLE `students` (
 ) ENGINE=InnoDB;
 
 
+-- enrollments TABLE
+-- each row is a distinct enrollment of a student in a course within this system. Each student may appear in a course at most once.
+CREATE TABLE `enrollments` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `student_id` int(11) NOT NULL,
+ `course_id` int(11) NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `enrollments_student_id` (`student_id`),
+ KEY `enrollments_course_id` (`course_id`),
+ CONSTRAINT `enrollments_student_constraint` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+ CONSTRAINT `enrollments_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB;
+
 
 
 -- reviewers TABLE
