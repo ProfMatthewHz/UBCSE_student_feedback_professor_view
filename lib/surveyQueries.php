@@ -1,9 +1,9 @@
 <?php
-  function handleSurveyQuery($db_connection, $survey_id, $email, $addl_query) {
+  function handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $addl_query) {
     $base_query = 'SELECT DISTINCT course.name course_name, surveys.name survey_name FROM reviewers
                    INNER JOIN surveys ON reviewers.survey_id = surveys.id 
                    INNER JOIN course on course.id = surveys.course_id 
-                   WHERE surveys.id=? AND reviewers.reviewer_email=? AND '.$addl_query;
+                   WHERE surveys.id=? AND reviewers.'.$email_field.'=? AND '.$addl_query;
     $stmt_request = $db_connection->prepare($base_query);
     $stmt_request->bind_param('is', $survey_id, $email);
     $stmt_request->execute();
@@ -20,12 +20,14 @@
 
   function validCompletedSurvey($db_connection, $survey_id, $email) {
     $query_str = 'surveys.expiration_date < NOW()';
-    return handleSurveyQuery($db_connection, $survey_id, $email, $query_str);
+    $email_field = 'teammate_email';
+    return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
   }
 
   function validActiveSurvey($db_connection, $survey_id, $email) {
     $query_str = 'surveys.start_date <= NOW() AND surveys.expiration_date > NOW()';
-    return handleSurveyQuery($db_connection, $survey_id, $email, $query_str);
+    $email_field = 'reviewer_email';
+    return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
   }
 
   function initializeReviewerData($db_connection, $survey_id, $email) {
