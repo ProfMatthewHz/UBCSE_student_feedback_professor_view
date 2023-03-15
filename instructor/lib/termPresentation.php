@@ -10,7 +10,7 @@ function emit_course($widgetId, $course_id, $course_info) {
       <div id="collapse'.$widgetId.'" class="accordion-collapse collapse" aria-labelledby="header'.$widgetId.'">
         <div class="accordion-body"><div class="container">';
          if ($course_info['mutable']) {
-          echo '<div class="row justify-content-end pb-3"><div class="col-auto"><button type="button" class="btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#rosterUpdateModal" data-bs-coursename="'.$course_info["name"].'">Update Roster</button></div></div>';
+          echo '<div class="row justify-content-end pb-3"><div class="col-auto"><button type="button" class="btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#rosterUpdateModal" data-bs-courseid="'.$course_id.'" data-bs-coursename="'.$course_info["name"].'">Update Roster</button></div></div>';
          } 
          if (count($course_info['upcoming']) + count($course_info['active']) + count($course_info['expired']) != 0) {
             echo

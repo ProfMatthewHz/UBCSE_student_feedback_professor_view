@@ -137,6 +137,7 @@ foreach ($terms as $name => &$term_courses) {
       // Create the fake form we are uploading
       let formData = new FormData();
       formData.append("roster-file", document.getElementById("roster-file").files[0]);
+      formData.append("course-id", document.getElementById("roster-course-id").value);
       fetch('rosterUpdate.php', {method: "POST", body: formData})
         .then(res => res.json())
         .then(data => {
@@ -164,6 +165,7 @@ foreach ($terms as $name => &$term_courses) {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+          <input type="hidden" id="roster-course-id" value=""></input>
           <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
           <div class="input-group input-group-sm">
           <input type="file" id="roster-file" class="form-control" name="roster-file"></input>
@@ -209,9 +211,14 @@ foreach ($terms as $name => &$term_courses) {
   let rosterModal = document.getElementById("rosterUpdateModal");
   rosterModal.addEventListener('show.bs.modal', function (event) {
       // Get the course name from the button that was clicked
-      let course_name = event.relatedTarget.getAttribute('data-bs-coursename')
+      let course_name = event.relatedTarget.getAttribute('data-bs-coursename')      
       let modTitle = document.getElementById("rosterUpdateModalLabel");
       modTitle.innerHTML = "Update " + course_name + " Roster";
+      // Also get the course id from the button that was clicked
+      let course_id = event.relatedTarget.getAttribute('data-bs-courseid')
+      let courseIdInput = document.getElementById("roster-course-id");
+      courseIdInput.value = course_id;
+      // Clear the file input in case it had been used before
       let modFile = document.getElementById("roster-file");
       modFile.value ='';
       modFile.value = null;

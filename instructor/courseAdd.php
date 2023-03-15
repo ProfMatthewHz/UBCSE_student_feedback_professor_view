@@ -127,7 +127,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // get the inserted course id
             $course_id = $con->insert_id;
 
-            uploadRoster($con, $names_emails);
+            uploadRoster($con, $course_id, $names_emails);
 
             // redirect to course page with message
             $_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);

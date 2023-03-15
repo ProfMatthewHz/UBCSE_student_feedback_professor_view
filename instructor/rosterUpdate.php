@@ -23,7 +23,7 @@ $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-  if (!isset($_FILES['roster-file'])) {
+  if (!isset($_FILES['roster-file']) || !isset($_POST['course_id'])) {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
     exit();
@@ -32,6 +32,20 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
+    exit();
+  }
+
+  // Get the course id of the course whose roster is being updated
+  $course_id = intval($_POST['course_id']);
+  $stmt = $con->prepare('SELECT id FROM course WHERE id=? AND instructor_id=?');
+  $stmt->bind_param('ii', $course_id, $instructor->id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $result->fetch_all(MYSQLI_ASSOC);
+  // reply forbidden if this is trying to update a course that the instructor does NOT teach
+  if ($result->num_rows != 1) {
+    http_response_code(403);
+    echo "403: Forbidden.";
     exit();
   }
 
@@ -65,7 +79,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $results['success'] = false;
         $results['error'] = $names_emails['error'];
       } else {
-        uploadRoster($con, $names_emails);
+        clearRoster($con, $course_id);
+        uploadRoster($con, $course_id, $names_emails);
       }
     }
   }
