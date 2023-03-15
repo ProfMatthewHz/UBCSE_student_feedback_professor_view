@@ -6,7 +6,7 @@ function emitUpdateFileDescriptionFn() {
   echo '  case "1": formatObject.innerHTML = "One row per review. Each row has 2 column: reviewer email address, reviewee email address";multDiv.style.display="none";break;';
   echo '  case "2": formatObject.innerHTML = "One row per team. Each row contains the email addresses for all team members. Blank columns are ignored";multDiv.style.display="none";break;';
   echo '  case "3": formatObject.innerHTML = "One row per team. Each row contains the email addresses for all team members with the manager email address listed last. Blank columns are ignored";multDiv.style.display=null;break;';
-  echo '  case "4": formatObject.innerHTML = "One row per individual being reviewed. Each row contains the email addresses for all of the reviewers. The person being reviewed should be the final email address on the row";multDiv.style.display="none";break;';
+  echo '  case "4": formatObject.innerHTML = "One row per individual being reviewed. Each row contains the email addresses for all of the reviewers AND must contain the person being reviewed as the final email address on the row";multDiv.style.display="none";break;';
   echo '  default: formatObject.innerHTML = "CSV file format needed for the pairing mode shown here";multDiv.style.display="none";break;';
   echo '}}</script>';
 }
