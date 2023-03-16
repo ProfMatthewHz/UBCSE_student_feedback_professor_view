@@ -1,6 +1,7 @@
 <?php
   function handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $addl_query) {
-    $base_query = 'SELECT DISTINCT course.name course_name, surveys.name survey_name FROM reviewers
+    $base_query = 'SELECT DISTINCT course.name course_name, surveys.name survey_name 
+                   FROM reviewers
                    INNER JOIN surveys ON reviewers.survey_id = surveys.id 
                    INNER JOIN course on course.id = surveys.course_id 
                    WHERE surveys.id=? AND reviewers.'.$email_field.'=? AND '.$addl_query;
@@ -19,7 +20,7 @@
   }
 
   function validCompletedSurvey($db_connection, $survey_id, $email) {
-    $query_str = 'surveys.expiration_date < NOW()';
+    $query_str = 'surveys.expiration_date <= NOW()';
     $email_field = 'teammate_email';
     return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
   }

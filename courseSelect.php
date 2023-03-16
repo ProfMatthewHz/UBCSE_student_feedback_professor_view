@@ -48,7 +48,7 @@
     $display_name = '('.$class_name.') '.$survey_name.' closed on '.$e->format('M d').' at '.$e->format('g:i a');
     $started = ($submitted > 0);
     $fully_submitted = ($submitted == $assigned);
-    $value = array($display_name, $fully_submitted, $started, $e);
+    $value = array($display_name, $fully_submitted, $started, $e, false);
     $past_surveys[$survey_id] = $value;
   }
   $stmt_past->close();
@@ -66,7 +66,11 @@
     if (!array_key_exists($survey_id, $past_surveys)) {
       $e = new DateTime($expire);
       $display_name = '('.$class_name.') '.$survey_name.' closed on '.$e->format('M d').' at '.$e->format('g:i a');
-      $value = array($display_name, false, false, $e);
+      $value = array($display_name, false, false, $e, true);
+      $past_surveys[$survey_id] = $value;
+    } else {
+      $value = $past_surveys[$survey_id];
+      $value[4] = true;
       $past_surveys[$survey_id] = $value;
     }
   }
@@ -153,13 +157,15 @@
               if(count($past_surveys) > 0) {
                 foreach ($past_surveys as $key => $value) {
                   echo('<p><i>'.$value[0].'</i> ');
-                  echo ('<a href="'.SITE_HOME.'startResults.php?survey='.$key.'">My Averages</a>');
+                  if ($value[4]) {
+                    echo ('<a href="'.SITE_HOME.'startResults.php?survey='.$key.'">My Averages</a> | ');
+                  }
                   if ($value[1]) {
-                    echo (' | <a href="'.SITE_HOME.'startReview.php?survey='.$key.'">My Submissions</a>');
+                    echo (' <a href="'.SITE_HOME.'startReview.php?survey='.$key.'">My Submissions</a>');
                   } else if ($value[2]) {
-                    echo (' | Evaluation Not Completed');
+                    echo (' Evaluation Not Completed');
                   } else {
-                    echo (' | Nothing submitted');
+                    echo (' Nothing submitted');
                   }
                   echo('</p>');
                 }
