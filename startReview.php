@@ -24,7 +24,7 @@
   }
 
   // Verify that the survey is a valid one for this student.
-  if (validCompletedSurvey($con, $survey, $email)) {
+  if (validCompletedSource($con, $survey, $email)) {
     $_SESSION['survey_id'] = $survey;
   } else {
     // This is not a valid survey for this student

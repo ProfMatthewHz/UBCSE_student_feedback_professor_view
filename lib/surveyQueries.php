@@ -19,9 +19,15 @@
     return false;
   }
 
-  function validCompletedSurvey($db_connection, $survey_id, $email) {
+  function validCompletedTarget($db_connection, $survey_id, $email) {
     $query_str = 'surveys.expiration_date <= NOW()';
     $email_field = 'teammate_email';
+    return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
+  }
+
+  function validCompletedSource($db_connection, $survey_id, $email) {
+    $query_str = 'surveys.expiration_date <= NOW()';
+    $email_field = 'reviewer_email';
     return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
   }
 
