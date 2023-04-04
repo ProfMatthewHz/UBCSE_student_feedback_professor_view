@@ -20,7 +20,7 @@ function emitAveragesTable($mc_topics, $mc_answers, $ff_topics, $texts, $scores)
             }
         }
         if ($count > 0) {
-            $average = $sum / $count;
+            $average = round($sum / $count, 2);
             $max = end($mc_answers[$topic_id])[1];
             foreach ($mc_answers[$topic_id] as $response) {
                 if ($response[1] > $max) {
