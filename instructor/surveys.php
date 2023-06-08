@@ -60,64 +60,12 @@ foreach ($courses as $course_info) {
   } else {
     $term_courses = array();
   }
-  
+
   $term_courses[$tempSurvey['id']] = $tempSurvey;
   $terms[$term_name] = $term_courses;
 }
 
-// get today's date
-$today = new DateTime();
-
-// Now get data on all of the surveys in each of those courses
-$course_stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
-                              FROM surveys
-                              LEFT JOIN reviews ON reviews.survey_id=surveys.id
-                              LEFT JOIN evals ON evals.reviews_id=reviews.id
-                              WHERE course_id=?
-                              GROUP BY name, start_date, end_date, rubric_id
-                              ORDER BY start_date DESC, end_date DESC');
-foreach ($terms as $name => &$term_courses) {
-  foreach($term_courses as $id => &$course) {
-    // Get the course's surveys in reverse chronological order
-    $course_stmt->bind_param('i', $id);
-    $course_stmt->execute(); 
-    $course_result = $course_stmt->get_result();
-    while ($row = $course_result->fetch_assoc()) {
-        $survey_info = array();
-        $survey_info['course_id'] = $id;
-        $survey_info['name'] = $row['name'];
-        $survey_info['start_date'] = $row['start_date'];
-        $survey_info['end_date'] = $row['end_date'];
-        $survey_info['rubric_id'] = $row['rubric_id'];
-        $survey_info['id'] = $row['id'];
-        // Generate and store that progress as text
-        $percentage = 0;
-        if ($row['total'] != 0) {
-          $percentage = floor(($row['completed'] / $row['total']) * 100);
-        }
-        $survey_info['completion'] = $percentage . '% completed';
-
-        // determine status of survey. then adjust dates to more friendly format
-        $s = new DateTime($survey_info['start_date']);
-        $e = new DateTime($survey_info['end_date']);
-        $survey_info['sort_start_date'] = $survey_info['start_date'];
-        $survey_info['sort_expiration_date'] = $survey_info['end_date'];
-        $survey_info['start_date'] = $s->format('M j').' at '. $s->format('g:i A');
-        $survey_info['end_date'] = $e->format('M j').' at '. $e->format('g:i A');
-
-        if ($today < $s) {
-          $course['upcoming'][] = $survey_info;
-        } else if ($today < $e) {
-          $course['active'][] = $survey_info;
-        } else {
-          $course['expired'][] = $survey_info;
-        }
-      }
-    }
-    unset($course);
-  }
-  $course_stmt->close();
-  $total_stmt->close();
+$terms = addSurveysToCourses($con, $terms, $today);
 ?>
 <!doctype html>
 <html lang="en">
