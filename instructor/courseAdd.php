@@ -14,7 +14,8 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
-require_once "lib/rosterFunctions.php";
+require_once "lib/enrollmentFunctions.php";
+require_once "lib/courseQueries.php";
 
 //query information about the requester
 $con = connectToDatabase();
@@ -111,23 +112,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       } else {
         // now add the roster to the database if no other errors were set after adding the course to the database
         if (empty($errorMsg)) {
-          // check for duplicate courses
-          $stmt = $con->prepare('SELECT id FROM course WHERE code=? AND name=? AND semester=? AND year=? AND instructor_id=?');
-          $stmt->bind_param('ssiii', $course_code, $course_name, $semester, $course_year, $instructor->id);
-          $stmt->execute();
-          $result = $stmt->get_result();
-          $data = $result->fetch_all(MYSQLI_ASSOC);
+          // Verify this course does not already exist
+          if (!courseExists($con, $course_code, $course_name, $semester, $course_year, $instructor->id)) {
+            // Create the course in the database
+            $course_id = addCourse($con, $course_code, $course_name, $semester, $course_year);
 
-          // only add if not a duplicate
-          if ($result->num_rows == 0) {
-            $stmt = $con->prepare('INSERT INTO course (code, name, semester, year, instructor_id) VALUES (?, ?, ?, ?, ?)');
-            $stmt->bind_param('ssiii', $course_code, $course_name, $semester, $course_year, $instructor->id);
-            $stmt->execute();
+            // Add the instructor to the course
+            addInstructor($con, $course_id, $instructor->id);
 
-            // get the inserted course id
-            $course_id = $con->insert_id;
-
-            uploadRoster($con, $course_id, $names_emails);
+            // Upload the course roster for later use
+            addToCourse($con, $course_id, $names_emails);
 
             // redirect to course page with message
             $_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);
@@ -136,9 +130,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: ".INSTRUCTOR_HOME."surveys.php");
             exit();
 
-          }
-          else
-          {
+          } else {
             $errorMsg['duplicate'] = 'Error: The entered course already exists.';
           }
         }

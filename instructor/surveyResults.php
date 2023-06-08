@@ -15,7 +15,7 @@ require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/surveyQueries.php";
 require_once "lib/surveyQueries.php";
-
+require_once "lib/courseQueries.php";
 
 // query information about the requester
 $con = connectToDatabase();
@@ -43,26 +43,26 @@ if ($sid === 0) {
 }
 
 // Look up info about the requested survey
-$survey_info = getSurveyRubric($con, $sid);
+$survey_info = getSurveyData($con, $sid);
+if (empty($survey_info)) {
+  http_response_code(404);
+  echo "404: Not found.";
+  exit();
+}
 $survey_name = $survey_info['name'];
 
-// make sure the survey is for a course the current instructor actually teaches
-$stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $survey_info['course_id'], $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
-$course_info = $result->fetch_all(MYSQLI_ASSOC);
-
+// Get data for this single course
+$course_info = getSingleCourseInfo($con, $survey_info['course_id'], $instructor->id);
 // reply forbidden if instructor did not create survey or the course is ambiguous
-if ($result->num_rows != 1) {
+if (empty($course_info)) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();
 }
-$course_name = $course_info[0]['name'];
-$course_code = $course_info[0]['code'];
-$course_term = SEMESTER_MAP_REVERSE[$course_info[0]['semester']];
-$course_year = $course_info[0]['year'];
+$course_name = $course_info['name'];
+$course_code = $course_info['code'];
+$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+$course_year = $course_info['year'];
 
 // TODO: Refactor this code so I do not need to duplicate it on download
 // Array mapping email address to normalized results
@@ -72,7 +72,7 @@ $averages = array();
 $survey_complete = getCompletionData($con, $sid);
 
 // Get the info for everyone who will be evaluated
-$teammates = getRevieweeData($con, $sid);
+$teammates = getReviewedData($con, $sid);
 
 // Get information completed by the reviewer -- how many were reviewed and the total points
 $scores = getSurveyScores($con, $sid, $teammates);

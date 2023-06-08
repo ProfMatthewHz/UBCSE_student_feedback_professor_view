@@ -13,6 +13,8 @@ session_start();
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
+require_once "lib/courseQueries.php";
+require_once "lib/reviewQueries.php";
 
 
 // query information about the requester
@@ -25,8 +27,7 @@ $instructor->check_session($con, 0);
 
 // check for the query string parameter
 // respond not found on no query string parameter
-if (!isset($_GET['survey']))
-{
+if (!isset($_GET['survey'])) {
   http_response_code(404);   
   echo "404: Not found.";
   exit();
@@ -35,39 +36,14 @@ if (!isset($_GET['survey']))
 // make sure the query string is an integer, reply 404 otherwise
 $sid = intval($_GET['survey']);
 
-if ($sid === 0)
-{
+if ($sid === 0) {
   http_response_code(404);   
   echo "404: Not found.";
   exit();
 }
 
-// try to look up info about the requested survey
-$survey_info = array();
-
-$stmt = $con->prepare('SELECT course_id, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$survey_info = $result->fetch_all(MYSQLI_ASSOC);
-
-// reply not found on no match
-if ($result->num_rows == 0) {
-  http_response_code(404);   
-  echo "404: Not found.";
-  exit();
-}
-
-// make sure the survey is for a course the current instructor actually teaches
-$stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $survey_info[0]['course_id'], $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
-$data = $result->fetch_all(MYSQLI_ASSOC);
-
-// reply forbidden if instructor did not create survey
-if ($result->num_rows == 0) {
+// Look up info about the requested survey
+if (!isCourseInstructor($con, $course_id, $instructor->id)) {
   http_response_code(403);   
   echo "403: Forbidden.";
   exit();
@@ -77,13 +53,10 @@ if ($result->num_rows == 0) {
 $pairings = "reviewer_email,reviewee_email\n";
 
 // get information about the pairings
-$stmt = $con->prepare('SELECT reviewer_email, teammate_email FROM reviewers WHERE survey_id=? ORDER BY id');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
+$reviews = getReviewPairingsData($con, $sid);
 
-while ($row = $result->fetch_assoc()) {
-  $pairings .= $row['reviewer_email'] . "," . $row['teammate_email'] . "\n";
+foreach ($reviews as $pair) {
+  $pairings .= $pair['reviewer_email'] . "," . $pair['reviewed_email'] . "\n";
 }
 
 // generate the correct headers for the file download

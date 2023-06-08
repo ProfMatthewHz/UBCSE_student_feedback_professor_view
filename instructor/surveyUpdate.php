@@ -15,6 +15,7 @@ require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
 require_once 'lib/rubricQueries.php';
+require_once 'lib/surveyQueries.php';
 
 // set timezone
 date_default_timezone_set('America/New_York');
@@ -55,27 +56,31 @@ if (($_SERVER['REQUEST_METHOD'] == 'GET') && isset($_GET['survey'])) {
 // Get rubric info
 $rubrics = selectRubrics($con);
 
-// Get the survey's current data 
-$stmt = $con->prepare('SELECT surveys.*, course.code, course.name, course.semester, course.year FROM surveys INNER JOIN course on surveys.course_id=course.id WHERE surveys.id=? AND course.instructor_id=?');
-$stmt->bind_param('ii', $survey_id, $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
-while ($row = $result->fetch_array(MYSQLI_NUM)) {
-  $course_id = $row[1];
-  $start_data = $row[2];
-  $survey_name = $row[3];
-  $end_data = $row[4];
-  $rubric_id = $row[5];
-  $course_code = $row[6];
-  $course_name = $row[7];
-  $course_term = SEMESTER_MAP_REVERSE[$row[8]];
-  $course_year = $row[9];
-}
-if (!isset($course_id)) {
-  http_response_code(400);
-  echo "Bad Request: Invalid survey id.";
+// try to look up info about the requested survey
+$survey_info = getSurveyData($con, $survey_id);
+if ($empty($survey_info)) {
+  http_response_code(403);
+  echo "403: Forbidden.";
   exit();
 }
+$course_id = $survey_info['course_id'];
+
+// Get the info for the course that this instructor teaches 
+$course_info = getSingleCourseInfo($con, $course_id, $instructor->id);
+if (empty($course_info)) {
+  http_response_code(403);
+  echo "403: Forbidden.";
+  exit();
+}
+$survey_name = $survey_info['name'];
+$start_data = $survey_info['start_date'];
+$end_data = $survey_info['end_date'];
+$rubric_id = $survey_info['rubric_id'];
+$course_name = $course_info['name'];
+$course_code = $course_info['code'];
+$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+$course_year = $course_info['year'];
+
 $s = new DateTime($start_data);
 $e = new DateTime($end_data);
 $now = new DateTime();
@@ -184,13 +189,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errorMsg)) {
       $sdate = $start_date . ' ' . $start_time;
       $edate = $end_date . ' ' . $end_time;
-      $stmt = $con->prepare('UPDATE surveys SET name = ?, start_date = ?, expiration_date = ?, rubric_id = ? WHERE id = ?');
-      $stmt->bind_param('sssii', $survey_name, $sdate, $edate, $rubric_id, $survey_id);
-      $stmt->execute();
-
+      if (updateSurvey($con, $survey_id, $survey_name, $sdate, $edate, $rubric_id)) {
+        $_SESSION['survey-update'] = "Successfully added updated";
+      } else {
+        $_SESSION['survey-update'] = "Database error. Could not update survey.";
+      }
       // redirect to survey page with sucess message
-      $_SESSION['survey-update'] = "Successfully added updated";
-      $stmt->close();
       http_response_code(302);
       header("Location: surveys.php");
       exit();
@@ -213,7 +217,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Update the survey details in the database
     if (empty($errorMsg)) {
       $edate = $end_date . ' ' . $end_time;
-      $stmt = $con->prepare('UPDATE surveys SET name = ?, expiration_date = ? WHERE id = ?');
+      $stmt = $con->prepare('UPDATE surveys SET name = ?, end_date = ? WHERE id = ?');
       $stmt->bind_param('ssi', $survey_name, $edate, $survey_id);
       $stmt->execute();
       $stmt->close();

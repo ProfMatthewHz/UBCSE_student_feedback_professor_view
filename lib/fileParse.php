@@ -19,7 +19,7 @@ function force_ascii($str) {
     return $str;
 }
 
-function parse_review_pairs($file_handle, $db_connection) {
+function parse_review_pairs($file_handle, $con) {
   // return array
   $ret_val = array();
 
@@ -40,10 +40,10 @@ function parse_review_pairs($file_handle, $db_connection) {
       $ret_val['error'] = 'CSV file does not have a review pair on line ' . $line_num;
       return $ret_val;
     } else {
-      if (!email_already_exists($line_text[0], $db_connection)) {
+      if (!email_already_exists($con, $line_text[0])) {
         $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[0];
         return $ret_val;
-      } else if (!email_already_exists($line_text[1], $db_connection)) {
+      } else if (!email_already_exists($con, $line_text[1])) {
         $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[1];
         return $ret_val;
       } else {
@@ -58,7 +58,7 @@ function parse_review_pairs($file_handle, $db_connection) {
   return $ret_val;
 }
 
-function parse_review_teams($file_handle, $db_connection) {
+function parse_review_teams($file_handle, $con) {
   // return array
   $ret_val = array();
 
@@ -76,7 +76,7 @@ function parse_review_teams($file_handle, $db_connection) {
 
     // Make sure the current line's data are valid
     for ($j = 0; $j < $line_fields; $j++) {
-      if ( (!empty($line_text[$j])) && !email_already_exists($line_text[$j], $db_connection)) {
+      if ( (!empty($line_text[$j])) && !email_already_exists($con, $line_text[$j])) {
         $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
         return $ret_val;
       }
@@ -99,7 +99,7 @@ function parse_review_teams($file_handle, $db_connection) {
   return $ret_val;
 }
 
-function parse_review_managed_teams($file_handle, $pm_mult, $db_connection) {
+function parse_review_managed_teams($file_handle, $pm_mult, $con) {
   // return array
   $ret_val = array();
 
@@ -122,7 +122,7 @@ function parse_review_managed_teams($file_handle, $pm_mult, $db_connection) {
     // Make sure the current line's data are valid
     for ($j = $line_fields; $j >= 0; $j--) {
       if (!empty($line_text[$j])) {
-        if (!email_already_exists($line_text[$j], $db_connection)) {
+        if (!email_already_exists($con, $line_text[$j])) {
           $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
           return $ret_val;
         } else if (!isset($manager)) {
@@ -163,7 +163,7 @@ function parse_review_managed_teams($file_handle, $pm_mult, $db_connection) {
 }
 
 
-function parse_review_many_to_one($file_handle, $db_connection) {
+function parse_review_many_to_one($file_handle, $con) {
   // return array
   $ret_val = array();
 
@@ -186,7 +186,7 @@ function parse_review_many_to_one($file_handle, $db_connection) {
     // Make sure the current line's data are valid
     for ($j = $line_fields; $j >= 0; $j--) {
       if (!empty($line_text[$j])) {
-        if (!email_already_exists($line_text[$j], $db_connection)) {
+        if (!email_already_exists($con, $line_text[$j])) {
           $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
           return $ret_val;
         } else if (!isset($reviewee)) {
@@ -253,38 +253,5 @@ function parse_roster_file($file_handle) {
     $ret_val[] = $line_text;
   }
   return $ret_val;
-}
-
-function email_already_exists($email_addr, $db_connection) {
-  // Create the SQL statement which we can use to verify the email address exists
-  $stmt = $db_connection->prepare('SELECT students.student_id FROM students WHERE students.email=?');
-  $stmt->bind_param('s', $email_addr);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $count = mysqli_num_rows($result);
-
-  // Return if that email address already exists
-  return $count != 0;
-}
-
-function add_pairings($emails, $survey_id, $db_connection) {
-  // prepare SQL statements
-  $stmt_check = $db_connection->prepare('SELECT id FROM reviewers WHERE survey_id=? AND reviewer_email=? AND teammate_email=?');
-  $stmt_add = $db_connection->prepare('INSERT INTO reviewers (survey_id, reviewer_email, teammate_email, eval_weight) VALUES (?, ?, ?, ?)');
-
-  // loop over each pairing
-  foreach ($emails as $pairing) {
-    // check if the pairing already exists
-    $stmt_check->bind_param('iss', $survey_id, $pairing[0], $pairing[1]);
-    $stmt_check->execute();
-    $result = $stmt_check->get_result();
-    $data = $result->fetch_all(MYSQLI_ASSOC);
-
-    // add the pairing if it does not exist
-    if ($result->num_rows == 0) {
-      $stmt_add->bind_param('issi', $survey_id, $pairing[0], $pairing[1], $pairing[2]);
-      $stmt_add->execute();
-    }
-  }
 }
 ?>

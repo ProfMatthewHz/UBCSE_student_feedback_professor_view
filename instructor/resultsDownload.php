@@ -15,6 +15,7 @@ require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/surveyQueries.php";
 require_once "lib/surveyQueries.php";
+require_once "lib/instructorQueries.php";
 
 // query information about the requester
 $con = connectToDatabase();
@@ -26,14 +27,12 @@ $instructor->check_session($con, 0);
 
 // respond not found on no query string parameters
 $sid = NULL;
-if (!isset($_GET['survey']))
-{
+if (!isset($_GET['survey'])) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
 }
-if (!isset($_GET['type']))
-{
+if (!isset($_GET['type'])) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
@@ -56,17 +55,15 @@ if ($sid === 0) {
 }
 
 // Look up info about the requested survey
-$survey_info = getSurveyRubric($con, $sid);
+$survey_info = getSurveyData($con, $sid);
+if (empty($survey_info)) {
+  http_response_code(404);
+  echo "404: Not found.";
+  exit();
+}
 
 // make sure the survey is for a course the current instructor actually teaches
-$stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $survey_info['course_id'], $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
-$data = $result->fetch_all(MYSQLI_ASSOC);
-
-// reply forbidden if instructor did not create survey
-if ($result->num_rows == 0) {
+if (!isCourseInstructor($con, $survey_info['course_id'], $instructor->id)) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();
@@ -79,7 +76,7 @@ $averages = array();
 $survey_complete = getCompletionData($con, $sid);
 
 // Get the info for everyone who will be evaluated
-$teammates = getRevieweeData($con, $sid);
+$teammates = getReviewedData($con, $sid);
 
 // Get information completed by the reviewer -- how many were reviewed and the total points
 $scores = getSurveyScores($con, $sid, $teammates);

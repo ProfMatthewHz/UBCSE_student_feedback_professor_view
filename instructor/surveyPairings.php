@@ -13,9 +13,11 @@ session_start();
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
+require_once "../lib/fileParse.php";
 require_once "lib/pairingFunctions.php";
 require_once "lib/surveyQueries.php";
-require_once "../lib/fileParse.php";
+require_once "lib/courseQueries.php";
+require_once "lib/reviewQueries.php";
 
 // set timezone
 date_default_timezone_set('America/New_York');
@@ -26,7 +28,6 @@ $con = connectToDatabase();
 // try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
-
 
 // check for the query string or post parameter
 $sid = NULL;
@@ -65,26 +66,26 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 }
 
 // Look up info about the requested survey
-$survey_info = getSurveyRubric($con, $sid);
+$survey_info = getSurveyData($con, $sid);
+if (empty($survey_info)) {
+  http_response_code(404);
+  echo "404: Not found.";
+  exit();
+}
 $survey_name = $survey_info['name'];
 
-// make sure the survey is for a course the current instructor actually teaches
-$stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $survey_info['course_id'], $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
-$course_info = $result->fetch_all(MYSQLI_ASSOC);
-
+// Get data on this course for this instrutor
+$course_info = getSingleCourseInfo($con, $survey_info['course_id'], $instructor->id);
 // reply forbidden if instructor did not create survey or if survey was ambiguous
-if ($result->num_rows != 1) {
+if (empty($course_info)) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();
 }
-$course_name = $course_info[0]['name'];
-$course_code = $course_info[0]['code'];
-$course_term = SEMESTER_MAP_REVERSE[$course_info[0]['semester']];
-$course_year = $course_info[0]['year'];
+$course_name = $course_info['name'];
+$course_code = $course_info['code'];
+$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+$course_year = $course_info['year'];
 
 // now perform the possible pairing modification functions
 // first set some flags
@@ -153,44 +154,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
       // Delete the old pairings from the database and then add the new pairings to the database if no other error message were set so far
       if (empty($errorMsg)) {
-        $stmt = $con->prepare('DELETE FROM reviewers WHERE survey_id=?');
-        $stmt->bind_param('i', $sid);
-        $stmt->execute();
-        add_pairings($pairings, $sid, $con);
+        removeExistingPairings($con, $survey_id);
+        addPairings($con, $sid, $pairings);
         unset($pairings);
       }
     }
   }
 }
 // get information about the pairings
-$stmt = $con->prepare('SELECT reviewer_email, teammate_email FROM reviewers WHERE survey_id=? ORDER BY id');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
-
-while ($row = $result->fetch_assoc()) {
-  $pair_info = array();
-  $pair_info['reviewer_email'] = $row['reviewer_email'];
-  $pair_info['teammate_email'] = $row['teammate_email'];
-  $pairings[] = $pair_info;
-}
-
-// now get the names for each pairing
-$stmt = $con->prepare('SELECT name FROM students WHERE email=?');
-$size = count($pairings);
-for ($i = 0; $i < $size; $i++) {
-  $stmt->bind_param('s', $pairings[$i]['reviewer_email']);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = $result->fetch_all(MYSQLI_ASSOC);
-  $pairings[$i]['reviewer_name'] = $data[0]['name'];
-
-  $stmt->bind_param('s', $pairings[$i]['teammate_email']);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = $result->fetch_all(MYSQLI_ASSOC);
-  $pairings[$i]['teammate_name'] = $data[0]['name'];
-}
+$pairings = getReviewPairingsData($con, $sid);
 ?>
 <!doctype html>
 <html lang="en">
@@ -248,7 +220,7 @@ for ($i = 0; $i < $size; $i++) {
           <tbody>
         <?php
           foreach ($pairings as $pair) {
-            echo '<tr><td>' . htmlspecialchars($pair['reviewer_name']) . ' (' . htmlspecialchars($pair['reviewer_email']) . ')</td><td>' . htmlspecialchars($pair['teammate_name']) . ' (' . htmlspecialchars($pair['teammate_email']) . ')</td></tr>';
+            echo '<tr><td>' . htmlspecialchars($pair['reviewer_name']) . ' (' . htmlspecialchars($pair['reviewer_email']) . ')</td><td>' . htmlspecialchars($pair['reviewed_name']) . ' (' . htmlspecialchars($pair['reviewed_email']) . ')</td></tr>';
           }
         ?>
         </tbody>

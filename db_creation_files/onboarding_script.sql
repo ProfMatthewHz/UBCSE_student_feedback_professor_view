@@ -18,25 +18,25 @@ CREATE TABLE `instructors` (
 
 -- courses table
 -- each row defines a specific course that uses this system
-CREATE TABLE `courses` ( -- was `course`
+CREATE TABLE `courses` ( -- was course
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `code` text NOT NULL,
  `name` text NOT NULL,
  `semester` tinyint NOT NULL,
  `year` tinyint NOT NULL,
+ -- removed instructor_id column
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
 
--- courses table
+-- course_instructors table
 -- each row defines an instructor of a course; this normalization allows a course to include multiple instructors 
 CREATE TABLE `course_instructors` (
- `id` int(11) NOT NULL AUTO_INCREMENT,
  `course_id` int(11) NOT NULL,
  `instructor_id` int(11) NOT NULL,
- PRIMARY KEY (`id`),
- KEY `course_instructors_instructors_idx` (`instructor_id`),
- CONSTRAINT `course_instructor_instructors_constraint` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+ PRIMARY KEY (`course_id`,`instructor_id`),
+ KEY `course_instructors_instructor_idx` (`instructor_id`),
+ CONSTRAINT `course_instructor_instructor_constraint` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
  KEY `course_instructors_course_idx` (`course_id`),
  CONSTRAINT `course_instructor_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
@@ -74,8 +74,8 @@ CREATE TABLE `enrollments` (
  `student_id` int(11) NOT NULL,
  `course_id` int(11) NOT NULL,
   PRIMARY KEY (`student_id`,`course_id`),
-  KEY `enrollments_student_id` (`student_id`),
-  KEY `enrollments_course_id` (`course_id`),
+  KEY `enrollments_student_idx` (`student_id`),
+  KEY `enrollments_course_idx` (`course_id`),
   CONSTRAINT `enrollments_student_constraint` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `enrollments_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
@@ -91,9 +91,9 @@ CREATE TABLE `reviews` ( -- was reviewers
  `reviewed_id` int(11) NOT NULL,
  `eval_weight` int(11) NOT NULL DEFAULT 1,
  PRIMARY KEY (`id`),
- KEY `reviews_survey_id` (`survey_id`),
- KEY `reviews_reviewer_id` (`reviewer_id`),
- KEY `reviews_reviewed_id` (`reviewed_id`),
+ KEY `reviews_survey_idx` (`survey_id`),
+ KEY `reviews_reviewer_idx` (`reviewer_id`),
+ KEY `reviews_reviewed_idx` (`reviewed_id`),
  CONSTRAINT `reviews_survey_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
  CONSTRAINT `reviews_reviewer_constraint` FOREIGN KEY (`reviewer_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
  CONSTRAINT `reviews_reviewed_constraint` FOREIGN KEY (`reviewed_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -106,7 +106,7 @@ CREATE TABLE `evals` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `review_id` int(11) NOT NULL, -- was reviewers_id
  PRIMARY KEY (`id`),
- KEY `evals_review_id` (`review_id`),
+ KEY `evals_review_idx` (`review_id`),
  CONSTRAINT `evals_review_constraint` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
@@ -128,7 +128,7 @@ CREATE TABLE `rubric_scores` (
   `name` text NOT NULL,
   `score` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `rubric_scores_rubric_id` (`rubric_id`),
+  KEY `rubric_scores_rubric_idx` (`rubric_id`),
   CONSTRAINT `rubric_scorse_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
@@ -141,7 +141,7 @@ CREATE TABLE `rubric_topics` (
  `question` text NOT NULL, 
  `question_response` enum('multiple_choice','text') NOT NULL DEFAULT 'multiple_choice',
  PRIMARY KEY (`id`),
- KEY `rubric_topics_rubric_id` (`rubric_id`),
+ KEY `rubric_topics_rubric_idx` (`rubric_id`),
  CONSTRAINT `rubric_topics_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
@@ -152,8 +152,8 @@ CREATE TABLE `rubric_responses` (
   `score_id` int(11) NOT NULL,
   `response` text NOT NULL,
   PRIMARY KEY (`topic_id`,`score_id`),
-  KEY `rubric_responses_topic_id` (`topic_id`),
-  KEY `rubric_responses_score_id` (`score_id`),
+  KEY `rubric_responses_topic_idx` (`topic_id`),
+  KEY `rubric_responses_score_idx` (`score_id`),
   CONSTRAINT `rubric_responses_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `rubric_responses_score_constraint` FOREIGN KEY (`score_id`) REFERENCES `rubric_scores` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
@@ -165,9 +165,9 @@ CREATE TABLE `scores` (
  `topic_id` int(11) NOT NULL,
  `score_id` int(11) NOT NULL,
  PRIMARY KEY (`eval_id`,`topic_id`),
- KEY `scores_eval_id` (`eval_id`),
- KEY `scores_topic_id` (`topic_id`),
- KEY `scores_score_id` (`score_id`),
+ KEY `scores_eval_idx` (`eval_id`),
+ KEY `scores_topic_idx` (`topic_id`),
+ KEY `scores_score_idx` (`score_id`),
  CONSTRAINT `scores_eval_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
  CONSTRAINT `scores_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
  CONSTRAINT `scores_score_constraint` FOREIGN KEY (`score_id`) REFERENCES `rubric_scores` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -180,8 +180,8 @@ CREATE TABLE `freeforms` (  -- was freeform
  `topic_id` int(11) NOT NULL,
  `response` TEXT DEFAULT NULL,
  PRIMARY KEY (`eval_id`,`topic_id`),
- KEY `freeform_eval_id` (`eval_id`),
- KEY `freeform_topic_id` (`topic_id`),
+ KEY `freeform_eval_idx` (`eval_id`),
+ KEY `freeform_topic_idx` (`topic_id`),
  CONSTRAINT `freeform_eval_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
  CONSTRAINT `freeform_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;

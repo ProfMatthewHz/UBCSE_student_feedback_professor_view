@@ -25,14 +25,14 @@ $group_ids = array_keys($_SESSION['group_members']);
 $num_of_group_members = count($_SESSION['group_members']);
 $progress_pct = round((($_SESSION['group_member_number']+1) * 100) / $num_of_group_members);
 $progress_text = ($_SESSION['group_member_number']+1).' of '.$num_of_group_members;
-$reviewers_id = $group_ids[$_SESSION['group_member_number']];
-$name =  htmlspecialchars($_SESSION['group_members'][$reviewers_id]);
+$reviews_id = $group_ids[$_SESSION['group_member_number']];
+$name =  htmlspecialchars($_SESSION['group_members'][$reviews_id]);
 $mc_topic_ids = array_keys($_SESSION['mc_topics']);
 $ff_topic_ids = array_keys($_SESSION['ff_topics']);
 
 //fetch eval id, if it exists
-$stmt = $con->prepare('SELECT id FROM evals WHERE reviewers_id=?');
-$stmt->bind_param('i', $reviewers_id);
+$stmt = $con->prepare('SELECT id FROM evals WHERE reviews_id=?');
+$stmt->bind_param('i', $reviews_id);
 $stmt->execute();
 $stmt->bind_result($eval_id);
 $stmt->store_result();
@@ -74,8 +74,8 @@ if ( !empty($_POST) && isset($_POST)) {
 	}
 	// Only create the eval id when we have an evaluation for this review pairing.
 	if (!isset($eval_id)) {
-		$stmt = $con->prepare('INSERT INTO evals (reviewers_id) VALUES(?)');
-		$stmt->bind_param('i', $reviewers_id);
+		$stmt = $con->prepare('INSERT INTO evals (reviews_id) VALUES(?)');
+		$stmt->bind_param('i', $reviews_id);
 		$stmt->execute();
 		$eval_id = $stmt->insert_id;
 		$stmt->close();

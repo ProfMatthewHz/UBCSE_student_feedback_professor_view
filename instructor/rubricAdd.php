@@ -128,14 +128,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (empty($rubric_name)) {
     $errorMsg['rubric-name'] = "Rubric MUST have a name";
   } else {
-    $stmt = $con->prepare('SELECT id FROM rubrics WHERE description=?');
-    $stmt->bind_param('s', $rubric_name);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $data = $result->fetch_all(MYSQLI_ASSOC);
-
-    // only add if not a duplicate
-    if ($result->num_rows != 0) {
+    $rubric_id = getIdFromDescription($con, $rubric_name);
+    if (empty($rubric_id)) {
       $errorMsg['rubric-name'] = "Rubric with that name already exists";
     }
   }

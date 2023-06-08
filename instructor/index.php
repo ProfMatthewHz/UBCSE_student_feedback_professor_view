@@ -14,6 +14,7 @@ require_once "../lib/random.php";
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
+require_once "lib/instructorQueries.php";
 
 
 // query information about the requester
@@ -32,21 +33,14 @@ if (!empty($_SERVER['uid'])) {
   // make sure the email is not just whitespace
   $email = $_SERVER['uid']."@buffalo.edu";
 
-  // now, lookup the email in the database
-  $stmt = $con->prepare('SELECT id FROM instructors WHERE email=?');
-  $stmt->bind_param('s', $email);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = $result->fetch_all(MYSQLI_ASSOC);
-
-  // check if the email matches and store error messages or get the instructor id
-  if ($result->num_rows == 0) {
+  // Now check if this is a recognized instructor
+  $id = getInstructorId($con, $email);
+  if (empty($id)) {
     // This user is not an instructor -- optimistically redirect them to the student-side of the system
     $loc_string = "Location: ".SITE_HOME."/index.php";
     header($loc_string);
     exit();
   }
-  $id = $data[0]['id'];
 
   // first, generate the session cookie
   $session_cookie = random_bytes(TOKEN_SIZE);
@@ -63,10 +57,8 @@ if (!empty($_SERVER['uid'])) {
   // now, generate the CSRF token
   $csrf_token = bin2hex(random_bytes(TOKEN_SIZE));
 
-  // store the new tokens and expiration dates in the database, NULL out the initial authorization id
-  $stmt = $con->prepare('UPDATE instructors SET session_token=?, session_expiration=?, csrf_token=? WHERE id=?');
-  $stmt->bind_param('sisi', $hashed_cookie, $session_expiration, $csrf_token, $id);
-  $stmt->execute();
+  // Update the information for this instructor
+  updateInstructorInfo($con, $hashed_cookie, $session_expiration, $csrf_token, $id);
 
   // redirect the instructor to the next page
   http_response_code(302);

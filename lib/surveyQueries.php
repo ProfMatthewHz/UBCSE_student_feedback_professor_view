@@ -1,10 +1,10 @@
 <?php
   function handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $addl_query) {
-    $base_query = 'SELECT DISTINCT course.name course_name, surveys.name survey_name 
-                   FROM reviewers
-                   INNER JOIN surveys ON reviewers.survey_id = surveys.id 
-                   INNER JOIN course on course.id = surveys.course_id 
-                   WHERE surveys.id=? AND reviewers.'.$email_field.'=? AND '.$addl_query;
+    $base_query = 'SELECT DISTINCT coursesname course_name, surveys.name survey_name 
+                   FROM reviews
+                   INNER JOIN surveys ON reviews.survey_id = surveys.id 
+                   INNER JOIN courses on coursesid = surveys.course_id 
+                   WHERE surveys.id=? AND reviews.'.$email_field.'=? AND '.$addl_query;
     $stmt_request = $db_connection->prepare($base_query);
     $stmt_request->bind_param('is', $survey_id, $email);
     $stmt_request->execute();
@@ -20,29 +20,29 @@
   }
 
   function validCompletedTarget($db_connection, $survey_id, $email) {
-    $query_str = 'surveys.expiration_date <= NOW()';
+    $query_str = 'surveys.end_date <= NOW()';
     $email_field = 'teammate_email';
     return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
   }
 
   function validCompletedSource($db_connection, $survey_id, $email) {
-    $query_str = 'surveys.expiration_date <= NOW()';
+    $query_str = 'surveys.end_date <= NOW()';
     $email_field = 'reviewer_email';
     return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
   }
 
   function validActiveSurvey($db_connection, $survey_id, $email) {
-    $query_str = 'surveys.start_date <= NOW() AND surveys.expiration_date > NOW()';
+    $query_str = 'surveys.start_date <= NOW() AND surveys.end_date > NOW()';
     $email_field = 'reviewer_email';
     return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
   }
 
   function initializeReviewerData($db_connection, $survey_id, $email) {
     $ret_val = array();
-    $query_str = 'SELECT reviewers_id
-                  FROM reviewers
-                  INNER JOIN evals ON evals.reviewers_id = reviewers.id
-                  WHERE reviewers.survey_id =? AND reviewers.teammate_email=? AND reviewers.reviewer_email<>?';
+    $query_str = 'SELECT reviews_id
+                  FROM reviews
+                  INNER JOIN evals ON evals.reviews_id = reviews.id
+                  WHERE reviews.survey_id =? AND reviews.teammate_email=? AND reviews.reviewer_email<>?';
     $stmt_group = $db_connection->prepare($query_str);
     $stmt_group->bind_param('iss',$survey_id,$email, $email);
     $stmt_group->execute();
@@ -56,10 +56,10 @@
 
   function initializeRevieweeData($db_connection, $survey_id, $email) {
     $ret_val = array();
-    $query_str = 'SELECT reviewers.id, students.name 
-                  FROM reviewers
-                  INNER JOIN students ON reviewers.teammate_email = students.email 
-                  WHERE reviewers.survey_id =? AND reviewers.reviewer_email=?';
+    $query_str = 'SELECT reviews.id, students.name 
+                  FROM reviews
+                  INNER JOIN students ON reviews.teammate_email = students.email 
+                  WHERE reviews.survey_id =? AND reviews.reviewer_email=?';
     $stmt_group = $db_connection->prepare($query_str);
     $stmt_group->bind_param('is',$survey_id,$email);
     $stmt_group->execute();

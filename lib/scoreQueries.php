@@ -34,7 +34,7 @@
                   FROM scores2 
                   INNER JOIN rubric_scores ON scores2.score_id=rubric_scores.id 
                   INNER JOIN evals ON scores2.eval_id=evals.id 
-                  WHERE evals.reviewers_id=?';
+                  WHERE evals.reviews_id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
@@ -60,7 +60,7 @@
     $query_str = 'SELECT topic_id, score_id 
                   FROM scores2 
                   INNER JOIN evals ON scores2.eval_id=evals.id 
-                  WHERE evals.reviewers_id=?';
+                  WHERE evals.reviews_id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
@@ -84,9 +84,9 @@
 
   function getReviewText($db_connection, $review_id, $topics) {
     $query_str = 'SELECT topic_id, response 
-                  FROM freeform
+                  FROM freeforms
                   INNER JOIN evals ON freeform.eval_id=evals.id 
-                  WHERE evals.reviewers_id=?';
+                  WHERE evals.review_id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
@@ -109,7 +109,7 @@
   }
 
   function insertNewScore($db_connection, $eval_id, $topic_id, $score_id) {
-    $query_str = 'INSERT INTO scores2 (eval_id, topic_id, score_id) VALUES (?,?,?)';
+    $query_str = 'INSERT INTO scores (eval_id, topic_id, score_id) VALUES (?,?,?)';
     $stmt = $db_connection->prepare($query_str);
     $stmt->bind_param('iii',$eval_id, $topic_id, $score_id);
     $stmt->execute();
@@ -117,7 +117,7 @@
   }
 
   function updateExistingScore($db_connection, $eval_id, $topic_id, $score_id) {
-    $query_str = 'UPDATE scores2 SET score_id=? WHERE eval_id=? AND topic_id=?';
+    $query_str = 'UPDATE scores SET score_id=? WHERE eval_id=? AND topic_id=?';
     $stmt = $db_connection->prepare($query_str);
     $stmt->bind_param('iii',$score_id, $eval_id, $topic_id);
     $stmt->execute();
@@ -125,7 +125,7 @@
   }
 
   function insertNewText($db_connection, $eval_id, $topic_id, $text) {
-    $query_str = 'INSERT INTO freeform (eval_id, topic_id, response) VALUES (?,?,?)';
+    $query_str = 'INSERT INTO freeforms (eval_id, topic_id, response) VALUES (?,?,?)';
     $stmt = $db_connection->prepare($query_str);
     $stmt->bind_param('iis',$eval_id, $topic_id, $text);
     $stmt->execute();
@@ -133,7 +133,7 @@
   }
 
   function updateExistingText($db_connection, $eval_id, $topic_id, $text) {
-    $query_str = 'UPDATE freeform SET response=? WHERE eval_id=? AND topic_id=?';
+    $query_str = 'UPDATE freeforms SET response=? WHERE eval_id=? AND topic_id=?';
     $stmt = $db_connection->prepare($query_str);
     $stmt->bind_param('sii',$text, $eval_id, $topic_id);
     $stmt->execute();

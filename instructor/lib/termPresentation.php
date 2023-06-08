@@ -24,7 +24,7 @@ function emit_course($widgetId, $course_id, $course_info) {
           foreach ($course_info['upcoming'] as $survey) {
             echo '<div class="row justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
-                    <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                    <div class="col-6">'.$survey['start_date'].' to '.$survey['end_date'].'</div>
                     <div class="col">Not yet active</div><div class="col">';
             echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Update</a> | ';
             echo '<a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
@@ -33,7 +33,7 @@ function emit_course($widgetId, $course_id, $course_info) {
           foreach ($course_info['active'] as $survey) {
             echo '<div class="row justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
-                    <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                    <div class="col-6">'.$survey['start_date'].' to '.$survey['end_date'].'</div>
                     <div class="col">'.$survey['completion'].'</div><div class="col">';
             if ($course_info['mutable']) {
               echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Extend Deadline</a> | ';
@@ -44,7 +44,7 @@ function emit_course($widgetId, $course_id, $course_info) {
           foreach ($course_info['expired'] as $survey) {
             echo '<div class="row justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
-                    <div class="col-6">'.$survey['start_date'].' to '.$survey['expiration_date'].'</div>
+                    <div class="col-6">'.$survey['start_date'].' to '.$survey['end_date'].'</div>
                     <div class="col">'.$survey['completion'].'</div><div class="col">';
             if ($course_info['mutable']) {
               echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Extend Deadline</a> | ';

@@ -13,7 +13,8 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
-require_once "lib/rosterFunctions.php";
+require_once "lib/enrollmentFunctions.php";
+require_once "lib/instructorQueries.php";
 
 //query information about the requester
 $con = connectToDatabase();
@@ -37,13 +38,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // Get the course id of the course whose roster is being updated
   $course_id = intval($_POST['course_id']);
-  $stmt = $con->prepare('SELECT id FROM course WHERE id=? AND instructor_id=?');
-  $stmt->bind_param('ii', $course_id, $instructor->id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $result->fetch_all(MYSQLI_ASSOC);
-  // reply forbidden if this is trying to update a course that the instructor does NOT teach
-  if ($result->num_rows != 1) {
+
+  // make sure the survey is for a course the current instructor actually teaches
+  if (!isCourseInstructor($con, $course_id, $instructor->id)) {
     http_response_code(403);
     echo "403: Forbidden.";
     exit();
@@ -80,7 +77,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $results['error'] = $names_emails['error'];
       } else {
         clearRoster($con, $course_id);
-        uploadRoster($con, $course_id, $names_emails);
+        addToCourse($con, $course_id, $names_emails);
       }
     }
   }

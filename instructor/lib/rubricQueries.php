@@ -1,4 +1,19 @@
 <?php
+function getIdFromDescription($con, $name) {
+  // Pessimistically assume that the rubric doesn't exist
+  $retVal = 0;
+  $stmt = $con->prepare('SELECT id FROM rubrics WHERE description=?');
+  $stmt->bind_param('s', $name);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $data = $result->fetch_all(MYSQLI_ASSOC);
+  if ($result->num_rows > 0) {
+    $retVal = $data[0]['id'];
+  }
+  $stmt->close();
+  return $retVal;
+}
+
 function insertRubric($con, $name) {
   $stmt = $con->prepare('INSERT INTO rubrics (description) VALUES(?)');
   $stmt->bind_param('s', $name);

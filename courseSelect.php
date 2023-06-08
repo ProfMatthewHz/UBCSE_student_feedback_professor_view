@@ -32,13 +32,13 @@
 
   // TECHNICAL DEBT TODO: Make this into a separate function
   $past_surveys = array();
-  $stmt_past = $con->prepare('SELECT course.name, surveys.name, surveys.id, surveys.expiration_date, COUNT(reviewers.id) assigned, COUNT(evals.id) submitted
+  $stmt_past = $con->prepare('SELECT coursesname, surveys.name, surveys.id, surveys.end_date, COUNT(reviews.id) assigned, COUNT(evals.id) submitted
                               FROM surveys
-                              INNER JOIN course on course.id = surveys.course_id 
-                              INNER JOIN reviewers on reviewers.survey_id=surveys.id
-                              LEFT JOIN evals on evals.reviewers_id=reviewers.id
-                              WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.expiration_date < NOW()
-                              GROUP BY course.name, surveys.name, surveys.id, surveys.expiration_date');
+                              INNER JOIN courses on coursesid = surveys.course_id 
+                              INNER JOIN reviews on reviews.survey_id=surveys.id
+                              LEFT JOIN evals on evals.reviews_id=reviews.id
+                              WHERE reviews.reviewer_email=? AND coursessemester='.$term.' AND coursesyear='.$year.' AND surveys.end_date < NOW()
+                              GROUP BY coursesname, surveys.name, surveys.id, surveys.end_date');
   $stmt_past->bind_param('s', $email);
   $stmt_past->execute();
   $stmt_past->bind_result($class_name,$survey_name, $survey_id, $expire, $assigned, $submitted);
@@ -52,11 +52,11 @@
     $past_surveys[$survey_id] = $value;
   }
   $stmt_past->close();
-  $stmt_past = $con->prepare('SELECT DISTINCT course.name, surveys.name, surveys.id, surveys.expiration_date
+  $stmt_past = $con->prepare('SELECT DISTINCT coursesname, surveys.name, surveys.id, surveys.end_date
                               FROM surveys
-                              INNER JOIN course on course.id = surveys.course_id 
-                              INNER JOIN reviewers on reviewers.survey_id=surveys.id
-                              WHERE reviewers.teammate_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.expiration_date < NOW()');
+                              INNER JOIN courses on coursesid = surveys.course_id 
+                              INNER JOIN reviews on reviews.survey_id=surveys.id
+                              WHERE reviews.teammate_email=? AND coursessemester='.$term.' AND coursesyear='.$year.' AND surveys.end_date < NOW()');
   $stmt_past->bind_param('s', $email);
   $stmt_past->execute();
   $stmt_past->bind_result($class_name,$survey_name, $survey_id, $expire);
@@ -80,14 +80,14 @@
 
   // TECHNICAL DEBT TODO: Make this into a separate function
   $current_surveys = array();
-  $stmt_curr = $con->prepare('SELECT course.name, surveys.name, surveys.id, surveys.expiration_date, COUNT(reviewers.id) assigned, COUNT(evals.id) submitted
+  $stmt_curr = $con->prepare('SELECT coursesname, surveys.name, surveys.id, surveys.end_date, COUNT(reviews.id) assigned, COUNT(evals.id) submitted
                               FROM surveys
-                              INNER JOIN course on course.id = surveys.course_id 
-                              INNER JOIN reviewers on reviewers.survey_id=surveys.id
-                              LEFT JOIN evals on evals.reviewers_id=reviewers.id
-                              WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.start_date <= NOW() AND surveys.expiration_date > NOW()
-                              GROUP BY course.name, surveys.name, surveys.id, surveys.expiration_date
-                              ORDER BY surveys.expiration_date');
+                              INNER JOIN courses on coursesid = surveys.course_id 
+                              INNER JOIN reviews on reviews.survey_id=surveys.id
+                              LEFT JOIN evals on evals.reviews_id=reviews.id
+                              WHERE reviews.reviewer_email=? AND coursessemester='.$term.' AND coursesyear='.$year.' AND surveys.start_date <= NOW() AND surveys.end_date > NOW()
+                              GROUP BY coursesname, surveys.name, surveys.id, surveys.end_date
+                              ORDER BY surveys.end_date');
   $stmt_curr->bind_param('s', $email);
   $stmt_curr->execute();
   $stmt_curr->bind_result($class_name,$survey_name, $survey_id, $expire, $assigned, $submitted);
@@ -106,11 +106,11 @@
 
   // TECHNICAL DEBT TODO: Make this into a separate function
   $upcoming_surveys = array();
-  $stmt_next = $con->prepare('SELECT DISTINCT course.name, surveys.name, surveys.id, surveys.start_date
-                              FROM reviewers
-                              INNER JOIN surveys ON reviewers.survey_id = surveys.id 
-                              INNER JOIN course on course.id = surveys.course_id 
-                              WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.start_date > NOW()
+  $stmt_next = $con->prepare('SELECT DISTINCT coursesname, surveys.name, surveys.id, surveys.start_date
+                              FROM reviews
+                              INNER JOIN surveys ON reviews.survey_id = surveys.id 
+                              INNER JOIN courses on coursesid = surveys.course_id 
+                              WHERE reviews.reviewer_email=? AND coursessemester='.$term.' AND coursesyear='.$year.' AND surveys.start_date > NOW()
                               ORDER BY surveys.start_date');
   $stmt_next->bind_param('s', $email);
   $stmt_next->execute();

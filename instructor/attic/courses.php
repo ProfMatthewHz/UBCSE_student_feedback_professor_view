@@ -13,6 +13,7 @@ session_start();
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
+require_once "lib/courseQueries.php";
 
 
 // query information about the requester
@@ -26,11 +27,8 @@ $instructor->check_session($con, 0);
 // store information about courses as array of array
 $courses = array();
 
-// get information about the courses
-$stmt = $con->prepare('SELECT code, name, semester, year, id FROM course WHERE instructor_id=? ORDER BY year DESC, semester DESC');
-$stmt->bind_param('i', $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
+// get information about the courses taught by this instructor
+$result = getAllCourses($con, $instructor->id);
 
 while ($row = $result->fetch_assoc()) {
   $course_info = array();
