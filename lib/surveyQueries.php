@@ -1,11 +1,11 @@
 <?php
-  function validCompletedTarget($db_connection, $survey_id, $student_id) {
+  function getSurveyResultsInfo($db_connection, $survey_id, $student_id) {
     $query_str = 'surveys.end_date <= NOW()';
     $student_id_field = 'reviewed_id';
     return handleSurveyQuery($db_connection, $survey_id, $student_id, $student_id_field, $query_str);
   }
 
-  function validCompletedSource($db_connection, $survey_id, $student_id) {
+  function getCompletedSurveyInfo($db_connection, $survey_id, $student_id) {
     $query_str = 'surveys.end_date <= NOW()';
     $student_id_field = 'reviewer_id';
     return handleSurveyQuery($db_connection, $survey_id, $student_id, $student_id_field, $query_str);

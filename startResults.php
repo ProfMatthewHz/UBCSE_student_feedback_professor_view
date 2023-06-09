@@ -9,11 +9,11 @@
   require "lib/surveyQueries.php";
   require "lib/reviewQueries.php";
 
-  if(!isset($_SESSION['email'])) {
+  if(!isset($_SESSION['student_id'])) {
     header("Location: ".SITE_HOME."index.php");
     exit();
   }
-  $email = $_SESSION['email'];
+  $id = $_SESSION['student_id'];
   $con = connectToDatabase();
 
   // Verify that the survey exists
@@ -25,9 +25,12 @@
     exit();
   }
 
-  // Verify that the survey is a valid one for this student.
-  if (validCompletedTarget($con, $survey, $email)) {
-    $_SESSION['survey_id'] = $survey;
+  // Verify that the survey is a valid one for this student to view their results
+  $survey_info = getSurveyResultsInfo($con, $survey, $id);
+  if (isset($survey_info)) {
+    foreach ($survey_info as $key => $value) {
+      $_SESSION[$key] = $value;
+    }
   } else {
     // This is not a valid survey for this student
     echo "Bad Request: Talk to your instructor about this error.";
@@ -35,7 +38,7 @@
     exit();
   }
 
-  $_SESSION['reviewers'] = getReviewSources($con, $survey, $email);
+  $_SESSION['reviewers'] = getReviewSources($con, $survey, $id);
 
   // Get the multiple choice questions and responses for this survey.
   $_SESSION['mc_topics'] = getSurveyMultipleChoiceTopics($con, $survey);

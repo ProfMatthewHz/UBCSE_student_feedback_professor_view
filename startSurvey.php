@@ -26,14 +26,14 @@
     exit();
   }
 
-    // Verify that the survey is a valid one for this student
-    $survey_info = getActiveSurveyInfo($con, $survey, $id);
-    if (isset($survey_info)) {
-      foreach ($survey_info as $key => $value) {
-        $_SESSION[$key] = $value;
-      }
-    } else {
-      // This is not a valid survey for this student
+  // Verify that the survey is a valid one for this student to be taking
+  $survey_info = getActiveSurveyInfo($con, $survey, $id);
+  if (isset($survey_info)) {
+    foreach ($survey_info as $key => $value) {
+      $_SESSION[$key] = $value;
+    }
+  } else {
+    // This is not a valid survey for this student
     echo "Bad Request: Talk to your instructor about this error.";
     http_response_code(400);
     exit();

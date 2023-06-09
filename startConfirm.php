@@ -26,7 +26,7 @@
     exit();
   }
 
-  // Verify that the survey is a valid one for this student
+  // Verify that the survey is a valid one for this student to be able to review and update
   $survey_info = getActiveSurveyInfo($con, $survey, $id);
   if (isset($survey_info)) {
     foreach ($survey_info as $key => $value) {

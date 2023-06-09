@@ -9,11 +9,11 @@
   require "lib/reviewQueries.php";
   require "lib/surveyQueries.php";
   
-  if(!isset($_SESSION['email'])) {
+  if(!isset($_SESSION['student_id'])) {
     header("Location: ".SITE_HOME."index.php");
     exit();
   }
-  $email = $_SESSION['email'];
+  $id = $_SESSION['student_id'];
   
   $con = connectToDatabase();
 
@@ -26,9 +26,12 @@
     exit();
   }
 
-  // Verify that the survey is a valid one for this student.
-  if (validCompletedSource($con, $survey, $email)) {
-    $_SESSION['survey_id'] = $survey;
+  // Verify that the survey is a valid one for this student to review their responses
+  $survey_info = getCompletedSurveyInfo($con, $survey, $id);
+  if (isset($survey_info)) {
+    foreach ($survey_info as $key => $value) {
+      $_SESSION[$key] = $value;
+    }
   } else {
     // This is not a valid survey for this student
     echo "Bad Request: Talk to your instructor about this error.";
@@ -36,7 +39,7 @@
     exit();
   }
 
-  $_SESSION['group_members'] = getReviewTargets($con, $survey, $email);
+  $_SESSION['group_members'] = getReviewTargets($con, $survey, $id);
 
   // Get the questions and responses for this survey. For now, this will be hard coded.
   $_SESSION['mc_topics'] = getSurveyMultipleChoiceTopics($con, $survey);
