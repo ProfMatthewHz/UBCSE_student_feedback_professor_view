@@ -1,22 +1,23 @@
 <?php
-function force_ascii($str) {
-
-    // detect the character encoding
-    $encoding = mb_detect_encoding($str, ['ASCII','UTF-8']);
-      
-    // escape all of the question marks to remove any illegal artifacts
-    $str = str_replace( "?", "[question_mark]", $str);
-      
-    // convert the string to the target encoding
-    $str = mb_convert_encoding($str, "ASCII", $encoding);
-      
-    // remove any question marks that have been introduced because of illegal characters
-    $str = str_replace( "?", "", $str);
-      
-    // replace the token string "[question_mark]" with the symbol "?"
-    $str = str_replace("[question_mark]", "?", $str);
+function clean_to_ascii($str) {
+  // detect the character encoding
+  $encoding = mb_detect_encoding($str, ['ASCII','UTF-8']);
+    
+  // escape all of the question marks to remove any illegal artifacts
+  $str = str_replace( "?", "[question_mark]", $str);
+    
+  // convert the string to the target encoding
+  $str = mb_convert_encoding($str, "ASCII", $encoding);
+    
+  // remove any question marks that have been introduced because of illegal characters
+  $str = str_replace( "?", "", $str);
+    
+  // replace the token string "[question_mark]" with the symbol "?"
+  $str = str_replace("[question_mark]", "?", $str);
   
-    return $str;
+  // Finally, clean up the results by removing any extra whitespace
+  $str = trim($str);
+  return $str;
 }
 
 function parse_review_pairs($file_handle, $con) {
@@ -28,33 +29,29 @@ function parse_review_pairs($file_handle, $con) {
     $line_num = $line_num + 1;
 
     // Force the input into ASCII format
-    $line_text = array_map("force_ascii", $line_text);
-
-    // Clean up any whitespace oddities
-    $line_text = array_map("trim", $line_text);
+    $line_text = array_map("clean_to_ascii", $line_text);
 
     $line_fields = count($line_text);
 
-    // Verify the current line's data seems reasonable.
-    if ($line_fields != 2) {
-      $ret_val['error'] = 'CSV file does not have a review pair on line ' . $line_num;
-      return $ret_val;
-    } else {
-      if (!email_already_exists($con, $line_text[0])) {
-        $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[0];
+    // Verify the current line's data seems reasonable while allowing us to skip blank lines
+    if ($line_fields == 1 || $line_fields > 2) {
+      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain a review pair\n';
+    } else if ($line_fields == 2) {
+      $reviewer_id = getIdFromEmail($con, $line_text[0]);
+      if (empty($reviewer_id)) {
+        $ret_val['error'] = $ret_val['error'] . 'Line '. $line_num . ' includes an unknown reviewer (' . $line_text[0] . ')\n';
+      }
+      $reviewed_id = getIdFromEmail($con, $line_text[1]);
+      if (empty($reviewed_id)) {
+        $ret_val['error'] = $ret_val['error'] . 'Line '. $line_num . ' includes an unknown person being reviewed (' . $line_text[1] . ')\n';
         return $ret_val;
-      } else if (!email_already_exists($con, $line_text[1])) {
-        $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[1];
-        return $ret_val;
-      } else {
-        // Default to a weighting of 1
-        $line_text[] = 1;
-        // Fast than array_push when appending large numbers of data
-        $ret_val[] = $line_text;
+      }
+      if (!empty($reviewer_id) && !empty($reviewed_id)) {
+        // Fastest way to append an array; assumes each eval is independent and so is equally weighted
+        $ret_val[] = array(strval($reviewer_id), strval($reviewed_id), $line_num, 1);
       }
     }
   }
-
   return $ret_val;
 }
 
@@ -67,31 +64,39 @@ function parse_review_teams($file_handle, $con) {
     $line_num = $line_num + 1;
 
     // Force the input into ASCII format
-    $line_text = array_map("force_ascii", $line_text);
+    $line_text = array_map("clean_to_ascii", $line_text);
 
-    // Clean up any whitespace oddities
-    $line_text = array_map("trim", $line_text);
-
-    $line_fields = count($line_text);
-
+    // Create the array of student id's for this line
+    $ids = array();
+    $error = '';
+    $column = 0;
     // Make sure the current line's data are valid
-    for ($j = 0; $j < $line_fields; $j++) {
-      if ( (!empty($line_text[$j])) && !email_already_exists($con, $line_text[$j])) {
-        $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
-        return $ret_val;
+    foreach ($line_text as $email) {
+      if (!empty($email)) {
+        $student_id = getIdFromEmail($con, $email);
+        if (empty($student_id)) {
+          $error = $error . 'Line '. $line_num . ' at column ' . $column . ' includes an unknown person (' . $email . ')\n';
+        } else {
+          $ids[] = $student_id;
+        }
       }
+      $column = $column + 1;
     }
-
-    // Now that we know data are valid, create & add all possible team pairings
-    for ($j = 0; $j < $line_fields; $j++) {
-      for ($k = 0; $k < $line_fields; $k++) {
-        if ((!empty($line_text[$j])) && (!empty($line_text[$k]))) {
-          $pairing = array();
-          $pairing[0] = $line_text[$j];
-          $pairing[1] = $line_text[$k];
-          $pairing[2] = 1;
+    if (empty($error)) {
+      // Now that we know data are valid, create & add all possible team pairings
+      $id_len = count($ids);
+      foreach ($ids as $reviewer_id) {
+        for ($k = 0; $k < $id_len; $k++) {
+          // Append pairings to our array array; defaults to each team being independent and each review is equally weighted
+          $pairing = array($reviewer_id, $ids[$k], $line_num, 1);
           $ret_val[] = $pairing;
         }
+      }
+    } else {
+      if (isset($ret_val['error'])) {
+        $ret_val['error'] = $ret_val['error'] . $error;
+      } else {
+        $ret_val['error'] = $error;
       }
     }
   }
@@ -106,62 +111,58 @@ function parse_review_managed_teams($file_handle, $pm_mult, $con) {
   $line_num = 0;
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
     $team_members = array();
-    $team_size = 0;
     unset($manager);
-
+    $error = '';
     $line_num = $line_num + 1;
 
     // Force the input into ASCII format
-    $line_text = array_map("force_ascii", $line_text);
+    $line_text = array_map("clean_to_ascii", $line_text);
 
-    // Clean up white space oddities
-    $line_text = array_map("trim", $line_text);
-
-    $line_fields = count($line_text) - 1;
-    
+    $column = 0;
     // Make sure the current line's data are valid
-    for ($j = $line_fields; $j >= 0; $j--) {
-      if (!empty($line_text[$j])) {
-        if (!email_already_exists($con, $line_text[$j])) {
-          $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
-          return $ret_val;
-        } else if (!isset($manager)) {
-          $manager = $line_text[$j];
+    foreach ($line_text as $email) {
+      if (!empty($email)) {
+        $student_id = getIdFromEmail($con, $email);
+        if (empty($student_id)) {
+          $error = $error . 'Line '. $line_num . ' at column ' . $column . ' includes an unknown person (' . $email . ')\n';
         } else {
-          $team_members[] = $line_text[$j];
-          $team_size = $team_size + 1;
+          if (isset($manager)) {
+            // We process each column as if it is the manager. We now add it to the team since we know it is not.
+            $team_members[] = $manager;
+          }
+          $manager = $student_id;
         }
       }
     }
-    // Skip over any lines that are entirely blank
-    if (isset($manager)) {
-      if ($team_size == 0) {
-        $ret_val['error'] = 'CSV file at line '. $line_num . ' only lists a manager: ' . $manager;
-        return $ret_val;
-      }
-
+    // Any lines that do not have at least 1 team member and 1 manager are an error
+    if (empty($team_members) && isset($manager) && empty($error)) {
+        $error = 'Line '. $line_num . ' only includes a manager\n';
+    }
+    // Only add lines that do not have errors
+    if (empty($error)) {
+      $team_size = count($team_members);
       // Now that we know data are valid, create & add all possible team pairings
-      for ($j = 0; $j < $team_size; $j++) {
-        $managed = array();
-        $managed[0] = $manager;
-        $managed[1] = $team_members[$j];
-        $managed[2] = $pm_mult;
+      foreach ($team_members as $member) {
+        // Add the manager's review
+        $managed = array($manager, $member, $line_num, $pm_mult);
         $ret_val[] = $managed;
-
+        // Now add all of the team member's reviews
         for ($k = 0; $k < $team_size; $k++) {
-          $pairing = array();
-          $pairing[0] = $team_members[$j];
-          $pairing[1] = $team_members[$k];
-          $pairing[2] = 1;
+          $pairing = array($member, $team_members[$k], $line_num, 1);
           $ret_val[] = $pairing;
         }
+      }
+    } else {
+      if (isset($ret_val['error'])) {
+        $ret_val['error'] = $ret_val['error'] . $error;
+      } else {
+        $ret_val['error'] = $error;
       }
     }
   }
 
   return $ret_val;
 }
-
 
 function parse_review_many_to_one($file_handle, $con) {
   // return array
@@ -170,47 +171,46 @@ function parse_review_many_to_one($file_handle, $con) {
   $line_num = 0;
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
     $team_members = array();
-    $team_size = 0;
-    unset($reviewee);
-
+    unset($manager);
+    $error = '';
     $line_num = $line_num + 1;
 
     // Force the input into ASCII format
-    $line_text = array_map("force_ascii", $line_text);
+    $line_text = array_map("clean_to_ascii", $line_text);
 
-    // Clean up white space oddities
-    $line_text = array_map("trim", $line_text);
-
-    $line_fields = count($line_text) - 1;
-    
+    $column = 0;
     // Make sure the current line's data are valid
-    for ($j = $line_fields; $j >= 0; $j--) {
-      if (!empty($line_text[$j])) {
-        if (!email_already_exists($con, $line_text[$j])) {
-          $ret_val['error'] = 'CSV file at line '. $line_num . ' includes an email that is not in system: ' . $line_text[$j];
-          return $ret_val;
-        } else if (!isset($reviewee)) {
-          $reviewee = $line_text[$j];
+    foreach ($line_text as $email) {
+      if (!empty($email)) {
+        $student_id = getIdFromEmail($con, $email);
+        if (empty($student_id)) {
+          $error = $error . 'Line '. $line_num . ' at column ' . $column . ' includes an unknown person (' . $email . ')\n';
         } else {
-          $team_members[] = $line_text[$j];
-          $team_size = $team_size + 1;
+          if (isset($manager)) {
+            // We process each column as if it is the manager. We now add it to the team since we know it is not.
+            $team_members[] = $manager;
+          }
+          $manager = $student_id;
         }
       }
     }
-    // Skip over any lines that are entirely blank
-    if (isset($reviewee)) {
-      if ($team_size == 0) {
-        $ret_val['error'] = 'CSV file at line '. $line_num . ' only lists the person being reviewed: ' . $reviewee;
-        return $ret_val;
-      }
-
+    // Any lines that do not have at least 1 team member and 1 manager are an error
+    if (empty($team_members) && isset($manager) && empty($error)) {
+        $error = 'Line '. $line_num . ' only includes a manager\n';
+    }
+    // Only add lines that do not have errors
+    if (empty($error)) {
       // Now that we know data are valid, create & add all possible team pairings
-      for ($j = 0; $j < $team_size; $j++) {
-        $managed = array();
-        $managed[0] = $team_members[$j];
-        $managed[1] = $reviewee;
-        $managed[2] = 1;
+      foreach ($team_members as $member) {
+        // Add the manager's review
+        $managed = array($member, $manager, $line_num, 1);
         $ret_val[] = $managed;
+      }
+    } else {
+      if (isset($ret_val['error'])) {
+        $ret_val['error'] = $ret_val['error'] . $error;
+      } else {
+        $ret_val['error'] = $error;
       }
     }
   }
@@ -220,37 +220,39 @@ function parse_review_many_to_one($file_handle, $con) {
 
 function parse_roster_file($file_handle) {
   // return array
-  $rev_val = array();
+  $ret_val = array();
 
   $line_num = 0;
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
-
     $line_num = $line_num + 1;
 
     // Force the input into ASCII format
-    $line_text = array_map("force_ascii", $line_text);
-
-    // Clean up whitespace oddities
-    $line_text = array_map("trim", $line_text);
+    $line_text = array_map("clean_to_ascii", $line_text);
 
     $line_fields = count($line_text);
 
-    if ($line_fields != 2) {
-      $ret_val['error'] = 'Input CSV file has incorrect format at line ' . $line_num;
-      return $ret_val;
+    // Verify the current line's data seems reasonable while allowing us to skip blank lines
+    if ($line_fields == 1 || $line_fields > 2) {
+      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain a name and email\n';
+    } else if ($line_fields == 2) {
+      $error = '';
+      if (!ctype_print($line_text[0])) {
+        $error = 'Line '. $line_num . ' includes a name with unprintable characters (' . $line_text[0] . ')\n';
+      }
+      if (!filter_var($line_text[1], FILTER_VALIDATE_EMAIL)) {
+        $error = $error . 'Line '. $line_num . ' includes an improperly formatted email address (' . $line_text[1] . ')\n';
+      }
+      if (empty($error)) {
+        // add the fields to the array
+        $ret_val[] = $line_text;
+      } else {
+        if (isset($ret_val['error'])) {
+          $ret_val['error'] = $ret_val['error'] . $error;
+        } else {
+          $ret_val['error'] = $error;
+        }
+      }
     }
-
-    if (!ctype_print($line_text[0])) {
-      $ret_val['error'] = 'Input CSV file includes a name ('.$line_text[0].') with unprintable characters on line ' . $line_num;
-      return $ret_val;
-    }
-
-    if (!filter_var($line_text[1], FILTER_VALIDATE_EMAIL)) {
-      $ret_val['error'] = 'Input CSV file includes an improperly formatted email address on line ' . $line_num;
-      return $ret_val;
-    }
-    // add the fields to the array
-    $ret_val[] = $line_text;
   }
   return $ret_val;
 }

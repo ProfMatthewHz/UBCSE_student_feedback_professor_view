@@ -22,7 +22,7 @@ function removeExistingPairings($con, $survey_id) {
   return $retVal;
 }
 
-function email_already_exists($con, $email_addr) {
+function getIdFromEmail($con, $email_addr) {
   // Create the SQL statement which we can use to verify the email address exists
   $stmt = $con->prepare('SELECT students.id FROM students WHERE students.email=?');
   $stmt->bind_param('s', $email_addr);
@@ -41,7 +41,7 @@ function addPairings($con, $survey_id, $emails) {
   $stmt_check = $con->prepare('SELECT id 
                                FROM reviews
                                WHERE survey_id=? AND reviewer_id=? AND reviewed_id=?');
-  $stmt_add = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, team_id, reviewed_id, eval_weight) VALUES (?, ?, ?, ?)');
+  $stmt_add = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_weight) VALUES (?, ?, ?, ?, ?)');
 
   // loop over each pairing
   foreach ($emails as $pairing) {
@@ -53,7 +53,7 @@ function addPairings($con, $survey_id, $emails) {
 
     // add the pairing if it does not exist
     if ($result->num_rows == 0) {
-      $stmt_add->bind_param('issi', $survey_id, $pairing[0], $pairing[1], $pairing[2]);
+      $stmt_add->bind_param('iiiii', $survey_id, $pairing[0], $pairing[1], $pairing[2], $pairing[3]);
       $retVal = $retVal && $stmt_add->execute();
     }
   }
