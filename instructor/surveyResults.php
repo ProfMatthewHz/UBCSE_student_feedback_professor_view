@@ -26,7 +26,7 @@ $instructor->check_session($con, 0);
 
 
 // respond not found on no query string parameter
-$sid = NULL;
+$survey_id = NULL;
 if (!isset($_GET['survey'])) {
   http_response_code(404);
   echo "404: Not found.";
@@ -34,16 +34,16 @@ if (!isset($_GET['survey'])) {
 }
 
 // make sure the query string is an integer, reply 404 otherwise
-$sid = intval($_GET['survey']);
+$survey_id = intval($_GET['survey']);
 
-if ($sid === 0) {
+if ($survey_id === 0) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
 }
 
 // Look up info about the requested survey
-$survey_info = getSurveyData($con, $sid);
+$survey_info = getSurveyData($con, $survey_id);
 if (empty($survey_info)) {
   http_response_code(404);
   echo "404: Not found.";
@@ -69,21 +69,21 @@ $course_year = $course_info['year'];
 $averages = array();
 
 // Get the per-reviewer data
-$survey_complete = getCompletionData($con, $sid);
+$survey_complete = getCompletionData($con, $survey_id);
 
 // Get the info for everyone who will be evaluated
-$teammates = getReviewedData($con, $sid);
+$teammates = getReviewedData($con, $survey_id);
 
 // Get information completed by the reviewer -- how many were reviewed and the total points
-$scores = getSurveyScores($con, $sid, $teammates);
+$scores = getSurveyScores($con, $survey_id, $teammates);
 
 // Get how much we should be weighting each of the reviews
-$weights = getSurveyWeights($con, $sid, $teammates);
+$weights = getSurveyWeights($con, $survey_id, $teammates);
 
 // Get the total number of points this reviewer provided on the surveys
-$totals = getSurveyTotals($con, $sid, $teammates);
+$totals = getSurveyTotals($con, $survey_id, $teammates);
 
-$topics = getSurveyMultipleChoiceTopics($con, $sid);
+$topics = getSurveyMultipleChoiceTopics($con, $survey_id);
 
 foreach ($teammates as $email => $name) {
   $sum_normalized = 0;
@@ -127,7 +127,7 @@ foreach ($teammates as $email => $name) {
   }
 }
 $topics['normalized'] = 'Normalized Score';
-$reviewers = getReviewerData($con, $sid);
+$reviewers = getReviewerData($con, $survey_id);
 ?>
 <!doctype html>
 <html lang="en">
@@ -172,7 +172,7 @@ $reviewers = getReviewerData($con, $sid);
         <div class="tab-pane mt-2" id="raw" role="tabpanel" aria-labelledby="raw-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=individual" target="_blank">Download Individual Averages</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $survey_id; ?>&type=individual" target="_blank">Download Individual Averages</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">
@@ -208,7 +208,7 @@ $reviewers = getReviewerData($con, $sid);
         <div class="tab-pane active show mt-2" id="full-normalized" role="tabpanel" aria-labelledby="full-normalized-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw-full" target="_blank">Download Raw Survey Results</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $survey_id; ?>&type=raw-full" target="_blank">Download Raw Survey Results</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">
@@ -247,7 +247,7 @@ $reviewers = getReviewerData($con, $sid);
         <div class="tab-pane mt-2" id="avg-normalized" role="tabpanel" aria-labelledby="avg-normalized-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=average" target="_blank">Download Final Results</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $survey_id; ?>&type=average" target="_blank">Download Final Results</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">

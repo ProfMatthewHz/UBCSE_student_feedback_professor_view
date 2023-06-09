@@ -1,4 +1,5 @@
 <?php
+
 function getReviewPairingsData($con, $survey_id) {
   $stmt = $con->prepare('SELECT reviewer.email reviewer_email, reviewer.name reviewer_name, reviewed.email reviewed_email, reviewed.name reviewed_name
                          FROM reviews
@@ -19,38 +20,6 @@ function removeExistingPairings($con, $survey_id) {
   $stmt->bind_param('i', $survey_id);
   $retVal = $stmt->execute();
   $stmt->close();
-  return $retVal;
-}
-
-function getIdFromEmail($con, $email_addr) {
-  // Create the SQL statement which we can use to verify the email address exists
-  $stmt = $con->prepare('SELECT students.id FROM students WHERE students.email=?');
-  $stmt->bind_param('s', $email_addr);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $count = mysqli_num_rows($result);
-  $stmt->close();
-  // Return if that email address already exists
-  return $count != 0;
-}
-
-function getIdsFromEmails($con, $line_num, $emails) {
-  // We do not allow teams of 1, so flag this as an error right away.
-  if (count($emails) == 1) {
-    $retVal = array('error' => 'Line ' . $line_num . ' only contains 1 name\n');
-    return $retVal;
-  }
-  // Otherwise we have a valid team and can try getting the ids
-  $retVal = array('error' => '', 'ids' => array());
-  // Make sure the current line's data are valid
-  foreach ($emails as $column => $email) {
-    $student_id = getIdFromEmail($con, $email);
-    if (empty($student_id)) {
-      $retVal['error'] = $$retVal['error'] . 'Line '. $line_num . ' at column ' . $column . ' includes an unknown person (' . $email . ')\n';
-    } else {
-      $retVal['ids'][] = $student_id;
-    }
-  }
   return $retVal;
 }
 

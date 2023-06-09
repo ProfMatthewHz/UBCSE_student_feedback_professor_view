@@ -1,11 +1,10 @@
 <?php
 function getReviewSources($db_connection, $survey_id, $id) {
   $ret_val = array();
-  $query_str = 'SELECT reviews_id
-                FROM reviews
-                INNER JOIN evals ON evals.reviews_id = reviews.id
-                WHERE reviews.survey_id =? AND reviews.reviewed_id=? AND reviews.reviewed_id<>reviews.reviewer_id';
-  $stmt = $db_connection->prepare($query_str);
+  $stmt = $db_connection->prepare('SELECT reviews_id
+                                   FROM reviews
+                                   INNER JOIN evals ON evals.reviews_id = reviews.id
+                                   WHERE reviews.survey_id =? AND reviews.reviewed_id=? AND reviews.reviewed_id<>reviews.reviewer_id');
   $stmt->bind_param('ii',$survey_id,$id);
   $stmt->execute();
   $result = $stmt->get_result();

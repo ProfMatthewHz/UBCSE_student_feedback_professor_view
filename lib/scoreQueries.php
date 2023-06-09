@@ -33,7 +33,7 @@
     $query_str = 'SELECT topic_id, score 
                   FROM scores
                   INNER JOIN rubric_scores ON scores.rubric_score_id=rubric_scores.id 
-                  INNER JOIN evals ON scores2.eval_id=evals.id
+                  INNER JOIN evals ON scores.eval_id=evals.id
                   WHERE evals.reviews_id=?';
     $retVal = array();
     // Prepare the next selection statement

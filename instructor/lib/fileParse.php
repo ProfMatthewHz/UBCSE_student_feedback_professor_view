@@ -1,4 +1,26 @@
 <?php
+require_once '../../lib/studentQueries.php';
+
+function getIdsFromEmails($con, $line_num, $emails) {
+  // We do not allow teams of 1, so flag this as an error right away.
+  if (count($emails) == 1) {
+    $retVal = array('error' => 'Line ' . $line_num . ' only contains 1 name\n');
+    return $retVal;
+  }
+  // Otherwise we have a valid team and can try getting the ids
+  $retVal = array('error' => '', 'ids' => array());
+  // Make sure the current line's data are valid
+  foreach ($emails as $column => $email) {
+    $student_id = getIdFromEmail($con, $email);
+    if (empty($student_id)) {
+      $retVal['error'] = $$retVal['error'] . 'Line '. $line_num . ' at column ' . $column . ' includes an unknown person (' . $email . ')\n';
+    } else {
+      $retVal['ids'][] = $student_id;
+    }
+  }
+  return $retVal;
+}
+
 function clean_to_ascii($str) {
   // detect the character encoding
   $encoding = mb_detect_encoding($str, ['ASCII','UTF-8']);

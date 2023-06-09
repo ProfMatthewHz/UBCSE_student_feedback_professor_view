@@ -26,7 +26,7 @@ $instructor->check_session($con, 0);
 
 
 // respond not found on no query string parameters
-$sid = NULL;
+$survey_id = NULL;
 if (!isset($_GET['survey'])) {
   http_response_code(404);
   echo "404: Not found.";
@@ -46,16 +46,16 @@ if ($_GET['type'] !== 'raw-full' && $_GET['type'] !== 'individual' && $_GET['typ
 }
 
 // make sure the query string is an integer, reply 404 otherwise
-$sid = intval($_GET['survey']);
+$survey_id = intval($_GET['survey']);
 
-if ($sid === 0) {
+if ($survey_id === 0) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
 }
 
 // Look up info about the requested survey
-$survey_info = getSurveyData($con, $sid);
+$survey_info = getSurveyData($con, $survey_id);
 if (empty($survey_info)) {
   http_response_code(404);
   echo "404: Not found.";
@@ -73,23 +73,23 @@ if (!isCourseInstructor($con, $survey_info['course_id'], $instructor->id)) {
 $averages = array();
 
 // Get the per-reviewer data
-$survey_complete = getCompletionData($con, $sid);
+$survey_complete = getCompletionData($con, $survey_id);
 
 // Get the info for everyone who will be evaluated
-$teammates = getReviewedData($con, $sid);
+$teammates = getReviewedData($con, $survey_id);
 
 // Get information completed by the reviewer -- how many were reviewed and the total points
-$scores = getSurveyScores($con, $sid, $teammates);
+$scores = getSurveyScores($con, $survey_id, $teammates);
 
 // Get how much we should be weighting each of the reviews
-$weights = getSurveyWeights($con, $sid, $teammates);
+$weights = getSurveyWeights($con, $survey_id, $teammates);
 
 // Get the total number of points this reviewer provided on the surveys
-$totals = getSurveyTotals($con, $sid, $teammates);
+$totals = getSurveyTotals($con, $survey_id, $teammates);
 
-$topics = getSurveyMultipleChoiceTopics($con, $sid);
+$topics = getSurveyMultipleChoiceTopics($con, $survey_id);
 
-foreach ($teammates as $email => $name) {
+foreach ($teammates as $id => $value) {
   $sum_normalized = 0;
   $review_weights = 0;
   $norm_review_weights = 0;
@@ -134,7 +134,7 @@ foreach ($teammates as $email => $name) {
 // now generate the raw scores output
 if ($_GET['type'] === 'individual') {
   header('Content-Type: text/csv; charset=UTF-8');
-  header('Content-Disposition: attachment; filename="survey-' . $sid . '-individual-results.csv"');
+  header('Content-Disposition: attachment; filename="survey-' . $survey_id . '-individual-results.csv"');
   $out = fopen('php://output', 'w');
   $header = array("Reviewee");
   foreach ($topics as $topic_id => $question) {
@@ -153,7 +153,7 @@ if ($_GET['type'] === 'individual') {
   $topics['normalized'] = 'Normalized Score';
   // generate the correct headers for the file download
   header('Content-Type: text/csv; charset=UTF-8');
-  header('Content-Disposition: attachment; filename="survey-' . $sid . '-raw-results.csv"');
+  header('Content-Disposition: attachment; filename="survey-' . $survey_id . '-raw-results.csv"');
   $out = fopen('php://output', 'w');
   $header = array("Reviewer","Reviewee");
   foreach ($topics as $topic_id => $question) {
@@ -179,7 +179,7 @@ if ($_GET['type'] === 'individual') {
 } else {
   // generate the correct headers for the file download
   header('Content-Type: text/csv; charset=UTF-8');
-  header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-averages.csv"');
+  header('Content-Disposition: attachment; filename="survey-' . $survey_id . '-normalized-averages.csv"');
   $out = fopen('php://output', 'w');
   fputcsv($out, array("Reviewee","Average Normalized Score"));
   foreach ($averages as $email => $avg_results) {
