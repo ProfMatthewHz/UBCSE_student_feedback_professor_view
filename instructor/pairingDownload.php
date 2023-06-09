@@ -43,7 +43,7 @@ if ($sid === 0) {
 }
 
 // Look up info about the requested survey
-if (!isCourseInstructor($con, $course_id, $instructor->id)) {
+if (!isSurveyInstructor($con, $sid, $instructor->id)) {
   http_response_code(403);   
   echo "403: Forbidden.";
   exit();
@@ -65,5 +65,4 @@ header('Content-Disposition: attachment; filename="survey-' . $sid . '-pairings.
 
 // ouput the data
 echo $pairings;
-
 ?>
