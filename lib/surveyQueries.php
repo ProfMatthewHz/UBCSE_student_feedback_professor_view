@@ -1,40 +1,39 @@
 <?php
-  function validCompletedTarget($db_connection, $survey_id, $email) {
+  function validCompletedTarget($db_connection, $survey_id, $student_id) {
     $query_str = 'surveys.end_date <= NOW()';
-    $email_field = 'teammate_email';
-    return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
+    $student_id_field = 'reviewed_id';
+    return handleSurveyQuery($db_connection, $survey_id, $student_id, $student_id_field, $query_str);
   }
 
-  function validCompletedSource($db_connection, $survey_id, $email) {
+  function validCompletedSource($db_connection, $survey_id, $student_id) {
     $query_str = 'surveys.end_date <= NOW()';
-    $email_field = 'reviewer_email';
-    return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
+    $student_id_field = 'reviewer_id';
+    return handleSurveyQuery($db_connection, $survey_id, $student_id, $student_id_field, $query_str);
   }
 
-  function validActiveSurvey($db_connection, $survey_id, $email) {
+  function getActiveSurveyInfo($db_connection, $survey_id, $student_id) {
     $query_str = 'surveys.start_date <= NOW() AND surveys.end_date > NOW()';
-    $email_field = 'reviewer_email';
-    return handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $query_str);
+    $student_id_field = 'reviewer_id';
+    return handleSurveyQuery($db_connection, $survey_id, $student_id, $student_id_field, $query_str);
   }
 
-  function handleSurveyQuery($db_connection, $survey_id, $email, $email_field, $addl_query) {
-    $base_query = 'SELECT DISTINCT coursesname course_name, surveys.name survey_name 
-                   FROM reviews
-                   INNER JOIN surveys ON reviews.survey_id = surveys.id 
-                   INNER JOIN courses on courses.id = surveys.course_id 
-                   WHERE surveys.id=? AND reviews.'.$email_field.'=? AND '.$addl_query;
-    $stmt_request = $db_connection->prepare($base_query);
-    $stmt_request->bind_param('is', $survey_id, $email);
-    $stmt_request->execute();
-    $result = $stmt_request->get_result();
-    if ($row = $result->fetch_row()){
-      $_SESSION['course_name'] = $row[0];
-      $_SESSION['survey_name'] = $row[1];
-      $stmt_request->close();
-      return true;
+  function handleSurveyQuery($db_connection, $survey_id, $student_id, $student_id_field, $addl_query) {
+    // Pessimistically assume this fails
+    $ret_val = null;
+    $query = 'SELECT DISTINCT courses.name course_name, surveys.name survey_name 
+              FROM reviews
+              INNER JOIN surveys ON reviews.survey_id = surveys.id 
+              INNER JOIN courses on courses.id = surveys.course_id 
+              WHERE surveys.id=? AND reviews.'.$student_id_field.'=? AND '.$addl_query;
+    $stmt = $db_connection->prepare($query);
+    $stmt->bind_param('ii', $survey_id, $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_row()) {
+      $ret_val = array("survey_id" => $survey_id, "course_name" => $row[0], "survey_name" => $row[1]);
     }
-    $stmt_request->close();
-    return false;
+    $stmt->close();
+    return $ret_val;
   }
 
 
