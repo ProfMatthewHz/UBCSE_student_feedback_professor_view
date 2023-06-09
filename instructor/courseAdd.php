@@ -107,7 +107,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       fclose($file_handle);
 
       // check for any errors
-      if (isset($names_emails['error'])) {
+      if (!empty(($names_emails['error']))) {
         $errorMsg['roster-file'] = $names_emails['error'];
       } else {
         // now add the roster to the database if no other errors were set after adding the course to the database

@@ -145,18 +145,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
       $pairings = getPairingResults($con, $pairing_mode, $pm_mult, $file_handle);
-      if (empty($pairings)) {
+      if (!isset($pairings)) {
         $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
       }
 
       // Clean up our file handling
       fclose($file_handle);
 
-      // Delete the old pairings from the database and then add the new pairings to the database if no other error message were set so far
-      if (empty($errorMsg)) {
-        removeExistingPairings($con, $survey_id);
-        addPairings($con, $sid, $pairings);
-        unset($pairings);
+       // check for any errors
+       if (!empty($pairings['error'])) {
+        $errorMsg['pairing-file'] = $pairings['error'];
+      } else {
+        // finally add the pairings to the database if no other error message were set so far
+        // first add the survey details to the database
+        if (empty($errorMsg)) {
+          removeExistingPairings($con, $survey_id);
+          addPairings($con, $sid, $pairings['id']);
+          unset($pairings);
+        }
       }
     }
   }

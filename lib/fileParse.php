@@ -30,6 +30,8 @@ function parse_review_pairs($file_handle, $con) {
 
     // Force the input into ASCII format
     $line_text = array_map("clean_to_ascii", $line_text);
+    // Remove any blank entries from the array
+    $line_text = array_filter($line_text);
 
     $line_fields = count($line_text);
 
@@ -44,11 +46,10 @@ function parse_review_pairs($file_handle, $con) {
       $reviewed_id = getIdFromEmail($con, $line_text[1]);
       if (empty($reviewed_id)) {
         $ret_val['error'] = $ret_val['error'] . 'Line '. $line_num . ' includes an unknown person being reviewed (' . $line_text[1] . ')\n';
-        return $ret_val;
       }
       if (!empty($reviewer_id) && !empty($reviewed_id)) {
         // Fastest way to append an array; assumes each eval is independent and so is equally weighted
-        $ret_val[] = array(strval($reviewer_id), strval($reviewed_id), $line_num, 1);
+        $ret_val[] = array($reviewer_id, $reviewed_id, $line_num, 1);
       }
     }
   }
@@ -57,47 +58,37 @@ function parse_review_pairs($file_handle, $con) {
 
 function parse_review_teams($file_handle, $con) {
   // return array
-  $ret_val = array();
+  $ret_val = array('error' => '', 'ids' => array());
 
-  $line_num = 0;
+  $line_num = -1;
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
     $line_num = $line_num + 1;
 
     // Force the input into ASCII format
     $line_text = array_map("clean_to_ascii", $line_text);
-
-    // Create the array of student id's for this line
-    $ids = array();
-    $error = '';
-    $column = 0;
-    // Make sure the current line's data are valid
-    foreach ($line_text as $email) {
-      if (!empty($email)) {
-        $student_id = getIdFromEmail($con, $email);
-        if (empty($student_id)) {
-          $error = $error . 'Line '. $line_num . ' at column ' . $column . ' includes an unknown person (' . $email . ')\n';
-        } else {
-          $ids[] = $student_id;
-        }
-      }
-      $column = $column + 1;
+    // Remove any blank entries from the array
+    $line_text = array_filter($line_text);
+  
+    // This is horrible practice, but it handles the degenerate case of a blank line and makes the code much easier to read
+    if (empty($line_text)) {
+      continue;
     }
-    if (empty($error)) {
+
+    // Get the errors and ids from the current line
+    $line_data = getIdsFromEmails($con, $line_num, $line_text);
+
+    if (empty($line_data['error'])) {
       // Now that we know data are valid, create & add all possible team pairings
-      $id_len = count($ids);
-      foreach ($ids as $reviewer_id) {
+      $id_len = count($line_data['ids']);
+      foreach ($line_data['ids'] as $reviewer_id) {
         for ($k = 0; $k < $id_len; $k++) {
           // Append pairings to our array array; defaults to each team being independent and each review is equally weighted
-          $pairing = array($reviewer_id, $ids[$k], $line_num, 1);
-          $ret_val[] = $pairing;
+          $pairing = array($reviewer_id, $line_data['ids'][$k], $line_num, 1);
+          $ret_val['ids'][] = $pairing;
         }
       }
     } else {
-      if (isset($ret_val['error'])) {
-        $ret_val['error'] = $ret_val['error'] . $error;
-      } else {
-        $ret_val['error'] = $error;
-      }
+      $ret_val['error'] = $ret_val['error'] . $line_data['error'];
     }
   }
 
@@ -106,58 +97,42 @@ function parse_review_teams($file_handle, $con) {
 
 function parse_review_managed_teams($file_handle, $pm_mult, $con) {
   // return array
-  $ret_val = array();
+  $ret_val = array('error' => '', 'ids' => array());
 
-  $line_num = 0;
+  $line_num = -1;
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
-    $team_members = array();
-    unset($manager);
-    $error = '';
     $line_num = $line_num + 1;
 
     // Force the input into ASCII format
     $line_text = array_map("clean_to_ascii", $line_text);
+    // Remove any blank entries from the array
+    $line_text = array_filter($line_text);
 
-    $column = 0;
-    // Make sure the current line's data are valid
-    foreach ($line_text as $email) {
-      if (!empty($email)) {
-        $student_id = getIdFromEmail($con, $email);
-        if (empty($student_id)) {
-          $error = $error . 'Line '. $line_num . ' at column ' . $column . ' includes an unknown person (' . $email . ')\n';
-        } else {
-          if (isset($manager)) {
-            // We process each column as if it is the manager. We now add it to the team since we know it is not.
-            $team_members[] = $manager;
-          }
-          $manager = $student_id;
-        }
-      }
+    // This is horrible practice, but it handles the degenerate case of a blank line and makes the code much easier to read
+    if (empty($line_text)) {
+      continue;
     }
-    // Any lines that do not have at least 1 team member and 1 manager are an error
-    if (empty($team_members) && isset($manager) && empty($error)) {
-        $error = 'Line '. $line_num . ' only includes a manager\n';
-    }
+    
+    // Get the errors and ids from the current line
+    $line_data = getIdsFromEmails($con, $line_num, $line_text);
+
     // Only add lines that do not have errors
     if (empty($error)) {
-      $team_size = count($team_members);
+      $manager = array_pop($line_data['ids']);
+      $team_size = count($line_data['ids']);
       // Now that we know data are valid, create & add all possible team pairings
-      foreach ($team_members as $member) {
+      foreach ($line_data['ids'] as $member) {
         // Add the manager's review
         $managed = array($manager, $member, $line_num, $pm_mult);
-        $ret_val[] = $managed;
+        $ret_val['ids'][] = $managed;
         // Now add all of the team member's reviews
         for ($k = 0; $k < $team_size; $k++) {
-          $pairing = array($member, $team_members[$k], $line_num, 1);
-          $ret_val[] = $pairing;
+          $pairing = array($member, $line_data['ids'][$k], $line_num, 1);
+          $ret_val['ids'][] = $pairing;
         }
       }
     } else {
-      if (isset($ret_val['error'])) {
-        $ret_val['error'] = $ret_val['error'] . $error;
-      } else {
-        $ret_val['error'] = $error;
-      }
+      $ret_val['error'] = $ret_val['error'] . $line_data['error'];
     }
   }
 
@@ -166,52 +141,36 @@ function parse_review_managed_teams($file_handle, $pm_mult, $con) {
 
 function parse_review_many_to_one($file_handle, $con) {
   // return array
-  $ret_val = array();
+  $ret_val = array('error' => '', 'ids' => array());
 
-  $line_num = 0;
+  $line_num = -1;
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
-    $team_members = array();
-    unset($manager);
-    $error = '';
     $line_num = $line_num + 1;
 
     // Force the input into ASCII format
     $line_text = array_map("clean_to_ascii", $line_text);
+    // Remove any blank entries from the array
+    $line_text = array_filter($line_text);
 
-    $column = 0;
-    // Make sure the current line's data are valid
-    foreach ($line_text as $email) {
-      if (!empty($email)) {
-        $student_id = getIdFromEmail($con, $email);
-        if (empty($student_id)) {
-          $error = $error . 'Line '. $line_num . ' at column ' . $column . ' includes an unknown person (' . $email . ')\n';
-        } else {
-          if (isset($manager)) {
-            // We process each column as if it is the manager. We now add it to the team since we know it is not.
-            $team_members[] = $manager;
-          }
-          $manager = $student_id;
-        }
-      }
+    // This is horrible practice, but it handles the degenerate case of a blank line and makes the code much easier to read
+    if (empty($line_text)) {
+      continue;
     }
-    // Any lines that do not have at least 1 team member and 1 manager are an error
-    if (empty($team_members) && isset($manager) && empty($error)) {
-        $error = 'Line '. $line_num . ' only includes a manager\n';
-    }
+
+    // Get the errors and ids from the current line
+    $line_data = getIdsFromEmails($con, $line_num, $line_text);
+
     // Only add lines that do not have errors
     if (empty($error)) {
+      $manager = array_pop($line_data['ids']);
       // Now that we know data are valid, create & add all possible team pairings
-      foreach ($team_members as $member) {
+      foreach ($line_data['ids'] as $member) {
         // Add the manager's review
         $managed = array($member, $manager, $line_num, 1);
-        $ret_val[] = $managed;
+        $ret_val['ids'][] = $managed;
       }
     } else {
-      if (isset($ret_val['error'])) {
-        $ret_val['error'] = $ret_val['error'] . $error;
-      } else {
-        $ret_val['error'] = $error;
-      }
+      $ret_val['error'] = $ret_val['error'] . $line_data['error'];
     }
   }
 
@@ -220,7 +179,7 @@ function parse_review_many_to_one($file_handle, $con) {
 
 function parse_roster_file($file_handle) {
   // return array
-  $ret_val = array();
+  $ret_val = array('error' => '', 'ids' => array());
 
   $line_num = 0;
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
@@ -228,6 +187,8 @@ function parse_roster_file($file_handle) {
 
     // Force the input into ASCII format
     $line_text = array_map("clean_to_ascii", $line_text);
+    // Remove any blank entries from the array
+    $line_text = array_filter($line_text);
 
     $line_fields = count($line_text);
 
@@ -244,13 +205,9 @@ function parse_roster_file($file_handle) {
       }
       if (empty($error)) {
         // add the fields to the array
-        $ret_val[] = $line_text;
+        $ret_val['ids'] = $line_text;
       } else {
-        if (isset($ret_val['error'])) {
-          $ret_val['error'] = $ret_val['error'] . $error;
-        } else {
-          $ret_val['error'] = $error;
-        }
+        $ret_val['error'] = $ret_val['error'] . $error;
       }
     }
   }

@@ -216,7 +216,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
       $pairings = getPairingResults($con, $pairing_mode, $pm_mult, $file_handle);
-      if (empty($pairings)) {
+      if (!isset($pairings)) {
         $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
       }
       
@@ -224,7 +224,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       fclose($file_handle);
 
       // check for any errors
-      if (isset($pairings['error'])) {
+      if (!empty($pairings['error'])) {
         $errorMsg['pairing-file'] = $pairings['error'];
       } else {
         // finally add the pairings to the database if no other error message were set so far
@@ -233,7 +233,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           $sdate = $start_date . ' ' . $start_time;
           $edate = $end_date . ' ' . $end_time;
           $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id);
-          addPairings($con, $survey_id, $pairings);
+          addPairings($con, $survey_id, $pairings['ids']);
           http_response_code(302);
           header("Location: ".INSTRUCTOR_HOME."surveys.php");
           exit();

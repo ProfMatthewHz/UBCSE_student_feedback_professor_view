@@ -72,7 +72,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       fclose($file_handle);
 
       // check for any errors
-      if (isset($names_emails['error'])) {
+      if (!empty($names_emails['error'])) {
         $results['success'] = false;
         $results['error'] = $names_emails['error'];
       } else {
