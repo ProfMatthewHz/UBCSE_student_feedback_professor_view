@@ -1,8 +1,8 @@
 <?php
   function getEvalScores($db_connection, $eval_id) {
-    $query_str = 'SELECT topic_id, score_id 
-                  FROM scores2
-                  WHERE eval_id=? AND score_id IS NOT NULL';
+    $query_str = 'SELECT topic_id, rubric_score_id 
+                  FROM scores
+                  WHERE eval_id=?';
     $retVal = array();
     $stmt = $db_connection->prepare($query_str);
     $stmt->bind_param('i', $eval_id);
@@ -16,7 +16,7 @@
 
   function getEvalTexts($db_connection, $eval_id) {
     $query_str = 'SELECT topic_id, response 
-                  FROM freeform
+                  FROM freeforms
                   WHERE eval_id=? AND response IS NOT NULL';
     $retVal = array();
     $stmt = $db_connection->prepare($query_str);
@@ -31,9 +31,9 @@
 
   function getReviewPoints($db_connection, $review_id, $topics) {
     $query_str = 'SELECT topic_id, score 
-                  FROM scores2 
-                  INNER JOIN rubric_scores ON scores2.score_id=rubric_scores.id 
-                  INNER JOIN evals ON scores2.eval_id=evals.id 
+                  FROM scores
+                  INNER JOIN rubric_scores ON scores.rubric_score_id=rubric_scores.id 
+                  INNER JOIN evals ON scores2.eval_id=evals.id
                   WHERE evals.reviews_id=?';
     $retVal = array();
     // Prepare the next selection statement
@@ -45,7 +45,7 @@
       $topic_id = $row[0];
       $score = $row[1];
       if (!array_key_exists($topic_id, $topics)) {
-        // This is not a valid survey for this student
+        // This should never be able to happen
         echo "ERROR: Survey submission was invalid. Talk to your instructor about this error.";
         http_response_code(400);
         exit();
@@ -57,9 +57,9 @@
   }
 
   function getReviewScores($db_connection, $review_id, $topics) {
-    $query_str = 'SELECT topic_id, score_id 
-                  FROM scores2 
-                  INNER JOIN evals ON scores2.eval_id=evals.id 
+    $query_str = 'SELECT topic_id, rubric_score_id 
+                  FROM scores
+                  INNER JOIN evals ON scores.eval_id=evals.id 
                   WHERE evals.reviews_id=?';
     $retVal = array();
     // Prepare the next selection statement
@@ -71,7 +71,7 @@
       $topic_id = $row[0];
       $score = $row[1];
       if (!array_key_exists($topic_id, $topics)) {
-        // This is not a valid survey for this student
+        // This should not ever be able to happen
         echo "ERROR: Survey submission was invalid. Talk to your instructor about this error.";
         http_response_code(400);
         exit();
@@ -97,7 +97,7 @@
       $topic_id = $row[0];
       $text = $row[1];
       if (!array_key_exists($topic_id, $topics)) {
-        // This is not a valid survey for this student
+        // This should not be able to happen
         echo "ERROR: Survey submission was invalid. Talk to your instructor about this error.";
         http_response_code(400);
         exit();
@@ -109,7 +109,7 @@
   }
 
   function insertNewScore($db_connection, $eval_id, $topic_id, $score_id) {
-    $query_str = 'INSERT INTO scores (eval_id, topic_id, score_id) VALUES (?,?,?)';
+    $query_str = 'INSERT INTO scores (eval_id, topic_id, rubric_score_id) VALUES (?,?,?)';
     $stmt = $db_connection->prepare($query_str);
     $stmt->bind_param('iii',$eval_id, $topic_id, $score_id);
     $stmt->execute();
@@ -117,7 +117,7 @@
   }
 
   function updateExistingScore($db_connection, $eval_id, $topic_id, $score_id) {
-    $query_str = 'UPDATE scores SET score_id=? WHERE eval_id=? AND topic_id=?';
+    $query_str = 'UPDATE scores SET rubric_score_id=? WHERE eval_id=? AND topic_id=?';
     $stmt = $db_connection->prepare($query_str);
     $stmt->bind_param('iii',$score_id, $eval_id, $topic_id);
     $stmt->execute();

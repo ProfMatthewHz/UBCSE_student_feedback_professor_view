@@ -163,14 +163,14 @@ CREATE TABLE `rubric_responses` (
 CREATE TABLE `scores` (
  `eval_id` int(11) NOT NULL,
  `topic_id` int(11) NOT NULL,
- `score_id` int(11) NOT NULL,
+ `rubric_score_id` int(11) NOT NULL,
  PRIMARY KEY (`eval_id`,`topic_id`),
  KEY `scores_eval_idx` (`eval_id`),
  KEY `scores_topic_idx` (`topic_id`),
- KEY `scores_score_idx` (`score_id`),
+ KEY `scores_rubric_score_idx` (`rubric_score_id`),
  CONSTRAINT `scores_eval_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
  CONSTRAINT `scores_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
- CONSTRAINT `scores_score_constraint` FOREIGN KEY (`score_id`) REFERENCES `rubric_scores` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+ CONSTRAINT `scores_rubric_score_constraint` FOREIGN KEY (`rubric_score_id`) REFERENCES `rubric_scores` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- freeforms TABLE

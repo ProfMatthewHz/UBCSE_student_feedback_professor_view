@@ -23,7 +23,7 @@ function getReviewTargets($db_connection, $survey_id, $id) {
                 INNER JOIN students ON reviews.reviewed_id = students.id 
                 WHERE reviews.survey_id =? AND reviews.reviewer_id=?';
   $stmt = $db_connection->prepare($query_str);
-  $stmt->bind_param('ii',$survey_id,$id);
+  $stmt->bind_param('ii',$survey_id, $id);
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {

@@ -21,8 +21,8 @@
     // Pessimistically assume this fails
     $ret_val = null;
     $query = 'SELECT DISTINCT courses.name course_name, surveys.name survey_name 
-              FROM reviews
-              INNER JOIN surveys ON reviews.survey_id = surveys.id 
+              FROM surveys
+              INNER JOIN reviews ON reviews.survey_id = surveys.id 
               INNER JOIN courses on courses.id = surveys.course_id 
               WHERE surveys.id=? AND reviews.'.$student_id_field.'=? AND '.$addl_query;
     $stmt = $db_connection->prepare($query);
@@ -40,10 +40,9 @@
   function getSurveyMultipleChoiceTopics($db_connection, $survey_id) {
     $ret_val = array();
     $query_str = 'SELECT rubric_topics.id, question
-                  FROM rubric_topics 
-                  INNER JOIN surveys ON surveys.rubric_id = rubric_topics.rubric_id
-                  WHERE surveys.id = ?
-                  AND rubric_topics.question_response = "'.MC_QUESTION_TYPE.'"
+                  FROM surveys 
+                  INNER JOIN rubric_topics ON surveys.rubric_id = rubric_topics.rubric_id
+                  WHERE surveys.id = ? AND rubric_topics.question_response = "'.MC_QUESTION_TYPE.'"
                   ORDER BY rubric_topics.id';
     $stmt_topics = $db_connection->prepare($query_str);
     $stmt_topics->bind_param('i', $survey_id);
@@ -59,10 +58,9 @@
   function getSurveyFreeformTopics($db_connection, $survey_id) {
     $ret_val = array();
     $query_str = 'SELECT rubric_topics.id, question
-                  FROM rubric_topics 
-                  INNER JOIN surveys ON surveys.rubric_id = rubric_topics.rubric_id
-                  WHERE surveys.id = ?
-                  AND rubric_topics.question_response = "'.FREEFORM_QUESTION_TYPE.'"
+                  FROM surveys 
+                  INNER JOIN rubric_topics ON surveys.rubric_id = rubric_topics.rubric_id
+                  WHERE surveys.id = ? AND rubric_topics.question_response = "'.FREEFORM_QUESTION_TYPE.'"
                   ORDER BY rubric_topics.id';
     $stmt_topics = $db_connection->prepare($query_str);
     $stmt_topics->bind_param('i', $survey_id);
