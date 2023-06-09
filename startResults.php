@@ -3,15 +3,17 @@
   ini_set("display_errors", "1"); // shows all errors
   ini_set("log_errors", 1);
   session_start();
+
   require "lib/constants.php";
+  require "lib/database.php";
+  require "lib/surveyQueries.php";
+  require "lib/reviewQueries.php";
 
   if(!isset($_SESSION['email'])) {
     header("Location: ".SITE_HOME."index.php");
     exit();
   }
   $email = $_SESSION['email'];
-  require "lib/database.php";
-  require "lib/surveyQueries.php";
   $con = connectToDatabase();
 
   // Verify that the survey exists
@@ -33,7 +35,7 @@
     exit();
   }
 
-  $_SESSION['reviewers'] = initializeReviewerData($con, $survey, $email);
+  $_SESSION['reviewers'] = getReviewSources($con, $survey, $email);
 
   // Get the multiple choice questions and responses for this survey.
   $_SESSION['mc_topics'] = getSurveyMultipleChoiceTopics($con, $survey);

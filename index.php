@@ -8,24 +8,18 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 require "lib/constants.php";
 require "lib/database.php";
+require "lib/studentQueries.php";
 $con = connectToDatabase();
 
 if(!empty($_SERVER['uid'])) {
   $email = $_SERVER['uid']."@buffalo.edu";
-
-  $stmt = $con->prepare('SELECT student_id FROM students WHERE email=?');
-  $stmt->bind_param('s', $email);
-  $stmt->execute();
-  $stmt->bind_result($student_ID);
-  $stmt->store_result();
-  if ($stmt->num_rows == 0) {
-    http_response_code(400);
-    echo "Unknown email address entered. Talk to your professor to get you added as a site user.";
-    exit();
+  $id = getIdFromEmail($con, $email);
+  if (empty($id)) {
+     http_response_code(400);
+     echo 'Double-check UBIT: ' . $email . ' is not in the system.';
+     exit();
   }
-  $stmt->fetch();
-	session_regenerate_id();
-	$_SESSION['loggedin'] = TRUE;
+  session_regenerate_id();
 	$_SESSION['email'] = $email;
 	$_SESSION['student_ID'] = $student_ID;
 	$stmt->close();
@@ -33,6 +27,6 @@ if(!empty($_SERVER['uid'])) {
 	exit();
 } else {
   http_response_code(400);
-  echo "Could not connect: Error connecting to shibboleth. Talk to Matthew to get this fixed.";
+  echo "Error connecting to shibboleth. Let Matthew know since this should not happen.";
   exit();
 }

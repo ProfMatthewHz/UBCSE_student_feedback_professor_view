@@ -3,6 +3,7 @@ require "lib/constants.php";
 require "lib/database.php";
 require "lib/resultsTable.php";
 require "lib/scoreQueries.php";
+
 //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors

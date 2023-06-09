@@ -3,15 +3,18 @@
   ini_set("display_errors", "1"); // shows all errors
   ini_set("log_errors", 1);
   session_start();
-  require "lib/constants.php";
 
+  require "lib/constants.php";
+  require "lib/database.php";
+  require "lib/reviewQueries.php";
+  require "lib/surveyQueries.php";
+  
   if(!isset($_SESSION['email'])) {
     header("Location: ".SITE_HOME."index.php");
     exit();
   }
   $email = $_SESSION['email'];
-  require "lib/database.php";
-  require "lib/surveyQueries.php";
+  
   $con = connectToDatabase();
 
   // Verify that the survey exists
@@ -33,7 +36,7 @@
     exit();
   }
 
-  $_SESSION['group_members'] = initializeRevieweeData($con, $survey, $email);
+  $_SESSION['group_members'] = getReviewTargets($con, $survey, $email);
 
   // Get the questions and responses for this survey. For now, this will be hard coded.
   $_SESSION['mc_topics'] = getSurveyMultipleChoiceTopics($con, $survey);
