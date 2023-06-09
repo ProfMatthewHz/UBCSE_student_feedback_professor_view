@@ -1,5 +1,4 @@
 <?php
-
   function validCompletedTarget($db_connection, $survey_id, $email) {
     $query_str = 'surveys.end_date <= NOW()';
     $email_field = 'teammate_email';
@@ -22,7 +21,7 @@
     $base_query = 'SELECT DISTINCT coursesname course_name, surveys.name survey_name 
                    FROM reviews
                    INNER JOIN surveys ON reviews.survey_id = surveys.id 
-                   INNER JOIN courses on coursesid = surveys.course_id 
+                   INNER JOIN courses on courses.id = surveys.course_id 
                    WHERE surveys.id=? AND reviews.'.$email_field.'=? AND '.$addl_query;
     $stmt_request = $db_connection->prepare($base_query);
     $stmt_request->bind_param('is', $survey_id, $email);
@@ -97,5 +96,117 @@
     }
     $stmt_responses->close();
     return $ret_val;
+  }
+
+  function createQueryReviewer($con, $date_clause) {
+    $sql = 'SELECT courses.name, surveys.name, surveys.id, surveys.start_date, surveys.end_date, COUNT(reviews.id), COUNT(evals.id)
+            FROM surveys
+            INNER JOIN courses on courses.id = surveys.course_id 
+            INNER JOIN reviews on reviews.survey_id=surveys.id
+            LEFT JOIN evals on evals.reviews_id=reviews.id
+            WHERE reviews.reviewer_id=? AND courses.semester=? AND courses.year=?';
+    if (!empty($date_clause)) {
+      $sql = $sql . ' AND ' . $date_clause;
+    }
+    $sql = $sql.' GROUP BY surveys.id';
+    $retVal = $con->prepare($sql);
+    return $retVal;
+  }
+
+  function createQueryReviewed($con, $date_clause) {
+    $sql = 'SELECT courses.name, surveys.name, surveys.id, surveys.start_date, surveys.end_date, COUNT(evals.id)
+            FROM surveys
+            INNER JOIN courses on courses.id = surveys.course_id 
+            INNER JOIN reviews on reviews.survey_id=surveys.id
+            LEFT JOIN evals on evals.reviews_id=reviews.id
+            WHERE reviews.reviewed_id=? AND reviews.reviewer_id<>? AND courses.semester=? AND courses.year=?';
+    if (!empty($date_clause)) {
+      $sql = $sql . ' AND ' . $date_clause;
+    }
+    $sql = $sql.' GROUP BY surveys.id';
+    $retVal = $con->prepare($sql);
+    return $retVal;
+  }
+
+  function chronologicalComparator($a, $b) {
+    $a_datetime = $a[1];
+    $b_datetime = $b[1];
+    if ($a_datetime < $b_datetime) {
+      return 1;
+    } else if ($a_datetime > $b_datetime) {
+      return -1;
+    } else {
+      return 0;
+    }
+  }
+
+  function getClosedSurveysForTerm($con, $term, $year, $id) {
+    $retVal = array();
+    $stmt = createQueryReviewer($con, 'surveys.end_date < NOW()');
+    $stmt->bind_param('iii', $id, $term, $year);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      $e = new DateTime($row[4]);
+      $fully_submitted = ($row[5] == $row[6]);
+      $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false);
+    }
+    $stmt->close();
+
+    $stmt = createQueryReviewed($con, 'surveys.end_date < NOW()');
+    $stmt->bind_param('iiii', $id, $id, $term, $year);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      if (array_key_exists($row[2], $retVal)) {
+        $survey = $retVal[$row[2]];
+        // Update that they could be reviewed on this survey
+        $survey[5] = true;
+        // Update that they were reviewed on this survey
+        $survey[6] = ($row[5] > 0);
+        $retVal[$row[2]] = $survey;
+      } else {
+        $e = new DateTime($row[4]);
+        $evaluated = ($row[5] > 0);
+        $retVal[$row[2]] = array($row[0], $row[1], $e, false, false, true, $evaluated);
+      }
+    }
+    $stmt->close();
+    // Sort the array to be in chronological order
+    uasort($retVal, 'chronologicalComparator');
+    return $retVal;
+  }
+
+  function getCurrentSurveysForTerm($con, $term, $year, $id) {
+    $retVal = array();
+    $stmt = createQueryReviewer($con, 'surveys.start_date <= NOW() AND surveys.end_date > NOW()');
+    $stmt->bind_param('iii', $term, $year, $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      $e = new DateTime($row[4]);
+      $fully_submitted = ($row[5] == $row[6]);
+      $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false);
+    }
+    $stmt->close();
+    // Sort the array to be in chronological order
+    uasort($retVal, 'chronologicalComparator');
+    return $retVal;
+  }
+
+  function getUpcomingSurveysForTerm($con, $term, $year, $id) {
+    $retVal = array();
+    $stmt = createQueryReviewer($con, 'surveys.start_date > NOW()');
+    $stmt->bind_param('iii', $term, $year, $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      $s = new DateTime($row[3]);
+      $retVal[$row[2]] = array($row[0], $row[1], $s, true, false, false, false);
+    }
+    $stmt->close();
+    // Sort the array to be in chronological order
+    uasort($retVal, 'chronologicalComparator');
+    return $retVal;
   }
 ?>
