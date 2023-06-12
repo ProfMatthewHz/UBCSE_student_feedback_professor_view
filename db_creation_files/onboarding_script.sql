@@ -4,13 +4,11 @@ CREATE TABLE `instructors` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` TEXT NOT NULL,
   `email` VARCHAR(20) NOT NULL,
-  `init_auth_id` VARCHAR(255),
   `session_token` VARCHAR(255),
   `session_expiration` INT,
   `csrf_token` VARCHAR(255),
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `init_auth` (`init_auth_id`),
   UNIQUE KEY `session_token` (`session_token`),
   UNIQUE KEY `csrf_token` (`csrf_token`)
 ) ENGINE=InnoDB;
@@ -23,7 +21,7 @@ CREATE TABLE `courses` ( -- was course
  `code` text NOT NULL,
  `name` text NOT NULL,
  `semester` tinyint NOT NULL,
- `year` tinyint NOT NULL,
+ `year` year NOT NULL,
  -- removed instructor_id column
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
