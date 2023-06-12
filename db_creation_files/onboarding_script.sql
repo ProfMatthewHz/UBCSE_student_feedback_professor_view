@@ -33,26 +33,10 @@ CREATE TABLE `course_instructors` (
  `course_id` int(11) NOT NULL,
  `instructor_id` int(11) NOT NULL,
  PRIMARY KEY (`course_id`,`instructor_id`),
- KEY `course_instructors_instructor_idx` (`instructor_id`),
- CONSTRAINT `course_instructor_instructor_constraint` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
  KEY `course_instructors_course_idx` (`course_id`),
- CONSTRAINT `course_instructor_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB;
-
--- surveys TABLE
--- each row represents a use of this system for a course. Students must only be able to submit evaluations between
--- the start date and end date listed
-CREATE TABLE `surveys` (
- `id` int(11) NOT NULL AUTO_INCREMENT,
- `course_id` int(11) NOT NULL,
- `start_date` datetime NOT NULL,
- `end_date` datetime NOT NULL, -- was expiration_date
- `name` CHARACTER NOT NULL,
- `rubric_id` int(11) NOT NULL,
- PRIMARY KEY (`id`),
- UNIQUE KEY `id` (`id`),
- KEY `survey_course_idx` (`course_id`),
- CONSTRAINT `survey_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+ KEY `course_instructors_instructor_idx` (`instructor_id`),
+ CONSTRAINT `course_instructors_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+ CONSTRAINT `course_instructors_instructor_constraint` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
 
@@ -60,8 +44,8 @@ CREATE TABLE `surveys` (
 -- each row is a distinct student who has been added to this system. Each student must only appear once EVEN IF they are registered in multiple classes
 CREATE TABLE `students` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
- `email` varchar(20) NOT NULL,
  `name` text NOT NULL,
+ `email` varchar(20) NOT NULL,
  PRIMARY KEY (`id`),
  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB;
@@ -76,6 +60,33 @@ CREATE TABLE `enrollments` (
   KEY `enrollments_course_idx` (`course_id`),
   CONSTRAINT `enrollments_student_constraint` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `enrollments_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB;
+
+
+-- rubrics TABLE
+-- each row represents a single rubric that we can use
+CREATE TABLE `rubrics` (
+  `id` int(11) NOT NULL,
+  `description` varchar(500) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+
+-- surveys TABLE
+-- each row represents a use of this system for a course. Students must only be able to submit evaluations between
+-- the start date and end date listed
+CREATE TABLE `surveys` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `course_id` int(11) NOT NULL,
+ `start_date` datetime NOT NULL,
+ `end_date` datetime NOT NULL, -- was expiration_date
+ `name` VARCHAR(30) NOT NULL,
+ `rubric_id` int(11) NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `surveys_course_idx` (`course_id`),
+ KEY `surveys_rubric_idx` (`rubric_id`),
+ CONSTRAINT `surveys_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+ CONSTRAINT `surveys_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
 
@@ -109,15 +120,6 @@ CREATE TABLE `evals` (
 ) ENGINE=InnoDB;
 
 
--- rubrics TABLE
--- each row represents a single rubric that we can use
-CREATE TABLE `rubrics` (
-  `id` int(11) NOT NULL,
-  `description` varchar(500) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
-
 -- rubric_scores TABLE
 -- each row represents a score levels from the multiple choice questions in this rubric
 CREATE TABLE `rubric_scores` (
@@ -127,7 +129,7 @@ CREATE TABLE `rubric_scores` (
   `score` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `rubric_scores_rubric_idx` (`rubric_id`),
-  CONSTRAINT `rubric_scorse_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `rubric_scores_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
 
@@ -147,13 +149,13 @@ CREATE TABLE `rubric_topics` (
 -- each row contains the text of the response at a specific score level on the specific topic
 CREATE TABLE `rubric_responses` (
   `topic_id` int(11) NOT NULL,
-  `score_id` int(11) NOT NULL,
+  `rubric_score_id` int(11) NOT NULL,
   `response` text NOT NULL,
-  PRIMARY KEY (`topic_id`,`score_id`),
+  PRIMARY KEY (`topic_id`,`rubric_score_id`),
   KEY `rubric_responses_topic_idx` (`topic_id`),
-  KEY `rubric_responses_score_idx` (`score_id`),
+  KEY `rubric_responses_rubric_score_idx` (`rubric_score_id`),
   CONSTRAINT `rubric_responses_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `rubric_responses_score_constraint` FOREIGN KEY (`score_id`) REFERENCES `rubric_scores` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `rubric_responses_rubric_score_constraint` FOREIGN KEY (`rubric_score_id`) REFERENCES `rubric_scores` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
 -- scores TABLE
@@ -178,8 +180,8 @@ CREATE TABLE `freeforms` (  -- was freeform
  `topic_id` int(11) NOT NULL,
  `response` TEXT DEFAULT NULL,
  PRIMARY KEY (`eval_id`,`topic_id`),
- KEY `freeform_eval_idx` (`eval_id`),
- KEY `freeform_topic_idx` (`topic_id`),
- CONSTRAINT `freeform_eval_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
- CONSTRAINT `freeform_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+ KEY `freeforms_eval_idx` (`eval_id`),
+ KEY `freeforms_topic_idx` (`topic_id`),
+ CONSTRAINT `freeforms_eval_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `freeforms_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
