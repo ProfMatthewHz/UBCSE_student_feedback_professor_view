@@ -16,6 +16,8 @@ require_once "../lib/infoClasses.php";
 require_once "../lib/surveyQueries.php";
 require_once "lib/surveyQueries.php";
 require_once "lib/courseQueries.php";
+require_once "lib/resultsCalculations.php";
+
 
 // query information about the requester
 $con = connectToDatabase();
@@ -64,70 +66,20 @@ $course_code = $course_info['code'];
 $course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
 $course_year = $course_info['year'];
 
-// TODO: Refactor this code so I do not need to duplicate it on download
-// Array mapping email address to normalized results
-$averages = array();
-
-// Get the per-reviewer data
-$survey_complete = getCompletionData($con, $survey_id);
-
-// Get the info for everyone who will be evaluated
+// Retrieves the ids, names, & emails of everyone who was reviewed in this survey.
 $teammates = getReviewedData($con, $survey_id);
 
-// Get information completed by the reviewer -- how many were reviewed and the total points
+// Get the survey results organized by the student being reviewed since this is how we actually do our calculations
 $scores = getSurveyScores($con, $survey_id, $teammates);
 
-// Get how much we should be weighting each of the reviews
-$weights = getSurveyWeights($con, $survey_id, $teammates);
-
-// Get the total number of points this reviewer provided on the surveys
-$totals = getSurveyTotals($con, $survey_id, $teammates);
-
+// Averages only exist for multiple-choice topics, so that is all we get for now
 $topics = getSurveyMultipleChoiceTopics($con, $survey_id);
 
-foreach ($teammates as $email => $name) {
-  $sum_normalized = 0;
-  $review_weights = 0;
-  $norm_review_weights = 0;
-  $personal_average = array();
-  foreach (array_keys($topics) as $topic_id) {
-    $personal_average[$topic_id] = 0;
-  }
-  foreach ($scores[$email] as $reviewer => $scored) {
-    $weight = $weights[$email][$reviewer];
-    $sum = 0;
-    foreach ($scored as $id => $score) {
-      $weighted_score = $score * $weight;
-      $sum = $sum + $weighted_score;
-      $personal_average[$id] =  $personal_average[$id] + $weighted_score;
-    }
-    $review_weights = $review_weights + $weight;
-    // Verify that this reviewer completed all of their 
-    if ($survey_complete[$reviewer]) {
-      // Normalize the sum by calculating the percentage of points this student received and then adjust for the weight of the evaluation
-      $normalized_sum = ($sum / $totals[$reviewer]) * ($weights[$reviewer]["total"]/$weight);
-      $scores[$email][$reviewer]['normalized'] = $normalized_sum;
-      $sum_normalized = $sum_normalized + ($normalized_sum * $weight);
-      $norm_review_weights = $norm_review_weights + $weight;
-    } else {
-      $scores[$email][$reviewer]['normalized'] = NO_SCORE_MARKER;
-    }
-  }
-  foreach (array_keys($topics) as $topic_id) {
-    if ($review_weights == 0) {
-      $averages[$email][$topic_id] = NO_SCORE_MARKER;
-    } else {
-      $averages[$email][$topic_id] = $personal_average[$topic_id] / $review_weights;
-    }
-  }
-  if ($norm_review_weights == 0) {
-    $averages[$email]["overall"] = NO_SCORE_MARKER;
-  } else {
-    $averages[$email]["overall"] = $sum_normalized / $norm_review_weights;
-  }
-}
-$topics['normalized'] = 'Normalized Score';
+// Retrieves the ids, names, & emails of everyone who was a reviewer in this survey.
 $reviewers = getReviewerData($con, $survey_id);
+
+// Retrieves the per-team records organized by reviewer
+$team_data = getReviewerPerTeamResults($con, $survey_id);
 ?>
 <!doctype html>
 <html lang="en">
@@ -179,28 +131,25 @@ $reviewers = getReviewerData($con, $survey_id);
             <table class="table table-striped table-hover">
               <thead>
                 <tr>
-                  <th scope="col">Reviewee Name (Email)</th>
                   <?php
-                  foreach ($topics as $topic_id => $question) {
-                    if ($topic_id != 'normalized') {
-                      echo '<th scope="col">'.$question.'</th>';
-                    }
+                  $results = getIndividualsResults($teammates, $scores, $topics);
+                  $header = array_shift($results);
+                  foreach ($header as $column) {
+                    echo '<th scope="col">'.$column.'</th>';
                   }
                   ?>
                 </tr>
               </thead>
               <tbody>
-              <?php
-                foreach ($teammates as $email => $name) {
-                  echo '<tr><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
-                  foreach ($topics as $topic_id => $question) {
-                    if ($topic_id != 'normalized') {
-                      echo '<td>'.$averages[$email][$topic_id].'</td>';
+                <?php
+                  foreach ($results as $row) {
+                    echo '<tr>';
+                    foreach ($row as $cell) {
+                      echo '<td>'.htmlspecialchars($cell).'</td>';
                     }
+                    echo '</tr>';
                   }
-                  echo '</tr>';
-                }
-              ?>
+                ?>
               </tbody>
             </table>
           </div>
@@ -214,32 +163,25 @@ $reviewers = getReviewerData($con, $survey_id);
           <div class="row justify-content-center mt-1">
             <table class="table table-striped table-hover">
               <thead>
-                <tr>
-                  <th scope="col">Reviewer Name (Email)</th>
-                  <th scope="col">Reviewee Name (Email)</th>
-                  <?php
-                  foreach ($topics as $topic_id => $question) {
-                    echo '<th scope="col">'.$question.'</th>';
-                  }
-                  ?>
-                </tr>
+                <?php
+                    $results = getRawResults($teammates, $scores, $topics, $reviewers, $team_data);
+                    $header = array_shift($results);
+                    foreach ($header as $cell) {
+                      echo '<th scope="col">'.$cell.'</th>';
+                    }
+                    ?>
+                  </tr>
               </thead>
               <tbody>
-              <?php
-                foreach ($teammates as $email => $name) {
-                  foreach ($scores[$email] as $reviewer => $scored) {
-                    echo '<tr><td>' . htmlspecialchars($reviewer) . '<br>(' . htmlspecialchars($reviewers[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
-                    foreach ($topics as $topic_id => $question) {
-                      if (isset($scored[$topic_id])) {
-                        echo '<td>'.$scored[$topic_id].'</td>';
-                      } else {
-                        echo '<td>'.NO_SCORE_MARKER.'</td>';
-                      }
+                <?php
+                  foreach ($results as $row) {
+                    echo '<tr>';
+                    foreach ($row as $cell) {
+                      echo '<td>'.htmlspecialchars($cell).'</td>';
                     }
                     echo '</tr>';
                   }
-                }
-              ?>
+                ?>
               </tbody>
             </table>
           </div>
@@ -253,22 +195,25 @@ $reviewers = getReviewerData($con, $survey_id);
           <div class="row justify-content-center mt-1">
             <table class="table table-striped table-hover">
               <thead>
-                <tr>
-                  <th scope="col">Name (Email)</th>
-                  <th scope="col">Average Normalized Score</th>
-                </tr>
+                <?php
+                    $results = getFinalResults($teammates, $scores, $topics, $reviewers, $team_data);
+                    $header = array_shift($results);
+                    foreach ($header as $cell) {
+                      echo '<th scope="col">'.$cell.'</th>';
+                    }
+                    ?>
+                  </tr>
               </thead>
               <tbody>
-              <?php
-                foreach ($averages as $email => $norm_array) {
-                  echo '<tr><td>' . htmlspecialchars($teammates[$email]) . '<br>(' . htmlspecialchars($email) . ')' . '</td>';
-                  if ($norm_array["overall"] === NO_SCORE_MARKER) {
-                    echo '<td>'.NO_SCORE_MARKER.'</td></tr>';
-                  } else {
-                    echo '<td>' . $norm_array["overall"]  . '</td></tr>';
+                <?php
+                  foreach ($results as $row) {
+                    echo '<tr>';
+                    foreach ($row as $cell) {
+                      echo '<td>'.htmlspecialchars($cell).'</td>';
+                    }
+                    echo '</tr>';
                   }
-                }
-              ?>
+                ?>
               </tbody>
             </table>
           </div>
