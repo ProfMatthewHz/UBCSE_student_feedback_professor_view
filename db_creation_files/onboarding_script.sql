@@ -66,7 +66,7 @@ CREATE TABLE `enrollments` (
 -- rubrics TABLE
 -- each row represents a single rubric that we can use
 CREATE TABLE `rubrics` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
@@ -123,7 +123,7 @@ CREATE TABLE `evals` (
 -- rubric_scores TABLE
 -- each row represents a score levels from the multiple choice questions in this rubric
 CREATE TABLE `rubric_scores` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `rubric_id` int(11) NOT NULL,
   `name` text NOT NULL,
   `score` tinyint(4) NOT NULL,
