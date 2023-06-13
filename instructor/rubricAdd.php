@@ -222,7 +222,7 @@ function makeLevelVisible(levelNum) {
           <label for="rubric-level">Types of Levels Rubric Uses:</label>
         </div>
 
-        <div id="rubric-level2" class="border-top border-bottom">
+        <div id="rubric-level5" class="border-top border-bottom">
           <div class="row mx-1">
             <div class="col text-start align-top">
               <span style="font-size:small;color:DarkGrey">Lowest level:</span>
