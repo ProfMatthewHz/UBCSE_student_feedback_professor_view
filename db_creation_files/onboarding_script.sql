@@ -14,13 +14,12 @@ CREATE TABLE `instructors` (
 
 -- courses table
 -- each row defines a specific course that uses this system
-CREATE TABLE `courses` ( -- was course
+CREATE TABLE `courses` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `code` text NOT NULL,
  `name` text NOT NULL,
  `semester` tinyint NOT NULL,
  `year` year NOT NULL,
- -- removed instructor_id column
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
@@ -89,12 +88,12 @@ CREATE TABLE `surveys` (
  `end_date` datetime NOT NULL,
  `name` VARCHAR(30) NOT NULL,
  `rubric_id` int(11) NOT NULL,
- `survey_type_id` int(11) NOT NULL,
+ `survey_type_id` tinyint NOT NULL,
  PRIMARY KEY (`id`),
  KEY `surveys_course_idx` (`course_id`),
  KEY `surveys_rubric_idx` (`rubric_id`),
  CONSTRAINT `surveys_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
- CONSTRAINT `surveys_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+ CONSTRAINT `surveys_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
  CONSTRAINT `surveys_survey_type_constraint` FOREIGN KEY (`survey_type_id`) REFERENCES `survey_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
