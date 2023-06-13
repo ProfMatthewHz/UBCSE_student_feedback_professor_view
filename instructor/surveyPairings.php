@@ -166,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // first add the survey details to the database
         if (empty($errorMsg)) {
           removeExistingPairings($con, $survey_id);
-          addPairings($con, $sid, $pairings['id']);
+          addReviewsToSurvey($con, $sid, $pairings['id']);
           unset($pairings);
         }
       }
