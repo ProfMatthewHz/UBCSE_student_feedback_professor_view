@@ -1,5 +1,5 @@
 <?php
-require_once '../../lib/studentQueries.php';
+require_once '../lib/studentQueries.php';
 
 function getIdsFromEmails($con, $line_num, $emails) {
   // We do not allow teams of 1, so flag this as an error right away.

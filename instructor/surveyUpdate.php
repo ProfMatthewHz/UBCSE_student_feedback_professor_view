@@ -15,6 +15,7 @@ require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "lib/fileParse.php";
 require_once 'lib/rubricQueries.php';
+require_once 'lib/courseQueries.php';
 require_once 'lib/surveyQueries.php';
 
 // set timezone
@@ -58,7 +59,7 @@ $rubrics = selectRubrics($con);
 
 // try to look up info about the requested survey
 $survey_info = getSurveyData($con, $survey_id);
-if ($empty($survey_info)) {
+if (empty($survey_info)) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();

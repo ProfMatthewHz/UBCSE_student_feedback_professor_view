@@ -177,7 +177,7 @@
   function getCurrentSurveysForTerm($con, $term, $year, $id) {
     $retVal = array();
     $stmt = createQueryReviewer($con, 'surveys.start_date <= NOW() AND surveys.end_date > NOW()');
-    $stmt->bind_param('iii', $term, $year, $id);
+    $stmt->bind_param('iii', $id, $term, $year);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
@@ -194,7 +194,7 @@
   function getUpcomingSurveysForTerm($con, $term, $year, $id) {
     $retVal = array();
     $stmt = createQueryReviewer($con, 'surveys.start_date > NOW()');
-    $stmt->bind_param('iii', $term, $year, $id);
+    $stmt->bind_param('iii', $id, $term, $year);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
