@@ -242,7 +242,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           $sdate = $start_date . ' ' . $start_time;
           $edate = $end_date . ' ' . $end_time;
           $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id);
-          addPairings($con, $survey_id, $pairings['ids']);
+          addReviewsToSurvey($con, $survey_id, $pairings['ids']);
           http_response_code(302);
           header("Location: ".INSTRUCTOR_HOME."surveys.php");
           exit();

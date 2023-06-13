@@ -23,7 +23,24 @@ function removeExistingPairings($con, $survey_id) {
   return $retVal;
 }
 
-function addPairings($con, $survey_id, $emails) {
+function getReviewsForSurvey($con, $survey_id) {
+  // Get the pairings used in the original survey 
+  $retVal = array();
+  // prepare SQL statements
+  $stmt = $con->prepare('SELECT reviewer_id, reviewed_id, team_id, eval_weight 
+                         FROM reviews
+                         WHERE survey_id=?');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $retVal[] = $row;
+  }
+  $stmt->close();
+  return $retVal;
+}
+
+function addReviewsToSurvey($con, $survey_id, $emails) {
   // Optimistically assume everything works
   $retVal = true;
   // prepare SQL statements

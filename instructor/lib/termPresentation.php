@@ -16,38 +16,38 @@ function emit_course($widgetId, $course_id, $course_info) {
             echo
             '<div class="row justify-content-evenly">
               <div class="col"><b>Survey Name</b></div>
-              <div class="col-6"><b>Dates Available</b></div>
+              <div class="col"><b>Dates Available</b></div>
               <div class="col"><b>Completion Rates</b></div>
               <div class="col"><b>Actions</b></div>
             </div>';
           }
           foreach ($course_info['upcoming'] as $survey) {
-            echo '<div class="row justify-content-evenly">
+            echo '<div class="row pb-2 justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
-                    <div class="col-6">'.$survey['start_date'].' to '.$survey['end_date'].'</div>
+                    <div class="col">'.$survey['start_date'].' to '.$survey['end_date'].'</div>
                     <div class="col">Not yet active</div><div class="col">';
-            echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Update</a> | ';
+            echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Update</a> | <a href="surveyDuplicate.php?survey=' . $survey['id'] . '">Duplicate</a> | ';
             echo '<a href="surveyPairings.php?survey='.$survey['id'].'">Modify Assignments</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                   </div>';
           }
           foreach ($course_info['active'] as $survey) {
-            echo '<div class="row justify-content-evenly">
+            echo '<div class="row row pb-2 justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
-                    <div class="col-6">'.$survey['start_date'].' to '.$survey['end_date'].'</div>
+                    <div class="col">'.$survey['start_date'].' to '.$survey['end_date'].'</div>
                     <div class="col">'.$survey['completion'].'</div><div class="col">';
             if ($course_info['mutable']) {
-              echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Extend Deadline</a> | ';
+              echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Extend</a> | <a href="surveyDuplicate.php?survey=' . $survey['id'] . '">Duplicate</a> | ';
             }
             echo '<a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div>
                   </div>';
           }
           foreach ($course_info['expired'] as $survey) {
-            echo '<div class="row justify-content-evenly">
+            echo '<div class="row row pb-2 justify-content-evenly">
                     <div class="col">'.$survey['name'].'</div>
-                    <div class="col-6">'.$survey['start_date'].' to '.$survey['end_date'].'</div>
+                    <div class="col">'.$survey['start_date'].' to '.$survey['end_date'].'</div>
                     <div class="col">'.$survey['completion'].'</div><div class="col">';
             if ($course_info['mutable']) {
-              echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Extend Deadline</a> | ';
+              echo '<a href="surveyUpdate.php?survey='.$survey['id'].'">Extend</a> | <a href="surveyDuplicate.php?survey=' . $survey['id'] . '">Duplicate</a> |';
             }
             echo '<a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete</a></div></div>';
           }
