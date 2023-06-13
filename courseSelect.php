@@ -96,7 +96,7 @@
                   $deadline_text = ' due ';
                   $link = 'startSurvey.php';
                   if ($value[4]) {
-                    $deadline_text = ' can be reviewed until ';
+                    $deadline_text = ' can be revised until ';
                     $link = 'startConfirm.php';
                   }
                   $e = $value[2];
