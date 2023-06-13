@@ -14,8 +14,8 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/surveyQueries.php";
+require_once "lib/courseQueries.php";
 require_once "lib/surveyQueries.php";
-require_once "lib/instructorQueries.php";
 require_once "lib/resultsCalculations.php";
 require_once "lib/resultsFunctions.php";
 
