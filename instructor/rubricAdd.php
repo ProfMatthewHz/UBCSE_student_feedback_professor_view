@@ -27,11 +27,11 @@ function check_level($names, $values, $level, &$errorMsg) {
 }
 
 function check_value_monotonic($level_values, &$errorMsg) {
-  $prev_level = PHP_INT_MAX;
+  $prev_level = PHP_INT_MIN;
   foreach ($level_values as $level => $value) {
     if (!key_exists($level, $errorMsg)) {
       $val = intval($value);
-      if ($val > $prev_level) {
+      if ($val < $prev_level) {
         $errorMsg[$level."-value"] = "Lower level CANNOT have higher value";
       }
       $prev_level = $val;
@@ -95,22 +95,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  get_data_posted($level_names, "level1", "-name");
-  get_data_posted($level_values, "level1", "-value");
+  // Levels are processed lowest-to-highest (reverse name order) for consistency in presentation
+  get_data_posted($level_names, "level5", "-name");
+  get_data_posted($level_values, "level5", "-value");
   if ( ($rubric_level == '4') || ($rubric_level == '5') ) {
-    get_data_posted($level_names, "level2", "-name");
-    get_data_posted($level_values, "level2", "-value");
+    get_data_posted($level_names, "level4", "-name");
+    get_data_posted($level_values, "level4", "-value");
   }
   if ( ($rubric_level == '3') || ($rubric_level == '5') ) {
     get_data_posted($level_names, "level3", "-name");
     get_data_posted($level_values, "level3", "-value");
   }
   if ( ($rubric_level == '4') || ($rubric_level == '5') ) {
-    get_data_posted($level_names, "level4", "-name");
-    get_data_posted($level_values, "level4", "-value");
+    get_data_posted($level_names, "level2", "-name");
+    get_data_posted($level_values, "level2", "-value");
   }
-  get_data_posted($level_names, "level5", "-name");
-  get_data_posted($level_values, "level5", "-value");
+  get_data_posted($level_names, "level1", "-name");
+  get_data_posted($level_values, "level1", "-value");
+
 
   // Check that the names & values that are used are valid
   check_level($level_names, $level_values, "level1", $errorMsg);
@@ -213,9 +215,9 @@ function makeLevelVisible(levelNum) {
 
         <div class="form-floating ms-1 mb-3">
           <select class="form-select <?php if(isset($errorMsg["rubric-level"])) {echo "is-invalid ";} ?>" id="rubric-level" name="rubric-level" required onchange="handleLevelChange();">
-            <option value="3" <?php if (isset($rubric_level) && $rubric_level == 3) {echo 'selected';} ?>>Highest-Middle-Lowest</option>
-            <option value="4" <?php if (isset($rubric_level) && $rubric_level == 4) {echo 'selected';} ?>>Highest-High-Low-Lowest</option>
-            <option value="5" <?php if (isset($rubric_level) && $rubric_level == 5) {echo 'selected';} ?>>Highest-High-Middle-Low-Lowest</option>
+            <option value="3" <?php if (isset($rubric_level) && $rubric_level == 3) {echo 'selected';} ?>>Lowest-Middle-Highest</option>
+            <option value="4" <?php if (isset($rubric_level) && $rubric_level == 4) {echo 'selected';} ?>>Lowest-Low-High-Highest</option>
+            <option value="5" <?php if (isset($rubric_level) && $rubric_level == 5) {echo 'selected';} ?>>Lowest-Low-Middle-High-Highest</option>
           </select>
           <label for="rubric-level">Types of Levels Rubric Uses:</label>
         </div>
