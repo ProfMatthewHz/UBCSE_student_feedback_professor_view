@@ -13,20 +13,10 @@ session_start();
 require_once "../lib/random.php";
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
 require_once "lib/instructorQueries.php";
-
 
 // query information about the requester
 $con = connectToDatabase();
-
-// try to get information about the instructor who made this request by checking the session cookie
-// redirect to home page if already logged in
-$instructor = new InstructorInfo();
-
-// define needed variables
-$email_error_message = "";
-$email_error_message2 = "";
 
 // handle data from shibboleth
 if (!empty($_SERVER['uid'])) {
@@ -41,25 +31,7 @@ if (!empty($_SERVER['uid'])) {
     header($loc_string);
     exit();
   }
-
-  // first, generate the session cookie
-  $session_cookie = random_bytes(TOKEN_SIZE);
-
-  // hash the initial authorization cookie
-  $hashed_cookie = hash_pbkdf2("sha256", $session_cookie, SESSIONS_SALT, PBKDF2_ITERS);
-
-  // set the initial authorization cookie for 12 hours
-  $session_expiration = time() + SESSION_TOKEN_EXPIRATION_SECONDS;
-  $c_options['expires'] = $session_expiration;
-  $c_options['samesite'] = 'Lax';
-  setcookie(SESSION_COOKIE_NAME, bin2hex($session_cookie), $c_options);
-
-  // now, generate the CSRF token
-  $csrf_token = bin2hex(random_bytes(TOKEN_SIZE));
-
-  // Update the information for this instructor
-  updateInstructorInfo($con, $hashed_cookie, $session_expiration, $csrf_token, $id);
-
+  $_SESSION['id'] = $id;
   // redirect the instructor to the next page
   http_response_code(302);
   header("Location: ".INSTRUCTOR_HOME."surveys.php");

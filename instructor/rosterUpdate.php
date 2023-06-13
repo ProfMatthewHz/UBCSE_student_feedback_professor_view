@@ -11,7 +11,6 @@ session_start();
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
 require_once '../lib/studentQueries.php';
 require_once "lib/fileParse.php";
 require_once "lib/enrollmentFunctions.php";
@@ -21,8 +20,12 @@ require_once "lib/instructorQueries.php";
 $con = connectToDatabase();
 
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!isset($_FILES['roster-file']) || !isset($_POST['course_id'])) {
@@ -41,7 +44,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $course_id = intval($_POST['course_id']);
 
   // make sure the survey is for a course the current instructor actually teaches
-  if (!isCourseInstructor($con, $course_id, $instructor->id)) {
+  if (!isCourseInstructor($con, $course_id, $instructor_id)) {
     http_response_code(403);
     echo "403: Forbidden.";
     exit();

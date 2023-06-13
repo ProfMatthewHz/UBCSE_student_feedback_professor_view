@@ -4,12 +4,10 @@ CREATE TABLE `instructors` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` TEXT NOT NULL,
   `email` VARCHAR(20) NOT NULL,
-  `session_token` VARCHAR(255),
-  `session_expiration` INT,
+  `session_expiration` INT, -- future expansion
   `csrf_token` VARCHAR(255),
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `session_token` (`session_token`),
   UNIQUE KEY `csrf_token` (`csrf_token`)
 ) ENGINE=InnoDB;
 

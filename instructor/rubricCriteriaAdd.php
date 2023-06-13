@@ -1,5 +1,4 @@
 <?php
-
 function check_level_response($crit, $level_name, $text, &$errorMsg) {
   if (!isset($_POST[$crit."-".$level_name])) {
     http_response_code(403);
@@ -25,15 +24,19 @@ session_start();
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
+require_once "lib/instructorQueries.php";
 require_once "lib/rubricQueries.php";
 
 //query information about the requester
 $con = connectToDatabase();
 
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 
 $errorMsg = array();
 $criteria = array();
@@ -55,7 +58,8 @@ if (($_SERVER['REQUEST_METHOD'] != 'POST') && isset($_SESSION["confirm"])) {
     exit();
   }
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token'])) {
+  $csrf_token = getCSRFToken($con, $instructor_id);
+  if (!hash_equals($csrf_token, $_POST['csrf-token'])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
     exit();
@@ -116,7 +120,7 @@ if (($_SERVER['REQUEST_METHOD'] != 'POST') && isset($_SESSION["confirm"])) {
 
 // Avoid problems in the verification screen from double-submitting a rubric
 unset($_SESSION["confirm"]);
-
+$csrf_token = createCSRFToken($con, $instructor_id);
 $level_keys_for_js = json_encode(array_keys($_SESSION["rubric"]["levels"]["names"]));
 $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["names"]));
 ?>
@@ -299,7 +303,7 @@ $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["n
     <form class="mt-5 mx-1" id="define-rubric" method="post">
       <div id="crit-list">
       </div>
-      <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
+      <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>"></input>
       <div class="row mx-1 mt-2">
         <div class="col">
           <button type="button" class="btn btn-outline-secondary" onclick="addCriterion()">+ Add Criterion</button>

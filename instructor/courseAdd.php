@@ -12,8 +12,8 @@ session_start();
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
 require_once '../lib/studentQueries.php';
+require_once "lib/instructorQueries.php";
 require_once "lib/fileParse.php";
 require_once "lib/enrollmentFunctions.php";
 require_once "lib/courseQueries.php";
@@ -22,9 +22,12 @@ require_once "lib/courseQueries.php";
 $con = connectToDatabase();
 
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
-
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 //stores error messages corresponding to form fields
 $errorMsg = array();
 
@@ -46,7 +49,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
+  $csrf_token = getCSRFToken($con, $instructor_id);
+  if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
     exit();
@@ -114,12 +118,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         // now add the roster to the database if no other errors were set after adding the course to the database
         if (empty($errorMsg)) {
           // Verify this course does not already exist
-          if (!courseExists($con, $course_code, $course_name, $semester, $course_year, $instructor->id)) {
+          if (!courseExists($con, $course_code, $course_name, $semester, $course_year, $_SESSION['id'])) {
             // Create the course in the database
             $course_id = addCourse($con, $course_code, $course_name, $semester, $course_year);
 
             // Add the instructor to the course
-            addInstructor($con, $course_id, $instructor->id);
+            addInstructor($con, $course_id, $instructor_id);
 
             // Upload the course roster for later use
             addToCourse($con, $course_id, $names_emails['ids']);
@@ -139,6 +143,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 }
+$csrf_token = getCSRFToken($con, $instructor_id);
 ?>
 <!doctype html>
 <html lang="en">
@@ -191,7 +196,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           <label for="roster-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"]; } else { echo "Roster (CSV File):";} ?></label>
         </div>
 
-    <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
+    <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>" />
 
     <input class="btn btn-success" type="submit" value="Create Course" />
     </div>

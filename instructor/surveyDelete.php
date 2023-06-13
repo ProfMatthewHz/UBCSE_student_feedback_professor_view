@@ -12,7 +12,6 @@ session_start();
 // bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
 require_once "lib/instructorQueries.php";
 require_once "lib/courseQueries.php";
 require_once "lib/surveyQueries.php";
@@ -21,10 +20,13 @@ require_once "lib/surveyQueries.php";
 // query information about the requester
 $con = connectToDatabase();
 
-// try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
-
+//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 
 // check for the query string or post parameter
 $sid = NULL;
@@ -53,7 +55,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   }
   
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token'])) {
+  $csrf_token = getCSRFToken($con, $instructor_id);
+  if (!hash_equals($csrf_token, $_POST['csrf-token'])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
     exit();
@@ -80,7 +83,7 @@ if (empty($survey_info)) {
 $survey_name = $survey_info['name'];
 
 // Get the info for the course that this instructor teaches 
-$course_info = getSingleCourseInfo($con, $survey_info['course_id'], $instructor->id);
+$course_info = getSingleCourseInfo($con, $survey_info['course_id'], $instructor_id);
 if (empty($course_info)) {
   http_response_code(403);
   echo "403: Forbidden.";
@@ -117,6 +120,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   } 
 }
+$csrf_token = createCSRFToken($con, $instructor_id);
 ?>
 <!doctype html>
 <html lang="en">
@@ -155,7 +159,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             I understand that deleting this survey will delete all scores associated with this survey.</label>
         </div>
         <input type="hidden" name="survey" value="<?php echo $sid; ?>"></input>
-        <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
+        <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>"></input>
         <div class="row justify-content-center align-items-center">
           <div class="col-sm-auto form-check">
             <input type="submit" class="btn btn-danger" value="Delete Survey"></input>

@@ -12,8 +12,8 @@ session_start();
 // //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
 require_once '../lib/studentQueries.php';
+require_once "lib/instructorQueries.php";
 require_once "lib/fileParse.php";
 require_once "lib/pairingFunctions.php";
 require_once "lib/rubricQueries.php";
@@ -27,9 +27,13 @@ date_default_timezone_set('America/New_York');
 // //query information about the requester
 $con = connectToDatabase();
 
-// //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
+//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 
 // store information about courses as array of array
 $courses = array();
@@ -40,7 +44,7 @@ $term = MONTH_MAP_SEMESTER[$month];
 $year = idate('Y');
 
 // get information about the courses
-$all_data = getAllCoursesForInstructor($con, $instructor->id);
+$all_data = getAllCoursesForInstructor($con, $instructor_id);
 
 foreach ($all_data as $row) {
   if (($row['year'] >= $year) && ($row['semester'] >= $term)) {
@@ -95,7 +99,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']) || !is_uploaded_file($_FILES['pairing-file']['tmp_name']))
+  $csrf_token = getCSRFToken($con, $instructor_id);
+  if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['pairing-file']['tmp_name']))
   {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
@@ -119,7 +124,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg['rubric-id'] = "Please choose a valid rubric.";
   }
 
-  if (!isCourseInstructor($con, $course_id, $instructor->id)) {
+  if (!isCourseInstructor($con, $course_id, $instructor_id)) {
     $errorMsg['course-id'] = "Please choose a valid course.";
   }
 
@@ -249,6 +254,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
   $rubric_id = array_key_first($rubrics);
 }
+$csrf_token = createCSRFToken($con, $instructor_id);
 ?>
 <!doctype html>
 <html lang="en">
@@ -329,7 +335,7 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
         <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>
       </div>
 
-      <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
+      <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>" />
 
       <input type="submit" class="btn btn-success" value="Create Survey">
           </div>

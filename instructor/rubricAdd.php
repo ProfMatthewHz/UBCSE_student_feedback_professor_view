@@ -51,15 +51,19 @@ session_start();
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
+require_once "lib/instructorQueries.php";
 require_once "lib/rubricQueries.php";
 
 //query information about the requester
 $con = connectToDatabase();
 
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
@@ -78,7 +82,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token'])) {
+  $csrf_token = getCSRFToken($con, $instructor_id);
+  if (!hash_equals($csrf_token, $_POST['csrf-token'])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
     exit();
@@ -151,6 +156,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $level_names = $_SESSION["rubric"]["levels"]["names"];
 }
 unset($_SESSION["rubric"]);
+$csrf_token = createCSRFToken($con, $instructor_id);
 ?>
 <!doctype html>
 <html lang="en">
@@ -333,7 +339,7 @@ function makeLevelVisible(levelNum) {
           </div>
         </div>
 
-      <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
+      <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>"></input>
       <div class="row mx-1 mt-2 justify-content-center">
       <div class="col-auto">
       <input class="btn btn-success" type="submit" value="Define Criteria"></input>

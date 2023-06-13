@@ -12,7 +12,6 @@ session_start();
 // bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
 require_once "../lib/surveyQueries.php";
 require_once "lib/courseQueries.php";
 require_once "lib/surveyQueries.php";
@@ -22,10 +21,13 @@ require_once "lib/resultsFunctions.php";
 // query information about the requester
 $con = connectToDatabase();
 
-// try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
-
+//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 
 // respond not found on no query string parameters
 $survey_id = NULL;
@@ -60,7 +62,7 @@ if (empty($survey_info)) {
 }
 
 // make sure the survey is for a course the current instructor actually teaches
-if (!isCourseInstructor($con, $survey_info['course_id'], $instructor->id)) {
+if (!isCourseInstructor($con, $survey_info['course_id'], $instructor_id)) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();

@@ -11,7 +11,6 @@ session_start();
 //bring in required code
 require_once "../../lib/database.php";
 require_once "../../lib/constants.php";
-require_once "../../lib/infoClasses.php";
 require_once "rubricQueries.php";
 require_once "rubricTable.php";
 
@@ -19,8 +18,13 @@ require_once "rubricTable.php";
 $con = connectToDatabase();
 
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
+
 // In case of error, remove that we are reviewing a rubric
 unset($_SESSION['rubric_reviewed']);
 

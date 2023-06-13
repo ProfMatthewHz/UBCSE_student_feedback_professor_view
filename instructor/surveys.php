@@ -11,7 +11,6 @@ session_start();
 // bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
 require_once "lib/termPresentation.php";
 require_once "lib/courseQueries.php";
 
@@ -21,9 +20,13 @@ date_default_timezone_set('America/New_York');
 // query information about the requester
 $con = connectToDatabase();
 
-// try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
+//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
   
 // Just to be certain, we will unset any session variables that we are using to track state within a process
 unset($_SESSION["rubric_reviewed"]);
@@ -38,7 +41,7 @@ $year = idate('Y');
 $terms = array();
 
 // get information about all courses an instructor teaches in priority order
-$courses = getAllCoursesForInstructor($con, $instructor->id);
+$courses = getAllCoursesForInstructor($con, $instructor_id);
 
 foreach ($courses as $course_info) {
   $tempSurvey = array();
