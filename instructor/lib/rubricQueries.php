@@ -79,7 +79,10 @@ function selectRubricName($con, $rubric_id) {
 
 function selectRubricScores($con, $rubric_id) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT id, name, score FROM rubric_scores WHERE rubric_id=? ORDER BY score');
+  $stmt = $con->prepare('SELECT id, name, score 
+                         FROM rubric_scores
+                         WHERE rubric_id=? 
+                         ORDER BY score');
   $stmt->bind_param('i', $rubric_id);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -96,7 +99,11 @@ function selectRubricScores($con, $rubric_id) {
 
 function selectTopicResponses($con, $topic_id) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT rubric_score_id, response FROM rubric_responses WHERE topic_id=? ORDER BY topic_id');
+  $stmt = $con->prepare('SELECT rubric_score_id, response 
+                         FROM rubric_responses 
+                         INNER JOIN rubric_scores ON rubric_score_id=rubric_scores.id
+                         WHERE topic_id=? 
+                         ORDER BY score');
   $stmt->bind_param('i', $topic_id);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -111,7 +118,10 @@ function selectTopicResponses($con, $topic_id) {
 
 function selectRubricTopics($con, $rubric_id) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT id, question, question_response FROM rubric_topics WHERE rubric_id=? ORDER BY id');
+  $stmt = $con->prepare('SELECT id, question, question_response 
+                         FROM rubric_topics 
+                         WHERE rubric_id=? 
+                         ORDER BY id');
   $stmt->bind_param('i', $rubric_id);
   $stmt->execute();
   $result = $stmt->get_result();
