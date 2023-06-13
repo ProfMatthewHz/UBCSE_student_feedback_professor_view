@@ -102,7 +102,7 @@ CREATE TABLE `surveys` (
 
 -- reviews TABLE
 -- each row represents a set of evaluations that will need to be completed
-CREATE TABLE `reviews` ( -- was reviewers
+CREATE TABLE `reviews` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `survey_id` int(11) NOT NULL,
  `reviewer_id` int(11) NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE `reviews` ( -- was reviewers
 -- each row defines a single peer- or self-evaluation. Rows are added/updated only as students complete their evaluations
 CREATE TABLE `evals` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
- `review_id` int(11) NOT NULL, -- was reviewers_id
+ `review_id` int(11) NOT NULL,
  PRIMARY KEY (`id`),
  KEY `evals_review_idx` (`review_id`),
  CONSTRAINT `evals_review_constraint` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -185,7 +185,7 @@ CREATE TABLE `scores` (
 
 -- freeforms TABLE
 -- each row represents the freeform response entered on an evaluation in response to a freeform question
-CREATE TABLE `freeforms` (  -- was freeform
+CREATE TABLE `freeforms` (
  `eval_id` int(11) NOT NULL,
  `topic_id` int(11) NOT NULL,
  `response` TEXT DEFAULT NULL,
