@@ -43,7 +43,7 @@ if (empty($eval_id)) {
 }
 
 //When submit button is pressed
-if (isset($_POST)) {
+if (!empty($_POST)) {
 	$actual = count($_SESSION['mc_topics']) + count($_SESSION['ff_topics']);
 	if (count($_POST) != $actual) {
 		echo "Bad Request: Expected ".$actual." items, but posted ".count($_POST);
