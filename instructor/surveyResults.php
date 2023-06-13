@@ -17,6 +17,7 @@ require_once "../lib/surveyQueries.php";
 require_once "lib/surveyQueries.php";
 require_once "lib/courseQueries.php";
 require_once "lib/resultsCalculations.php";
+require_once "lib/resultsFunctions.php";
 
 
 // query information about the requester
@@ -196,7 +197,7 @@ $team_data = getReviewerPerTeamResults($con, $survey_id);
             <table class="table table-striped table-hover">
               <thead>
                 <?php
-                    $results = getFinalResults($teammates, $scores, $topics, $reviewers, $team_data);
+                    $results = getFinalResults($teammates, $scores, $topics, $team_data);
                     $header = array_shift($results);
                     foreach ($header as $cell) {
                       echo '<th scope="col">'.$cell.'</th>';

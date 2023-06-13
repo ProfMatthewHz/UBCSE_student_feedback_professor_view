@@ -16,6 +16,7 @@ function calculateAverages($students, $scores, $topics) {
          // Update the totals on this topic
          $total_points = $total_points + ($responses[$topic_id] * $weight);
          $total_weight = $total_weight + $weight;
+         
       }
       if ($total_weight == 0) {
         $averages[$topic_id] = NO_SCORE_MARKER;
@@ -37,16 +38,27 @@ function calculateNormalizedSurveyResults($students, $scores, $topics, $team_dat
     foreach ($scores[$student_id] as $reviewer_id => $responses) {
       $weight = $responses["weight"];
       $team = $responses["team"];
+      $reviewer_total_points = $team_data[$reviewer_id][$team]["total_score"];
+      $reviewer_total_reviews = $team_data[$reviewer_id][$team]["total_people"];
+      
       // Check that the student completed all of the surveys and that this review "counts"
       if (($team_data[$reviewer_id][$team]["completion"]) && ($weight != 0)) {
-        $total = 0;
-        // Loop through each topic -- this will eventually allow the option to weight topics differently
-        foreach (array_keys($topics) as $topic_id) {
-          $total = $total + $responses[$topic_id];
+        // Handle the degenerate case where nobody on the team was assigned points
+        if ($reviewer_total_points == 0) {
+          // Assign everyone a result of 0   
+          $ret_val[$student_id][$reviewer_id] = 0;
+        } else {
+          $total = 0;
+          // Loop through each topic -- this will eventually allow the option to weight topics differently
+          foreach (array_keys($topics) as $topic_id) {
+            $total = $total + $responses[$topic_id];
+          }
+          // Now normalize the total against the total score for this reviewer to this team
+          $total = $total / $reviewer_total_points;
+          // Finally, multiply by the number of reviews to get a result independent of team size
+          $total = $total * $reviewer_total_reviews;
+          $ret_val[$student_id][$reviewer_id] = $total;
         }
-        // Now normalize the total against the total score for this reviewer to this team
-        $total = $total / $team_data[$reviewer_id][$team]["total_score"];
-        $ret_val[$student_id][$reviewer_id] = $total;
       } else {
         $ret_val[$student_id][$reviewer_id] = NO_SCORE_MARKER;
       }

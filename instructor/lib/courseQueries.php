@@ -56,7 +56,7 @@ function addSurveysToCourses($con, &$terms) {
   $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
                          FROM surveys
                          LEFT JOIN reviews ON reviews.survey_id=surveys.id
-                         LEFT JOIN evals ON evals.reviews_id=reviews.id
+                         LEFT JOIN evals ON evals.review_id=reviews.id
                          WHERE course_id=?
                          GROUP BY name, start_date, end_date, rubric_id
                          ORDER BY start_date DESC, end_date DESC');
@@ -107,7 +107,7 @@ function addSurveysToCourses($con, &$terms) {
 function getAllCoursesForInstructor($con, $instructor_id) {
   $stmt = $con->prepare('SELECT id, code, name, semester, year 
                          FROM courses
-                         INNER JOIN course_instructors ON courses.id=course_instructor.course_id
+                         INNER JOIN course_instructors ON courses.id=course_instructors.course_id
                          WHERE instructor_id=? 
                          ORDER BY year DESC, semester DESC, code DESC');
   $stmt->bind_param('i', $instructor_id);
@@ -123,7 +123,7 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
   $retVal = null;
   $stmt = $con->prepare('SELECT id, code, name, semester, year 
                          FROM courses
-                         INNER JOIN course_instructors ON courses.id=course_instructor.course_id
+                         INNER JOIN course_instructors ON courses.id=course_instructors.course_id
                          WHERE id=? AND instructor_id=?');
   $stmt->bind_param('ii', $course_id, $instructor_id);
   $stmt->execute();

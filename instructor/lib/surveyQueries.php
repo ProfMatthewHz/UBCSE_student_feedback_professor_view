@@ -108,9 +108,9 @@ function getCompletionData($con, $survey_id) {
 function getReviewerPerTeamResults($con, $survey_id) {
   $ret_val = array();
 
-  $stmt = $con->prepare('SELECT reviews.reviewer_id, reviews.team_id, COUNT(reviews.id), COUNT(evals.id), SUM(score)
+  $stmt = $con->prepare('SELECT reviews.reviewer_id, reviews.team_id, COUNT(DISTINCT reviews.id), COUNT(reviews.id), COUNT(evals.id), SUM(score)
                          FROM reviews
-                         LEFT JOIN evals ON evals.reviews_id=reviews.id
+                         LEFT JOIN evals ON evals.review_id=reviews.id
                          LEFT JOIN scores ON evals.id=scores.eval_id
                          LEFT JOIN rubric_scores ON rubric_scores.id=scores.rubric_score_id
                          LEFT JOIN rubric_topics ON rubric_topics.id=scores.topic_id
@@ -122,9 +122,10 @@ function getReviewerPerTeamResults($con, $survey_id) {
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
     $reviewer_id = $row[0];
     $team_id = $row[1];
-    $completed = ($row[2] == $row[3]);
-    $sum_weighted_score = $row[4];
-    $team_result = array("completion" => $completed, "total_score" => $sum_weighted_score);
+    $reviews = $row[2];
+    $completed = ($row[3] == $row[4]);
+    $sum_weighted_score = $row[5];
+    $team_result = array("completion" => $completed, "total_score" => $sum_weighted_score, "total_people" => $reviews);
     if (!array_key_exists($reviewer_id, $ret_val)) {
       $ret_val[$reviewer_id] = array($team_id => $team_result);
     } else {
@@ -133,6 +134,7 @@ function getReviewerPerTeamResults($con, $survey_id) {
     }
   }
   $stmt->close();
+  return $ret_val;
 }
 
 function getReviewsTeam($con, $survey_id) {
@@ -211,12 +213,12 @@ function getSurveyScores($con, $survey_id, $teammates) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT reviewer_id, team_id, eval_weight, topic_id, score
                          FROM reviews
-                         INNER JOIN evals on evals.reviews_id=reviews.id 
+                         INNER JOIN evals on evals.review_id=reviews.id 
                          INNER JOIN scores ON evals.id=scores.eval_id
                          INNER JOIN rubric_scores ON rubric_scores.id=scores.rubric_score_id
-                         WHERE survey_id=? AND reviewer.reviewed_id=?');
+                         WHERE survey_id=? AND reviews.reviewed_id=?');
   foreach (array_keys($teammates) as $student_id) {
-    // Create the space for this teammate -- ASSUMES TEAMMATES ARE UNIQUE
+    // Create the space for this teammate -- ASSUMES TEAMMATES ARE UNIQUE      
     $ret_val[$student_id] = array();
     $stmt->bind_param('ii',$survey_id, $student_id);
     $stmt->execute();

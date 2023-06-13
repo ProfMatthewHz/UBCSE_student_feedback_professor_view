@@ -16,6 +16,8 @@ if(!empty($_SERVER['uid'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // query information about the requester
+  $con = connectToDatabase();
   if (empty($_POST["UBIT"])) {
     http_response_code(400);
     echo "Bad Request: Missing parameters.";

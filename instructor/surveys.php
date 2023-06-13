@@ -65,7 +65,7 @@ foreach ($courses as $course_info) {
   $terms[$term_name] = $term_courses;
 }
 
-$terms = addSurveysToCourses($con, $terms, $today);
+$terms = addSurveysToCourses($con, $terms);
 ?>
 <!doctype html>
 <html lang="en">
