@@ -79,7 +79,7 @@ $terms = addSurveysToCourses($con, $terms);
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <script>
-    function updateRoster() {
+    function expandRoster() {
       // Create the fake form we are uploading
       let formData = new FormData();
       formData.append("roster-file", document.getElementById("roster-file").files[0]);
@@ -107,7 +107,7 @@ $terms = addSurveysToCourses($con, $terms);
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="rosterUpdateModalLabel">Add to course roster</h5>
+            <h5 class="modal-title" id="rosterUpdateModalLabel">Expand course roster</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -119,7 +119,7 @@ $terms = addSurveysToCourses($con, $terms);
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="updateRoster()">Update</button>
+            <button type="button" class="btn btn-primary" onclick="expandRoster()">Expand</button>
           </div>
         </div>
       </div>
