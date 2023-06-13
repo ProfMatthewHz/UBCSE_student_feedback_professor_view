@@ -20,7 +20,7 @@ if(!empty($_SERVER['uid'])) {
      exit();
   }
   session_regenerate_id();
-	$_SESSION['student_id'] = $student_ID;
+	$_SESSION['student_id'] = $id;
 	$stmt->close();
 	header("Location: ".SITE_HOME."/courseSelect.php");
 	exit();
