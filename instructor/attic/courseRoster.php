@@ -17,6 +17,7 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
+require_once "lib/courseQueries.php";
 
 
 // query information about the requester
@@ -29,11 +30,9 @@ $instructor->check_session($con, 0);
 
 // check for the query string or post parameter
 $cid = NULL;
-if($_SERVER['REQUEST_METHOD'] == 'GET')
-{
+if($_SERVER['REQUEST_METHOD'] == 'GET') {
   // respond not found on no query string parameter
-  if (!isset($_GET['course']))
-  {
+  if (!isset($_GET['course'])) {
     http_response_code(404);
     echo "404: Not found.";
     exit();
@@ -42,18 +41,14 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')
   // make sure the query string is an integer, reply 404 otherwise
   $cid = intval($_GET['course']);
 
-  if ($cid === 0)
-  {
+  if ($cid === 0) {
     http_response_code(404);
     echo "404: Not found.";
     exit();
   }
-}
-else
-{
+} else {
   // respond bad request if bad post parameters
-  if (!isset($_POST['course']))
-  {
+  if (!isset($_POST['course'])) {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
     exit();
@@ -62,8 +57,7 @@ else
   // make sure the post survey id is an integer, reply 400 otherwise
   $cid = intval($_POST['course']);
 
-  if ($cid === 0)
-  {
+  if ($cid === 0) {
     http_response_code(400);
     echo "Bad Request: Invalid parameters.";
     exit();
@@ -72,15 +66,9 @@ else
 }
 
 // try to look up info about the requested course and make sure the current instructor teaches it
-$stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $cid, $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
-$course_info = $result->fetch_all(MYSQLI_ASSOC);
-
+$course_info = getSingleCourseInfo($con, $cid, $instructor->id);
 // reply forbidden if instructor did not create course or course does not exist
-if ($result->num_rows == 0)
-{
+if (empty($course_info)) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();
@@ -171,7 +159,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     }
     else
     {
-      $names_emails = // TODO: FIXME parse_pairings("3", $file_string);
+      $names_emails = array();// TODO: FIXME parse_pairings("3", $file_string);
 
       // check for any errors
       if (isset($names_emails['error']))
@@ -284,7 +272,7 @@ while ($row = $result->fetch_assoc())
 
     <div class="w3-container w3-center">
         <h2>Course Roster</h2>
-        <p><?php echo htmlspecialchars($course_info[0]['code']) . ' ' . htmlspecialchars($course_info[0]['name']) . ' - ' . htmlspecialchars(SEMESTER_MAP_REVERSE[$course_info[0]['semester']]) . ' ' . htmlspecialchars($course_info[0]['year']) ?></p>
+        <p><?php echo htmlspecialchars($course_info['code']) . ' ' . htmlspecialchars($course_info['name']) . ' - ' . htmlspecialchars(SEMESTER_MAP_REVERSE[$course_info['semester']]) . ' ' . htmlspecialchars($course_info['year']) ?></p>
     </div>
 
     <?php

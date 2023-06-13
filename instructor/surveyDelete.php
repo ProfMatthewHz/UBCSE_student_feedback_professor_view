@@ -12,16 +12,21 @@ session_start();
 // bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
+require_once "lib/instructorQueries.php";
+require_once "lib/courseQueries.php";
+require_once "lib/surveyQueries.php";
 
 
 // query information about the requester
 $con = connectToDatabase();
 
-// try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
-
+//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 
 // check for the query string or post parameter
 $sid = NULL;
@@ -50,7 +55,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   }
   
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token'])) {
+  $csrf_token = getCSRFToken($con, $instructor_id);
+  if (!hash_equals($csrf_token, $_POST['csrf-token'])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
     exit();
@@ -68,74 +74,53 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 }
 
 // try to look up info about the requested survey
-$survey_info = array();
-
-$stmt = $con->prepare('SELECT course_id, name, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
-$survey_info = $result->fetch_all(MYSQLI_ASSOC);
-
-// reply forbidden if course does not exist or if the survey is ambiguous
-if ($result->num_rows != 1) {
-  http_response_code(404);
-  echo "403: Forbidden.";
-  exit();
-}
-$survey_name = $survey_info[0]['name'];
-
-// make sure the survey is for a course the current instructor actually teaches
-$stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $survey_info[0]['course_id'], $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
-$course_info = $result->fetch_all(MYSQLI_ASSOC);
-
-// reply forbidden if instructor did not create survey or if survey was ambiguous
-if ($result->num_rows != 1) {
+$survey_info = getSurveyData($con, $sid);
+if (empty($survey_info)) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();
 }
-$course_name = $course_info[0]['name'];
-$course_code = $course_info[0]['code'];
-$course_term = SEMESTER_MAP_REVERSE[$course_info[0]['semester']];
-$course_year = $course_info[0]['year'];
+$survey_name = $survey_info['name'];
+
+// Get the info for the course that this instructor teaches 
+$course_info = getSingleCourseInfo($con, $survey_info['course_id'], $instructor_id);
+if (empty($course_info)) {
+  http_response_code(403);
+  echo "403: Forbidden.";
+  exit();
+}
+$course_name = $course_info['name'];
+$course_code = $course_info['code'];
+$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+$course_year = $course_info['year'];
 
 // now perform the possible deletion function
 // first set some flags
 $errorMsg = array();
 
 // now perform the basic checks
-if($_SERVER['REQUEST_METHOD'] == 'POST')
-{
- 
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
   // now check for the agreement checkbox
-  if (!isset($_POST['agreement']))
-  {
+  if (!isset($_POST['agreement'])) {
     $errorMsg['agreement'] = 'Please read the statement next to the checkbox and check it if you agree.';
-  }
-  else if ($_POST['agreement'] != "1")
-  {
+  } else if ($_POST['agreement'] != "1") {
     $errorMsg['agreement'] = 'Please read the statement next to the checkbox and check it if you agree.';
   }
   
   // now delete the survey if agreement
-  if (empty($errorMsg))
-  {
-    $stmt = $con->prepare('DELETE FROM surveys WHERE id=?');
-    $stmt->bind_param('i', $sid);
-    $stmt->execute();
-    
-    // redirect to next page and set message
-    $_SESSION['survey-delete'] = "Successfully deleted survey.";
-      
+  if (empty($errorMsg)) {
+    if (deleteSurvey($con, $sid)) { 
+      // redirect to next page and set message
+      $_SESSION['survey-delete'] = "Successfully deleted survey.";
+    } else {
+      $_SESSION['survey-delete'] = "Error: Could not delete survey.";
+    }
     http_response_code(302);   
     header("Location: ".INSTRUCTOR_HOME."surveys.php");
     exit();
-  }
-  
+  } 
 }
+$csrf_token = createCSRFToken($con, $instructor_id);
 ?>
 <!doctype html>
 <html lang="en">
@@ -174,7 +159,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
             I understand that deleting this survey will delete all scores associated with this survey.</label>
         </div>
         <input type="hidden" name="survey" value="<?php echo $sid; ?>"></input>
-        <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>"></input>
+        <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>"></input>
         <div class="row justify-content-center align-items-center">
           <div class="col-sm-auto form-check">
             <input type="submit" class="btn btn-danger" value="Delete Survey"></input>

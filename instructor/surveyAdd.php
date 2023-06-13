@@ -12,21 +12,28 @@ session_start();
 // //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
-require_once "../lib/fileParse.php";
+require_once '../lib/studentQueries.php';
+require_once "lib/instructorQueries.php";
+require_once "lib/fileParse.php";
 require_once "lib/pairingFunctions.php";
-
+require_once "lib/rubricQueries.php";
+require_once "lib/surveyQueries.php";
+require_once "lib/courseQueries.php";
+require_once "lib/reviewQueries.php";
 
 // set timezone
 date_default_timezone_set('America/New_York');
 
-
 // //query information about the requester
 $con = connectToDatabase();
 
-// //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
+//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 
 // store information about courses as array of array
 $courses = array();
@@ -37,39 +44,22 @@ $term = MONTH_MAP_SEMESTER[$month];
 $year = idate('Y');
 
 // get information about the courses
-$stmt = $con->prepare('SELECT id, code, name, semester, year FROM course WHERE instructor_id=? ORDER BY year DESC, semester DESC');
-$stmt->bind_param('i', $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
+$all_data = getAllCoursesForInstructor($con, $instructor_id);
 
-while ($row = $result->fetch_assoc())
-{
-  $course_info = array();
-  $course_info['code'] = $row['code'];
-  $course_info['name'] = $row['name'];
-  $course_info['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
-  $course_info['year'] = $row['year'];
-  $course_info['id'] = $row['id'];
-  if (($course_info['year'] >= $year) && ($row['semester'] >= $term)) {
+foreach ($all_data as $row) {
+  if (($row['year'] >= $year) && ($row['semester'] >= $term)) {
+    $course_info = array();
+    $course_info['code'] = $row['code'];
+    $course_info['name'] = $row['name'];
+    $course_info['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
+    $course_info['year'] = $row['year'];
+    $course_info['id'] = $row['id'];
     $courses[] = $course_info;
   }
 }
-$stmt->close();
 
 // store information about rubrics as array of array
-$rubrics = array();
-
-// get information about the rubrics
-$stmt = $con->prepare('SELECT id, description FROM rubrics ORDER BY description');
-$stmt->execute();
-$result = $stmt->get_result();
-while ($row = $result->fetch_assoc()) {
-  $rubric_info = array();
-  $rubric_info['id'] = $row['id'];
-  $rubric_info['description'] = $row['description'];
-  array_push($rubrics, $rubric_info);
-}
-$stmt->close();
+$rubrics = selectRubrics($con);
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
@@ -83,12 +73,17 @@ $start_time = NULL;
 $end_time = NULL;
 $pairing_mode = NULL;
 $survey_name = NULL;
+$pm_mult = 1;
 
 // check for the query string or post parameter
 if($_SERVER['REQUEST_METHOD'] == 'GET') {
   // respond not found on no query string parameter
   if (isset($_GET['course'])) {
     $course_id = intval($_GET['course']);
+  } else {
+    http_response_code(400);
+    echo "Bad Request: Missing parameters.";
+    exit();
   }
 }
 
@@ -104,7 +99,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']) || !is_uploaded_file($_FILES['pairing-file']['tmp_name']))
+  $csrf_token = getCSRFToken($con, $instructor_id);
+  if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['pairing-file']['tmp_name']))
   {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
@@ -128,14 +124,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg['rubric-id'] = "Please choose a valid rubric.";
   }
 
-  $stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
-  $stmt->bind_param('ii', $course_id, $instructor->id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = $result->fetch_all(MYSQLI_ASSOC);
-
-  // reply forbidden if instructor did not create survey
-  if ($result->num_rows == 0) {
+  if (!isCourseInstructor($con, $course_id, $instructor_id)) {
     $errorMsg['course-id'] = "Please choose a valid course.";
   }
 
@@ -209,6 +198,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 
+  // Get the multiplier used for pm evaluations
+  $pm_mult = intval($_POST['pm-mult']);
+
   // check the pairing mode
   $pairing_mode = trim($_POST['pairing-mode']);
   if (empty($pairing_mode)) {
@@ -232,8 +224,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!$file_handle) {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
-      $pairings = getPairingResults($con, $pairing_mode, $file_handle);
-      if (empty($pairings)) {
+      $pairings = getPairingResults($con, $pairing_mode, $pm_mult, $file_handle);
+      if (!isset($pairings)) {
         $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
       }
       
@@ -241,7 +233,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       fclose($file_handle);
 
       // check for any errors
-      if (isset($pairings['error'])) {
+      if (!empty($pairings['error'])) {
         $errorMsg['pairing-file'] = $pairings['error'];
       } else {
         // finally add the pairings to the database if no other error message were set so far
@@ -249,17 +241,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (empty($errorMsg)) {
           $sdate = $start_date . ' ' . $start_time;
           $edate = $end_date . ' ' . $end_time;
-          $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, ?, ?)');
-          $stmt->bind_param('isssi', $course_id, $survey_name, $sdate, $edate, $rubric_id);
-          $stmt->execute();
-
-          add_pairings($pairings, $con->insert_id, $con);
-
-          // redirect to survey page with sucess message
-          $_SESSION['survey-add'] = "Successfully added survey.";
-
+          $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id);
+          addPairings($con, $survey_id, $pairings['ids']);
           http_response_code(302);
-          header("Location: surveys.php");
+          header("Location: ".INSTRUCTOR_HOME."surveys.php");
           exit();
         }
       }
@@ -267,8 +252,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 }
 if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
-  $rubric_id = $rubrics[0]['id'];
+  $rubric_id = array_key_first($rubrics);
 }
+$csrf_token = createCSRFToken($con, $instructor_id);
 ?>
 <!doctype html>
 <html lang="en">
@@ -320,38 +306,36 @@ if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
           <label for="start-time"><?php if(isset($errorMsg["start-time"])) {echo $errorMsg["start-time"]; } else { echo "Start Time:";} ?></label>
       </div>
       <div class="form-floating mb-3">
-          <input type="date" id="end-date" name="end-date" class="form-control <?php if(isset($errorMsg["end-date"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_date) {echo htmlspecialchars($start_date);} else {echo date("Y-m-d");} ?>"></input>
+          <input type="date" id="end-date" name="end-date" class="form-control <?php if(isset($errorMsg["end-date"])) {echo "is-invalid ";} ?>" required value="<?php if ($end_date) {echo htmlspecialchars($end_date);} else {echo date("Y-m-d");} ?>"></input>
           <label for="end-date"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"]; } else { echo "End Date:";} ?></label>
       </div>
       <div class="form-floating mb-3">
-          <input type="time" id="end-time" name="end-time" class="form-control <?php if(isset($errorMsg["end-time"])) {echo "is-invalid ";} ?>" required value="<?php if ($start_time) {echo htmlspecialchars($start_time);} else {echo "00:00";} ?>"></input>
+          <input type="time" id="end-time" name="end-time" class="form-control <?php if(isset($errorMsg["end-time"])) {echo "is-invalid ";} ?>" required value="<?php if ($end_time) {echo htmlspecialchars($end_time);} else {echo "23:59";} ?>"></input>
           <label for="end-time"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"]; } else { echo "End Time:";} ?></label>
       </div>
       <div class="form-floating mb-3">
           <select class="form-select <?php if(isset($errorMsg["rubric-id"])) {echo "is-invalid ";} ?>" id="rubric-id" name="rubric-id">
             <option value="-1" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Rubric</option>
             <?php
-            foreach ($rubrics as $rubric) {
-              if ($rubric_id == $rubric['id']) {
-                echo '<option value="' . $rubric['id'] . '" selected>' . htmlspecialchars($rubric['description']) . '</option>';
+            foreach ($rubrics as $id => $description) {
+              if ($rubric_id == $id) {
+                echo '<option value="' . $id . '" selected>' . htmlspecialchars($description) . '</option>';
               } else {
-                echo '<option value="' . $rubric['id'] . '" >' . htmlspecialchars($rubric['description']) . '</option>';
+                echo '<option value="' . $id . '" >' . htmlspecialchars($description) . '</option>';
               }
             }
             ?>
           </select>
           <label for="rubric-id"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"]; } else { echo "Rubric:";} ?></label>
       </div>
-      <div class="form-floating mb-3">
-        <?php emitSurveyTypeSelect($errorMsg, $pairing_mode); ?>
-      </div>
+      <?php emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult); ?>
       <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
       <div class="form-floating mt-0 mb-3">
         <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
         <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>
       </div>
 
-      <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
+      <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>" />
 
       <input type="submit" class="btn btn-success" value="Create Survey">
           </div>

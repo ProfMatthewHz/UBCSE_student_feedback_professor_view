@@ -12,20 +12,26 @@ session_start();
 // bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
 require_once "../lib/surveyQueries.php";
+require_once "lib/surveyQueries.php";
+require_once "lib/courseQueries.php";
+require_once "lib/resultsCalculations.php";
+require_once "lib/resultsFunctions.php";
 
 
 // query information about the requester
 $con = connectToDatabase();
 
-// try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
-
+//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 
 // respond not found on no query string parameter
-$sid = NULL;
+$survey_id = NULL;
 if (!isset($_GET['survey'])) {
   http_response_code(404);
   echo "404: Not found.";
@@ -33,163 +39,50 @@ if (!isset($_GET['survey'])) {
 }
 
 // make sure the query string is an integer, reply 404 otherwise
-$sid = intval($_GET['survey']);
+$survey_id = intval($_GET['survey']);
 
-if ($sid === 0) {
+if ($survey_id === 0) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
 }
 
-// try to look up info about the requested survey
-$survey_info = array();
-
-$stmt = $con->prepare('SELECT course_id, name, start_date, expiration_date, rubric_id FROM surveys WHERE id=?');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
-$survey_info = $result->fetch_all(MYSQLI_ASSOC);
-
-// reply not found on no match
-if ($result->num_rows != 1) {
+// Look up info about the requested survey
+$survey_info = getSurveyData($con, $survey_id);
+if (empty($survey_info)) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
 }
-$survey_name = $survey_info[0]['name'];
+$survey_name = $survey_info['name'];
 
-
-// make sure the survey is for a course the current instructor actually teaches
-$stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $survey_info[0]['course_id'], $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
-$course_info = $result->fetch_all(MYSQLI_ASSOC);
-
+// Get data for this single course
+$course_info = getSingleCourseInfo($con, $survey_info['course_id'], $instructor_id);
 // reply forbidden if instructor did not create survey or the course is ambiguous
-if ($result->num_rows != 1) {
+if (empty($course_info)) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();
 }
-$course_name = $course_info[0]['name'];
-$course_code = $course_info[0]['code'];
-$course_term = SEMESTER_MAP_REVERSE[$course_info[0]['semester']];
-$course_year = $course_info[0]['year'];
+$course_name = $course_info['name'];
+$course_code = $course_info['code'];
+$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+$course_year = $course_info['year'];
 
-// TODO: Refactor this code so I do not need to duplicate it on download
+// Retrieves the ids, names, & emails of everyone who was reviewed in this survey.
+$teammates = getReviewedData($con, $survey_id);
 
-// This wil be an array of arrays organized by the person BEING REVIEWED.
-$scores = array();
-// Array mapping email to total number of points
-$totals = array();
-// Array mapping email addresses to names of teammates
-$teammates = array();
-// Array mapping email address to normalized results
-$averages = array();
-// Array mapping email address to names of reviewers
-$reviewers = array();
+// Get the survey results organized by the student being reviewed since this is how we actually do our calculations
+$scores = getSurveyScores($con, $survey_id, $teammates);
 
-$stmt = $con->prepare('SELECT reviewer_email, students.name, SUM(rubric_scores.score) total_score, COUNT(DISTINCT teammate_email) expected, COUNT(DISTINCT evals.id) actual
-                       FROM reviewers
-                       INNER JOIN students ON reviewers.reviewer_email=students.email 
-                       LEFT JOIN evals ON evals.reviewers_id=reviewers.id 
-                       LEFT JOIN scores2 ON scores2.eval_id=evals.id 
-                       LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id 
-                       WHERE survey_id=? 
-                       GROUP BY reviewer_email, students.name');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
-while ($row = $result->fetch_array(MYSQLI_NUM)) {
-  $email_addr = $row[0];
-  $reviewers[$email_addr] = $row[1];
-  // If the reviewer completed this survey
-  if ($row[3] == $row[4]) {
-    // Initialize the total number of points
-    $totals[$email_addr] = $row[2] / $row[3];
-  }
-}
-$stmt->close();
+// Averages only exist for multiple-choice topics, so that is all we get for now
+$topics = getSurveyMultipleChoiceTopics($con, $survey_id);
 
-// Get the info for everyone who will be evaluated
-$stmt = $con->prepare('SELECT DISTINCT teammate_email, students.name
-                       FROM reviewers 
-                       INNER JOIN students ON reviewers.teammate_email=students.email 
-                       WHERE survey_id=?');
-$stmt->bind_param('i', $sid);
-$stmt->execute();
-$result = $stmt->get_result();
-while ($row = $result->fetch_array(MYSQLI_NUM)) {
-  $email_addr = $row[0];
-  $teammates[$email_addr] = $row[1];
-  $scores[$email_addr] = array();
-}
-$stmt->close();
+// Retrieves the ids, names, & emails of everyone who was a reviewer in this survey.
+$reviewers = getReviewerData($con, $survey_id);
 
-// Get information completed by the reviewer -- how many were reviewed and the total points
-$stmt_scores = $con->prepare('SELECT reviewer_email, teammate_email, topic_id, score 
-                              FROM reviewers
-                              LEFT JOIN evals on evals.reviewers_id=reviewers.id 
-                              LEFT JOIN scores2 ON evals.id=scores2.eval_id
-                              LEFT JOIN rubric_scores ON rubric_scores.id=scores2.score_id
-                              WHERE survey_id=? AND teammate_email=?');
-foreach ($teammates as $email => $name) {
-  $stmt_scores->bind_param('is',$sid, $email);
-  $stmt_scores->execute();
-  $result = $stmt_scores->get_result();
-  while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    if (isset($row[2])) {
-      if (!isset($scores[$email][$row[0]])) {
-        $scores[$email][$row[0]] = array();
-      }
-      if (isset($row[2])) {
-        $scores[$email][$row[0]][$row[2]] = $row[3];
-      }
-    }
-  }
-}
-$stmt_scores->close();
-
-$topics = getSurveyTopics($con, $sid);
-foreach ($teammates as $email => $name) {
-  $sum_normalized = 0;
-  $reviews = 0;
-  $norm_reviews = 0;
-  $personal_average = array();
-  foreach (array_keys($topics) as $topic_id) {
-    $personal_average[$topic_id] = 0;
-  }
-  foreach ($scores[$email] as $reviewer => $scored) {
-    $sum = 0;
-    foreach ($scored as $id => $score) {
-      $sum = $sum + $score;
-      $personal_average[$id] =  $personal_average[$id] + $score;
-    }
-    $reviews = $reviews + 1;
-    // Verify that this reviewer completed all of their 
-    if (isset($totals[$reviewer]) && ($totals[$reviewer] != NO_SCORE_MARKER)) {
-      $scores[$email][$reviewer]['normalized'] = ($sum / $totals[$reviewer]);
-      $sum_normalized = $sum_normalized + ($sum / $totals[$reviewer]);
-      $norm_reviews = $norm_reviews + 1;
-    } else {
-      $scores[$email][$reviewer]['normalized'] = NO_SCORE_MARKER;
-    }
-  }
-  foreach (array_keys($topics) as $topic_id) {
-    if ($reviews == 0) {
-      $averages[$email][$topic_id] = NO_SCORE_MARKER;
-    } else {
-      $averages[$email][$topic_id] = $personal_average[$topic_id] / $reviews;
-    }
-  }
-  if ($norm_reviews == 0) {
-    $averages[$email]["overall"] = NO_SCORE_MARKER;
-  } else {
-    $averages[$email]["overall"] = $sum_normalized / $norm_reviews;
-  }
-}
-$topics['normalized'] = 'Normalized Score';
+// Retrieves the per-team records organized by reviewer
+$team_data = getReviewerPerTeamResults($con, $survey_id);
 ?>
 <!doctype html>
 <html lang="en">
@@ -234,35 +127,32 @@ $topics['normalized'] = 'Normalized Score';
         <div class="tab-pane mt-2" id="raw" role="tabpanel" aria-labelledby="raw-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=individual" target="_blank">Download Individual Averages</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $survey_id; ?>&type=individual" target="_blank">Download Individual Averages</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">
             <table class="table table-striped table-hover">
               <thead>
                 <tr>
-                  <th scope="col">Reviewee Name (Email)</th>
                   <?php
-                  foreach ($topics as $topic_id => $question) {
-                    if ($topic_id != 'normalized') {
-                      echo '<th scope="col">'.$question.'</th>';
-                    }
+                  $results = getIndividualsResults($teammates, $scores, $topics);
+                  $header = array_shift($results);
+                  foreach ($header as $column) {
+                    echo '<th scope="col">'.$column.'</th>';
                   }
                   ?>
                 </tr>
               </thead>
               <tbody>
-              <?php
-                foreach ($teammates as $email => $name) {
-                  echo '<tr><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
-                  foreach ($topics as $topic_id => $question) {
-                    if ($topic_id != 'normalized') {
-                      echo '<td>'.$averages[$email][$topic_id].'</td>';
+                <?php
+                  foreach ($results as $row) {
+                    echo '<tr>';
+                    foreach ($row as $cell) {
+                      echo '<td>'.htmlspecialchars($cell).'</td>';
                     }
+                    echo '</tr>';
                   }
-                  echo '</tr>';
-                }
-              ?>
+                ?>
               </tbody>
             </table>
           </div>
@@ -270,38 +160,31 @@ $topics['normalized'] = 'Normalized Score';
         <div class="tab-pane active show mt-2" id="full-normalized" role="tabpanel" aria-labelledby="full-normalized-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw-full" target="_blank">Download Raw Survey Results</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $survey_id; ?>&type=raw-full" target="_blank">Download Raw Survey Results</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">
             <table class="table table-striped table-hover">
               <thead>
-                <tr>
-                  <th scope="col">Reviewer Name (Email)</th>
-                  <th scope="col">Reviewee Name (Email)</th>
-                  <?php
-                  foreach ($topics as $topic_id => $question) {
-                    echo '<th scope="col">'.$question.'</th>';
-                  }
-                  ?>
-                </tr>
+                <?php
+                    $results = getRawResults($teammates, $scores, $topics, $reviewers, $team_data);
+                    $header = array_shift($results);
+                    foreach ($header as $cell) {
+                      echo '<th scope="col">'.$cell.'</th>';
+                    }
+                    ?>
+                  </tr>
               </thead>
               <tbody>
-              <?php
-                foreach ($teammates as $email => $name) {
-                  foreach ($scores[$email] as $reviewer => $scored) {
-                    echo '<tr><td>' . htmlspecialchars($reviewer) . '<br>(' . htmlspecialchars($reviewers[$reviewer]) . ')' . '</td><td>' . htmlspecialchars($email) . '<br>(' . htmlspecialchars($name) . ')' . '</td>';
-                    foreach ($topics as $topic_id => $question) {
-                      if (isset($scored[$topic_id])) {
-                        echo '<td>'.$scored[$topic_id].'</td>';
-                      } else {
-                        echo '<td>--</td>';
-                      }
+                <?php
+                  foreach ($results as $row) {
+                    echo '<tr>';
+                    foreach ($row as $cell) {
+                      echo '<td>'.htmlspecialchars($cell).'</td>';
                     }
                     echo '</tr>';
                   }
-                }
-              ?>
+                ?>
               </tbody>
             </table>
           </div>
@@ -309,28 +192,31 @@ $topics['normalized'] = 'Normalized Score';
         <div class="tab-pane mt-2" id="avg-normalized" role="tabpanel" aria-labelledby="avg-normalized-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
-              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $sid; ?>&type=average" target="_blank">Download Final Results</a>
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $survey_id; ?>&type=average" target="_blank">Download Final Results</a>
             </div>
           </div>
           <div class="row justify-content-center mt-1">
             <table class="table table-striped table-hover">
               <thead>
-                <tr>
-                  <th scope="col">Name (Email)</th>
-                  <th scope="col">Average Normalized Score</th>
-                </tr>
+                <?php
+                    $results = getFinalResults($teammates, $scores, $topics, $team_data);
+                    $header = array_shift($results);
+                    foreach ($header as $cell) {
+                      echo '<th scope="col">'.$cell.'</th>';
+                    }
+                    ?>
+                  </tr>
               </thead>
               <tbody>
-              <?php
-                foreach ($averages as $email => $norm_array) {
-                  echo '<tr><td>' . htmlspecialchars($teammates[$email]) . '<br>(' . htmlspecialchars($email) . ')' . '</td>';
-                  if ($norm_array["overall"] === NO_SCORE_MARKER) {
-                    echo '<td>--</td></tr>';
-                  } else {
-                    echo '<td>' . $norm_array["overall"]  . '</td></tr>';
+                <?php
+                  foreach ($results as $row) {
+                    echo '<tr>';
+                    foreach ($row as $cell) {
+                      echo '<td>'.htmlspecialchars($cell).'</td>';
+                    }
+                    echo '</tr>';
                   }
-                }
-              ?>
+                ?>
               </tbody>
             </table>
           </div>

@@ -12,17 +12,22 @@ session_start();
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
-require_once "../lib/fileParse.php";
-
+require_once '../lib/studentQueries.php';
+require_once "lib/instructorQueries.php";
+require_once "lib/fileParse.php";
+require_once "lib/enrollmentFunctions.php";
+require_once "lib/courseQueries.php";
 
 //query information about the requester
 $con = connectToDatabase();
 
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
-
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 //stores error messages corresponding to form fields
 $errorMsg = array();
 
@@ -44,7 +49,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check CSRF token
-  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
+  $csrf_token = getCSRFToken($con, $instructor_id);
+  if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
     http_response_code(403);
     echo "Forbidden: Incorrect parameters.";
     exit();
@@ -93,7 +99,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg['roster-file'] = 'An error occured when uploading the file. Please try again.';
   }
   // start parsing the file
-  else{
+  else {
     $file_handle = @fopen($_FILES['roster-file']['tmp_name'], "r");
 
     // catch errors or continue parsing the file
@@ -106,55 +112,21 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       fclose($file_handle);
 
       // check for any errors
-      if (isset($names_emails['error'])) {
+      if (!empty(($names_emails['error']))) {
         $errorMsg['roster-file'] = $names_emails['error'];
       } else {
         // now add the roster to the database if no other errors were set after adding the course to the database
         if (empty($errorMsg)) {
-          // check for duplicate courses
-          $stmt = $con->prepare('SELECT id FROM course WHERE code=? AND name=? AND semester=? AND year=? AND instructor_id=?');
-          $stmt->bind_param('ssiii', $course_code, $course_name, $semester, $course_year, $instructor->id);
-          $stmt->execute();
-          $result = $stmt->get_result();
-          $data = $result->fetch_all(MYSQLI_ASSOC);
+          // Verify this course does not already exist
+          if (!courseExists($con, $course_code, $course_name, $semester, $course_year, $_SESSION['id'])) {
+            // Create the course in the database
+            $course_id = addCourse($con, $course_code, $course_name, $semester, $course_year);
 
-          // only add if not a duplicate
-          if ($result->num_rows == 0) {
-            $stmt = $con->prepare('INSERT INTO course (code, name, semester, year, instructor_id) VALUES (?, ?, ?, ?, ?)');
-            $stmt->bind_param('ssiii', $course_code, $course_name, $semester, $course_year, $instructor->id);
-            $stmt->execute();
+            // Add the instructor to the course
+            addInstructor($con, $course_id, $instructor_id);
 
-            // get the inserted course id
-            $course_id = $con->insert_id;
-
-
-            // now insert the roster into the roster database and the student database if needed
-            $roster_size = count($names_emails);
-
-            // prepare sql statements
-            $stmt_check = $con->prepare('SELECT student_id FROM students WHERE email=?');
-            $stmt_news = $con->prepare('INSERT INTO students (email, name) VALUES (?, ?)');
-
-            for ($i = 0; $i < $roster_size; $i ++) {
-              $stmt_check->bind_param('s', $names_emails[$i][1]);
-              $stmt_check->execute();
-              $result = $stmt_check->get_result();
-              $student_info = $result->fetch_all(MYSQLI_ASSOC);
-              $student_id = NULL;
-
-              // check if the student already exists if they don't insert them
-              if ($result->num_rows == 0)
-              {
-                $stmt_news->bind_param('ss', $names_emails[$i][1], $names_emails[$i][0]);
-                $stmt_news->execute();
-
-                $student_id = $con->insert_id;
-              }
-              else
-              {
-                $student_id = $student_info[0]['student_id'];
-              }
-            }
+            // Upload the course roster for later use
+            addToCourse($con, $course_id, $names_emails['ids']);
 
             // redirect to course page with message
             $_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);
@@ -163,9 +135,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: ".INSTRUCTOR_HOME."surveys.php");
             exit();
 
-          }
-          else
-          {
+          } else {
             $errorMsg['duplicate'] = 'Error: The entered course already exists.';
           }
         }
@@ -173,6 +143,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 }
+$csrf_token = getCSRFToken($con, $instructor_id);
 ?>
 <!doctype html>
 <html lang="en">
@@ -225,7 +196,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           <label for="roster-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"]; } else { echo "Roster (CSV File):";} ?></label>
         </div>
 
-    <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
+    <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>" />
 
     <input class="btn btn-success" type="submit" value="Create Course" />
     </div>

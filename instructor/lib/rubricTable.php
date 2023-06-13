@@ -15,12 +15,17 @@
           $bg_color = "#f8f8f8";
         }
         $name = $topic_data["question"];
-        $responses = $topic_data["responses"];
         $ret_val = $ret_val.'<div class="row py-2 mx-1 align-items-stretch border-bottom border-1 border-secondary" style="background-color:'.$bg_color.'">';
         $ret_val = $ret_val.'  <div class="col-2 text-center"><b>'.$name.'</b></div>';
-        foreach (array_keys($scores) as $score_id) {
-          $response_text = $responses[$score_id];
-          $ret_val = $ret_val.'<div class="col-2 ms-auto">'.$response_text.'</div>';
+        if ($topic_data["type"] == MC_QUESTION_TYPE) {
+          $responses = $topic_data["responses"];
+          foreach (array_keys($scores) as $score_id) {
+            $response_text = $responses[$score_id];
+            $ret_val = $ret_val.'<div class="col-2 ms-auto">'.$response_text.'</div>';
+          }
+        } else {
+          $num_cols = count($scores) * 2;
+          $ret_val = $ret_val.'<div class="col-'.$num_cols.' ms-auto">Freeform response</div>';
         }
         $ret_val = $ret_val.'</div>';
         $shaded = !$shaded;

@@ -1,4 +1,77 @@
 <?php
+
+function create_levels_array($scores) {
+	$ret_val = array("names" => array(), "values" => array());
+	$max_level = count($scores) - 1;
+	$cur_level = 0;
+	foreach (array_values($scores) as $score) {
+		if ($cur_level == 0) {
+			$ret_val["names"]["level5"] = $score["name"];
+			$ret_val["values"]["level5"] = $score["score"];
+		} else if ($cur_level == $max_level) {
+			$ret_val["names"]["level1"] = $score["name"];
+			$ret_val["values"]["level1"] = $score["score"];
+		} else if ($cur_level == 1) {
+			if (($max_level == 3) || ($max_level == 4)) {
+				$ret_val["names"]["level4"] = $score["name"];
+				$ret_val["values"]["level4"] = $score["score"];
+			} else {
+				$ret_val["names"]["level3"] = $score["name"];
+				$ret_val["values"]["level3"] = $score["score"];
+			}
+		} else if ($cur_level == 2) {
+			if ($max_level == 3) {
+				$ret_val["names"]["level2"] = $score["name"];
+				$ret_val["values"]["level2"] = $score["score"];
+			} else {
+				$ret_val["names"]["level3"] = $score["name"];
+				$ret_val["values"]["level3"] = $score["score"];
+			}
+		} else if ($cur_level == 3) {
+			$ret_val["names"]["level2"] = $score["name"];
+			$ret_val["values"]["level2"] = $score["score"];
+		}
+		$cur_level = $cur_level + 1;
+	}
+	return $ret_val;
+}
+
+function create_topics_array($topics) {
+	$ret_val = array();
+	foreach ($topics as $topic) {
+		$topic_data = array();
+		$topic_data["question"] = $topic["question"];
+		$topic_data["type"] = $topic["type"];
+		$topic_data["responses"] = array();
+		$max_level = count($topic["responses"]) - 1;
+		$cur_level = 0;
+		foreach (array_values($topic["responses"]) as $response) {
+			if ($cur_level == 0) {
+				$topic_data["responses"]["level5"] = $response;
+			} else if ($cur_level == $max_level) {
+				$topic_data["responses"]["level1"] = $response;
+			} else if ($cur_level == 1) {
+				if (($max_level == 3) || ($max_level == 4)) {
+					$topic_data["responses"]["level4"] = $response;
+				} else {
+					$topic_data["responses"]["level3"] = $response;
+				}
+			} else if ($cur_level == 2) {
+				if ($max_level == 3) {
+					$topic_data["responses"]["level2"] = $response;
+				} else {
+					$topic_data["responses"]["level3"] = $response;
+				}
+			} else if ($cur_level == 3) {
+				$topic_data["responses"]["level2"] = $response;
+			}
+			$cur_level = $cur_level + 1;
+		}
+		$ret_val[] = $topic_data;
+	}
+	return $ret_val;
+}
+
 //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
@@ -11,19 +84,53 @@ session_start();
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
-require_once "../lib/fileParse.php";
+require_once "lib/instructorQueries.php";
 require_once "lib/rubricQueries.php";
 
 //query information about the requester
 $con = connectToDatabase();
 
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
 
-$errorMsg = array();
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // check CSRF token
+	$csrf_token = getCSRFToken($con, $instructor_id);
+  if (!hash_equals($csrf_token, $_POST['csrf-token'])) {
+    http_response_code(403);
+    echo "Forbidden: Incorrect parameters.";
+    exit();
+  }
+	if (!isset($_SESSION["rubric_reviewed"])) {
+    http_response_code(400);
+    echo "Bad Request: Missing parmeters.";
+    exit();
+	}
+	$rubric_id = $_SESSION["rubric_reviewed"];
+	unset($_SESSION["rubric_reviewed"]);
+	$rubric_name = selectRubricName($con, $rubric_id);
+	$_SESSION["rubric"] = array("name" => $rubric_name);
+
+	$scores = selectRubricScores($con, $rubric_id);
+	$_SESSION["rubric"]["levels"] = create_levels_array($scores);
+
+	$topics = selectRubricTopics($con, $rubric_id);
+	$topics_data = create_topics_array($topics);
+	$_SESSION["confirm"] = array("topics" => $topics_data);
+	http_response_code(302);
+	header("Location: ".INSTRUCTOR_HOME."rubricAdd.php");
+	exit();
+}
+
 $rubrics = selectRubrics($con);
+$csrf_token = createCSRFToken($con, $instructor_id);
+// Just to be certain, we will unset the session variable that tracks the rubric we are currently reviewing
+unset($_SESSION["rubric_reviewed"]);
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -48,6 +155,9 @@ $rubrics = selectRubrics($con);
 		function showTable(response) {
 			let table_html = JSON.parse(response);
 			document.getElementById("rubric-table").innerHTML = table_html;
+			let duplicateBtn = document.getElementById("duplicate-button");
+			duplicateBtn.setAttribute("aria-disabled", "false");
+			duplicateBtn.classList.remove("disabled");
 		}
 		function updateRubric() {
 			let rubric_id = document.getElementById("rubric-select").value;
@@ -83,6 +193,14 @@ $rubrics = selectRubrics($con);
 		<div class="col"><i>Selected rubric will appear here</i></div>
 		</div>
 		<hr>
+    <form class="mt-2 mx-1" id="duplicate-rubric" method="post">
+		<input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>"></input>
+      <div class="row mx-1 mt-2 justify-content-center">
+      <div class="col-auto">
+      <input id='duplicate-button' class="btn btn-outline-secondary disabled" type="submit" aria-disabled="true" value="Duplicate Rubric"></input>
+</div></div>
+    </form>
+    <hr>
 		<div class="row mx-1 mt-2 justify-content-center">
         <div class="col-auto">
 					<a href="surveys.php" class="btn btn-outline-info" role="button" aria-disabled="false">Return to Instructor Home</a>

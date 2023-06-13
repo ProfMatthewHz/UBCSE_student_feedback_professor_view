@@ -11,8 +11,8 @@ session_start();
 // bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "../lib/infoClasses.php";
 require_once "lib/termPresentation.php";
+require_once "lib/courseQueries.php";
 
 // set timezone
 date_default_timezone_set('America/New_York');
@@ -20,9 +20,17 @@ date_default_timezone_set('America/New_York');
 // query information about the requester
 $con = connectToDatabase();
 
-// try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-$instructor = new InstructorInfo();
-$instructor->check_session($con, 0);
+//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+if (!isset($_SESSION['id'])) {
+  http_response_code(403);
+  echo "Forbidden: You must be logged in to access this page.";
+  exit();
+}
+$instructor_id = $_SESSION['id'];
+  
+// Just to be certain, we will unset any session variables that we are using to track state within a process
+unset($_SESSION["rubric_reviewed"]);
+unset($_SESSION["rubric"]);
 
 // Find out the term that we are currently in
 $month = idate('m');
@@ -33,20 +41,17 @@ $year = idate('Y');
 $terms = array();
 
 // get information about all courses an instructor teaches in priority order
-$stmt1 = $con->prepare('SELECT name, semester, year, code, id FROM course WHERE instructor_id=? ORDER BY year DESC, semester DESC, code DESC');
-$stmt1->bind_param('i', $instructor->id);
-$stmt1->execute();
-$result1 = $stmt1->get_result();
+$courses = getAllCoursesForInstructor($con, $instructor_id);
 
-while ($row = $result1->fetch_assoc()) {
+foreach ($courses as $course_info) {
   $tempSurvey = array();
-  $tempSurvey['name'] = $row['name'];
-  $tempSurvey['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
-  $tempSurvey['year'] = $row['year'];
-  $tempSurvey['code'] = $row['code'];
-  $tempSurvey['id'] = $row['id'];
+  $tempSurvey['name'] = $course_info['name'];
+  $tempSurvey['semester'] = SEMESTER_MAP_REVERSE[$course_info['semester']];
+  $tempSurvey['year'] = $course_info['year'];
+  $tempSurvey['code'] = $course_info['code'];
+  $tempSurvey['id'] = $course_info['id'];
   // If this course is current or in the future, we can create new surveys for it
-  $tempSurvey['mutable'] = ($tempSurvey['year'] >= $year) && ($row['semester'] >= $term);
+  $tempSurvey['mutable'] = ($tempSurvey['year'] >= $year) && ($course_info['semester'] >= $term);
   // Create the arrays we will need for later
   $tempSurvey['upcoming'] = array();
   $tempSurvey['active'] = array();
@@ -58,67 +63,12 @@ while ($row = $result1->fetch_assoc()) {
   } else {
     $term_courses = array();
   }
+
   $term_courses[$tempSurvey['id']] = $tempSurvey;
   $terms[$term_name] = $term_courses;
 }
 
-// get today's date
-$today = new DateTime();
-
-// Now get data on all of the surveys in each of those courses
-foreach ($terms as $name => &$term_courses) {
-  foreach($term_courses as $id => &$course) {
-    // Get the course's surveys in reverse chronological order
-    $stmt2 = $con->prepare('SELECT name, start_date, expiration_date, rubric_id, id FROM surveys WHERE course_id=? ORDER BY start_date DESC, expiration_date DESC');
-    $stmt2->bind_param('i', $id);
-    $stmt2->execute();
-    $result2 = $stmt2->get_result();
-
-    while ($row = $result2->fetch_assoc()) {
-        $survey_info = array();
-        $survey_info['course_id'] = $id;
-        $survey_info['name'] = $row['name'];
-        $survey_info['start_date'] = $row['start_date'];
-        $survey_info['expiration_date'] = $row['expiration_date'];
-        $survey_info['rubric_id'] = $row['rubric_id'];
-        $survey_info['id'] = $row['id'];
-
-        // Determine the completion rate of the survey
-        $stmt_total = $con->prepare('SELECT COUNT(reviewers.id) AS total, COUNT(evals.id) AS completed 
-                                    FROM reviewers 
-                                    LEFT JOIN evals on evals.reviewers_id=reviewers.id
-                                    WHERE survey_id=?');
-        $stmt_total->bind_param('i', $survey_info['id']);
-        $stmt_total->execute();
-        $result_total = $stmt_total->get_result();
-        $data_total = $result_total->fetch_all(MYSQLI_ASSOC);
-
-        // Generate and store that progress as text
-        $percentage = 0;
-        if ($data_total[0]['total'] != 0) {
-          $percentage = floor(($data_total[0]['completed'] / $data_total[0]['total']) * 100);
-        }
-        $survey_info['completion'] = $percentage . '% completed';
-
-        // determine status of survey. then adjust dates to more friendly format
-        $s = new DateTime($survey_info['start_date']);
-        $e = new DateTime($survey_info['expiration_date']);
-        $survey_info['sort_start_date'] = $survey_info['start_date'];
-        $survey_info['sort_expiration_date'] = $survey_info['expiration_date'];
-        $survey_info['start_date'] = $s->format('M j').' at '. $s->format('g:i A');
-        $survey_info['expiration_date'] = $e->format('M j').' at '. $e->format('g:i A');
-
-        if ($today < $s) {
-          $course['upcoming'][] = $survey_info;
-        } else if ($today < $e) {
-          $course['active'][] = $survey_info;
-        } else {
-          $course['expired'][] = $survey_info;
-        }
-      }
-    }
-    unset($course);
-  }
+$terms = addSurveysToCourses($con, $terms);
 ?>
 <!doctype html>
 <html lang="en">
@@ -128,12 +78,52 @@ foreach ($terms as $name => &$term_courses) {
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <script>
+    function updateRoster() {
+      // Create the fake form we are uploading
+      let formData = new FormData();
+      formData.append("roster-file", document.getElementById("roster-file").files[0]);
+      formData.append("course-id", document.getElementById("roster-course-id").value);
+      fetch('rosterUpdate.php', {method: "POST", body: formData})
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById("roster-file-label").innerHTML = "Success!";
+            // Show success message for 5 seconds before modal closes
+            setTimeout(() => { $('#rosterUpdateModal').modal('hide');}, 5000);
+          } else {
+            document.getElementById("roster-file-label").innerHTML = data.error;
+          }
+        });
+    }
+  </script>
   <title>CSE Evaluation Survey System - Instuctor Overview</title>
 </head>
 <body class="text-center">
 <!-- Header -->
 <main>
   <div class="container-fluid">
+    <div class="modal fade" id="rosterUpdateModal" tabindex="-1" aria-labelledby="rosterUpdateModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rosterUpdateModalLabel">Add to course roster</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+          <input type="hidden" id="roster-course-id" value=""></input>
+          <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
+          <div class="input-group input-group-sm">
+          <input type="file" id="roster-file" class="form-control" name="roster-file"></input>
+          <label for="roster-file" id="roster-file-label"></label></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="updateRoster()">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
       <div class="col-sm-auto text-center">
         <h4 class="text-white display-1">UB CSE Evalution System<br>Instructor Overview</h4>
@@ -163,5 +153,22 @@ foreach ($terms as $name => &$term_courses) {
     </div>
   </div>
 </main>
+<script>
+  let rosterModal = document.getElementById("rosterUpdateModal");
+  rosterModal.addEventListener('show.bs.modal', function (event) {
+      // Get the course name from the button that was clicked
+      let course_name = event.relatedTarget.getAttribute('data-bs-coursename')      
+      let modTitle = document.getElementById("rosterUpdateModalLabel");
+      modTitle.innerHTML = "Update " + course_name + " Roster";
+      // Also get the course id from the button that was clicked
+      let course_id = event.relatedTarget.getAttribute('data-bs-courseid')
+      let courseIdInput = document.getElementById("roster-course-id");
+      courseIdInput.value = course_id;
+      // Clear the file input in case it had been used before
+      let modFile = document.getElementById("roster-file");
+      modFile.value ='';
+      modFile.value = null;
+  });
+</script>
 </body>
 </html>

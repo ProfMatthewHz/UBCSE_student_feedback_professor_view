@@ -6,15 +6,14 @@
 
   require "lib/constants.php";
   require "lib/database.php";
-  require "lib/reviewQueries.php";
   require "lib/surveyQueries.php";
-  
+  require "lib/reviewQueries.php";
+
   if(!isset($_SESSION['student_id'])) {
     header("Location: ".SITE_HOME."index.php");
     exit();
   }
   $id = $_SESSION['student_id'];
-  
   $con = connectToDatabase();
 
   // Verify that the survey exists
@@ -26,8 +25,8 @@
     exit();
   }
 
-  // Verify that the survey is a valid one for this student to review their responses
-  $survey_info = getCompletedSurveyInfo($con, $survey, $id);
+  // Verify that the survey is a valid one for this student to view their results
+  $survey_info = getSurveyResultsInfo($con, $survey, $id);
   if (isset($survey_info)) {
     foreach ($survey_info as $key => $value) {
       $_SESSION[$key] = $value;
@@ -39,18 +38,19 @@
     exit();
   }
 
-  $_SESSION['group_members'] = getReviewTargets($con, $survey, $id);
+  $_SESSION['reviewers'] = getReviewSources($con, $survey, $id);
 
-  // Get the questions and responses for this survey. For now, this will be hard coded.
+  // Get the multiple choice questions and responses for this survey.
   $_SESSION['mc_topics'] = getSurveyMultipleChoiceTopics($con, $survey);
 	$_SESSION['mc_answers'] = array();
   foreach ($_SESSION['mc_topics'] as $topic_id => $topic) {
-    $_SESSION['mc_answers'][$topic_id] = getSurveyMultipleChoiceResponses($con, $topic_id, false);
+    $_SESSION['mc_answers'][$topic_id] = getSurveyMultipleChoiceResponses($con, $topic_id, true);
   }
+
   // Get the freeform questions and responses for this survey.
   $_SESSION['ff_topics'] = getSurveyFreeformTopics($con, $survey);
-  
+
   // Now redirect the user to the peer evaluation form
-  header("Location: ".SITE_HOME."/evalReview.php");
+  header("Location: ".SITE_HOME."/showResults.php");
   exit();
 ?>

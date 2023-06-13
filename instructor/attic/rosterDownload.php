@@ -16,6 +16,7 @@ session_start();
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
+require_once "lib/courseQueries.php";
 
 
 // query information about the requester
@@ -28,8 +29,7 @@ $instructor->check_session($con, 0);
 
 // check for the query string parameter
 // respond not found on no query string parameter
-if (!isset($_GET['course']))
-{
+if (!isset($_GET['course'])) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
@@ -38,23 +38,14 @@ if (!isset($_GET['course']))
 // make sure the query string is an integer, reply 404 otherwise
 $cid = intval($_GET['course']);
 
-if ($cid === 0)
-{
+if ($cid === 0) {
   http_response_code(404);
   echo "404: Not found.";
   exit();
 }
 
-// try to look up info about the requested course and make sure the current instructor teaches it
-$stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
-$stmt->bind_param('ii', $cid, $instructor->id);
-$stmt->execute();
-$result = $stmt->get_result();
-$course_info = $result->fetch_all(MYSQLI_ASSOC);
-
-// reply forbidden if instructor did not create course or course does not exist
-if ($result->num_rows == 0)
-{
+// Check that this is a survey for a course the current instructor actually teaches
+if (!isCourseInstructor($con, $cid, $instructor->id)) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();
@@ -80,5 +71,4 @@ header('Content-Disposition: attachment; filename="course-' . $cid . '-roster.cs
 
 // ouput the data
 echo $roster;
-
 ?>

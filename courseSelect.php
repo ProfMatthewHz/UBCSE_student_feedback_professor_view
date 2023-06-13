@@ -5,88 +5,22 @@
   session_start();
   require "lib/constants.php";
 
-  if(!isset($_SESSION['email'])) {
+  if(!isset($_SESSION['student_id'])) {
     header("Location: ".SITE_HOME."index.php");
     exit();
   }
   
-  $email = $_SESSION['email'];
+  $student_id = $_SESSION['student_id'];
   require "lib/database.php";
+  require "lib/surveyQueries.php";
   $con = connectToDatabase();
   $month = idate('m');
   $term = MONTH_MAP_SEMESTER[$month];
   $year = idate('Y');
 
-  // TECHNICAL DEBT TODO: Make this into a separate function
-  $past_surveys = array();
-  $stmt_past = $con->prepare('SELECT course.name, surveys.name, surveys.id, surveys.expiration_date, COUNT(reviewers.id) assigned, COUNT(evals.id) submitted
-                              FROM surveys
-                              INNER JOIN course on course.id = surveys.course_id 
-                              INNER JOIN reviewers on reviewers.survey_id=surveys.id
-                              LEFT JOIN evals on evals.reviewers_id=reviewers.id
-                              WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.expiration_date < NOW()
-                              GROUP BY course.name, surveys.name, surveys.id, surveys.expiration_date
-                              ORDER BY surveys.expiration_date');
-  $stmt_past->bind_param('s', $email);
-  $stmt_past->execute();
-  $stmt_past->bind_result($class_name,$survey_name, $survey_id, $expire, $assigned, $submitted);
-  $stmt_past->store_result();
-  while ($stmt_past->fetch()){
-    $e = new DateTime($expire);
-    if ($assigned == $submitted) {
-      $display_name = '('.$class_name.') '.$survey_name.' is available for review after closing on '.$e->format('M d').' at '.$e->format('g:i a');
-      $past_surveys[htmlspecialchars($display_name)] = $survey_id;
-    } else {
-      $display_name = '('.$class_name.') '.$survey_name.' was due by '.$e->format('M d').' at '.$e->format('g:H a');
-      $past_surveys[htmlspecialchars($display_name)] = null;
-    }
-  }
-  $stmt_past->close();
-
-  // TECHNICAL DEBT TODO: Make this into a separate function
-  $current_surveys = array();
-  $stmt_curr = $con->prepare('SELECT course.name, surveys.name, surveys.id, surveys.expiration_date, COUNT(reviewers.id) assigned, COUNT(evals.id) submitted
-                              FROM surveys
-                              INNER JOIN course on course.id = surveys.course_id 
-                              INNER JOIN reviewers on reviewers.survey_id=surveys.id
-                              LEFT JOIN evals on evals.reviewers_id=reviewers.id
-                              WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.start_date <= NOW() AND surveys.expiration_date > NOW()
-                              GROUP BY course.name, surveys.name, surveys.id, surveys.expiration_date
-                              ORDER BY surveys.expiration_date');
-  $stmt_curr->bind_param('s', $email);
-  $stmt_curr->execute();
-  $stmt_curr->bind_result($class_name,$survey_name, $survey_id, $expire, $assigned, $submitted);
-  $stmt_curr->store_result();
-  while ($stmt_curr->fetch()){
-    $e = new DateTime($expire);
-    if ($assigned == $submitted) {
-      $display_name = '('.$class_name.') '.$survey_name.' can be revised through '.$e->format('M d').' at '.$e->format('g:i a');
-      $survey_id = $survey_id * -1;
-    } else {
-      $display_name = '('.$class_name.') '.$survey_name.' must be completed by '.$e->format('M d').' at '.$e->format('g:i a');
-    }
-    $current_surveys[htmlspecialchars($display_name)] = $survey_id;
-  }
-  $stmt_curr->close();
-
-  // TECHNICAL DEBT TODO: Make this into a separate function
-  $upcoming_surveys = array();
-  $stmt_next = $con->prepare('SELECT DISTINCT course.name, surveys.name, surveys.id, surveys.start_date
-                              FROM reviewers
-                              INNER JOIN surveys ON reviewers.survey_id = surveys.id 
-                              INNER JOIN course on course.id = surveys.course_id 
-                              WHERE reviewers.reviewer_email=? AND course.semester='.$term.' AND course.year='.$year.' AND surveys.start_date > NOW()
-                              ORDER BY surveys.start_date');
-  $stmt_next->bind_param('s', $email);
-  $stmt_next->execute();
-  $stmt_next->bind_result($class_name,$survey_name, $survey_id, $start);
-  $stmt_next->store_result();
-  while ($stmt_next->fetch()){
-    $e = new DateTime($start);
-    $display_name = '('.$class_name.') '.$survey_name.' opening on '.$e->format('M d').' at '.$e->format('g:i a');
-    $upcoming_surveys[] = $display_name;
-  }
-  $stmt_next->close();
+  $past_surveys = getClosedSurveysForTerm($con, $term, $year, $_SESSION['student_id']);
+  $current_surveys = getCurrentSurveysForTerm($con, $term, $year, $_SESSION['student_id']);
+  $upcoming_surveys = getUpcomingSurveysForTerm($con, $term, $year, $_SESSION['student_id']);
  ?>
 <!doctype html>
 <html lang="en">
@@ -121,11 +55,23 @@
               <?php
               if(count($past_surveys) > 0) {
                 foreach ($past_surveys as $key => $value) {
-                  echo('<p>');
-                  if (empty($value)) {
-                    echo ($key);
-                  } else {
-                    echo ('<a href="'.SITE_HOME.'startReview.php?survey='.$value.'">'.$key.'</a>');
+                  $e = $value[2];
+                  $display_name = '('.$value[0].') '.$value[1].' closed '.$e->format('M d').' at '.$e->format('g:i a');
+                  echo('<p><i>'.$display_name.'</i> ');
+                  // Check to see if the student was evaluated in this survey
+                  if ($value[5]) {
+                    if ($value[6]) {
+                      echo (' <a href="'.SITE_HOME.'startResults.php?survey='.$key.'">My Averages</a> ');
+                    } else {
+                      echo (' No evaluations received ');
+                    }
+                  }
+                  if ($value[3]) {
+                    if ($value[4]) {
+                      echo (' <a href="'.SITE_HOME.'startReview.php?survey='.$key.'">My Submissions</a> ');
+                    } else {
+                      echo (' Submission not completed ');
+                    }
                   }
                   echo('</p>');
                 }
@@ -147,12 +93,15 @@
               <?php
               if(count($current_surveys) > 0) {
                 foreach ($current_surveys as $key => $value) {
-                  if ($value < 0) {
-                    $value = $value * -1;
-                    echo('<p><a href="'.SITE_HOME.'startConfirm.php?survey='.$value.'">'.$key.'</a></p>');
-                  } else {
-                    echo('<p><a href="'.SITE_HOME.'startSurvey.php?survey='.$value.'">'.$key.'</a></p>');
+                  $deadline_text = ' due ';
+                  $link = 'startSurvey.php';
+                  if ($value[4]) {
+                    $deadline_text = ' can be reviewed until ';
+                    $link = 'startConfirm.php';
                   }
+                  $e = $value[2];
+                  $display_name = '('.$value[0].') '.$value[1].$deadline_text.$e->format('M d').' at '.$e->format('g:i a');
+                  echo('<p><a href="' . SITE_HOME . $link . '?survey='.$key.'">'.$display_name.'</a></p>');
                 }
               } else {
                 echo('<p><i>No surveys currently available</i></p>');
@@ -171,11 +120,13 @@
             <div class="accordion-body">
               <?php
               if(count($upcoming_surveys) > 0) {
-                foreach ($upcoming_surveys as $key) {
-                  echo('<p>'.$key.'</p>');
+                foreach ($upcoming_surveys as $key => $value) {
+                  $s = $value[2];
+                  $display_name = '('.$value[0].') '.$value[1].' will open '.$s->format('M d').' at '.$s->format('g:i a');
+                  echo('<p>'.$diplay_name.'</p>');
                 }
               } else {
-                echo('<p><i>No known surveys upcoming. Check back later!</i></p>');
+                echo('<p><i>Nothing planned yet. Check back later!</i></p>');
               }
               ?>
             </div>
