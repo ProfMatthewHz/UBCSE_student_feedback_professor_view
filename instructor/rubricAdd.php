@@ -129,7 +129,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg['rubric-name'] = "Rubric MUST have a name";
   } else {
     $rubric_id = getIdFromDescription($con, $rubric_name);
-    if (empty($rubric_id)) {
+    if (!empty($rubric_id)) {
       $errorMsg['rubric-name'] = "Rubric with that name already exists";
     }
   }
