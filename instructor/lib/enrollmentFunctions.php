@@ -13,10 +13,10 @@ function addToCourse($con, $course_id, $names_emails) {
   $retVal = true;
 
   // Create the prepared statements
-  $stmt_check = $con->prepare('SELECT student_id FROM students WHERE email=?');
+  $stmt_check = $con->prepare('SELECT id FROM students WHERE email=?');
   $stmt_news = $con->prepare('INSERT INTO students (email, name) VALUES (?, ?)');
   $stmt_enroll = $con->prepare('INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)');  
-  foreach ($names_emails as list($email, $name)) {
+  foreach ($names_emails as list($name, $email)) {
     $stmt_check->bind_param('s', $email);
     $stmt_check->execute();
     $result = $stmt_check->get_result();
@@ -28,7 +28,7 @@ function addToCourse($con, $course_id, $names_emails) {
       $retVal = $retVal && $stmt_news->execute();
       $student_id = $con->insert_id;
     } else {
-      $student_id = $student_info[0]['student_id'];
+      $student_id = $student_info[0]['id'];
     }
     // An id of 0 is used by MySQL for the ID when the insert failed. This should always be non-zero
     if ($student_id != 0) {

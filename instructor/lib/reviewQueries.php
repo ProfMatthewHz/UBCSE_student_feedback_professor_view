@@ -6,7 +6,7 @@ function getReviewPairingsData($con, $survey_id) {
                          INNER JOIN students reviewer ON reviews.reviewer_id=reviewer.id
                          INNER JOIN students reviewed ON reviews.reviewed_id=reviewed.id
                          WHERE survey_id=?
-                         ORDER BY id');
+                         ORDER BY reviews.id');
   $stmt->bind_param('i', $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();

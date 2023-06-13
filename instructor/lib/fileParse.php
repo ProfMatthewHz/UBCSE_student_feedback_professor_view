@@ -1,6 +1,4 @@
 <?php
-require_once '../lib/studentQueries.php';
-
 function getIdsFromEmails($con, $line_num, $emails) {
   // We do not allow teams of 1, so flag this as an error right away.
   if (count($emails) == 1) {
@@ -227,7 +225,7 @@ function parse_roster_file($file_handle) {
       }
       if (empty($error)) {
         // add the fields to the array
-        $ret_val['ids'] = $line_text;
+        $ret_val['ids'][] = $line_text;
       } else {
         $ret_val['error'] = $ret_val['error'] . $error;
       }

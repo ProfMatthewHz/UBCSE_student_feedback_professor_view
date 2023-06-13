@@ -72,7 +72,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 
 // try to look up info about the requested survey
 $survey_info = getSurveyData($con, $sid);
-if ($empty($survey_info)) {
+if (empty($survey_info)) {
   http_response_code(403);
   echo "403: Forbidden.";
   exit();

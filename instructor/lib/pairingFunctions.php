@@ -19,9 +19,9 @@ function emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult) {
   echo '<div class="form-floating mb-3 col-ms-auto">';
   echo '<select class="'.$class.'" id="pairing-mode" name="pairing-mode" onload="handlePairingChange();" onchange="handlePairingChange();">';
   $survey_modes = array(1 => "Individual Reviewed by Individual",
-                        2 => "Team Reviewed by Team",
-                        3 => "Team Reviewed by Team + 1",
-                        4 => "1 Reviewed by Team");
+                        2 => "Team Reviewed by Entire Team",
+                        3 => "Team Reviewed by Entire Team + 1",
+                        4 => "Individual Reviewed by Entire Team");
   if (empty($pairing_mode)) {
     echo '<option value="-1" disabled selected>Select Pairing Mode</option>';
   }

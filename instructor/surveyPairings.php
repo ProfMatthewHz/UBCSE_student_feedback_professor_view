@@ -13,6 +13,7 @@ session_start();
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
+require_once '../lib/studentQueries.php';
 require_once "lib/fileParse.php";
 require_once "lib/pairingFunctions.php";
 require_once "lib/surveyQueries.php";

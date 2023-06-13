@@ -13,6 +13,7 @@ session_start();
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
+require_once '../lib/studentQueries.php';
 require_once "lib/fileParse.php";
 require_once "lib/enrollmentFunctions.php";
 require_once "lib/courseQueries.php";
@@ -121,7 +122,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             addInstructor($con, $course_id, $instructor->id);
 
             // Upload the course roster for later use
-            addToCourse($con, $course_id, $names_emails);
+            addToCourse($con, $course_id, $names_emails['ids']);
 
             // redirect to course page with message
             $_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);

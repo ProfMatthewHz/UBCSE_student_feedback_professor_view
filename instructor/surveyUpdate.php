@@ -13,6 +13,7 @@ session_start();
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
+require_once '../lib/studentQueries.php';
 require_once "lib/fileParse.php";
 require_once 'lib/rubricQueries.php';
 require_once 'lib/courseQueries.php';
@@ -74,16 +75,16 @@ if (empty($course_info)) {
   exit();
 }
 $survey_name = $survey_info['name'];
-$start_data = $survey_info['start_date'];
-$end_data = $survey_info['end_date'];
+$start_date = $survey_info['start_date'];
+$end_date = $survey_info['end_date'];
 $rubric_id = $survey_info['rubric_id'];
 $course_name = $course_info['name'];
 $course_code = $course_info['code'];
 $course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
 $course_year = $course_info['year'];
 
-$s = new DateTime($start_data);
-$e = new DateTime($end_data);
+$s = new DateTime($start_date);
+$e = new DateTime($end_date);
 $now = new DateTime();
 $start_date = $s->format('Y-m-d');
 $start_time = $s->format('H:i');
@@ -108,8 +109,53 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  // While everything will be sent on the post request, we will not always update the database with that info
-  if ($full_perms) {
+  // The survey name and end date can always be updated, so we check them first
+    
+  // Get the new name of this survey
+  $survey_name = trim($_POST['survey-name']);
+
+  // Get the new end date of the survey
+  $end_date = trim($_POST['end-date']);
+  if (empty($end_date)) {
+    $errorMsg['end-date'] = "Please choose a end date.";
+  } else {
+    $end = DateTime::createFromFormat('Y-m-d', $end_date);
+    if (!$end) {
+      $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
+    } else if ($end->format('Y-m-d') != $end_date) {
+      $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
+    }
+  }
+
+  $end_time = trim($_POST['end-time']);
+  if (empty($end_time)) {
+    $errorMsg['end-time'] = "Please choose a end time.";
+  } else {
+    $end = DateTime::createFromFormat('H:i', $end_time);
+    if (!$end) {
+      $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
+    } else if ($end->format('H:i') != $end_time) {
+      $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
+    }
+  }
+  if (!$full_perms) {
+    // This will be used when we are updating a survey that has already started
+    if (!isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
+      $orig_end = $e;
+      $e = new DateTime($end_date . ' ' . $end_time);
+      $today = new DateTime();
+      if ($orig_end > $e) {
+        $errorMsg['end-date'] = "Survey end date and time cannot be moved earlier.";
+        $errorMsg['end-time'] = "Survey end date and time cannot be moved earlier.";
+        $end_date = $orig_end->format('Y-m-d');
+        $end_time = $orig_end->format('H:i');
+      } else if (($e > $orig_end) && ($e < $today)) {
+        $errorMsg['end-date'] = "End date and time must occur in the future.";
+        $errorMsg['end-time'] = "End date and time must occur in the future.";
+      }
+    }
+  } else {
+    // Now check for the data that can only be updated when the survey has not started
     // check rubric is not empty
     $rubric_id = $_POST['rubric-id'];
     $rubric_id = intval($rubric_id);
@@ -139,36 +185,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
       }
     }
-  }
-  // get the name of this survey
-  $survey_name = trim($_POST['survey-name']);
 
-  // Get the end date of the survey
-  $end_date = trim($_POST['end-date']);
-  if (empty($end_date)) {
-    $errorMsg['end-date'] = "Please choose a end date.";
-  } else {
-    $end = DateTime::createFromFormat('Y-m-d', $end_date);
-    if (!$end) {
-      $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
-    } else if ($end->format('Y-m-d') != $end_date) {
-      $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
-    }
-  }
-
-  $end_time = trim($_POST['end-time']);
-  if (empty($end_time)) {
-    $errorMsg['end-time'] = "Please choose a end time.";
-  } else {
-    $end = DateTime::createFromFormat('H:i', $end_time);
-    if (!$end) {
-      $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
-    } else if ($end->format('H:i') != $end_time) {
-      $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
-    }
-  }
-
-  if ($full_perms) {
     // check dates and times
     if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
       $s = new DateTime($start_date . ' ' . $start_time);
@@ -185,50 +202,20 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errorMsg['end-time'] = "End date and time must occur in the future.";
       }
     }
-
-    // Update the survey details in the database
-    if (empty($errorMsg)) {
-      $sdate = $start_date . ' ' . $start_time;
-      $edate = $end_date . ' ' . $end_time;
-      if (updateSurvey($con, $survey_id, $survey_name, $sdate, $edate, $rubric_id)) {
-        $_SESSION['survey-update'] = "Successfully added updated";
-      } else {
-        $_SESSION['survey-update'] = "Database error. Could not update survey.";
-      }
-      // redirect to survey page with sucess message
-      http_response_code(302);
-      header("Location: surveys.php");
-      exit();
-    }
-  } else {
-    if (!isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
-      $orig_end = $e;
-      $e = new DateTime($end_date . ' ' . $end_time);
-      $today = new DateTime();
-      if ($orig_end > $e) {
-        $errorMsg['end-date'] = "Survey end date and time cannot be moved earlier.";
-        $errorMsg['end-time'] = "Survey end date and time cannot be moved earlier.";
-        $end_date = $orig_end->format('Y-m-d');
-        $end_time = $orig_end->format('H:i');
-      } else if (($e > $orig_end) && ($e < $today)) {
-        $errorMsg['end-date'] = "End date and time must occur in the future.";
-        $errorMsg['end-time'] = "End date and time must occur in the future.";
-      }
-    }
-    // Update the survey details in the database
-    if (empty($errorMsg)) {
-      $edate = $end_date . ' ' . $end_time;
-      $stmt = $con->prepare('UPDATE surveys SET name = ?, end_date = ? WHERE id = ?');
-      $stmt->bind_param('ssi', $survey_name, $edate, $survey_id);
-      $stmt->execute();
-      $stmt->close();
-      // redirect to survey page with sucess message
+  }
+  // Update the survey details in the database
+  if (empty($errorMsg)) {
+    $sdate = $start_date . ' ' . $start_time;
+    $edate = $end_date . ' ' . $end_time;
+    if (updateSurvey($con, $survey_id, $survey_name, $sdate, $edate, $rubric_id)) {
       $_SESSION['survey-update'] = "Successfully added updated";
-
-      http_response_code(302);
-      header("Location: surveys.php");
-      exit();
+    } else {
+      $_SESSION['survey-update'] = "Database error. Could not update survey.";
     }
+    // redirect to survey page with sucess message
+    http_response_code(302);
+    header("Location: surveys.php");
+    exit();
   }
 }
 ?>

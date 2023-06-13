@@ -1,7 +1,7 @@
 <?php
 function addCourse($con, $course_code, $course_name, $semester, $course_year) {
-  $stmt = $con->prepare('INSERT INTO courses (code, name, semester, year) VALUES (?, ?, ?, ?, ?)');
-  $stmt->bind_param('ssiii', $course_code, $course_name, $semester, $course_year);
+  $stmt = $con->prepare('INSERT INTO courses (code, name, semester, year) VALUES (?, ?, ?, ?)');
+  $stmt->bind_param('ssii', $course_code, $course_name, $semester, $course_year);
   $stmt->execute();
 
   // Return the inserted course's id
@@ -24,7 +24,7 @@ function courseExists($con, $course_code, $course_name, $semester, $course_year,
   $stmt = $con->prepare('SELECT id 
                          FROM courses
                          INNER JOIN course_instructors ON courses.id = course_instructors.course_id
-                         WHERE code=? AND name=? AND semester=? AND year=? AND course_instructors.id=?');
+                         WHERE code=? AND name=? AND semester=? AND year=? AND course_instructors.instructor_id=?');
   $stmt->bind_param('ssiii', $course_code, $course_name, $semester, $course_year, $instructor_id);
   $stmt->execute();
   $result = $stmt->get_result();

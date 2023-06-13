@@ -12,7 +12,6 @@ session_start();
 require_once "../../lib/database.php";
 require_once "../../lib/constants.php";
 require_once "../../lib/infoClasses.php";
-require_once "fileParse.php";
 require_once "rubricQueries.php";
 require_once "rubricTable.php";
 
