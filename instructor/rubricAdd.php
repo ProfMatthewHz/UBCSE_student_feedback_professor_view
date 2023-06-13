@@ -52,8 +52,6 @@ session_start();
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
-require_once '../lib/studentQueries.php';
-require_once "lib/fileParse.php";
 
 //query information about the requester
 $con = connectToDatabase();
