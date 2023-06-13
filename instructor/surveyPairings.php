@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check the pairing mode
-  $pairing_mode = trim($_POST['pairing-mode']);
+  $pairing_mode = intval($_POST['pairing-mode']);
   
   // validate the uploaded file
   if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE) {
@@ -166,6 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // first add the survey details to the database
         if (empty($errorMsg)) {
           removeExistingPairings($con, $survey_id);
+          updateSurveyPairing($con, $survey_id, $pairing_mode);
           addReviewsToSurvey($con, $sid, $pairings['id']);
           unset($pairings);
         }

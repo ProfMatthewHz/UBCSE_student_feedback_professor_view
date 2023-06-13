@@ -82,6 +82,7 @@ $survey_name = $survey_info['name'] . ' copy';
 $start_date = $survey_info['start_date'];
 $end_date = $survey_info['end_date'];
 $rubric_id = $survey_info['rubric_id'];
+$survey_type = $survey_info['survey_type_id'];
 $course_name = $course_info['name'];
 $course_code = $course_info['code'];
 $course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
@@ -202,7 +203,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pairings = getReviewsForSurvey($con, $survey_id);
     $sdate = $start_date . ' ' . $start_time;
     $edate = $end_date . ' ' . $end_time;
-    $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id);
+    $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id, $survey_type);
     addReviewsToSurvey($con, $survey_id, $pairings);
     http_response_code(302);
     header("Location: ".INSTRUCTOR_HOME."surveys.php");

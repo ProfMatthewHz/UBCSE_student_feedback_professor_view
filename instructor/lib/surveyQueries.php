@@ -7,9 +7,9 @@ function deleteSurvey($con, $survey_id) {
   return $retVal;
 }
 
-function insertSurvey($con, $course_id, $name, $start, $end, $rubric_id) {
-  $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, end_date, rubric_id) VALUES (?, ?, ?, ?, ?)');
-  $stmt->bind_param('isssi', $course_id, $name, $start, $end, $rubric_id);
+function insertSurvey($con, $course_id, $name, $start, $end, $rubric_id, $survey_type) {
+  $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, end_date, rubric_id, survey_type_id) VALUES (?, ?, ?, ?, ?, ?)');
+  $stmt->bind_param('isssii', $course_id, $name, $start, $end, $rubric_id, $survey_type);
   $stmt->execute();
   $survey_id = $con->insert_id;
   $stmt->close();
@@ -19,6 +19,14 @@ function insertSurvey($con, $course_id, $name, $start, $end, $rubric_id) {
 function updateSurvey($con, $survey_id, $name, $start, $end, $rubric_id) {
   $stmt = $con->prepare('UPDATE surveys SET name = ?, start_date = ?, end_date = ?, rubric_id = ? WHERE id = ?');
   $stmt->bind_param('sssii', $name, $start, $end, $rubric_id, $survey_id);
+  $retVal = $stmt->execute();
+  $stmt->close();
+  return $retVal;
+}
+
+function updateSurveyPairing($con, $survey_id, $survey_type) {
+  $stmt = $con->prepare('UPDATE surveys SET survey_type_id = ? WHERE id = ?');
+  $stmt->bind_param('ii', $survey_type, $survey_id);
   $retVal = $stmt->execute();
   $stmt->close();
   return $retVal;
@@ -42,7 +50,7 @@ function isSurveyInstructor($con, $survey_id, $instructor_id) {
 function getSurveyData($con, $survey_id) {
   // Pessimistically assume that this fails
   $retVal = null;
-  $stmt = $con->prepare('SELECT course_id, start_date, end_date, name, rubric_id 
+  $stmt = $con->prepare('SELECT course_id, start_date, end_date, name, rubric_id, survey_type_id 
                          FROM surveys 
                          WHERE id=?');
   $stmt->bind_param('i', $survey_id);

@@ -202,7 +202,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $pm_mult = intval($_POST['pm-mult']);
 
   // check the pairing mode
-  $pairing_mode = trim($_POST['pairing-mode']);
+  $pairing_mode = intval($_POST['pairing-mode']);
   if (empty($pairing_mode)) {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
   } 
@@ -241,7 +241,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (empty($errorMsg)) {
           $sdate = $start_date . ' ' . $start_time;
           $edate = $end_date . ' ' . $end_time;
-          $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id);
+          $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id, $pairing_mode);
           addReviewsToSurvey($con, $survey_id, $pairings['ids']);
           http_response_code(302);
           header("Location: ".INSTRUCTOR_HOME."surveys.php");
@@ -314,8 +314,8 @@ $csrf_token = createCSRFToken($con, $instructor_id);
           <label for="end-time"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"]; } else { echo "End Time:";} ?></label>
       </div>
       <div class="form-floating mb-3">
-          <select class="form-select <?php if(isset($errorMsg["rubric-id"])) {echo "is-invalid ";} ?>" id="rubric-id" name="rubric-id">
-            <option value="-1" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Rubric</option>
+          <select class="form-select <?php if(isset($errorMsg["rubric-id"])) {echo "is-invalid ";} ?>" id="rubric-id" name="rubric-id" required>
+            <option value="" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Select Rubric</option>
             <?php
             foreach ($rubrics as $id => $description) {
               if ($rubric_id == $id) {

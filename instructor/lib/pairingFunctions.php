@@ -1,12 +1,27 @@
 <?php
+
+function getSurveyTypes($con) {
+  $ret_val = array();
+  $stmt = $con->prepare('SELECT id, description, file_organization
+                         FROM survey_types
+                         ORDER BY id');
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $key = $row[0];
+    $ret_val[$key] = array($row[1], $row[2]);
+  }
+  $stmt->close();
+  return $ret_val;
+}
+
 function emitUpdateFileDescriptionFn() {
   echo '<script>function handlePairingChange() {';
   echo 'let selectObject = document.getElementById("pairing-mode");let numLevels = selectObject.value;let formatObject = document.getElementById("fileFormat");let multDiv = document.getElementById("mult_div");';
   echo 'switch(numLevels) {';
-  echo '  case "1": formatObject.innerHTML = "One row per review. Each row has 2 column: reviewer email address, reviewee email address";multDiv.style.display="none";break;';
-  echo '  case "2": formatObject.innerHTML = "One row per team. Each row contains the email addresses for all team members. Blank columns are ignored";multDiv.style.display="none";break;';
-  echo '  case "3": formatObject.innerHTML = "One row per team. Each row contains the email addresses for all team members with the manager email address listed last. Blank columns are ignored";multDiv.style.display=null;break;';
-  echo '  case "4": formatObject.innerHTML = "One row per individual being reviewed. Each row contains the email addresses for all of the reviewers AND must contain the person being reviewed as the final email address on the row";multDiv.style.display="none";break;';
+  foreach ($_SESSION["surveyTypes"] as $key => $description_and_file_org) {
+    echo '  case "' . $key . '": formatObject.innerHTML = "' . $description_and_file_org[1] . '";multDiv.style.display="none";break;';
+  }
   echo '  default: formatObject.innerHTML = "CSV file format needed for the pairing mode shown here";multDiv.style.display="none";break;';
   echo '}}</script>';
 }
@@ -17,20 +32,16 @@ function emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult) {
     $class = $class." is-invalid";
   }
   echo '<div class="form-floating mb-3 col-ms-auto">';
-  echo '<select class="'.$class.'" id="pairing-mode" name="pairing-mode" onload="handlePairingChange();" onchange="handlePairingChange();">';
-  $survey_modes = array(1 => "Individual Reviewed by Individual",
-                        2 => "Team Reviewed by Entire Team",
-                        3 => "Team Reviewed by Entire Team + 1",
-                        4 => "Individual Reviewed by Entire Team");
+  echo '<select class="'.$class.'" id="pairing-mode" name="pairing-mode" onload="handlePairingChange();" onchange="handlePairingChange();" required>';
   if (empty($pairing_mode)) {
-    echo '<option value="-1" disabled selected>Select Pairing Mode</option>';
+    echo '<option value="" disabled selected>Select Pairing Mode</option>';
   }
-  foreach ($survey_modes as $value => $name) {
+  foreach ($_SESSION["surveyTypes"] as $key => $description_and_file_org) {
     $selected_mode = "";
-    if (!empty($pairing_mode) && $pairing_mode == $value) {
+    if (!empty($pairing_mode) && $pairing_mode == $key) {
       $selected_mode = " selected";
     }
-    echo '<option value="'.$value.'"'.$selected_mode.'>'.$name.'</option>';
+    echo '<option value="'.$key.'"'.$selected_mode.'>'.$description_and_file_org[0].'</option>';
   }
   echo '</select>';
   $message = "Pairing Mode:";
@@ -50,13 +61,13 @@ function emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult) {
 }
 
 function getPairingResults($con, $pairing_mode, $pm_mult, $file_handle) {
-  if ($pairing_mode == '1') {
+  if ($pairing_mode == 1) {
     return parse_review_pairs($file_handle, $con);
-  } else if ($pairing_mode == '2') {
+  } else if ($pairing_mode == 2) {
     return parse_review_teams($file_handle, $con);
-  } else if ($pairing_mode == '3') {
+  } else if ($pairing_mode == 3) {
     return parse_review_managed_teams($file_handle, $pm_mult, $con);
-  } else if ($pairing_mode == '4') {
+  } else if ($pairing_mode == 4) {
     return parse_review_many_to_one($file_handle, $con);
   } else {
     return null;

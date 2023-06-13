@@ -10,6 +10,7 @@ session_start();
 require_once "../lib/random.php";
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
+require_once "lib/pairingFunctions.php";
 require_once "lib/instructorQueries.php";
 
 
@@ -37,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      exit();
   }
   $_SESSION['id'] = $id;
-
+  $_SESSION["surveyTypes"] = getSurveyTypes($con);
   // redirect the instructor to the next page
   http_response_code(302);
   header("Location: ".INSTRUCTOR_HOME."surveys.php");
