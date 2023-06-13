@@ -42,7 +42,7 @@ function insertRubricTopic($con, $rubric_id, $question, $question_type) {
 }
 
 function insertRubricReponse($con, $topic_id, $level_id, $response) {
-  $stmt = $con->prepare('INSERT INTO rubric_responses (topic_id, score_id, response) VALUES(?,?,?)');
+  $stmt = $con->prepare('INSERT INTO rubric_responses (topic_id, rubric_score_id, response) VALUES(?,?,?)');
   $stmt->bind_param('iis', $topic_id, $level_id, $response);
   $stmt->execute();
   $ret_val = $stmt->insert_id;
@@ -96,7 +96,7 @@ function selectRubricScores($con, $rubric_id) {
 
 function selectTopicResponses($con, $topic_id) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT score_id, response FROM rubric_responses WHERE topic_id=? ORDER BY topic_id');
+  $stmt = $con->prepare('SELECT rubric_score_id, response FROM rubric_responses WHERE topic_id=? ORDER BY topic_id');
   $stmt->bind_param('i', $topic_id);
   $stmt->execute();
   $result = $stmt->get_result();

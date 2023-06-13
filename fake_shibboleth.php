@@ -7,6 +7,7 @@ ini_set("error_log", "~/php-error.log");
 
 session_start();
 require "lib/constants.php";
+require "lib/database.php";
 require "lib/studentQueries.php";
 
 // Sanity check that prevents this from being used on the production server
@@ -32,8 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
   session_regenerate_id();
   $_SESSION['email'] = $email;
-  $_SESSION['student_id'] = $student_ID;
-  $stmt->close();
+  $_SESSION['student_id'] = $id;
   header("Location: ".SITE_HOME."/courseSelect.php");
   exit();
 }

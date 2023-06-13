@@ -75,11 +75,11 @@
 
   function getSurveyMultipleChoiceResponses($db_connection, $topic_id, $include_score) {
     $ret_val = array();
-    $query_str = 'SELECT score_id, response, score
+    $query_str = 'SELECT rubric_responses.rubric_score_id, response, score
                   FROM rubric_responses
-                  INNER JOIN rubric_scores ON rubric_scores.id = rubric_responses.score_id
+                  INNER JOIN rubric_scores ON rubric_scores.id = rubric_responses.rubric_score_id
                   WHERE topic_id = ? 
-                  ORDER BY score_id';
+                  ORDER BY rubric_responses.rubric_score_id';
     $stmt_responses = $db_connection->prepare($query_str);
     $stmt_responses->bind_param('i', $topic_id);
     $stmt_responses->execute();
@@ -100,7 +100,7 @@
             FROM surveys
             INNER JOIN courses on courses.id = surveys.course_id 
             INNER JOIN reviews on reviews.survey_id=surveys.id
-            LEFT JOIN evals on evals.reviews_id=reviews.id
+            LEFT JOIN evals on evals.review_id=reviews.id
             WHERE reviews.reviewer_id=? AND courses.semester=? AND courses.year=?';
     if (!empty($date_clause)) {
       $sql = $sql . ' AND ' . $date_clause;
@@ -115,7 +115,7 @@
             FROM surveys
             INNER JOIN courses on courses.id = surveys.course_id 
             INNER JOIN reviews on reviews.survey_id=surveys.id
-            LEFT JOIN evals on evals.reviews_id=reviews.id
+            LEFT JOIN evals on evals.review_id=reviews.id
             WHERE reviews.reviewed_id=? AND reviews.reviewer_id<>? AND courses.semester=? AND courses.year=?';
     if (!empty($date_clause)) {
       $sql = $sql . ' AND ' . $date_clause;

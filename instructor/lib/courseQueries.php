@@ -38,7 +38,7 @@ function isCourseInstructor($con, $course_id, $instructor_id) {
   // Make sure the survey is for a course the current instructor actually teaches
   $stmt = $con->prepare('SELECT id 
                          FROM courses 
-                         INNER JOIN course_instructors ON courses.id=course_instructor.course_id
+                         INNER JOIN course_instructors ON courses.id=course_instructors.course_id
                          WHERE id=? AND instructor_id=?');
   $stmt->bind_param('ii', $course_id, $instructor_id);
   $stmt->execute();

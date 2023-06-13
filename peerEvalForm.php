@@ -26,13 +26,13 @@ $group_ids = array_keys($_SESSION['group_members']);
 $num_of_group_members = count($_SESSION['group_members']);
 $progress_pct = round((($_SESSION['group_member_number']+1) * 100) / $num_of_group_members);
 $progress_text = ($_SESSION['group_member_number']+1).' of '.$num_of_group_members;
-$reviews_id = $group_ids[$_SESSION['group_member_number']];
-$name =  htmlspecialchars($_SESSION['group_members'][$reviews_id]);
+$review_id = $group_ids[$_SESSION['group_member_number']];
+$name =  htmlspecialchars($_SESSION['group_members'][$review_id]);
 $mc_topic_ids = array_keys($_SESSION['mc_topics']);
 $ff_topic_ids = array_keys($_SESSION['ff_topics']);
 
 //fetch eval id, if it exists
-$eval_id = getEvalForReview($con, $reviews_id);
+$eval_id = getEvalForReview($con, $review_id);
 if (empty($eval_id)) {
 	$student_scores=array();
 	$student_texts=array();
@@ -70,7 +70,7 @@ if ( !empty($_POST) && isset($_POST)) {
 	}
 	// Only create the eval id when we have an evaluation for this review pairing.
 	if (empty($eval_id)) {
-		$eval_id = addNewEvaluation($con, $reviews_id);
+		$eval_id = addNewEvaluation($con, $review_id);
 	}
 
 	// Add or update the scores in our multiple choice scores table

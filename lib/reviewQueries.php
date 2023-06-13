@@ -1,9 +1,9 @@
 <?php
 function getReviewSources($db_connection, $survey_id, $id) {
   $ret_val = array();
-  $stmt = $db_connection->prepare('SELECT reviews_id
+  $stmt = $db_connection->prepare('SELECT review_id
                                    FROM reviews
-                                   INNER JOIN evals ON evals.reviews_id = reviews.id
+                                   INNER JOIN evals ON evals.review_id = reviews.id
                                    WHERE reviews.survey_id =? AND reviews.reviewed_id=? AND reviews.reviewed_id<>reviews.reviewer_id');
   $stmt->bind_param('ii',$survey_id,$id);
   $stmt->execute();
@@ -32,19 +32,19 @@ function getReviewTargets($db_connection, $survey_id, $id) {
   return $ret_val;
 }
 
-function addNewEvaluation($con, $reviews_id) {
-  $stmt = $con->prepare('INSERT INTO evals (reviews_id) VALUES(?)');
-  $stmt->bind_param('i', $reviews_id);
+function addNewEvaluation($con, $review_id) {
+  $stmt = $con->prepare('INSERT INTO evals (review_id) VALUES(?)');
+  $stmt->bind_param('i', $review_id);
   $stmt->execute();
   $retVal = $stmt->insert_id;
   $stmt->close();
   return $retVal;
 }
 
-function getEvalForReview($con, $reviews_id) {
+function getEvalForReview($con, $review_id) {
   $retVal = 0;
   $stmt = $con->prepare('SELECT id FROM evals WHERE review_id=?');
-  $stmt->bind_param('i', $reviews_id);
+  $stmt->bind_param('i', $review_id);
   $stmt->execute();
   $stmt->bind_result($retVal);
   $stmt->store_result();

@@ -86,7 +86,7 @@ function getCompletionData($con, $survey_id) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT reviews.reviewer_id, reviews.team_id, COUNT(reviews.id) expected, COUNT(evals.id) actual
                          FROM reviews
-                         LEFT JOIN evals ON evals.reviews_id=reviews.id
+                         LEFT JOIN evals ON evals.review_id=reviews.id
                          WHERE survey_id=?
                          GROUP BY reviews.reviewer_id, reviews.team_id');
   $stmt->bind_param('i', $survey_id);
@@ -165,7 +165,7 @@ function getSurveyTotals($con, $survey_id, $teammates) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT reviewer_id, reviews.team_id, SUM(score * eval_weight) 
                          FROM reviews
-                         LEFT JOIN evals on evals.reviews_id=reviews.id
+                         LEFT JOIN evals on evals.review_id=reviews.id
                          LEFT JOIN scores ON evals.id=scores.eval_id
                          LEFT JOIN rubric_scores ON rubric_scores.id=scores.rubric_score_id
                          LEFT JOIN rubric_topics ON rubric_topics.id=scores.topic_id

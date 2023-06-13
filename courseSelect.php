@@ -55,7 +55,7 @@
               <?php
               if(count($past_surveys) > 0) {
                 foreach ($past_surveys as $key => $value) {
-                  $e = new DateTime($value[2]);
+                  $e = $value[2];
                   $display_name = '('.$value[0].') '.$value[1].' closed '.$e->format('M d').' at '.$e->format('g:i a');
                   echo('<p><i>'.$display_name.'</i> ');
                   // Check to see if the student was evaluated in this survey
@@ -99,7 +99,7 @@
                     $deadline_text = ' can be reviewed until ';
                     $link = 'startConfirm.php';
                   }
-                  $e = new DateTime($value[2]);
+                  $e = $value[2];
                   $display_name = '('.$value[0].') '.$value[1].$deadline_text.$e->format('M d').' at '.$e->format('g:i a');
                   echo('<p><a href="' . SITE_HOME . $link . '?survey='.$key.'">'.$display_name.'</a></p>');
                 }
@@ -121,7 +121,7 @@
               <?php
               if(count($upcoming_surveys) > 0) {
                 foreach ($upcoming_surveys as $key => $value) {
-                  $s = new DateTime($value[2]);
+                  $s = $value[2];
                   $display_name = '('.$value[0].') '.$value[1].' will open '.$s->format('M d').' at '.$s->format('g:i a');
                   echo('<p>'.$diplay_name.'</p>');
                 }

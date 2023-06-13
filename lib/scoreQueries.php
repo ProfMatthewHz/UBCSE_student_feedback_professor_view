@@ -34,7 +34,7 @@
                   FROM scores
                   INNER JOIN rubric_scores ON scores.rubric_score_id=rubric_scores.id 
                   INNER JOIN evals ON scores.eval_id=evals.id
-                  WHERE evals.reviews_id=?';
+                  WHERE evals.review_id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
@@ -60,7 +60,7 @@
     $query_str = 'SELECT topic_id, rubric_score_id 
                   FROM scores
                   INNER JOIN evals ON scores.eval_id=evals.id 
-                  WHERE evals.reviews_id=?';
+                  WHERE evals.review_id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
@@ -85,7 +85,7 @@
   function getReviewText($db_connection, $review_id, $topics) {
     $query_str = 'SELECT topic_id, response 
                   FROM freeforms
-                  INNER JOIN evals ON freeform.eval_id=evals.id 
+                  INNER JOIN evals ON freeforms.eval_id=evals.id 
                   WHERE evals.review_id=?';
     $retVal = array();
     // Prepare the next selection statement
