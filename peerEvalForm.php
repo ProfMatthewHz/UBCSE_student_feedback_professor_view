@@ -5,13 +5,13 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 session_start();
 require "lib/constants.php";
-if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course_name']) || 
+if (!isset($_SESSION['student_id']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course_name']) || 
 		!isset($_SESSION['survey_name']) || !isset($_SESSION['group_members']) || !isset($_SESSION['group_member_number']) ||
     !isset($_SESSION['mc_topics']) || !isset($_SESSION['mc_answers']) || !isset($_SESSION['ff_topics'])) {
 	header("Location: " . SITE_HOME . "index.php");
 	exit();
 }
-$email = $_SESSION['email'];
+$student_id = $_SESSION['student_id'];
 $course = $_SESSION['course_name'];
 $survey_name = $_SESSION['survey_name'];
 
@@ -43,7 +43,7 @@ if (empty($eval_id)) {
 }
 
 //When submit button is pressed
-if ( !empty($_POST) && isset($_POST)) {
+if (isset($_POST)) {
 	$actual = count($_SESSION['mc_topics']) + count($_SESSION['ff_topics']);
 	if (count($_POST) != $actual) {
 		echo "Bad Request: Expected ".$actual." items, but posted ".count($_POST);

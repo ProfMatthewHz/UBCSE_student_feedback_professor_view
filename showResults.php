@@ -10,7 +10,7 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 session_start();
 
-if (!isset($_SESSION['email']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course_name']) || 
+if (!isset($_SESSION['student_id']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course_name']) || 
     !isset($_SESSION['survey_name']) || !isset($_SESSION['reviewers']) ||
     !isset($_SESSION['mc_topics']) || !isset($_SESSION['mc_answers']) || !isset($_SESSION['ff_topics'])) {
     header("Location: " . SITE_HOME . "index.php");

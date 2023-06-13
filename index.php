@@ -20,7 +20,6 @@ if(!empty($_SERVER['uid'])) {
      exit();
   }
   session_regenerate_id();
-	$_SESSION['email'] = $email;
 	$_SESSION['student_id'] = $student_ID;
 	$stmt->close();
 	header("Location: ".SITE_HOME."/courseSelect.php");

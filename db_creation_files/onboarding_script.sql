@@ -79,7 +79,7 @@ CREATE TABLE `surveys` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `course_id` int(11) NOT NULL,
  `start_date` datetime NOT NULL,
- `end_date` datetime NOT NULL, -- was expiration_date
+ `end_date` datetime NOT NULL,
  `name` VARCHAR(30) NOT NULL,
  `rubric_id` int(11) NOT NULL,
  PRIMARY KEY (`id`),
@@ -96,7 +96,7 @@ CREATE TABLE `reviews` ( -- was reviewers
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `survey_id` int(11) NOT NULL,
  `reviewer_id` int(11) NOT NULL,
- `team_id` int(11), -- allowing null for historical purposes
+ `team_id` int(11) NOT NULL,
  `reviewed_id` int(11) NOT NULL,
  `eval_weight` int(11) NOT NULL DEFAULT 1,
  PRIMARY KEY (`id`),

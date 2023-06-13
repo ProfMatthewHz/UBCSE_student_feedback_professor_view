@@ -10,7 +10,7 @@
     exit();
   }
   
-  $email = $_SESSION['email'];
+  $student_id = $_SESSION['student_id'];
   require "lib/database.php";
   require "lib/surveyQueries.php";
   $con = connectToDatabase();
