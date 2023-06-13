@@ -159,7 +159,7 @@ $terms = addSurveysToCourses($con, $terms);
       // Get the course name from the button that was clicked
       let course_name = event.relatedTarget.getAttribute('data-bs-coursename')      
       let modTitle = document.getElementById("rosterUpdateModalLabel");
-      modTitle.innerHTML = "Update " + course_name + " Roster";
+      modTitle.innerHTML = "Expand " + course_name + " Roster";
       // Also get the course id from the button that was clicked
       let course_id = event.relatedTarget.getAttribute('data-bs-courseid')
       let courseIdInput = document.getElementById("roster-course-id");
