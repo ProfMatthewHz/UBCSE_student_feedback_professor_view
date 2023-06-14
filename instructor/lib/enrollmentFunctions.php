@@ -1,9 +1,51 @@
 <?php
-function clearRoster($con, $course_id) {
+function breakoutRosters($old_roster, $new_roster) {
+  // Setup the return value
+  $ret_val = array("new" => array(), "continuing" => array(), "removed" => array());
+  // Start by looping through the set of new roster to identify who are new and who are continuing students
+  foreach ($new_roster as $email=>$name) {
+    if (array_key_exists($email, $old_roster)) {
+      $ret_val["continuing"][$email] = $name;
+    } else {
+      $ret_val["new"][$email] = $name;
+    }
+  }
+  // Now loop through the roster to identify students who have been removed
+  foreach ($old_roster as $email => $name_and_id) {
+    if (!array_key_exists($email, $new_roster)) {
+      $ret_val["removed"][$email] = $name_and_id;
+    }
+  }
+  return $ret_val;
+}
+
+function getRoster($con, $course_id) {
+  $ret_val = array();
   // delete all enrollments for this course
-  $stmt = $con->prepare('DELETE FROM enrollments WHERE course_id=?');
+  $stmt = $con->prepare('SELECT email, name, student_id 
+                         FROM enrollments
+                         INNER JOIN students ON enrollments.student_id=students.id
+                         WHERE course_id=?');
   $stmt->bind_param('i', $course_id);
-  $retVal = $stmt->execute();
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $email = array_shift($row);
+    $ret_val[$email] = $row;
+  }
+  $stmt->close();
+  return $ret_val;
+}
+
+function removeFromRoster($con, $course_id, $students) {
+  // Optimistically assume that we will be successful
+  $retVal = true;
+  // Prepare the statement we will be using to remove the students
+  $stmt = $con->prepare('DELETE FROM enrollments WHERE course_id=? AND student_id=?');
+  foreach ($students as $email => $student) {
+    $stmt->bind_param('ii', $course_id, $student[1]);
+    $retVal = $retVal && $stmt->execute();
+  }
   $stmt->close();
   return $retVal;
 }
@@ -12,43 +54,27 @@ function addStudents($con, $course_id, $names_emails) {
   // Optimistically assume this will be successful.
   $retVal = true;
 
-  // Create the prepared statements
-  $stmt_student_check = $con->prepare('SELECT id FROM students WHERE email=?');
-  $stmt_add_student = $con->prepare('INSERT INTO students (email, name) VALUES (?, ?)');
-  $stmt_enroll_check = $con->prepare('SELECT student_id FROM enrollments WHERE student_id=? AND course_id=?');
-  $stmt_add_enroll = $con->prepare('INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)');  
-  foreach ($names_emails as list($name, $email)) {
-    $stmt_student_check->bind_param('s', $email);
-    $stmt_student_check->execute();
-    $result = $stmt_student_check->get_result();
-    $student_info = $result->fetch_all(MYSQLI_ASSOC);
-    $student_id = 0;
-    // check if the student already exists if they don't insert them
-    if ($result->num_rows == 0) {
-      $stmt_add_student->bind_param('ss', $email, $name);
-      $retVal = $retVal && $stmt_add_student->execute();
-      $student_id = $con->insert_id;
-    } else {
-      $student_id = $student_info[0]['id'];
-    }
-    // An id of 0 is used by MySQL for the ID when the insert failed. This should always be non-zero
+  // Get the student ID for every student, adding students where it is needed
+  $student_ids = forceIdsFromEmail($con, $names_emails);
+  // Create the prepared statement
+  $stmt = $con->prepare('INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)');
+  // And get the current roster to avoid adding a student a second time.
+  $course_roster = getRoster($con, $course_id);
+  foreach ($names_emails as $email => $name) {
+    $student_id = $student_ids[$email];
+    // An ID of 0 means the student was not added to the database
     if ($student_id != 0) {
       // Check if the student is already enrolled in the course
-      $stmt_enroll_check->bind_param('ii', $student_id, $course_id);
-      $retVal = $retVal && $stmt_enroll_check->execute();
-      $result_enroll = $stmt_enroll_check->get_result();
-      $result_enroll->fetch_all(MYSQLI_ASSOC);
-      if ($result_enroll->num_rows == 0) {
-        $stmt_add_enroll->bind_param('ii', $student_id, $course_id);
-        $retVal = $retVal && $stmt_add_enroll->execute();
+      if (!array_key_exists($email, $course_roster)) {
+        $stmt->bind_param('ii', $student_id, $course_id);
+        $retVal = $retVal && $stmt->execute();
       }
+    } else {
+      $retVal = false;
     }
   }
   // Clean up our SQL queries
-  $stmt_student_check->close();
-  $stmt_add_student->close();
-  $stmt_enroll_check->close();
-  $stmt_add_enroll->close();
+  $stmt->close();
   return $retVal;
 }
 ?>
