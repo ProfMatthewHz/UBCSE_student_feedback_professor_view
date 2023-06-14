@@ -60,9 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header("Location: ".INSTRUCTOR_HOME."surveys.php");
     exit();
   } else {
-    // Remove any students that need to be removed
+    // Remove any students that remained on the roster without being listed in the file
     if ($update_type == 'replace') {
-      removeFromRoster($con, $course_id, $_SESSION["roster_data"]["removed"]);
+      removeFromRoster($con, $course_id, $_SESSION["roster_data"]["remaining"]);
     }
     // Now add any students that need to be added
     addStudents($con, $course_id, $_SESSION["roster_data"]["new"]);
@@ -79,8 +79,12 @@ $course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
 $course_code = $course_info['code'];
 $course_name = $course_info['name'];
 $update_text = "Changes";
+$remaining_text = "Removed from";
+$remain_no_student_text = "to remove";
 if ($update_type == 'expand') {
   $update_text = "Expansion";
+  $remaining_text = "Remaining on";
+  $remain_no_student_text = " were enrolled and not in the update file";
 }
 ?>
 <!DOCTYPE HTML>
@@ -162,43 +166,33 @@ if ($update_type == 'expand') {
             </div>
           </div>
         </div>
-        <?php
-        if ($update_type != 'replace') {
-          echo "<!--";
-        }
-        ?>
         <div class="accordion-item shadow">
           <h2 class="accordion-header" id="headerRemoved">
-            <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRemoved" aria-expanded="true" aria-controls="collapseRemoved">Students Removed from Roster</button>
+            <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRemoved" aria-expanded="true" aria-controls="collapseRemoved">Students <?php echo $remaining_text; ?> Roster</button>
           </h2>
           <div id="collapseRemoved" class="accordion-collapse collapse show" aria-labelledby="headerRemoved">
             <div class="accordion-body">
               <?php
-              if (!empty($_SESSION["roster_data"]["removed"])) {
+              if (!empty($_SESSION["roster_data"]["remaining"])) {
                 // Add a header row
                 echo '<div class="row pb-2 justify-content-evenly">
                       <div class="col"><b>Name</b></div>
                       <div class="col"><b>Email</b></div>
                       </div>';
                 // Add a row for each student we will add to the roster
-                foreach ($_SESSION["roster_data"]["removed"] as $email=>$name_and_id) {
+                foreach ($_SESSION["roster_data"]["remaining"] as $email=>$name_and_id) {
                   echo '<div class="row pb-2 justify-content-evenly">
                           <div class="col text-danger">'.$name_and_id[0].'</div>
                           <div class="col text-danger">'.$email[0].'</div>
                         </div>';
                 }
               } else {
-                echo '<div class="row justify-content-center"><p><i>No students to remove</i></p></div>';
+                echo '<div class="row justify-content-center"><p><i>No students ' . $remain_no_student_text . '</i></p></div>';
               }
               ?>
             </div>
           </div>
       </div>
-      <?php
-        if ($update_type != 'replace') {
-          echo "-->";
-        }
-      ?>
     </div>
     </div>
     <form id="confirm-rubric" method="post">

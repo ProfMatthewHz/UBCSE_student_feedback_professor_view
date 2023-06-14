@@ -1,7 +1,7 @@
 <?php
 function breakoutRosters($old_roster, $new_roster) {
   // Setup the return value
-  $ret_val = array("new" => array(), "continuing" => array(), "removed" => array());
+  $ret_val = array("new" => array(), "continuing" => array(), "remaining" => array());
   // Start by looping through the set of new roster to identify who are new and who are continuing students
   foreach ($new_roster as $email=>$name) {
     if (array_key_exists($email, $old_roster)) {
@@ -13,7 +13,7 @@ function breakoutRosters($old_roster, $new_roster) {
   // Now loop through the roster to identify students who have been removed
   foreach ($old_roster as $email => $name_and_id) {
     if (!array_key_exists($email, $new_roster)) {
-      $ret_val["removed"][$email] = $name_and_id;
+      $ret_val["remaining"][$email] = $name_and_id;
     }
   }
   return $ret_val;
