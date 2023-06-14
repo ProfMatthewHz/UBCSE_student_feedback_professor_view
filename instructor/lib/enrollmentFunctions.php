@@ -3,18 +3,17 @@ function breakoutRosters($old_roster, $new_roster) {
   // Setup the return value
   $ret_val = array("new" => array(), "continuing" => array(), "removed" => array());
   // Start by looping through the set of new roster to identify who are new and who are continuing students
-  foreach ($new_roster as $student) {
-    $email = $student[1];
+  foreach ($new_roster as $email=>$name) {
     if (array_key_exists($email, $old_roster)) {
-      $ret_val["continuing"][] = $student;
+      $ret_val["continuing"][$email] = $name;
     } else {
-      $ret_val["new"][] = $student;
+      $ret_val["new"][$email] = $name;
     }
   }
   // Now loop through the roster to identify students who have been removed
   foreach ($old_roster as $email => $name_and_id) {
     if (!array_key_exists($email, $new_roster)) {
-      $ret_val["removed"][] = array($name_and_id[0], $email, $name_and_id[1]);
+      $ret_val["removed"][$email] = $name_and_id;
     }
   }
   return $ret_val;
@@ -43,8 +42,8 @@ function removeFromRoster($con, $course_id, $students) {
   $retVal = true;
   // Prepare the statement we will be using to remove the students
   $stmt = $con->prepare('DELETE FROM enrollments WHERE course_id=? AND student_id=?');
-  foreach ($students as $student) {
-    $stmt->bind_param('ii', $course_id, $student[2]);
+  foreach ($students as $email => $student) {
+    $stmt->bind_param('ii', $course_id, $student[1]);
     $retVal = $retVal && $stmt->execute();
   }
   $stmt->close();
@@ -61,7 +60,7 @@ function addStudents($con, $course_id, $names_emails) {
   $stmt = $con->prepare('INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)');
   // And get the current roster to avoid adding a student a second time.
   $course_roster = getRoster($con, $course_id);
-  foreach ($names_emails as list($name, $email)) {
+  foreach ($names_emails as $email => $name) {
     $student_id = $student_ids[$email];
     // An ID of 0 means the student was not added to the database
     if ($student_id != 0) {

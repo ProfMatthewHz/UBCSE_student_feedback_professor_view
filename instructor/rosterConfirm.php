@@ -11,6 +11,7 @@ session_start();
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
+require_once "../lib/studentQueries.php";
 require_once "lib/courseQueries.php";
 require_once "lib/enrollmentFunctions.php";
 
@@ -75,8 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 }
 $course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
-$course_code = $code_info['code'];
-$course_name = $code_info['name'];
+$course_code = $course_info['code'];
+$course_name = $course_info['name'];
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -117,10 +118,10 @@ $course_name = $code_info['name'];
                       <div class="col"><b>Email</b></div>
                       </div>';
                 // Add a row for each student we will add to the roster
-                foreach ($_SESSION["roster_data"]["new"] as $student) {
+                foreach ($_SESSION["roster_data"]["new"] as $email=>$name) {
                   echo '<div class="row pb-2 justify-content-evenly">
-                          <div class="col text-success">'.$student[0].'</div>
-                          <div class="col text-success">'.$student[1].'</div>
+                          <div class="col text-success">'.$name.'</div>
+                          <div class="col text-success">'.$email.'</div>
                         </div>';
                 }
               } else {
@@ -144,10 +145,10 @@ $course_name = $code_info['name'];
                       <div class="col"><b>Email</b></div>
                       </div>';
                 // Add a row for each student we will add to the roster
-                foreach ($_SESSION["roster_data"]["continuing"] as $student) {
+                foreach ($_SESSION["roster_data"]["continuing"] as $email=>$name) {
                   echo '<div class="row pb-2 justify-content-evenly">
-                          <div class="col">'.$student[0].'</div>
-                          <div class="col">'.$student[1].'</div>
+                          <div class="col">'.$name.'</div>
+                          <div class="col">'.$email.'</div>
                         </div>';
                 }
               } else {
@@ -171,10 +172,10 @@ $course_name = $code_info['name'];
                       <div class="col"><b>Email</b></div>
                       </div>';
                 // Add a row for each student we will add to the roster
-                foreach ($_SESSION["roster_data"]["removed"] as $student) {
+                foreach ($_SESSION["roster_data"]["removed"] as $email=>$name_and_id) {
                   echo '<div class="row pb-2 justify-content-evenly">
-                          <div class="col text-danger">'.$student[0].'</div>
-                          <div class="col text-danger">'.$student[1].'</div>
+                          <div class="col text-danger">'.$name_and_id[0].'</div>
+                          <div class="col text-danger">'.$email[0].'</div>
                         </div>';
                 }
               } else if ($update_type != 'replace') {

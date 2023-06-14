@@ -17,8 +17,7 @@ function forceIdsFromEmail($db_connection, $students) {
   $ret_val = array();
   $stmt_check = $db_connection->prepare('SELECT id FROM students WHERE email=?');
   $stmt_add = $db_connection->prepare('INSERT INTO students (email, name) VALUES (?, ?)');
-  foreach ($students as $student) {
-    $email = $student[1];
+  foreach ($students as $email => $name) {
     $stmt_check->bind_param('s',$email);
     $stmt_check->execute();
     $result = $stmt_check->get_result();
@@ -26,7 +25,6 @@ function forceIdsFromEmail($db_connection, $students) {
     if ($result->num_rows > 0) {
       $student_id = $ids[0][0];
     } else {
-      $name = $student[0];
       $stmt_add->bind_param('ss', $email, $name);
       $stmt_add->execute();
       $student_id = $db_connection->insert_id;
