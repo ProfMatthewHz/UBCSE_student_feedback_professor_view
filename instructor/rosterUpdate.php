@@ -13,6 +13,7 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once '../lib/studentQueries.php';
 require_once "lib/fileParse.php";
+require_once "lib/courseQueries.php";
 require_once "lib/enrollmentFunctions.php";
 require_once "lib/instructorQueries.php";
 
@@ -89,7 +90,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       } else if ($update_type == 'replace') {
         clearRoster($con, $course_id);
       }
-      addStudents($con, $course_id, $names_emails);
+      addStudents($con, $course_id, $names_emails["ids"]);
     }
   }
   // We can open the file, so lets start setting up the header

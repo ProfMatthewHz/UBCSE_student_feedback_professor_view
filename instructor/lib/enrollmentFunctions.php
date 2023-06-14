@@ -36,9 +36,9 @@ function addStudents($con, $course_id, $names_emails) {
       // Check if the student is already enrolled in the course
       $stmt_enroll_check->bind_param('ii', $student_id, $course_id);
       $retVal = $retVal && $stmt_enroll_check->execute();
-      $result = $stmt_student_check->get_result();
-      $student_info = $result->fetch_all(MYSQLI_ASSOC);
-      if ($result->num_rows == 0) {
+      $result_enroll = $stmt_enroll_check->get_result();
+      $result_enroll->fetch_all(MYSQLI_ASSOC);
+      if ($result_enroll->num_rows == 0) {
         $stmt_add_enroll->bind_param('ii', $student_id, $course_id);
         $retVal = $retVal && $stmt_add_enroll->execute();
       }

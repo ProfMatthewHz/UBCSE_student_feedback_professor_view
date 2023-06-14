@@ -89,11 +89,17 @@ $terms = addSurveysToCourses($con, $terms);
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            document.getElementById("roster-file-label").innerHTML = "Success!";
+            let pelem = document.getElementById("roster-update-result");
+            pelem.classList.remove("text-danger");
+            pelem.classList.add("text-success");
+            document.getElementById("roster-update-result").innerHTML = "<b>Success!</b>";
             // Show success message for 5 seconds before modal closes
-            setTimeout(() => { $('#rosterUpdateModal').modal('hide');}, 5000);
+            setTimeout(() => { bootstrap.Modal.getInstance(document.getElementById('rosterUpdateModal')).hide();}, 2000);
           } else {
-            document.getElementById("roster-file-label").innerHTML = data.error;
+            let pelem = document.getElementById("roster-update-result");
+            pelem.classList.remove("text-success");
+            pelem.classList.add("text-danger");
+            pelem.innerHTML = data.error;
           }
         });
     }
@@ -128,6 +134,7 @@ $terms = addSurveysToCourses($con, $terms);
                 <label class="form-check-label" for="expandRadio">Expand Roster</label>
               </div>
             </div>
+            <p class="text-danger fs-3" id="roster-update-result"></p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -197,6 +204,8 @@ $terms = addSurveysToCourses($con, $terms);
       // Set the radio buttons to default to expand
       let expandRadio = document.getElementById("expandRadio");
       expandRadio.click();
+      let pelem = document.getElementById("roster-update-result");
+      pelem.innerHTML = "";
   });
 </script>
 </body>
