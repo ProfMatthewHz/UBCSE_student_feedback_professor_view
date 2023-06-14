@@ -79,12 +79,8 @@ $course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
 $course_code = $course_info['code'];
 $course_name = $course_info['name'];
 $update_text = "Changes";
-$replace_accordion_state = '';
-$replace_accordion_activity = '';
 if ($update_type == 'expand') {
   $update_text = "Expansion";
-  $replace_accordion_state = "collapsed";
-  $replace_accordion_activity = "disabled";
 }
 ?>
 <!DOCTYPE HTML>
@@ -160,15 +156,20 @@ if ($update_type == 'expand') {
                         </div>';
                 }
               } else {
-                echo '<div class="row justify-content-center"><p><i>No continuing students</i></p></div>';
+                echo '<div class="row justify-content-center"><p><i>No students continuing</i></p></div>';
               }
               ?>
             </div>
           </div>
         </div>
+        <?php
+        if ($update_type != 'replace') {
+          echo "<!--";
+        }
+        ?>
         <div class="accordion-item shadow">
           <h2 class="accordion-header" id="headerRemoved">
-            <button class="accordion-button <?php echo $replace_accordion_state;?> fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRemoved" aria-expanded="true" aria-controls="collapseRemoved" <?php echo $replace_accordion_activity;?>>Students Removed from Roster</button>
+            <button class="accordion-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRemoved" aria-expanded="true" aria-controls="collapseRemoved">Students Removed from Roster</button>
           </h2>
           <div id="collapseRemoved" class="accordion-collapse collapse show" aria-labelledby="headerRemoved">
             <div class="accordion-body">
@@ -193,6 +194,11 @@ if ($update_type == 'expand') {
             </div>
           </div>
       </div>
+      <?php
+        if ($update_type != 'replace') {
+          echo "-->";
+        }
+      ?>
     </div>
     </div>
     <form id="confirm-rubric" method="post">
