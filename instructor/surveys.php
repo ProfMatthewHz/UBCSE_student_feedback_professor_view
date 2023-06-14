@@ -68,7 +68,7 @@ foreach ($courses as $course_info) {
   $terms[$term_name] = $term_courses;
 }
 
-$terms = addSurveysToCourses($con, $terms);
+$terms = getSurveysForCourses($con, $terms);
 ?>
 <!doctype html>
 <html lang="en">
@@ -85,16 +85,11 @@ $terms = addSurveysToCourses($con, $terms);
       formData.append("roster-file", document.getElementById("roster-file").files[0]);
       formData.append("course-id", document.getElementById("roster-course-id").value);
       formData.append("update-type", document.querySelector('input[name="rosterUpdateOptions"]:checked').value);
-      fetch('rosterUpdate.php', {method: "POST", body: formData})
+      fetch("<?php echo INSTRUCTOR_HOME."rosterUpdate.php";?>", {method: "POST", body: formData})
         .then(res => res.json())
         .then(data => {
-          if (data.success) {
-            let pelem = document.getElementById("roster-update-result");
-            pelem.classList.remove("text-danger");
-            pelem.classList.add("text-success");
-            document.getElementById("roster-update-result").innerHTML = "<b>Success!</b>";
-            // Show success message for 5 seconds before modal closes
-            setTimeout(() => { bootstrap.Modal.getInstance(document.getElementById('rosterUpdateModal')).hide();}, 2000);
+          if (data.error == "") {
+            window.location.replace("<?php echo INSTRUCTOR_HOME;?>rosterConfirm.php");
           } else {
             let pelem = document.getElementById("roster-update-result");
             pelem.classList.remove("text-success");

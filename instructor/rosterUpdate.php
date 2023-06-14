@@ -58,26 +58,20 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  $results = array();
-  $results['success'] = true;
+  $ret_val = array("error" => "");
   if ($_FILES['roster-file']['error'] == UPLOAD_ERR_INI_SIZE) {
-    $results['success'] = false;
-    $results['error'] = 'The selected file is too large.';
+    $ret_val['error'] = 'The selected file is too large.';
   } else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_PARTIAL) {
-    $results['success'] = false;
-    $results['error'] = 'The selected file was only paritally uploaded. Please try again.';
+    $ret_val['error'] = 'The selected file was only paritally uploaded. Please try again.';
   } else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_NO_FILE) {
-    $results['success'] = false;
-    $results['error'] ='A roster file must be provided.';
+    $ret_val['error'] ='A roster file must be provided.';
   } else if ($_FILES['roster-file']['error'] != UPLOAD_ERR_OK) {
-    $results['success'] = false;
-    $results['error'] = 'An error occured when uploading the file. Please try again.';
+    $ret_val['error'] = 'An error occured when uploading the file. Please try again.';
   } else {    
     $file_handle = @fopen($_FILES['roster-file']['tmp_name'], "r");
     // catch errors or continue parsing the file
     if (!$file_handle) {
-      $results['success'] = false;
-      $results['error'] = 'An error occured when uploading the file. Please try again.';
+      $ret_val['error'] = 'An error occured when uploading the file. Please try again.';
     } else {
       $names_emails = parse_roster_file($file_handle);
       // Clean up our file handling
@@ -85,18 +79,19 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
       // check for any errors
       if (!empty($names_emails['error'])) {
-        $results['success'] = false;
-        $results['error'] = $names_emails['error'];
-      } else if ($update_type == 'replace') {
-        clearRoster($con, $course_id);
+        $ret_val['error'] = $names_emails['error'];
+      } else {
+        $course_roster = getRoster($con, $course_id);
+        $_SESSION["roster_data"] = breakoutRosters($course_roster, $names_emails["ids"]);
+        $_SESSION["roster_course_id"] = $course_id;
+        $_SESSION["roster_update_type"] = $update_type;
       }
-      addStudents($con, $course_id, $names_emails["ids"]);
     }
   }
   // We can open the file, so lets start setting up the header
   header("Content-Type: application/json; charset=UTF-8");
   // Now lets dump the data we found
-  $myJSON = json_encode($results);
+  $myJSON = json_encode($ret_val);
   echo $myJSON;
 }
 ?>

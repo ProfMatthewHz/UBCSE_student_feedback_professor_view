@@ -49,7 +49,7 @@ function isCourseInstructor($con, $course_id, $instructor_id) {
   return $retVal;
 }
 
-function addSurveysToCourses($con, &$terms) {
+function getSurveysForCourses($con, &$terms) {
   $today = new DateTime();
 
   // Now get data on all of the surveys in each of those courses
@@ -121,7 +121,7 @@ function getAllCoursesForInstructor($con, $instructor_id) {
 function getSingleCourseInfo($con, $course_id, $instructor_id) {
   // Pessmisticaly assume that the course fails
   $retVal = null;
-  $stmt = $con->prepare('SELECT id, code, name, semester, year 
+  $stmt = $con->prepare('SELECT code, name, semester, year 
                          FROM courses
                          INNER JOIN course_instructors ON courses.id=course_instructors.course_id
                          WHERE id=? AND instructor_id=?');
