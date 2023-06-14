@@ -126,7 +126,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             addInstructor($con, $course_id, $instructor_id);
 
             // Upload the course roster for later use
-            addToCourse($con, $course_id, $names_emails['ids']);
+            addStudents($con, $course_id, $names_emails['ids']);
 
             // redirect to course page with message
             $_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);

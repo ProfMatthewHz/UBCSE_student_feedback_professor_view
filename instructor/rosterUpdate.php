@@ -28,7 +28,7 @@ if (!isset($_SESSION['id'])) {
 $instructor_id = $_SESSION['id'];
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-  if (!isset($_FILES['roster-file']) || !isset($_POST['course_id'])) {
+  if (!isset($_FILES['roster-file']) || !isset($_POST['course-id']) || !isset($_POST['update-type'])) {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
     exit();
@@ -40,8 +40,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
+  $update_type = $_POST['update-type'];
+  if (($update_type != 'replace') && ($update_type != 'expand')) {
+    http_response_code(400);
+    echo "Bad Request: Incorrect parameters.";
+    exit();
+  }
+
   // Get the course id of the course whose roster is being updated
-  $course_id = intval($_POST['course_id']);
+  $course_id = intval($_POST['course-id']);
 
   // make sure the survey is for a course the current instructor actually teaches
   if (!isCourseInstructor($con, $course_id, $instructor_id)) {
@@ -79,10 +86,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       if (!empty($names_emails['error'])) {
         $results['success'] = false;
         $results['error'] = $names_emails['error'];
-      } else {
+      } else if ($update_type == 'replace') {
         clearRoster($con, $course_id);
-        addToCourse($con, $course_id, $names_emails);
       }
+      addStudents($con, $course_id, $names_emails);
     }
   }
   // We can open the file, so lets start setting up the header

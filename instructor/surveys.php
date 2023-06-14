@@ -79,11 +79,12 @@ $terms = addSurveysToCourses($con, $terms);
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <script>
-    function expandRoster() {
+    function updateRoster() {
       // Create the fake form we are uploading
       let formData = new FormData();
       formData.append("roster-file", document.getElementById("roster-file").files[0]);
       formData.append("course-id", document.getElementById("roster-course-id").value);
+      formData.append("update-type", document.querySelector('input[name="rosterUpdateOptions"]:checked').value);
       fetch('rosterUpdate.php', {method: "POST", body: formData})
         .then(res => res.json())
         .then(data => {
@@ -107,19 +108,30 @@ $terms = addSurveysToCourses($con, $terms);
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="rosterUpdateModalLabel">Expand course roster</h5>
+            <h5 class="modal-title" id="rosterUpdateModalLabel">Update course roster</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-          <input type="hidden" id="roster-course-id" value=""></input>
-          <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
-          <div class="input-group input-group-sm">
-          <input type="file" id="roster-file" class="form-control" name="roster-file"></input>
-          <label for="roster-file" id="roster-file-label"></label></div>
+            <input type="hidden" id="roster-course-id" value=""></input>
+            <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
+            <div class="input-group input-group-sm">
+              <input type="file" id="roster-file" class="form-control" name="roster-file"></input>
+              <label for="roster-file" id="roster-file-label"></label>
+            </div>
+            <div class="btn-group mt-3" role="group" aria-label="Buttons selecting how to use roster file">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="rosterUpdateOptions" id="replaceRadio" value="replace">
+                <label class="form-check-label" for="replaceRadio">Replace Roster</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="rosterUpdateOptions" id="expandRadio" value="expand">
+                <label class="form-check-label" for="expandRadio">Expand Roster</label>
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="expandRoster()">Expand</button>
+            <button type="button" id="updateRosterBtn" class="btn btn-primary" onclick="updateRoster()">Update</button>
           </div>
         </div>
       </div>
@@ -130,7 +142,7 @@ $terms = addSurveysToCourses($con, $terms);
       </div>
     </div>
     <div class="row mt-5 mx-4">
-    <div class="col">
+      <div class="col">
         <a href="rubricReview.php" class="btn btn-outline-secondary btn-lg">View Existing Rubrics</a>
       </div>
       <div class="col ms-auto">
@@ -154,12 +166,26 @@ $terms = addSurveysToCourses($con, $terms);
   </div>
 </main>
 <script>
+  let replace = document.getElementById("replaceRadio");
+  replace.addEventListener('change', function(event) {
+    let button = document.getElementById("updateRosterBtn");
+    button.innerText = "Replace";
+    button.classList.remove("btn-info");
+    button.classList.add("btn-danger");
+  });
+  let expand = document.getElementById("expandRadio");
+  expand.addEventListener('change', function(event) {
+    let button = document.getElementById("updateRosterBtn");
+    button.innerText = "Expand";
+    button.classList.remove("btn-danger");
+    button.classList.add("btn-info");
+  });
   let rosterModal = document.getElementById("rosterUpdateModal");
   rosterModal.addEventListener('show.bs.modal', function (event) {
       // Get the course name from the button that was clicked
       let course_name = event.relatedTarget.getAttribute('data-bs-coursename')      
       let modTitle = document.getElementById("rosterUpdateModalLabel");
-      modTitle.innerHTML = "Expand " + course_name + " Roster";
+      modTitle.innerHTML = "Update " + course_name + " Roster";
       // Also get the course id from the button that was clicked
       let course_id = event.relatedTarget.getAttribute('data-bs-courseid')
       let courseIdInput = document.getElementById("roster-course-id");
@@ -168,6 +194,9 @@ $terms = addSurveysToCourses($con, $terms);
       let modFile = document.getElementById("roster-file");
       modFile.value ='';
       modFile.value = null;
+      // Set the radio buttons to default to expand
+      let expandRadio = document.getElementById("expandRadio");
+      expandRadio.click();
   });
 </script>
 </body>

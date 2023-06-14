@@ -8,38 +8,47 @@ function clearRoster($con, $course_id) {
   return $retVal;
 }
 
-function addToCourse($con, $course_id, $names_emails) {
+function addStudents($con, $course_id, $names_emails) {
   // Optimistically assume this will be successful.
   $retVal = true;
 
   // Create the prepared statements
-  $stmt_check = $con->prepare('SELECT id FROM students WHERE email=?');
-  $stmt_news = $con->prepare('INSERT INTO students (email, name) VALUES (?, ?)');
-  $stmt_enroll = $con->prepare('INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)');  
+  $stmt_student_check = $con->prepare('SELECT id FROM students WHERE email=?');
+  $stmt_add_student = $con->prepare('INSERT INTO students (email, name) VALUES (?, ?)');
+  $stmt_enroll_check = $con->prepare('SELECT student_id FROM enrollments WHERE student_id=? AND course_id=?');
+  $stmt_add_enroll = $con->prepare('INSERT INTO enrollments (student_id, course_id) VALUES (?, ?)');  
   foreach ($names_emails as list($name, $email)) {
-    $stmt_check->bind_param('s', $email);
-    $stmt_check->execute();
-    $result = $stmt_check->get_result();
+    $stmt_student_check->bind_param('s', $email);
+    $stmt_student_check->execute();
+    $result = $stmt_student_check->get_result();
     $student_info = $result->fetch_all(MYSQLI_ASSOC);
     $student_id = 0;
     // check if the student already exists if they don't insert them
     if ($result->num_rows == 0) {
-      $stmt_news->bind_param('ss', $email, $name);
-      $retVal = $retVal && $stmt_news->execute();
+      $stmt_add_student->bind_param('ss', $email, $name);
+      $retVal = $retVal && $stmt_add_student->execute();
       $student_id = $con->insert_id;
     } else {
       $student_id = $student_info[0]['id'];
     }
     // An id of 0 is used by MySQL for the ID when the insert failed. This should always be non-zero
     if ($student_id != 0) {
-      $stmt_enroll->bind_param('ii', $student_id, $course_id);
-      $retVal = $retVal && $stmt_enroll->execute();
+      // Check if the student is already enrolled in the course
+      $stmt_enroll_check->bind_param('ii', $student_id, $course_id);
+      $retVal = $retVal && $stmt_enroll_check->execute();
+      $result = $stmt_student_check->get_result();
+      $student_info = $result->fetch_all(MYSQLI_ASSOC);
+      if ($result->num_rows == 0) {
+        $stmt_add_enroll->bind_param('ii', $student_id, $course_id);
+        $retVal = $retVal && $stmt_add_enroll->execute();
+      }
     }
   }
   // Clean up our SQL queries
-  $stmt_check->close();
-  $stmt_news->close();
-  $stmt_enroll->close();
+  $stmt_student_check->close();
+  $stmt_add_student->close();
+  $stmt_enroll_check->close();
+  $stmt_add_enroll->close();
   return $retVal;
 }
 ?>
