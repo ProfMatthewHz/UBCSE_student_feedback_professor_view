@@ -75,6 +75,7 @@ CREATE TABLE `survey_types` (
   `id` tinyint NOT NULL AUTO_INCREMENT,
   `description` text NOT NULL,
   `file_organization` text NOT NULL,
+  `display_multiplier` tinyint NOT NULL,
    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
