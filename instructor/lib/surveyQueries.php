@@ -8,8 +8,10 @@ function deleteSurvey($con, $survey_id) {
 }
 
 function insertSurvey($con, $course_id, $name, $start, $end, $rubric_id, $survey_type) {
+  $start_string = $start->format('Y-m-d H:i:s');
+  $end_string = $end->format('Y-m-d H:i:s');
   $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, end_date, rubric_id, survey_type_id) VALUES (?, ?, ?, ?, ?, ?)');
-  $stmt->bind_param('isssii', $course_id, $name, $start, $end, $rubric_id, $survey_type);
+  $stmt->bind_param('isssii', $course_id, $name, $start_string, $end_string, $rubric_id, $survey_type);
   $stmt->execute();
   $survey_id = $con->insert_id;
   $stmt->close();

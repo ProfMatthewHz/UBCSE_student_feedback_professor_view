@@ -113,13 +113,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	}
 	$rubric_id = $_SESSION["rubric_reviewed"];
 	unset($_SESSION["rubric_reviewed"]);
-	$rubric_name = selectRubricName($con, $rubric_id);
+	$rubric_name = getRubricName($con, $rubric_id);
 	$_SESSION["rubric"] = array("name" => $rubric_name);
 
-	$scores = selectRubricScores($con, $rubric_id);
+	$scores = getRubricScores($con, $rubric_id);
 	$_SESSION["rubric"]["levels"] = create_levels_array($scores);
 
-	$topics = selectRubricTopics($con, $rubric_id);
+	$topics = getRubricTopics($con, $rubric_id);
 	$topics_data = create_topics_array($topics);
 	$_SESSION["confirm"] = array("topics" => $topics_data);
 	http_response_code(302);
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	exit();
 }
 
-$rubrics = selectRubrics($con);
+$rubrics = getRubrics($con);
 $csrf_token = createCSRFToken($con, $instructor_id);
 // Just to be certain, we will unset the session variable that tracks the rubric we are currently reviewing
 unset($_SESSION["rubric_reviewed"]);

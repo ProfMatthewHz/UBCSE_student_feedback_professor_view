@@ -1,14 +1,12 @@
 <?php
-function getIdFromEmail($db_connection, $email) {
-  $ret_val = 0;
-  $stmt = $db_connection->prepare('SELECT id FROM students WHERE email=?');
+function getStudentInfoFromEmail($db_connection, $email) {
+  $ret_val = null;
+  $stmt = $db_connection->prepare('SELECT id, name FROM students WHERE email=?');
   $stmt->bind_param('s',$email);
   $stmt->execute();
-  $stmt->bind_result($ret_val);
-  $stmt->store_result();
-  if (!$stmt->fetch()) {
-    $ret_val = 0;
-  }
+  $result = $stmt->get_result();
+  $row = $result->fetch_array(MYSQLI_NUM);
+  $ret_val = $row;
   $stmt->close();
   return $ret_val;
 }
