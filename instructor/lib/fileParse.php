@@ -1,19 +1,16 @@
 <?php
 function getIdsFromEmails($con, $line_num, $emails) {
-  // We do not allow teams of 1, so flag this as an error right away.
-  if (count($emails) == 1) {
-    $retVal = array('error' => 'Line ' . $line_num . ' only contains 1 name\n');
-    return $retVal;
-  }
   // Otherwise we have a valid team and can try getting the ids
-  $retVal = array('error' => '', 'ids' => array());
+  $retVal = array('error' => '', 'student_data' => array());
   // Make sure the current line's data are valid
   foreach ($emails as $column => $email) {
-    $student_id = getIdFromEmail($con, $email);
-    if (empty($student_id)) {
-      $retVal['error'] = $$retVal['error'] . 'Line '. $line_num . ' at column ' . $column . ' includes an unknown person (' . $email . ')\n';
+    $id_and_name = getStudentInfoFromEmail($con, $email);
+    if (empty($id_and_name)) {
+      $retVal['error'] = $retVal['error'] . 'Line '. $line_num . '  column ' . $column . ' includes an unknown email (' . $email . ')<br>';
     } else {
-      $retVal['ids'][] = $student_id;
+      $id = $id_and_name[0];
+      $name = $id_and_name[1];
+      $retVal['student_data'][$email] = array($name, $id);
     }
   }
   return $retVal;
@@ -40,160 +37,79 @@ function clean_to_ascii($str) {
   return $str;
 }
 
-function parse_review_pairs($file_handle, $con) {
+function parse_review_pairs($rows, $student_data) {
   // return array
   $ret_val = array();
+  foreach ($rows as $idx => $row) {
+    // Get the reviewer infomation
+    $reviewer = $row[0];
+    $reviewer_id = $student_data[$reviewer][1];
+    // Get the person being reviewed's info
+    $reviewed = $row[1];
+    $reviewed_id = $student_data[$reviewed][1];
+    // Create the pairing.
+    $ret_val[] = array($reviewer_id, $reviewed_id, $idx, 1);
+  }
+  return $ret_val;
+}
 
-  $line_num = 0;
-  while (($line_text = fgetcsv($file_handle)) !== FALSE) {
-    $line_num = $line_num + 1;
-
-    // Force the input into ASCII format
-    $line_text = array_map("clean_to_ascii", $line_text);
-    // Remove any blank entries from the array
-    $line_text = array_filter($line_text);
-
-    $line_fields = count($line_text);
-
-    // Verify the current line's data seems reasonable while allowing us to skip blank lines
-    if ($line_fields == 1 || $line_fields > 2) {
-      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain a review pair\n';
-    } else if ($line_fields == 2) {
-      $reviewer_id = getIdFromEmail($con, $line_text[0]);
-      if (empty($reviewer_id)) {
-        $ret_val['error'] = $ret_val['error'] . 'Line '. $line_num . ' includes an unknown reviewer (' . $line_text[0] . ')\n';
-      }
-      $reviewed_id = getIdFromEmail($con, $line_text[1]);
-      if (empty($reviewed_id)) {
-        $ret_val['error'] = $ret_val['error'] . 'Line '. $line_num . ' includes an unknown person being reviewed (' . $line_text[1] . ')\n';
-      }
-      if (!empty($reviewer_id) && !empty($reviewed_id)) {
-        // Fastest way to append an array; assumes each eval is independent and so is equally weighted
-        $ret_val[] = array($reviewer_id, $reviewed_id, $line_num, 1);
+function parse_review_teams($rows, $student_data) {
+  // return array
+  $ret_val = array();
+  foreach ($rows as $idx => $row) {
+    // We will need to create a review of each student for every other student.
+    $id_len = count($row);
+    foreach ($row as $reviewer_email) {
+      $reviewer_id = $student_data[$reviewer_email][1];
+      for ($k = 0; $k < $id_len; $k++) {
+        $reviewed_email = $row[$k];
+        $reviewed_id = $student_data[$reviewed_email][1];
+        // Append pairings to our array; defaults to each team being independent and each review is equally weighted
+        $ret_val[] = array($reviewer_id, $reviewed_id, $idx, 1);
       }
     }
   }
   return $ret_val;
 }
 
-function parse_review_teams($file_handle, $con) {
+function parse_managed_teams($rows, $student_data, $pm_mult) {
   // return array
-  $ret_val = array('error' => '', 'ids' => array());
-
-  $line_num = -1;
-  while (($line_text = fgetcsv($file_handle)) !== FALSE) {
-    $line_num = $line_num + 1;
-
-    // Force the input into ASCII format
-    $line_text = array_map("clean_to_ascii", $line_text);
-    // Remove any blank entries from the array
-    $line_text = array_filter($line_text);
-  
-    // This is horrible practice, but it handles the degenerate case of a blank line and makes the code much easier to read
-    if (empty($line_text)) {
-      continue;
-    }
-
-    // Get the errors and ids from the current line
-    $line_data = getIdsFromEmails($con, $line_num, $line_text);
-
-    if (empty($line_data['error'])) {
-      // Now that we know data are valid, create & add all possible team pairings
-      $id_len = count($line_data['ids']);
-      foreach ($line_data['ids'] as $reviewer_id) {
-        for ($k = 0; $k < $id_len; $k++) {
-          // Append pairings to our array array; defaults to each team being independent and each review is equally weighted
-          $pairing = array($reviewer_id, $line_data['ids'][$k], $line_num, 1);
-          $ret_val['ids'][] = $pairing;
-        }
+  $ret_val = array();
+  foreach ($rows as $idx => $row) {
+    // Remove the manager from the list of students
+    $manager_email = array_pop($row);
+    $manager_id = $student_data[$manager_email][1];
+    // We will need to create a review of each student for every other student.
+    $id_len = count($row) - 1;
+    foreach ($row as $reviewer_email) {
+      $reviewer_id = $student_data[$reviewer_email][1];
+      // Add the manager's review of this stuent
+      $ret_val[] = array($manager_id, $reviewer_id, $idx, $pm_mult);
+      for ($k = 0; $k < $id_len; $k++) {
+        $reviewed_email = $row[$k];
+        $reviewed_id = $student_data[$reviewed_email][1];
+        // Append pairings to our array; defaults to each team being independent and each review is equally weighted
+        $ret_val[] = array($reviewer_id, $reviewed_id, $idx, 1);
       }
-    } else {
-      $ret_val['error'] = $ret_val['error'] . $line_data['error'];
     }
   }
-
   return $ret_val;
 }
 
-function parse_review_managed_teams($file_handle, $pm_mult, $con) {
-  // return array
-  $ret_val = array('error' => '', 'ids' => array());
-
-  $line_num = -1;
-  while (($line_text = fgetcsv($file_handle)) !== FALSE) {
-    $line_num = $line_num + 1;
-
-    // Force the input into ASCII format
-    $line_text = array_map("clean_to_ascii", $line_text);
-    // Remove any blank entries from the array
-    $line_text = array_filter($line_text);
-
-    // This is horrible practice, but it handles the degenerate case of a blank line and makes the code much easier to read
-    if (empty($line_text)) {
-      continue;
-    }
-    
-    // Get the errors and ids from the current line
-    $line_data = getIdsFromEmails($con, $line_num, $line_text);
-
-    // Only add lines that do not have errors
-    if (empty($error)) {
-      $manager = array_pop($line_data['ids']);
-      $team_size = count($line_data['ids']);
-      // Now that we know data are valid, create & add all possible team pairings
-      foreach ($line_data['ids'] as $member) {
-        // Add the manager's review
-        $managed = array($manager, $member, $line_num, $pm_mult);
-        $ret_val['ids'][] = $managed;
-        // Now add all of the team member's reviews
-        for ($k = 0; $k < $team_size; $k++) {
-          $pairing = array($member, $line_data['ids'][$k], $line_num, 1);
-          $ret_val['ids'][] = $pairing;
-        }
-      }
-    } else {
-      $ret_val['error'] = $ret_val['error'] . $line_data['error'];
+function parse_manager_review($rows, $student_data) {
+  $ret_val = array();
+  foreach ($rows as $idx => $row) {
+    // We will need to create a review of each student for every other student.
+    $id_len = count($row);
+    // Remove the manager from the list of students
+    $manager_email = array_pop($row);
+    $manager_id = $student_data[$manager_email][1];
+    foreach ($row as $reviewer_email) {
+      $reviewer_id = $student_data[$reviewer_email][1];
+      // Add the manager's review of this stuent
+      $ret_val[] = array($reviewer_id, $manager_id, $idx, 1);
     }
   }
-
-  return $ret_val;
-}
-
-function parse_review_many_to_one($file_handle, $con) {
-  // return array
-  $ret_val = array('error' => '', 'ids' => array());
-
-  $line_num = -1;
-  while (($line_text = fgetcsv($file_handle)) !== FALSE) {
-    $line_num = $line_num + 1;
-
-    // Force the input into ASCII format
-    $line_text = array_map("clean_to_ascii", $line_text);
-    // Remove any blank entries from the array
-    $line_text = array_filter($line_text);
-
-    // This is horrible practice, but it handles the degenerate case of a blank line and makes the code much easier to read
-    if (empty($line_text)) {
-      continue;
-    }
-
-    // Get the errors and ids from the current line
-    $line_data = getIdsFromEmails($con, $line_num, $line_text);
-
-    // Only add lines that do not have errors
-    if (empty($error)) {
-      $manager = array_pop($line_data['ids']);
-      // Now that we know data are valid, create & add all possible team pairings
-      foreach ($line_data['ids'] as $member) {
-        // Add the manager's review
-        $managed = array($member, $manager, $line_num, 1);
-        $ret_val['ids'][] = $managed;
-      }
-    } else {
-      $ret_val['error'] = $ret_val['error'] . $line_data['error'];
-    }
-  }
-
   return $ret_val;
 }
 
@@ -214,20 +130,56 @@ function parse_roster_file($file_handle) {
 
     // Verify the current line's data seems reasonable while allowing us to skip blank lines
     if ($line_fields == 1 || $line_fields > 2) {
-      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain a name and email\n';
+      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain a name and email<br>';
     } else if ($line_fields == 2) {
       $error = '';
       if (!ctype_print($line_text[0])) {
-        $error = 'Line '. $line_num . ' includes a name with unprintable characters (' . $line_text[0] . ')\n';
+        $error = 'Line '. $line_num . ' includes a name with unprintable characters (' . $line_text[0] . ')<br>';
       }
       if (!filter_var($line_text[1], FILTER_VALIDATE_EMAIL)) {
-        $error = $error . 'Line '. $line_num . ' includes an improperly formatted email address (' . $line_text[1] . ')\n';
+        $error = $error . 'Line '. $line_num . ' includes an improperly formatted email address (' . $line_text[1] . ')<br>';
       }
       if (empty($error)) {
         // add the fields to the array
         $ret_val['ids'][$line_text[1]] = $line_text[0];
       } else {
         $ret_val['error'] = $ret_val['error'] . $error;
+      }
+    }
+  }
+  return $ret_val;
+}
+
+function processReviewFile($con, $require_pairs, $file_handle) {
+  $ret_val = array('error' => '', 'rows' => array(), 'individuals' => array());
+
+  $line_num = -1;
+  // Loop through each row in the (CSV) file
+  while (($line_text = fgetcsv($file_handle)) !== FALSE) {
+    $line_num = $line_num + 1;
+
+    // Force the input into ASCII format
+    $line_text = array_map("clean_to_ascii", $line_text);
+    // Remove any blank entries from the array
+    $line_text = array_filter($line_text);
+
+    // This is horrible practice, but it handles the degenerate case of a blank line and makes the code much easier to read
+    if (empty($line_text)) {
+      continue;
+    }
+    // Check for an incorrect number of entries on the current line
+    if ( $require_pairs && (count($line_text) > 2) ) {
+      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain a proper review assignment<br>';
+    } else {
+      // Verify the entries on the current line
+      $line_data = getIdsFromEmails($con, $line_num, $line_text);
+      if (!empty($line_data['error'])) {
+        $ret_val['error'] = $ret_val['error'] . $line_data['error'];
+      } else {
+        // Add any new individuals to our tracking
+        $ret_val['individuals'] = array_merge($ret_val['individuals'], $line_data['student_data']);
+        // Add the row to our list of (valid) rows
+        $ret_val['rows'][] = $line_text;
       }
     }
   }

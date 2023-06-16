@@ -207,7 +207,7 @@ if ($update_type == 'expand') {
       <hr>
       <div class="row mx-1 mt-2 justify-content-center">
         <div class="col-auto">
-          <input class="btn btn-outline-danger" name="return-cancel" type="submit" value="Return to Instructor Home"></input>
+          <input class="btn btn-outline-info" name="return-cancel" type="submit" value="Return to Instructor Home"></input>
         </div>
       </div>
     </form>

@@ -59,7 +59,7 @@ foreach ($all_data as $row) {
 }
 
 // store information about rubrics as array of array
-$rubrics = selectRubrics($con);
+$rubrics = getRubrics($con);
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
@@ -121,6 +121,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $rubric_id = $_POST['rubric-id'];
   $rubric_id = intval($rubric_id);
   if ($rubric_id === 0) {
+    $errorMsg['rubric-id'] = "Please choose a valid rubric.";
+  } else if (!array_key_exists($rubric_id, $rubrics)) {
     $errorMsg['rubric-id'] = "Please choose a valid rubric.";
   }
 
@@ -203,9 +205,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // check the pairing mode
   $pairing_mode = intval($_POST['pairing-mode']);
-  if (empty($pairing_mode)) {
+  if (!array_key_exists($pairing_mode, $_SESSION["surveyTypes"])) {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-  } 
+  }
   
   // validate the uploaded file
   if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE) {
@@ -224,29 +226,36 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!$file_handle) {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
-      $pairings = getPairingResults($con, $pairing_mode, $pm_mult, $file_handle);
-      if (!isset($pairings)) {
-        $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-      }
+      /*$pairings = getPairingResults($con, $pairing_mode, $pm_mult, $file_handle); */
+      // Get the data from the review file 
+      $file_data = processReviewFile($con, ($pairing_mode == 1),  $file_handle);
       
       // Clean up our file handling
       fclose($file_handle);
 
       // check for any errors
       if (!empty($pairings['error'])) {
-        $errorMsg['pairing-file'] = $pairings['error'];
-      } else {
+        $errorMsg['pairing-file'] = $file_data['error'];
+      } else if (empty($errorMsg)) {
+        // Save the data we will need for the confirmation page
+        $_SESSION["survey_course_id"] = $course_id;
+        $_SESSION["survey_file"] = $file_data['rows'];
+        $_SESSION["survey_students"] = $file_data['individuals'];
+        $_SESSION["survey_data"] = array('start' => $s, 'end' => $e, 'pairing_mode' => $pairing_mode, 'multiplier' => $pm_mult, 'rubric' => $rubric_id, 'name' => $survey_name);
+        http_response_code(302);
+        header("Location: ".INSTRUCTOR_HOME."surveyConfirm.php");
+        exit();
         // finally add the pairings to the database if no other error message were set so far
         // first add the survey details to the database
-        if (empty($errorMsg)) {
-          $sdate = $start_date . ' ' . $start_time;
-          $edate = $end_date . ' ' . $end_time;
-          $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id, $pairing_mode);
-          addReviewsToSurvey($con, $survey_id, $pairings['ids']);
-          http_response_code(302);
-          header("Location: ".INSTRUCTOR_HOME."surveys.php");
-          exit();
-        }
+        // if (empty($errorMsg)) {
+        //   $sdate = $start_date . ' ' . $start_time;
+        //   $edate = $end_date . ' ' . $end_time;
+        //   $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id, $pairing_mode);
+        //   addReviewsToSurvey($con, $survey_id, $pairings['ids']);
+        //   http_response_code(302);
+        //   header("Location: ".INSTRUCTOR_HOME."surveys.php");
+        //   exit();
+        // }
       }
     }
   }
@@ -276,6 +285,26 @@ $csrf_token = createCSRFToken($con, $instructor_id);
         <h4 class="text-white display-1">UB CSE Evalution System<br>Create New Survey</h4>
       </div>
     </div>
+    <?php
+    if (!empty($errorMsg['pairing-file'])) {
+      echo '<div class="modal fade" id="errorModalDisplay" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="errorModalTitle" aria-hidden="true">';
+      echo '  <div class="modal-dialog modal-dialog-scrollable">';
+      echo '    <div class="modal-content">';
+      echo '      <div class="modal-header">';
+      echo '        <h5 class="modal-title" id="errorModalTitle">Review File Errors</h5>';
+      echo '        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+      echo '      </div>';
+      echo '      <div class="modal-body">';
+      echo '        <p>' . $errorMsg['pairing-file'] . '</p>';
+      echo '      </div>';
+      echo '      <div class="modal-footer">';
+      echo '         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+      echo '      </div>';
+      echo '    </div>';
+      echo '  </div>';
+      echo '</div>';
+    }
+    ?>
     <form class="mt-5 mx-4" id="add-survey" method="post" enctype="multipart/form-data">
     <div class="form-inline justify-content-center align-items-center">
       <div class="form-floating mb-3">
@@ -332,7 +361,7 @@ $csrf_token = createCSRFToken($con, $instructor_id);
       <span id="fileFormat" style="font-size:small;color:DarkGrey"></span>
       <div class="form-floating mt-0 mb-3">
         <input type="file" id="pairing-file" class="form-control <?php if(isset($errorMsg["pairing-file"])) {echo "is-invalid ";} ?>" name="pairing-file" required></input>
-        <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"]; } else { echo "Review Assignments (CSV File):";} ?></label>
+        <label for="pairing-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["pairing-file"])) {echo 'Errors in file need to be fixed.'; } else { echo "Review Assignments (CSV File):";} ?></label>
       </div>
 
       <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>" />
@@ -349,5 +378,11 @@ $csrf_token = createCSRFToken($con, $instructor_id);
 
 </div>
           </main>
+<?php
+// Show the modal box with all of the file errors when there were file errors.
+if (!empty($errorMsg["pairing-file"])) {
+  echo '<script>let errorModal = new bootstrap.Modal(document.getElementById("errorModalDisplay"));errorModal.show();</script>';
+}
+?>
 </body>
 </html>

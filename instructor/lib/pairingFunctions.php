@@ -2,14 +2,14 @@
 
 function getSurveyTypes($con) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT id, description, file_organization
+  $stmt = $con->prepare('SELECT id, description, file_organization, display_multiplier
                          FROM survey_types
                          ORDER BY id');
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
     $key = $row[0];
-    $ret_val[$key] = array($row[1], $row[2]);
+    $ret_val[$key] = array($row[1], $row[2], $row[3]);
   }
   $stmt->close();
   return $ret_val;
@@ -19,8 +19,14 @@ function emitUpdateFileDescriptionFn() {
   echo '<script>function handlePairingChange() {';
   echo 'let selectObject = document.getElementById("pairing-mode");let numLevels = selectObject.value;let formatObject = document.getElementById("fileFormat");let multDiv = document.getElementById("mult_div");';
   echo 'switch(numLevels) {';
-  foreach ($_SESSION["surveyTypes"] as $key => $description_and_file_org) {
-    echo '  case "' . $key . '": formatObject.innerHTML = "' . $description_and_file_org[1] . '";multDiv.style.display="none";break;';
+  foreach ($_SESSION["surveyTypes"] as $key => $details) {
+    echo '  case "' . $key . '": formatObject.innerHTML = "' . $details[1] . '";multDiv.style.display=';
+    if ($details[2]) {
+      echo 'null';
+    } else {
+      echo '"none"';
+    }
+    echo ';break;';
   }
   echo '  default: formatObject.innerHTML = "CSV file format needed for the pairing mode shown here";multDiv.style.display="none";break;';
   echo '}}</script>';
@@ -60,17 +66,38 @@ function emitSurveyTypeSelect($errorMsg, $pairing_mode, $pm_mult) {
   echo '</div>';
 }
 
-function getPairingResults($con, $pairing_mode, $pm_mult, $file_handle) {
-  if ($pairing_mode == 1) {
-    return parse_review_pairs($file_handle, $con);
-  } else if ($pairing_mode == 2) {
-    return parse_review_teams($file_handle, $con);
-  } else if ($pairing_mode == 3) {
-    return parse_review_managed_teams($file_handle, $pm_mult, $con);
-  } else if ($pairing_mode == 4) {
-    return parse_review_many_to_one($file_handle, $con);
-  } else {
-    return null;
+function calculateRoles($pairings) {
+  $ret_val = array();
+  foreach ($pairings as $pair) {
+    $reviewer = $pair[0];
+    if (array_key_exists($reviewer, $ret_val)) {
+      $ret_val[$reviewer][0] = true;
+    } else {  
+      $ret_val[$reviewer] = array(true, false);
+    }
+    $reviewed = $pair[1];
+    if (array_key_exists($reviewed, $ret_val)) {
+      $ret_val[$reviewed][1] = true;
+    } else {  
+      $ret_val[$reviewed] = array(false, true);
+    }
   }
+  return $ret_val;
+}
+
+function processReviewRows($rows, $student_data, $pm_mult, $pairing_mode) {
+  $pairings = null;
+  if ($pairing_mode == 1) {
+    $pairings = parse_review_pairs($rows, $student_data);
+  } else if ($pairing_mode == 2) {
+    $pairings = parse_review_teams($rows, $student_data);
+  } else if ($pairing_mode == 3) {
+    $pairings = parse_managed_teams($rows, $student_data, $pm_mult);
+  } else if ($pairing_mode == 4) {
+    $pairings = parse_manager_review($rows, $student_data);
+  }
+  $roles = calculateRoles($pairings);
+  $ret_val = array("pairings" => $pairings, "roles" => $roles);
+  return $ret_val;
 }
 ?>

@@ -50,7 +50,7 @@ function insertRubricReponse($con, $topic_id, $level_id, $response) {
   return $ret_val;
 }
 
-function selectRubrics($con) {
+function getRubrics($con) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT id, description FROM rubrics');
   $stmt->execute();
@@ -64,11 +64,11 @@ function selectRubrics($con) {
   return $ret_val;
 }
 
-function selectRubricName($con, $rubric_id) {
+function getRubricName($con, $rubric_id) {
   $stmt = $con->prepare('SELECT description FROM rubrics WHERE id=?');
   $stmt->bind_param('i', $rubric_id);
   $stmt->execute();
-  $ret_val = "No Such Rubric";
+  $ret_val = "";
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
     $ret_val = $row[0];
@@ -77,7 +77,7 @@ function selectRubricName($con, $rubric_id) {
   return $ret_val;
 }
 
-function selectRubricScores($con, $rubric_id) {
+function getRubricScores($con, $rubric_id) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT id, name, score 
                          FROM rubric_scores
@@ -97,7 +97,7 @@ function selectRubricScores($con, $rubric_id) {
   return $ret_val;
 }
 
-function selectTopicResponses($con, $topic_id) {
+function getTopicResponses($con, $topic_id) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT rubric_score_id, response 
                          FROM rubric_responses 
@@ -116,7 +116,7 @@ function selectTopicResponses($con, $topic_id) {
   return $ret_val;
 }
 
-function selectRubricTopics($con, $rubric_id) {
+function getRubricTopics($con, $rubric_id) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT id, question, question_response 
                          FROM rubric_topics 
@@ -131,7 +131,7 @@ function selectRubricTopics($con, $rubric_id) {
     $question = $row[1];
     $question_type = $row[2];
     $topic_data["question"] = $question;
-    $topic_responses = selectTopicResponses($con, $topic_id);
+    $topic_responses = getTopicResponses($con, $topic_id);
     $topic_data["responses"] = $topic_responses;
     $topic_data["type"] = $question_type;
     $ret_val[] = $topic_data;
@@ -142,9 +142,9 @@ function selectRubricTopics($con, $rubric_id) {
 
 function getRubricData($con, $rubric_id) {
   $ret_val = array();
-  $rubric_scores = selectRubricScores($con, $rubric_id);
+  $rubric_scores = getRubricScores($con, $rubric_id);
   $ret_val["scores"] = $rubric_scores;
-  $rubric_topics = selectRubricTopics($con, $rubric_id, $rubric_scores);
+  $rubric_topics = getRubricTopics($con, $rubric_id, $rubric_scores);
   $ret_val["topics"] = $rubric_topics;
   return $ret_val;
 }

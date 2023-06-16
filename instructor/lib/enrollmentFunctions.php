@@ -77,4 +77,14 @@ function addStudents($con, $course_id, $names_emails) {
   $stmt->close();
   return $retVal;
 }
+
+function getNonRosterStudents($full_list, $roster) {
+  $ret_val = array();
+  foreach ($full_list as $email => $data) {
+    if (!array_key_exists($email, $roster)) {
+      $ret_val[$email] = $data;
+    }
+  }
+  return $ret_val;
+}
 ?>

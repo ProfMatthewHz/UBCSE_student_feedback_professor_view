@@ -60,7 +60,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'GET') && isset($_GET['survey'])) {
 }
 
 // Get rubric info
-$rubrics = selectRubrics($con);
+$rubrics = getRubrics($con);
 
 // try to look up info about the requested survey
 $survey_info = getSurveyData($con, $survey_id);
@@ -180,6 +180,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
     }
   }
+  $s = null;
+  $e = null;
 
   // check dates and times
   if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
@@ -201,9 +203,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Update the survey details in the database
   if (empty($errorMsg)) {
     $pairings = getReviewsForSurvey($con, $survey_id);
-    $sdate = $start_date . ' ' . $start_time;
-    $edate = $end_date . ' ' . $end_time;
-    $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id, $survey_type);
+    $survey_id = insertSurvey($con, $course_id, $survey_name, $s, $e, $rubric_id, $survey_type);
     addReviewsToSurvey($con, $survey_id, $pairings);
     http_response_code(302);
     header("Location: ".INSTRUCTOR_HOME."surveys.php");
