@@ -260,8 +260,8 @@ $roles = $file_results["roles"];
     </form>
   </div>
   <script>$(document).ready(function () {
-    $('#rosterTable').DataTable();
-    $('#nonRosterTable').DataTable();
+    $('#rosterTable').DataTable({order: [[3, 'desc'], [2, 'desc']], 'iDisplayLength': 25});
+    $('#nonRosterTable').DataTable({order: [[3, 'desc'], [2, 'desc']], 'iDisplayLength': 25});
 });</script>
 </main>
 </body>
