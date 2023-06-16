@@ -163,7 +163,7 @@ $roles = $file_results["roles"];
           <div id="collapseRoster" class="accordion-collapse collapse show" aria-labelledby="headerRoster">
             <div class="accordion-body">
               <div class="table-responsive">
-              <table class="table table-hover table-striped text-start" id="rosterTable">
+              <table class="table table-hover table-striped text-start align-middle" id="rosterTable">
                 <thead>
                   <tr>
                     <th scope="col">Email</th>
@@ -259,10 +259,12 @@ $roles = $file_results["roles"];
       </div>
     </form>
   </div>
-  <script>$(document).ready(function () {
-    $('#rosterTable').DataTable({order: [[3, 'desc'], [2, 'desc']], 'iDisplayLength': 25});
-    $('#nonRosterTable').DataTable({order: [[3, 'desc'], [2, 'desc']], 'iDisplayLength': 25});
-});</script>
+  <script>
+    $(document).ready(function () {
+      $('#rosterTable').DataTable({order: [[3, 'desc'], [2, 'desc']], 'iDisplayLength': 25});
+      $('#nonRosterTable').DataTable({order: [[3, 'desc'], [2, 'desc']], 'iDisplayLength': 25});
+    });
+  </script>
 </main>
 </body>
 </html>
