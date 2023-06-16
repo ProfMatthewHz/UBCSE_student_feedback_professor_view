@@ -109,7 +109,11 @@ $roles = $file_results["roles"];
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+	<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
   <title>CSE Evaluation Survey System - Confirm Survey</title>
 </head>
 <body class="text-center">
@@ -123,31 +127,31 @@ $roles = $file_results["roles"];
     </div>
     <div class="row justify-content-md-center mt-5 mx-1">
       <div class="col-sm-auto text-center">
-        <h4>Adding Survey for <br><?php echo $course_code . " - " . $course_name; ?></h4>
+        <h4 class="display-4">Adding Survey for <br><?php echo $course_code . " - " . $course_name; ?></h4>
       </div>
     </div>
-    <div class="row justify-content-md-center mt-5 mx-4">
+    <div class="row justify-content-md-center mt-5 align-items-center">
       <div class="col text-end">
-        <h4>Name:</h4>
+        Survey Name:
       </div>
       <div class="col text-start">
-         <b><?php echo $survey_name; ?></b>
+         <span class="fs-5"><?php echo $survey_name; ?></span>
       </div>
     </div>
-    <div class="row justify-content-md-center mx-4">
+    <div class="row justify-content-md-center align-items-center">
       <div class="col text-end">
-        <h4>Rubric:</h4>
+        Rubric:
       </div>
       <div class="col text-start">
-         <b><?php echo $rubric_name; ?></b>
+        <span class="fs-5"><?php echo $rubric_name; ?></span>
       </div>
     </div>
-    <div class="row justify-content-md-center mx-4">
+    <div class="row justify-content-md-center align-items-center mb-3">
       <div class="col text-end">
-        <h4>Survey Active:</h4>
+        <span>Survey Active:</span> 
       </div>
       <div class="col text-start">
-         <b><?php echo $survey_begin; ?></b> to <b><?php echo $survey_end; ?></b>
+         <span class="fs-5"><?php echo $survey_begin; ?> to <?php echo $survey_end; ?></span>
       </div>
     </div>
     <div class="row justify-content-md-center">
@@ -158,10 +162,12 @@ $roles = $file_results["roles"];
           </h2>
           <div id="collapseRoster" class="accordion-collapse collapse show" aria-labelledby="headerRoster">
             <div class="accordion-body">
-              <table class="table-sm table-hover">
+              <div class="table-responsive">
+              <table class="table table-hover table-striped text-start" id="rosterTable">
                 <thead>
                   <tr>
-                    <th scope="col">Name (Email)</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Name</th>
                     <th score="col">Reviewing Others</th>
                     <th score="col">Being Reviewed</th>
                   </tr>
@@ -171,22 +177,24 @@ $roles = $file_results["roles"];
                     // Add a row for each student in the course
                     foreach ($roster as $email => $name_and_id) {
                       echo '<tr>
-                              <td>'.$name_and_id[0].' ('.$email.')</td>';
+                              <td>'.$email.'</td>
+                              <td>'.$name_and_id[0].'</td>';
                       if (array_key_exists($name_and_id[1], $roles) && $roles[$name_and_id[1]][0]) {
-                        echo '<td class="text-success">&#x2714;</td>';
+                        echo '<td class="text-success" style="font-weight: bold;">&check;</td>';
                       } else {
-                        echo '<td class="text-danger">&#x2718</td>';
+                        echo '<td class="text-danger" style="font-weight: bold;">&#x2715;</td>';
                       }
                       if (array_key_exists($name_and_id[1], $roles) && $roles[$name_and_id[1]][1]) {
-                        echo '<td class="text-success">&#x2714;</td>';
+                        echo '<td class="text-success" style="font-weight: bold;">&check;</td>';
                       } else {
-                        echo '<td class="text-danger">&#x2718</td>';
+                        echo '<td class="text-danger" style="font-weight: bold;">&#x2715;</td>';
                       }
                       echo '</tr>';
                     }
                   ?>
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
         </div>
@@ -196,10 +204,12 @@ $roles = $file_results["roles"];
           </h2>
           <div id="collapseExternal" class="accordion-collapse collapse" aria-labelledby="headerExternal">
             <div class="accordion-body">
-              <table class="table-sm table-hover">
+            <div class="table-responsive">
+              <table class="table table-hover table-striped text-start" id="nonRosterTable">
                 <thead>
                   <tr>
-                    <th scope="col">Name (Email)</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Name</th>
                     <th score="col">Reviewing Others</th>
                     <th score="col">Being Reviewed</th>
                   </tr>
@@ -209,22 +219,24 @@ $roles = $file_results["roles"];
                     // Add a row for each student in the course
                     foreach ($non_roster as $email => $name_and_id) {
                       echo '<tr>
-                              <td>'.$name_and_id[0].' ('.$email.')</td>';
-                      if ($roles[$name_and_id[1]][0]) {
-                        echo '<td class="text-success">&#x2714;</td>';
+                              <td>'.$email.'</td>
+                              <td>'.$name_and_id[0].'</td>';
+                      if (array_key_exists($name_and_id[1], $roles) && $roles[$name_and_id[1]][0]) {
+                        echo '<td class="text-success" style="font-weight: bold;">&check;</td>';
                       } else {
-                        echo '<td class="text-danger">&#x2718</td>';
+                        echo '<td class="text-danger" style="font-weight: bold;">&#x2715;</td>';
                       }
-                      if ($roles[$name_and_id[1]][1]) {
-                        echo '<td class="text-success">&#x2714;</td>';
+                      if (array_key_exists($name_and_id[1], $roles) && $roles[$name_and_id[1]][1]) {
+                        echo '<td class="text-success" style="font-weight: bold;">&check;</td>';
                       } else {
-                        echo '<td class="text-danger">&#x2718</td>';
+                        echo '<td class="text-danger" style="font-weight: bold;">&#x2715;</td>';
                       }
                       echo '</tr>';
                     }
                   ?>
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
         </div>
@@ -242,11 +254,15 @@ $roles = $file_results["roles"];
       <hr>
       <div class="row mx-1 mt-2 justify-content-center">
         <div class="col-auto">
-          <input class="btn btn-outline-danger" name="return-survey" type="submit" value="Return to Instructor Home"></input>
+          <input class="btn btn-outline-info" name="return-survey" type="submit" value="Return to Instructor Home"></input>
         </div>
       </div>
     </form>
   </div>
+  <script>$(document).ready(function () {
+    $('#rosterTable').DataTable();
+    $('#nonRosterTable').DataTable();
+});</script>
 </main>
 </body>
 </html>
