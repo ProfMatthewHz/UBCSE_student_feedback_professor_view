@@ -226,7 +226,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!$file_handle) {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
-      /*$pairings = getPairingResults($con, $pairing_mode, $pm_mult, $file_handle); */
       // Get the data from the review file 
       $file_data = processReviewFile($con, ($pairing_mode == 1),  $file_handle);
       

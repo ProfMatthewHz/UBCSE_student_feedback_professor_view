@@ -1,7 +1,7 @@
 <?php
-function getIndividualsResults($teammates, $scores, $topics) {
+function getIndividualsAverages($students, $scores, $topics) {
   // Calculate the per-topic averages for each student
-  $averages = calculateAverages(array_keys($teammates), $scores, $topics);
+  $averages = calculateAverages(array_keys($students), $scores, $topics);
 
   // Now generate the array of results to output
   $ret_val = array();
@@ -14,7 +14,7 @@ function getIndividualsResults($teammates, $scores, $topics) {
   $ret_val[] = $header;
 
   // Then add one row per student who was reviewed
-  foreach ($teammates as $id => $name_and_email) {
+  foreach ($students as $id => $name_and_email) {
     $line = array($name_and_email['name'] . ' (' . $name_and_email['email'] . ')');
     foreach ($topics as $topic_id => $question) {
       $line[] = $averages[$id][$topic_id];
@@ -55,11 +55,8 @@ function getRawResults($teammates, $scores, $topics, $reviewers, $team_data) {
 }
 
 function getFinalResults($teammates, $scores, $topics, $team_data) {
-  // Calculate the normalized score for each survey that was completed
-  $normalized = calculateNormalizedSurveyResults(array_keys($teammates), $scores, $topics, $team_data);
-  
   // Finally, calculate the overall results for each student
-  $overall = calculateOverallResults(array_keys($teammates), $scores, $normalized);
+  $overall = calculateFinalNormalizedScore(array_keys($teammates), $scores, $topics, $team_data);
 
   // Now generate the array of results to output
   $ret_val = array();
@@ -72,6 +69,84 @@ function getFinalResults($teammates, $scores, $topics, $team_data) {
   foreach ($teammates as $id => $name_and_email) {
     $line = array($name_and_email['name'] .' (' . $name_and_email['email'] . ')', $overall[$id]);
     $ret_val[] = $line;
+  }
+  return $ret_val;
+}
+
+function transposeArray($scores) {
+  $ret_val = array();
+  // Loop through each person who was reviewed
+  foreach ($scores as $reviewee => $reviewers_array) {
+    // Loop through each person who reviewed them
+    foreach ($reviewers_array as $reviewer => $review_data) {
+      // Update our results with the reviewer & reviewee locations swapped
+      if (!array_key_exists($reviewer, $ret_val)) {
+        $ret_val[$reviewer] = array($reviewee => $review_data);
+      } else {
+        $ret_val[$reviewer][$reviewee] = $review_data;
+      }
+    }
+  }
+  return $ret_val;
+}
+
+function sumDifferencesSquare($reviews, $averages, $topic_id) {
+  $ret_val = 0;
+  foreach ($reviews as $reviewee => $review_data) {
+    // Calculate the difference between what the reviewer scored this student the student's average score on this topic
+    $diff = ($review_data[$topic_id] - $averages[$reviewee][$topic_id]);
+    // Add the square of the difference to our accumulator
+    $ret_val += pow($diff, 2);
+  }
+  return $ret_val;
+}
+
+function getReviewerReviewResults($reviewers, $scores, $averages, $topics, $team_data) {
+  // Generate the array of results to output
+  $ret_val = array();
+
+  // Create the header row
+  $header = array("Reviewer Name (Email)");
+  foreach ($topics as $question) {
+    $header[] = $question;
+  }
+  $header[] = "Normalized Total";
+  $ret_val[] = $header;
+
+  // Get the normalized scores and results that we will also need
+  $normals = calculateNormalizedSurveyResults(array_keys($scores), $scores, $topics, $team_data);
+  $avg_normal = calculateOverallResults(array_keys($scores), $scores, $normals);
+  // Transpose the results array so they are indexed as reviewer->reviewee rather than reviewee->reviewer
+  $invert_scores = transposeArray($scores);
+  $invert_normals = transposeArray($normals);
+
+  // Then add one row per student who was reviewed
+  foreach ($reviewers as $id => $name_and_email) {
+    $line = array($name_and_email['name'] .' (' . $name_and_email['email'] . ')');
+    // Check if this person actually completed any reviews
+    if (array_key_exists($id, $invert_scores)) {
+      // Get the number of reviews this person completed
+      $num_reviews = count($invert_scores[$id]);
+      // Get the results for this student on each topic
+      foreach ($topics as $topic_id => $question) {
+        $sumSquareDiff = sumDifferencesSquare($invert_scores[$id], $averages, $topic_id);
+        $line[] = $sumSquareDiff / $num_reviews;
+      }
+      $count = 0;
+      $total = 0;
+      foreach ($invert_normals[$id] as $reviewee => $normal) {
+        if ($normal != NO_SCORE_MARKER) {
+          $count++;
+          $total = $total + (pow($normal - $avg_normal[$reviewee], 2));
+        }
+      }
+      if ($count != 0) {
+        $line["normalized"] = $total / $count;
+      } else {
+        $line["normalized"] = NO_SCORE_MARKER;
+      }
+      $ret_val[] = $line;
+    }
   }
   return $ret_val;
 }

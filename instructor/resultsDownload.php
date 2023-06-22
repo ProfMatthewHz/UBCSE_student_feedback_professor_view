@@ -87,7 +87,7 @@ $results = NULL;
 $filename = NULL;
 // now generate the raw scores output
 if ($_GET['type'] === 'individual') {
-  $results = getIndividualsResults($teammates, $scores, $topics);
+  $results = getIndividualsAverages($teammates, $scores, $topics);
   $filename = 'survey-' . $survey_id . '-individual-averages.csv';
 } else if ($_GET['type'] === 'raw-full') {
   $results = getRawResults($teammates, $scores, $topics, $reviewers, $team_data);
