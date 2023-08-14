@@ -86,11 +86,9 @@ $team_data = getReviewerPerTeamResults($con, $survey_id);
 
 // Calculate the per-topic averages for each student
 $averages = calculateAverages(array_keys($teammates), $scores, $topics);
-// Calculate each students weighted normalized total
-$normalized_total = calculateFinalNormalizedScore(array_keys($teammates), $scores, $topics, $team_data);
 
 // Now generate the array containing each *reviewers* difference from the mean review of their group.
-$differences = getReviewerReviewResults($reviewers, $scores, $averages, $topics, $team_data);
+$differences = getReviewerReviewResults($reviewers, $scores, $topics, $team_data);
 ?>
 <!doctype html>
 <html lang="en">
@@ -135,21 +133,29 @@ $differences = getReviewerReviewResults($reviewers, $scores, $averages, $topics,
             <table class="table table-striped table-hover text-start align-middle" id="individualTable">
               <thead>
                 <tr>
-                  <?php
-                  $header = array_shift($differences);
-                  foreach ($header as $column) {
-                    echo '<th scope="col">'.$column.'</th>';
-                  }
-                  ?>
+                  <th score="col">Reviewer Name (Email)</th>
+                  <th scope="col">Review</th>
+                  <th scope="col">Average Difference from Group Normalized Totals</th>
                 </tr>
               </thead>
               <tbody>
                 <?php
-                  foreach ($differences as $row) {
+                  foreach ($differences as $key=>$result) {
                     echo '<tr>';
-                    foreach ($row as $cell) {
-                      echo '<td>'.htmlspecialchars($cell).'</td>';
+                    echo '<td>'.htmlspecialchars($key).'</td>';
+                    echo '<td>';
+                    echo '<table class="table table-striped table-hover text-start align-middle">';
+                    echo '<thead><tr>';
+                    echo '<th scope="col">Reviewee</th>';
+                    foreach ($topics as $topic_id=>$topic_name) {
+                      echo '<th scope="col">'.htmlspecialchars($topic_name).'</th>';
                     }
+                    echo '<th>NORMALIZED</th>';
+                    echo '</tr></thead>';
+                    echo '<tbody>';
+                    // foreach ()
+                    echo '</table></td>';
+                    echo '<td>'.$result.'</td>';
                     echo '</tr>';
                   }
                 ?>
@@ -168,7 +174,10 @@ $differences = getReviewerReviewResults($reviewers, $scores, $averages, $topics,
 </div>
 <script>
     $(document).ready(function () {
-      $('#individualTable').DataTable();
+      $('#individualTable').DataTable({
+        columnDefs: [ { orderable: false, targets: 1 }],
+        order: [[2, 'desc']]
+      });
     });
   </script>
 </main>

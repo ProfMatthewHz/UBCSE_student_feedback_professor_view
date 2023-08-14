@@ -101,17 +101,9 @@ function sumDifferencesSquare($reviews, $averages, $topic_id) {
   return $ret_val;
 }
 
-function getReviewerReviewResults($reviewers, $scores, $averages, $topics, $team_data) {
+function getReviewerReviewResults($reviewers, $scores, $topics, $team_data) {
   // Generate the array of results to output
   $ret_val = array();
-
-  // Create the header row
-  $header = array("Reviewer Name (Email)");
-  foreach ($topics as $question) {
-    $header[] = $question;
-  }
-  $header[] = "Normalized Total";
-  $ret_val[] = $header;
 
   // Get the normalized scores and results that we will also need
   $normals = calculateNormalizedSurveyResults(array_keys($scores), $scores, $topics, $team_data);
@@ -122,16 +114,10 @@ function getReviewerReviewResults($reviewers, $scores, $averages, $topics, $team
 
   // Then add one row per student who was reviewed
   foreach ($reviewers as $id => $name_and_email) {
-    $line = array($name_and_email['name'] .' (' . $name_and_email['email'] . ')');
+    $key = $name_and_email['name'] . ' (' . $name_and_email['email'] . ')';
+    $result = NO_SCORE_MARKER;
     // Check if this person actually completed any reviews
     if (array_key_exists($id, $invert_scores)) {
-      // Get the number of reviews this person completed
-      $num_reviews = count($invert_scores[$id]);
-      // Get the results for this student on each topic
-      foreach ($topics as $topic_id => $question) {
-        $sumSquareDiff = sumDifferencesSquare($invert_scores[$id], $averages, $topic_id);
-        $line[] = $sumSquareDiff / $num_reviews;
-      }
       $count = 0;
       $total = 0;
       foreach ($invert_normals[$id] as $reviewee => $normal) {
@@ -141,12 +127,10 @@ function getReviewerReviewResults($reviewers, $scores, $averages, $topics, $team
         }
       }
       if ($count != 0) {
-        $line["normalized"] = $total / $count;
-      } else {
-        $line["normalized"] = NO_SCORE_MARKER;
+        $result = round($total / $count, 3);
       }
-      $ret_val[] = $line;
     }
+    $ret_val[$key] = $result;
   }
   return $ret_val;
 }
