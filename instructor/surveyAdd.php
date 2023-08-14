@@ -46,6 +46,7 @@ $year = idate('Y');
 // get information about the courses
 $all_data = getAllCoursesForInstructor($con, $instructor_id);
 
+// Only show courses from the current term and future terms
 foreach ($all_data as $row) {
   if (($row['year'] >= $year) && ($row['semester'] >= $term)) {
     $course_info = array();
