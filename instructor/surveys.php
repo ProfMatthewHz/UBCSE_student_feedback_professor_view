@@ -114,7 +114,7 @@ $terms = getSurveysForCourses($con, $terms);
           </div>
           <div class="modal-body">
             <input type="hidden" id="roster-course-id" value=""></input>
-            <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
+            <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>email address</tt>, <tt>first name</tt>, <tt>last name</tt></span>
             <div class="input-group input-group-sm">
               <input type="file" id="roster-file" class="form-control" name="roster-file"></input>
               <label for="roster-file" id="roster-file-label"></label>
