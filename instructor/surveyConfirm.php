@@ -75,7 +75,7 @@ if (!isCourseInstructor($con, $course_id, $instructor_id)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  if (isset($_POST["cancel-changes"]) || isset($_POST["return-cancel"])) {
+  if (isset($_POST["cancel-survey"]) || isset($_POST["return-survey"])) {
     // Cancel out of the changes and exit back to the instructor home page
     unset($_SESSION["survey_file"]);
     unset($_SESSION["survey_data"]);

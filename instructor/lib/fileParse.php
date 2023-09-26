@@ -80,7 +80,7 @@ function parse_managed_teams($rows, $student_data, $pm_mult) {
     $manager_email = array_pop($row);
     $manager_id = $student_data[$manager_email][1];
     // We will need to create a review of each student for every other student.
-    $id_len = count($row) - 1;
+    $id_len = count($row);
     foreach ($row as $reviewer_email) {
       $reviewer_id = $student_data[$reviewer_email][1];
       // Add the manager's review of this stuent
