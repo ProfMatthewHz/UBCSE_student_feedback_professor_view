@@ -46,6 +46,7 @@ $year = idate('Y');
 // get information about the courses
 $all_data = getAllCoursesForInstructor($con, $instructor_id);
 
+// Only show courses from the current term and future terms
 foreach ($all_data as $row) {
   if (($row['year'] >= $year) && ($row['semester'] >= $term)) {
     $course_info = array();
@@ -226,7 +227,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!$file_handle) {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
-      /*$pairings = getPairingResults($con, $pairing_mode, $pm_mult, $file_handle); */
       // Get the data from the review file 
       $file_data = processReviewFile($con, ($pairing_mode == 1),  $file_handle);
       

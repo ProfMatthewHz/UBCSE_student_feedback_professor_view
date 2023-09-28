@@ -118,50 +118,17 @@ $team_data = getReviewerPerTeamResults($con, $survey_id);
     <div class="row justify-content-md-center mt-5 mx-4">
       <ul id="results-present" class="nav nav-pills nav-fill" role="tablist">
       <li class="nav-item">
-          <a class="nav-link active" id="full-normalized-pill" data-bs-toggle="tab" data-bs-target="#full-normalized" role="tab" aria-controls="raw-normalized" aria-selected="true">Raw Surveys</a>
+          <a class="nav-link active" id="raw-pill" data-bs-toggle="tab" data-bs-target="#raw" role="tab" aria-controls="raw" aria-selected="true">Raw Surveys</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="raw-pill" data-bs-toggle="tab" data-bs-target="#raw" role="tab" aria-controls="raw" aria-selected="false">Individual Averages</a>
+          <a class="nav-link" id="averaged-pill" data-bs-toggle="tab" data-bs-target="#averaged" role="tab" aria-controls="averaged" aria-selected="false">Individual Averages</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="avg-normalized-pill" data-bs-toggle="tab" data-bs-target="#avg-normalized" role="tab" aria-controls="avg-normalized" aria-selected="false">Normalized Results</a>
+          <a class="nav-link" id="normalized-pill" data-bs-toggle="tab" data-bs-target="#normalized" role="tab" aria-controls="normalized" aria-selected="false">Normalized Results</a>
         </li>
       </ul>
       <div id="results-tabs" class="tab-content border mt-2">
-        <div class="tab-pane mt-2" id="raw" role="tabpanel" aria-labelledby="raw-pill">
-          <div class="row justify-content-center">
-            <div class="col-sm-auto">
-              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $survey_id; ?>&type=individual" target="_blank">Download Individual Averages</a>
-            </div>
-          </div>
-          <div class="row justify-content-center mt-1">
-            <table class="table table-striped table-hover text-start align-middle" id="individualTable">
-              <thead>
-                <tr>
-                  <?php
-                  $results = getIndividualsResults($teammates, $scores, $topics);
-                  $header = array_shift($results);
-                  foreach ($header as $column) {
-                    echo '<th scope="col">'.$column.'</th>';
-                  }
-                  ?>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                  foreach ($results as $row) {
-                    echo '<tr>';
-                    foreach ($row as $cell) {
-                      echo '<td>'.htmlspecialchars($cell).'</td>';
-                    }
-                    echo '</tr>';
-                  }
-                ?>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="tab-pane active show mt-2" id="full-normalized" role="tabpanel" aria-labelledby="full-normalized-pill">
+      <div class="tab-pane active show mt-2" id="raw" role="tabpanel" aria-labelledby="raw-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
               <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $survey_id; ?>&type=raw-full" target="_blank">Download Raw Survey Results</a>
@@ -193,7 +160,40 @@ $team_data = getReviewerPerTeamResults($con, $survey_id);
             </table>
           </div>
         </div>
-        <div class="tab-pane mt-2" id="avg-normalized" role="tabpanel" aria-labelledby="avg-normalized-pill">
+        <div class="tab-pane mt-2" id="averaged" role="tabpanel" aria-labelledby="averaged-pill">
+          <div class="row justify-content-center">
+            <div class="col-sm-auto">
+              <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $survey_id; ?>&type=individual" target="_blank">Download Individual Averages</a>
+            </div>
+          </div>
+          <div class="row justify-content-center mt-1">
+            <table class="table table-striped table-hover text-start align-middle" id="individualTable">
+              <thead>
+                <tr>
+                  <?php
+                  $results = getIndividualsAverages($teammates, $scores, $topics);
+                  $header = array_shift($results);
+                  foreach ($header as $column) {
+                    echo '<th scope="col">'.$column.'</th>';
+                  }
+                  ?>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                  foreach ($results as $row) {
+                    echo '<tr>';
+                    foreach ($row as $cell) {
+                      echo '<td>'.htmlspecialchars($cell).'</td>';
+                    }
+                    echo '</tr>';
+                  }
+                ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-pane mt-2" id="normalized" role="tabpanel" aria-labelledby="normalized-pill">
           <div class="row justify-content-center">
             <div class="col-sm-auto">
               <a class="btn btn-outline-success" href="resultsDownload.php?survey=<?php echo $survey_id; ?>&type=average" target="_blank">Download Final Results</a>

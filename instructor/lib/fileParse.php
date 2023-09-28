@@ -80,7 +80,7 @@ function parse_managed_teams($rows, $student_data, $pm_mult) {
     $manager_email = array_pop($row);
     $manager_id = $student_data[$manager_email][1];
     // We will need to create a review of each student for every other student.
-    $id_len = count($row) - 1;
+    $id_len = count($row);
     foreach ($row as $reviewer_email) {
       $reviewer_id = $student_data[$reviewer_email][1];
       // Add the manager's review of this stuent
@@ -129,19 +129,22 @@ function parse_roster_file($file_handle) {
     $line_fields = count($line_text);
 
     // Verify the current line's data seems reasonable while allowing us to skip blank lines
-    if ($line_fields == 1 || $line_fields > 2) {
-      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain a name and email<br>';
-    } else if ($line_fields == 2) {
+    if ($line_fields != 0 && $line_fields != 3) {
+      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain an email, first name, and last name<br>';
+    } else if ($line_fields == 3) {
       $error = '';
-      if (!ctype_print($line_text[0])) {
-        $error = 'Line '. $line_num . ' includes a name with unprintable characters (' . $line_text[0] . ')<br>';
+      if (!filter_var($line_text[0], FILTER_VALIDATE_EMAIL)) {
+        $error = $error . 'Line '. $line_num . ' includes an improperly formatted email address (' . $line_text[0] . ')<br>';
       }
-      if (!filter_var($line_text[1], FILTER_VALIDATE_EMAIL)) {
-        $error = $error . 'Line '. $line_num . ' includes an improperly formatted email address (' . $line_text[1] . ')<br>';
+      if (!ctype_print($line_text[1])) {
+        $error = 'Line '. $line_num . ' includes a first name with unprintable characters (' . $line_text[1] . ')<br>';
+      }
+      if (!ctype_print($line_text[2])) {
+        $error = 'Line '. $line_num . ' includes a last name with unprintable characters (' . $line_text[2] . ')<br>';
       }
       if (empty($error)) {
         // add the fields to the array
-        $ret_val['ids'][$line_text[1]] = $line_text[0];
+        $ret_val['ids'][$line_text[0]] = $line_text[1] + " " + $line_text[2];
       } else {
         $ret_val['error'] = $ret_val['error'] . $error;
       }

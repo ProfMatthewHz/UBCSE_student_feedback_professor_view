@@ -190,7 +190,7 @@ $csrf_token = getCSRFToken($con, $instructor_id);
           <label for="course-year">Course Year:</label>
         </div>
 
-        <span style="font-size:small;color:DarkGrey">File needs 2 columns per row: <tt>name</tt>, <tt>email address</tt></span>
+        <span style="font-size:small;color:DarkGrey">File needs 3 columns per row: <tt>email address</tt>, <tt>first name</tt>, <tt>last name</tt></span>
         <div class="form-floating mt-0 mb-3">
           <input type="file" id="roster-file" class="form-control <?php if(isset($errorMsg["roster-file"])) {echo "is-invalid ";} ?>" name="roster-file" required></input>
           <label for="roster-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"]; } else { echo "Roster (CSV File):";} ?></label>

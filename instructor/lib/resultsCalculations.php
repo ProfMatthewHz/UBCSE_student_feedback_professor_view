@@ -29,6 +29,15 @@ function calculateAverages($students, $scores, $topics) {
   return $ret_val;
 }
 
+function calculateFinalNormalizedScore($students, $scores, $topics, $team_data) {
+  // Calculate the normalized score for each survey that was completed
+  $normalized = calculateNormalizedSurveyResults($students, $scores, $topics, $team_data);
+  
+  // Finally, calculate the overall results for each student
+  $ret_val = calculateOverallResults($students, $scores, $normalized);
+  return $ret_val;
+}
+
 function calculateNormalizedSurveyResults($students, $scores, $topics, $team_data) {
   $ret_val = array();
   // Loop through each of the individuals who was reviewed in thie evaluation
