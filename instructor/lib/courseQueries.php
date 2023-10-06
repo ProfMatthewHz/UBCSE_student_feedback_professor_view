@@ -161,6 +161,11 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
   }
   return $retVal;
 
+} 
+
+function getSurveysFromCourse($con, $course_id){
+
+  return null;
 }
 
 ?>
