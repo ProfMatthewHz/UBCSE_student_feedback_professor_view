@@ -137,6 +137,8 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
 }
 
 function getInstructorTermCourses($con, $instructor_id, $semester, $year){
+
+  $retVal = null;
   
   $stmt = $con->prepare('SELECT id, code, name, semester, year 
                          FROM courses
@@ -148,9 +150,27 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
 
   $stmt->execute();
   $result = $stmt->get_result();
+
   $courses_info = $result->fetch_all(MYSQLI_ASSOC);
+
+  print_r($result);
+  echo "<br>";
+  print_r($courses_info);
+  echo "<br>";
+
+  if ($result->num_rows > 0){
+    $retVal = $courses_info;
+  }
+
   $stmt->close();
-  return $courses_info;
+
+  if ($retVal == null){
+    $semesterName = SEMESTER_MAP_REVERSE[$semester];
+    $noCoursesMessage = sprintf("You (instructor_id = %u) do not currently have courses for <b> %s %u! </b>", $instructor_id, $semesterName, $year);
+    echo $noCoursesMessage;
+  }
+
+  return $retVal;
 
 }
 
