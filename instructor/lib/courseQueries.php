@@ -136,12 +136,21 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
   return $retVal;
 }
 
-function getInstructorTermCourses($con, $course_id, $instructor_id){
+function getInstructorTermCourses($con, $instructor_id, $semester, $year){
+  
+  $stmt = $con->prepare('SELECT id, code, name, semester, year 
+                         FROM courses
+                         INNER JOIN course_instructors ON courses.id=course_instructors.course_id
+                         WHERE instructor_id=? AND semester=? AND year=?
+                         ORDER BY year DESC, semester DESC, code DESC');
 
-  $retVal = null;
+  $stmt->bind_param('iii', $instructor_id, $semester, $year);
 
-
-  return $retVal;
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $courses_info = $result->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
+  return $courses_info;
 
 }
 
