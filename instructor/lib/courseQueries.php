@@ -135,4 +135,14 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
   $stmt->close();
   return $retVal;
 }
+
+function getInstructorTermCourses($con, $course_id, $instructor_id){
+
+  $retVal = null;
+
+
+  return $retVal
+
+}
+
 ?>
