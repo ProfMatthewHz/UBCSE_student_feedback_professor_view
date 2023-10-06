@@ -141,7 +141,7 @@ function getInstructorTermCourses($con, $course_id, $instructor_id){
   $retVal = null;
 
 
-  return $retVal
+  return $retVal;
 
 }
 
