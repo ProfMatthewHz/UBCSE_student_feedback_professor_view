@@ -14,7 +14,7 @@ code {
 
 @font-face {
   font-family: 'League Spartan';
-  src: url('./fonts/LeagueSpartan-VariableFont_wght.ttf');
+  src: url('../fonts/LeagueSpartan-VariableFont_wght.ttf');
 }
 
 * {
@@ -23,7 +23,7 @@ code {
 
 .sidebar {
   width: 195px;
-  height: 100%;
+  height: calc(100% - 148px);
   background: #225CB5;
   position: fixed;
   display: flex;

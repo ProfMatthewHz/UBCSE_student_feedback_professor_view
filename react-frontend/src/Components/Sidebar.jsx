@@ -1,4 +1,4 @@
-import '../index.css';
+import '../styles/index.css';
 import React from "react";
 
 export class SideBar extends React.Component {
