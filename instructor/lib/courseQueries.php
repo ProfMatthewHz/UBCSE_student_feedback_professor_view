@@ -164,7 +164,7 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
 
 } 
 
-function getSurveysFromCourse($con, $course_id){
+function getSurveysFromSingleCourse($con, $course_id){
 
   $retVal = null;
 
@@ -209,7 +209,6 @@ function getSurveysFromCourse($con, $course_id){
       $survey_info['sort_expiration_date'] = $survey_info['end_date'];
       $survey_info['start_date'] = $s->format('M j').' at '. $s->format('g:i A');
       $survey_info['end_date'] = $e->format('M j').' at '. $e->format('g:i A');
-
 
       $getSurveys[] = $survey_info;
 
