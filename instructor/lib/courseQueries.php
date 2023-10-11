@@ -169,38 +169,41 @@ function getSurveysFromCourse($con, $course_id){
 }
 
 
-function getInstructorTerms($con, $instructor_id) {
+function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
+  // Get the current year
+  $currentYear = (int) date('Y');
 
-    // have to avoid current semester and current year
-    $currentMonth = date('m')
-
-    $stmt = $con->prepare('SELECT DISTINCT courses.semester, courses.year
-                           FROM courses
-                           INNER JOIN course_instructors ON courses.id = course_instructors.course_id
-                           WHERE course_instructors.instructor_id = ?');
-  
-    $stmt->bind_param('i', $instructor_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $terms = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-  
-    return $terms;
+  // Prepare the SQL query to fetch distinct semesters and years for the current semester and year
+  $stmt = $con->prepare('SELECT DISTINCT semester, year
+                         FROM courses
+                         INNER JOIN course_instructors ON courses.id = course_instructors.course_id
+                         WHERE course_instructors.instructor_id = ?
+                         AND semester = ?
+                         AND year <= ?');  // Only consider years up to the current year
    
+  $stmt->bind_param('iii', $instructor_id, $currentSemester, $currentYear);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $terms = $result->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
+
+  return $terms;
 }
-// this function will be to return 
-//each of getInstructorTermCourses,
-// getInstructorTerms, getSurveysForCourses
 function instructorData($con, $instructor_id,$semester,$year,&$terms){
+
   //get Instructor Term Courses
-$instructorTermCourses = getInstructorTermCourses($con, $instructor_id, $semester, $year);
-//get surveysForCourses
-$surveysForCourses = getSurveysForCourses($con, &$terms);
-//get instructorTerms
-$instructorTerms = getInstructorTerms($con, $instructor_id);
-//return Strings 
-$retStrings = [];
-$retStrings = array_merge($instructorTermCourses,$surveysForCourses ,$instructorTerms)
+  $instructorTermCourses = getInstructorTermCourses($con, $instructor_id, $semester, $year);
+  //get surveysForCourses
+  $surveysForCourses = getSurveysForCourses($con, &$terms);
+  //get instructorTerms
+  $instructorTerms = getInstructorTerms($con, $instructor_id);
+  //return array Strings output
+  $retStrings = [];
+
+  $retStrings = array_merge($instructorTermCourses,$surveysForCourses ,$instructorTerms);
+
+  // working on output 
 }
+
 
 ?>
