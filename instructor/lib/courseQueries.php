@@ -173,20 +173,19 @@ function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear
   // Get the current year
   $currentYear = (int) date('Y');
 
-  // Prepare the SQL query to fetch distinct semesters and years for the current semester and year
+  
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
                          INNER JOIN course_instructors ON courses.id = course_instructors.course_id
                          WHERE course_instructors.instructor_id = ?
                          AND semester = ?
-                         AND year <= ?');  // Only consider years up to the current year
+                         AND year <= ?');  
    
   $stmt->bind_param('iii', $instructor_id, $currentSemester, $currentYear);
   $stmt->execute();
   $result = $stmt->get_result();
   $terms = $result->fetch_all(MYSQLI_ASSOC);
   $stmt->close();
-
   return $terms;
 }
 function instructorData($con, $instructor_id,$semester,$year,&$terms){
@@ -199,10 +198,10 @@ function instructorData($con, $instructor_id,$semester,$year,&$terms){
   $instructorTerms = getInstructorTerms($con, $instructor_id);
   //return array Strings output
   $retStrings = [];
-
   $retStrings = array_merge($instructorTermCourses,$surveysForCourses ,$instructorTerms);
 
   // working on output 
+  
 }
 
 
