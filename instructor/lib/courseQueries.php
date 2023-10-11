@@ -49,6 +49,7 @@ function isCourseInstructor($con, $course_id, $instructor_id) {
   return $retVal;
 }
 
+
 function getSurveysForCourses($con, &$terms) {
   $today = new DateTime();
 
@@ -148,8 +149,8 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
   $stmt->bind_param('iii', $instructor_id, $semester, $year);
   $stmt->execute();
   $result = $stmt->get_result();
-  $courses_info = $result->fetch_all(MYSQLI_ASSOC);
   if ($result->num_rows > 0){
+    $courses_info = $result->fetch_all(MYSQLI_ASSOC);
     $retVal = $courses_info;
   }
   $stmt->close();
@@ -163,9 +164,67 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
 
 } 
 
-function getSurveysFromCourse($con, $course_id){
+function getSurveysFromSingleCourse($con, $course_id){
 
-  return null;
+  $retVal = null;
+
+  $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
+                         FROM surveys
+                         LEFT JOIN reviews ON reviews.survey_id=surveys.id
+                         LEFT JOIN evals ON evals.review_id=reviews.id
+                         WHERE course_id=?
+                         GROUP BY name, start_date, end_date, rubric_id
+                         ORDER BY start_date DESC, end_date DESC');
+
+  $stmt->bind_param('i', $course_id);
+  $stmt->execute();
+
+  $result = $stmt->get_result();
+
+  if ($result->num_rows > 0){
+    $surveys = $result->fetch_all(MYSQLI_ASSOC);
+
+    $getSurveys = array();
+
+    foreach ($surveys as $s){
+
+      $survey_info = array();
+      $survey_info['course_id'] = $course_id;
+      $survey_info['name'] = $s['name'];
+      $survey_info['start_date'] = $s['start_date'];
+      $survey_info['end_date'] = $s['end_date'];
+      $survey_info['rubric_id'] = $s['rubric_id'];
+      $survey_info['id'] = $s['id'];
+      // Generate and store that progress as text
+      $percentage = 0;
+      if ($s['total'] != 0) {
+        $percentage = floor(($s['completed'] / $s['total']) * 100);
+      }
+      $survey_info['completion'] = $percentage . '% completed';
+
+      // determine status of survey. then adjust dates to more friendly format
+      $s = new DateTime($survey_info['start_date']);
+      $e = new DateTime($survey_info['end_date']);
+      $survey_info['sort_start_date'] = $survey_info['start_date'];
+      $survey_info['sort_expiration_date'] = $survey_info['end_date'];
+      $survey_info['start_date'] = $s->format('M j').' at '. $s->format('g:i A');
+      $survey_info['end_date'] = $e->format('M j').' at '. $e->format('g:i A');
+
+      $getSurveys[] = $survey_info;
+
+    }
+    unset($s);
+    
+    $retVal = $getSurveys;
+  }
+  $stmt->close();
+
+  if (is_null($retVal)){
+    $noSurveyMessage = sprintf("There are no surveys for this course.");
+    echo $noSurveyMessage;
+  }
+
+  return $retVal;
 }
 
 
