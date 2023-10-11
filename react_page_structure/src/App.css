@@ -1,0 +1,93 @@
+
+
+.titleBar{
+  position: absolute;
+  
+}
+.bluebarTop{
+  position: absolute;
+  color: #005bbb;
+  top: -385px;
+  height: 40px;
+  width: 1600px;
+  background-color: #005bbb   ;
+  
+}
+.whiteTop{
+  position:absolute;
+  width: 1600px;
+  top: -340px;
+  height: 80px;
+  border-bottom: 1px solid #005bbb;
+  
+  
+
+}
+
+.leftbar{
+  position: absolute;
+  color:  #005bbb;
+  height: 700px;
+  width: 220px;
+  top: -260px;
+  
+  background-color: #005bbb;
+  
+}
+
+
+
+#homeButton{
+  
+  background-color: #ffffff;
+  position: absolute;
+  color: #005bbb;
+  top:-320px;
+  left: 500px;
+  width: 200px;
+
+}
+
+#historyButton{
+  
+  background-color: #ffffff;
+  position: absolute;
+  color: #005bbb;
+  top:-320px;
+  left: 750px;
+  width: 200px;
+
+}
+
+
+#libraryButton{
+  
+  background-color: #ffffff;
+  position: absolute;
+  color: #005bbb;
+  top:-320px;
+  left: 1000px;
+  width: 200px;
+
+}
+
+
+
+
+.image{
+  position: relative;
+  top: -5px;
+  left: 35px;
+  width: 270px;
+  height: 80px;
+}
+
+.backgroundimage{
+  position: absolute;
+  height: 570px;
+  width: 780px;
+  top: -135px;
+  left: 220px;
+}
+
+
