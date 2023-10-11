@@ -168,4 +168,20 @@ function getSurveysFromCourse($con, $course_id){
   return null;
 }
 
+
+function getInstructorTerms($con, $instructor_id) {
+    $stmt = $con->prepare('SELECT DISTINCT courses.semester, courses.year
+                           FROM courses
+                           INNER JOIN course_instructors ON courses.id = course_instructors.course_id
+                           WHERE course_instructors.instructor_id = ?');
+  
+    $stmt->bind_param('i', $instructor_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $terms = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+  
+    return $terms;
+}
+
 ?>
