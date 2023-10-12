@@ -7,8 +7,15 @@ require_once 'lib/courseQueries.php';
 
 $con = connectToDatabase();
 
-$testResults = getInstructorTermCourses($con, 1, 2, 2024);
+$validData_testResults = getInstructorTermCourses($con, 1, 2, 2024);
+$invalidData_testResults = getInstructorTermCourses($con, 1, 3, 2024);
 
-print_r($testResults);
+echo "Valid Data Output: ";
+print_r($validData_testResults);
+
+echo "<br>";
+
+echo "Invalid Data Output: ";
+print_r($invalidData_testResults);
 
 ?>
