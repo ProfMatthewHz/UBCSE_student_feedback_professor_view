@@ -249,21 +249,6 @@ function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear
   $stmt->close();
   return $terms;
 }
-function instructorData($con, $instructor_id,$semester,$year,&$terms){
-
-  //get Instructor Term Courses
-  $instructorTermCourses = getInstructorTermCourses($con, $instructor_id, $semester, $year);
-  //get surveysForCourses
-  $surveysForCourses = getSurveysForCourses($con, &$terms);
-  //get instructorTerms
-  $instructorTerms = getInstructorTerms($con, $instructor_id);
-  //return array Strings output
-  $retStrings = [];
-  $retStrings = array_merge($instructorTermCourses,$surveysForCourses ,$instructorTerms);
-
-  // working on output 
-  
-}
 
 
 ?>
