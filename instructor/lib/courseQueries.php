@@ -155,19 +155,13 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
   }
   $stmt->close();
 
-  // if (empty($retVal)){
-  //   $semesterName = SEMESTER_MAP_REVERSE[$semester];
-  //   $noCoursesMessage = sprintf("You (instructor_id = %u) do not currently have courses for <b> %s %u! </b>", $instructor_id, $semesterName, $year);
-  //   echo $noCoursesMessage;
-  // }
-
   return $retVal;
 
 } 
 
 function getSurveysFromSingleCourse($con, $course_id){
 
-  $retVal = null;
+  $retVal = array();
 
   $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
                          FROM surveys
@@ -219,13 +213,7 @@ function getSurveysFromSingleCourse($con, $course_id){
     $retVal = $getSurveys;
   }
   $stmt->close();
-
-  if (is_null($retVal)){
-    $noSurveyMessage = sprintf("There are no surveys for this course.");
-    echo $noSurveyMessage;
-
-  }
-
+  
   return $retVal;
 }
 
