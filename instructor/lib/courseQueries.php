@@ -139,7 +139,7 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
 
 function getInstructorTermCourses($con, $instructor_id, $semester, $year){
 
-  $retVal = null;
+  $retVal = array();
 
   $stmt = $con->prepare('SELECT id, code, name, semester, year 
                          FROM courses
@@ -155,11 +155,12 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
   }
   $stmt->close();
 
-  if (is_null($retVal)){
-    $semesterName = SEMESTER_MAP_REVERSE[$semester];
-    $noCoursesMessage = sprintf("You (instructor_id = %u) do not currently have courses for <b> %s %u! </b>", $instructor_id, $semesterName, $year);
-    echo $noCoursesMessage;
-  }
+  // if (empty($retVal)){
+  //   $semesterName = SEMESTER_MAP_REVERSE[$semester];
+  //   $noCoursesMessage = sprintf("You (instructor_id = %u) do not currently have courses for <b> %s %u! </b>", $instructor_id, $semesterName, $year);
+  //   echo $noCoursesMessage;
+  // }
+
   return $retVal;
 
 } 
@@ -222,6 +223,7 @@ function getSurveysFromSingleCourse($con, $course_id){
   if (is_null($retVal)){
     $noSurveyMessage = sprintf("There are no surveys for this course.");
     echo $noSurveyMessage;
+
   }
 
   return $retVal;
