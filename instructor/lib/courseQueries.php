@@ -163,6 +163,12 @@ function getSurveysFromSingleCourse($con, $course_id){
 
   $retVal = array();
 
+  // Set expected key-value pairs (survey availability) 
+  $retVal["upcoming"] = array();
+  $retVal["active"] = array();
+  $retVal["expired"] = array();
+  
+
   $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
                          FROM surveys
                          LEFT JOIN reviews ON reviews.survey_id=surveys.id
@@ -175,11 +181,11 @@ function getSurveysFromSingleCourse($con, $course_id){
   $stmt->execute();
 
   $result = $stmt->get_result();
-
+  
   if ($result->num_rows > 0){
     $surveys = $result->fetch_all(MYSQLI_ASSOC);
 
-    $getSurveys = array();
+    $today = new DateTime();
 
     foreach ($surveys as $s){
 
@@ -200,17 +206,23 @@ function getSurveysFromSingleCourse($con, $course_id){
       // determine status of survey. then adjust dates to more friendly format
       $s = new DateTime($survey_info['start_date']);
       $e = new DateTime($survey_info['end_date']);
+
       $survey_info['sort_start_date'] = $survey_info['start_date'];
       $survey_info['sort_expiration_date'] = $survey_info['end_date'];
       $survey_info['start_date'] = $s->format('M j').' at '. $s->format('g:i A');
       $survey_info['end_date'] = $e->format('M j').' at '. $e->format('g:i A');
 
-      $getSurveys[] = $survey_info;
+      if ($today < $s) {
+        $retVal['upcoming'][] = $survey_info;
+      } else if ($today < $e) {
+        $retVal['active'][] = $survey_info;
+      } else {
+        $retVal['expired'][] = $survey_info;
+      }
 
     }
     unset($s);
     
-    $retVal = $getSurveys;
   }
   $stmt->close();
   
