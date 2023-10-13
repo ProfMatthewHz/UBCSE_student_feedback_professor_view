@@ -1,4 +1,7 @@
 <?php
+
+
+
 function addCourse($con, $course_code, $course_name, $semester, $course_year) {
   $stmt = $con->prepare('INSERT INTO courses (code, name, semester, year) VALUES (?, ?, ?, ?)');
   $stmt->bind_param('ssii', $course_code, $course_name, $semester, $course_year);
@@ -229,32 +232,39 @@ function getSurveysFromSingleCourse($con, $course_id){
 
 
 function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
-  // Get the current year
-  $currentYear = (int) date('Y');
+  // Use MONTH_MAP_SEMESTER to determine the current semester
+  $currentMonth = (int)date('n');
+  $currentSemester = MONTH_MAP_SEMESTER[$currentMonth];
 
-  
+  // Modify the SQL query to select courses with semesters earlier than the current semester and years less than or equal to currentYear
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
                          INNER JOIN course_instructors ON courses.id = course_instructors.course_id
                          WHERE course_instructors.instructor_id = ?
-                         AND semester = ?
-                         AND year <= ?');  
-   
-  $stmt->bind_param('iii', $instructor_id, $currentSemester, $currentYear);
+                         AND (year < ? OR (year = ? AND semester < ?))');
+
+  $stmt->bind_param('iiii', $instructor_id, $currentYear, $currentYear, $currentSemester);
   $stmt->execute();
   $result = $stmt->get_result();
   $terms = $result->fetch_all(MYSQLI_ASSOC);
   $stmt->close();
+
+  if (empty($terms)) {
+    return "No terms found for the instructor.";
+  } 
+
   return $terms;
 }
-function instructorData($con, $instructor_id,$semester,$year,&$terms){
+
+function instructorData($con, $instructor_id,$semester,$year,$terms,$currentYear){
 
   //get Instructor Term Courses
   $instructorTermCourses = getInstructorTermCourses($con, $instructor_id, $semester, $year);
   //get surveysForCourses
-  $surveysForCourses = getSurveysForCourses($con, &$terms);
+  $surveysForCourses = getSurveysForCourses($con, $terms);
   //get instructorTerms
-  $instructorTerms = getInstructorTerms($con, $instructor_id);
+
+  $instructorTerms = getInstructorTerms($con, $instructor_id,$instructor_id,$currentYear);
   //return array Strings output
   $retStrings = [];
   $retStrings = array_merge($instructorTermCourses,$surveysForCourses ,$instructorTerms);
@@ -263,5 +273,6 @@ function instructorData($con, $instructor_id,$semester,$year,&$terms){
   
 }
 
+//print_r("hello");
 
 ?>
