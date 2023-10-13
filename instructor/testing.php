@@ -11,7 +11,7 @@ $con = connectToDatabase();
 
 
 
-$testArray = [
+$testArray= [
 
     'testOne' =>  getInstructorTerms($con, 55502, 4, 2023),
     //testOne should print one record. 
@@ -24,10 +24,20 @@ $testArray = [
 ];
 
 
+
 echo "<pre>";
 print_r($testArray);
 echo "<pre>";
 
+
+
+// first test for instructorData and also testing all thre functions 
+// further testing needed.
+$testInstructorData = instructorData($con,1,2,2024,10115,2024); 
+
+
+
+print_r($testInstructorData);
 // current would be 4 2023
 //- 1 winter
 //- 2 spring 

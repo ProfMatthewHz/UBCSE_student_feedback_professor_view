@@ -140,6 +140,7 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
   return $retVal;
 }
 
+//Korey wrote this 
 function getInstructorTermCourses($con, $instructor_id, $semester, $year){
 
   $retVal = null;
@@ -166,7 +167,7 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
   return $retVal;
 
 } 
-
+// korey wrote this 
 function getSurveysFromSingleCourse($con, $course_id){
 
   $retVal = null;
@@ -251,25 +252,21 @@ function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear
 
   if (empty($terms)) {
     return "No terms found for the instructor.";
-  } 
+} 
 
   return $terms;
 }
 
-function instructorData($con, $instructor_id,$semester,$year,$terms,$currentYear){
+function instructorData($con, $instructor_id,$semester,$year,$course_id,$currentYear){
+  
+  $outPutAray = [
+    'previous Instructor Terms' => getInstructorTerms($con, $instructor_id,$instructor_id,$currentYear),
+    'instructor current Term Courses' => getInstructorTermCourses($con, $instructor_id, $semester, $year),
+    'Instructor surveys from single Course' => getSurveysFromSingleCourse($con, $course_id)
+  ];
+ 
 
-  //get Instructor Term Courses
-  $instructorTermCourses = getInstructorTermCourses($con, $instructor_id, $semester, $year);
-  //get surveysForCourses
-  $surveysForCourses = getSurveysForCourses($con, $terms);
-  //get instructorTerms
-
-  $instructorTerms = getInstructorTerms($con, $instructor_id,$instructor_id,$currentYear);
-  //return array Strings output
-  $retStrings = [];
-  $retStrings = array_merge($instructorTermCourses,$surveysForCourses ,$instructorTerms);
-
-  // working on output 
+  return $outPutAray;
   
 }
 
