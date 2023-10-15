@@ -33,18 +33,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $year = $_POST['year'];
     
    
-    print_r("HELLO 2"); 
+ 
     // Call the function and get the results
     $result = getInstructorTermCourses($con, $instructor_id, $semester, $year);
    
 
-    print_r("HELLO 3"); 
+   
     // Return the results as JSON
     header('Content-Type: application/json');
     echo json_encode($result);
-    print_r("HELLO 5"); 
+   
 } else {
-    print_r("HELLO 6"); 
+   
     // Return an error message for unsupported request methods
     http_response_code(405); // Method Not Allowed
     echo "Only POST requests are allowed.";
