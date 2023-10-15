@@ -26,6 +26,7 @@ code {
   height: calc(100% - 148px);
   background: #225CB5;
   position: fixed;
+  top: 148px;
   display: flex;
   flex-direction: column;
   justify-content: center;

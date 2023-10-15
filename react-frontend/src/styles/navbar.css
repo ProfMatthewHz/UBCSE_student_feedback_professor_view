@@ -9,6 +9,12 @@ nav {
     align-items: center;
     padding: 1.5rem;
     border-bottom: 1px solid #225CB5;
+    background-color: #fff;
+    position: fixed;
+    top: 30px;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .nav-left {
@@ -58,10 +64,10 @@ nav ul li a {
 }
 
 .topbar {
-    /* position: absolute; */
-    /* top: 0; */
-    /* left: 0; */
-    /* right: 0; */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     background-color: #225CB5;
     height: 30px;
     width: 100vw;

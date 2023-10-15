@@ -9,7 +9,7 @@ import Library from './pages/Library';
 function App() {
   return (
     <Router>
-      <div>
+      <div className="app">
         <Navbar />
         <Routes>
           {/* Add Routes here with a component to render at that Route */}
