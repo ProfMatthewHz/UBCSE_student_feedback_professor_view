@@ -41,10 +41,16 @@ const Home = () => {
       ],
     },
   ];
+  
+  const sidebar_content = {"Courses": courses.length > 0 ? (
+    courses.map((course) => course.code
+  )): (
+    []
+  )}
 
   return (
     <>
-      <SideBar />
+      <SideBar route="/" content_dictionary={sidebar_content}/>
       <div className="container">
         {courses.length > 0 ? (
           courses.map((course) => <Course key={course.id} course={course} />)

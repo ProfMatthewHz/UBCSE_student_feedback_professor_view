@@ -1,36 +1,40 @@
-import '../styles/index.css';
+import '../styles/sidebar.css';
 import React from "react";
 
-export class SideBar extends React.Component {
+function SideBar(props){
 
-  constructor(props) {
-    super();
-    this.state = {
-      course: '<div class="no-courses">No Courses</div>'
-    }
+  let add_course_button;
+  let sidebar_minheight;
+  if (props.route == "/") {
+    add_course_button = <button>+ Add Course</button>
+    sidebar_minheight = "90%"
   }
 
-  AddCourse() {
-    if (this.state.course == '<div class="no-courses">No Courses</div>') {
-      this.state.course = ''
-    }
-    this.setState({
-      course: this.state.course + '<a href=\"CSE302\"><div class=\"sidebar-option\">CSE302</div></a>'
-    });
-  }
-
-  render () {
-    return (
-      <div class="sidebar">
-        <div class="sidebar-content">
-          <h1>Courses</h1>
-          <div class="sidebar-list" dangerouslySetInnerHTML={{__html: this.state.course}}>
+  return (
+    <div className="sidebar">
+      {Object.entries(props.content_dictionary).map(([title, contents]) => {
+        return(
+          <div key={title} className="sidebar-content" style={{minHeight: sidebar_minheight}}>
+            <h1>{title}</h1>
+            <div className='sidebar-list'>
+              {contents.length > 0 ? (
+                contents.map(item => {
+                  return (
+                    <a href={item}><div className="sidebar-option">{item}</div></a>
+                  ) 
+                })
+              ) : (
+                <div className="no-content">No {title}</div>
+              )
+              }
+            </div>
+            {add_course_button}
           </div>
-          <button onClick={()=> this.AddCourse()}>+ Add Course</button>
-        </div>
-      </div>
-    )
-  }
+        )
+      })}
+    </div>
+  )
+
 };
 
 export default SideBar;

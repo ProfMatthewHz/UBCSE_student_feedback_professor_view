@@ -20,9 +20,15 @@ const History = () => {
     },
   ];
 
+  const sidebar_content = {
+    "Terms": []
+    ,
+    "Courses": courses.length > 0 ? (courses.map((course) => course.code)): ([])
+  }
+
   return (
     <>
-      <SideBar />
+      <SideBar route="/history" content_dictionary={sidebar_content}/>
       <div className="container">
         {courses.length > 0 ? (
           courses.map((course) => <Course key={course.id} course={course} />)
