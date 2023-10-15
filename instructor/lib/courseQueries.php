@@ -232,12 +232,10 @@ function getSurveysFromSingleCourse($con, $course_id){
 }
 
 
-function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
-  // Use MONTH_MAP_SEMESTER to determine the current semester
-  $currentMonth = (int)date('n');
-  $currentSemester = MONTH_MAP_SEMESTER[$currentMonth];
 
-  // Modify the SQL query to select courses with semesters earlier than the current semester and years less than or equal to currentYear
+function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
+  //take in currentSemester only 1,2,3,4
+  //semester Mapping = 'winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
                          INNER JOIN course_instructors ON courses.id = course_instructors.course_id
@@ -252,19 +250,27 @@ function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear
 
   if (empty($terms)) {
     return "No terms found for the instructor.";
-} 
+  } 
 
   return $terms;
 }
 
-function instructorData($con, $instructor_id,$semester,$currentSemester,$year,$course_id,$currentYear){
+// Example usage assuming $con, $instructor_id, $currentSemester, and $currentYear are set appropriately
+// $currentSemester should be the numeric representation of the current semester (1, 2, 3, or 4)
+// $currentYear should be the current year
+// $terms = getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear);
+// print_r($terms); // Display the terms
+
+
+
+function instructorData($con, $instructor_id,$currentSemester,$currentYear,$course_id){
   //function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear)
   //function getInstructorTermCourses($con, $instructor_id, $semester, $year)
   //function getSurveysFromSingleCourse($con, $course_id)
 
   $outPutAray = [
     'previous Instructor Terms' => getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) ,
-    'instructor current Term Courses' => getInstructorTermCourses($con, $instructor_id, $semester, $year),
+    'instructor current Term Courses' => getInstructorTermCourses($con, $instructor_id, $currentSemester, $currentYear),
     'Instructor surveys from single Course' => getSurveysFromSingleCourse($con, $course_id)
   ];
  
