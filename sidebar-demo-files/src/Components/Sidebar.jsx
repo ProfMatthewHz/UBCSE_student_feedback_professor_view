@@ -13,28 +13,20 @@ function SideBar(props){
   return (
     <div className="sidebar">
       {Object.entries(props.content_dictionary).map(([title, contents]) => {
-        if (contents.length === 0) {
-          return(
-            <div key={title} className="sidebar-content" style={{minHeight: sidebar_minheight}}>
-              <h1>{title}</h1>
-              <div className='sidebar-list'>
-                <div className="no-content">No {title}</div>
-              </div>
-              {add_course_button}
-            </div>
-          )
-        }
-
         return(
           <div key={title} className="sidebar-content" style={{minHeight: sidebar_minheight}}>
             <h1>{title}</h1>
             <div className='sidebar-list'>
-              {
-              contents.map(item => {
-                return (
-                  <a href={item}><div className="sidebar-option">{item}</div></a>
-                ) 
-              })}
+              {contents.length > 0 ? (
+                contents.map(item => {
+                  return (
+                    <a href={item}><div className="sidebar-option">{item}</div></a>
+                  ) 
+                })
+              ) : (
+                <div className="no-content">No {title}</div>
+              )
+              }
             </div>
             {add_course_button}
           </div>
@@ -46,3 +38,4 @@ function SideBar(props){
 };
 
 export default SideBar;
+
