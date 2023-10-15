@@ -270,6 +270,6 @@ function instructorData($con, $instructor_id,$semester,$year,$course_id,$current
   
 }
 
-//print_r("hello");
+
 
 ?>
