@@ -257,10 +257,13 @@ function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear
   return $terms;
 }
 
-function instructorData($con, $instructor_id,$semester,$year,$course_id,$currentYear){
-  
+function instructorData($con, $instructor_id,$semester,$currentSemester,$year,$course_id,$currentYear){
+  //function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear)
+  //function getInstructorTermCourses($con, $instructor_id, $semester, $year)
+  //function getSurveysFromSingleCourse($con, $course_id)
+
   $outPutAray = [
-    'previous Instructor Terms' => getInstructorTerms($con, $instructor_id,$instructor_id,$currentYear),
+    'previous Instructor Terms' => getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) ,
     'instructor current Term Courses' => getInstructorTermCourses($con, $instructor_id, $semester, $year),
     'Instructor surveys from single Course' => getSurveysFromSingleCourse($con, $course_id)
   ];
