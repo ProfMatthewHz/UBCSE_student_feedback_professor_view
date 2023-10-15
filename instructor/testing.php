@@ -21,14 +21,17 @@ $testArray= [
     //test three should print two records
     'testFour' => getInstructorTerms($con, 25025, 4, 2023),
     // test four should print No terms found for instructor
-    'testFive' => getInstructorTerms($con, 1, 2, 2024)
+    'testFive' => getInstructorTerms($con, 1, 2, 2024),
     // test five should print 1 record
+    'testSix' => getInstructorTerms($con,50243486,1,2021)
+    // test six should print 2 records
 ];
 
 
 
+
 echo "<pre>";
-//print_r($testArray);
+print_r($testArray);
 echo "<pre>";
 
 
