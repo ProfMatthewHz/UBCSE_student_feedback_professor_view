@@ -28,26 +28,36 @@ $testArray= [
 
 
 echo "<pre>";
-print_r($testArray);
+//print_r($testArray);
 echo "<pre>";
 
-//define("SEMESTER_MAP_REVERSE", array(1 => 'Winter', 2=> 'Spring', 3 => 'Summer', 4=> 'Fall'));
 
 
-// first test for instructorData and also testing all thre functions 
-// further testing needed.
-$testInstructorData = instructorData($con,1,2,2024,2024); 
-//instructor id = 1 = hartloff
-//semester = 2 = winter 
-//current semester = 2 = winter
-//year = 2024
-//course id = 10115 = CSE
-//current year = 2024
-//nstructorData($con, $instructor_id,$semester,$currentSemester,$year,$course_id,$currentYear);
+
+$testInstructorData = [
+    // Should print one record for getInstructorTerms, 
+    // One record for current Terms , 
+    // One survey record
+    'testOne' => instructorData($con,1,2,2024,10115),
+
+    // Should print one record for getInstructorTerms,
+    // No record for current Terms 
+    // One survey record
+    'testTwo' => instructorData($con,2,2,2006,42356),
+
+    // Should print no record for getInstructorTerms,
+    // One record for current Terms 
+    // One survey record
+    'testThree' => instructorData($con,0,1,2015,10101)
 
 
-//print_r($testInstructorData);
-// current would be 4 2023
+];
+
+
+
+
+
+print_r($testInstructorData);
 //- 1 winter
 //- 2 spring 
 //- 3 summer 

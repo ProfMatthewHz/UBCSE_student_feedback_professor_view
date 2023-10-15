@@ -255,12 +255,6 @@ function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear
   return $terms;
 }
 
-// Example usage assuming $con, $instructor_id, $currentSemester, and $currentYear are set appropriately
-// $currentSemester should be the numeric representation of the current semester (1, 2, 3, or 4)
-// $currentYear should be the current year
-// $terms = getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear);
-// print_r($terms); // Display the terms
-
 
 
 function instructorData($con, $instructor_id,$currentSemester,$currentYear,$course_id){
