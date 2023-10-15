@@ -1,4 +1,7 @@
 <?php
+
+
+
 function addCourse($con, $course_code, $course_name, $semester, $course_year) {
   $stmt = $con->prepare('INSERT INTO courses (code, name, semester, year) VALUES (?, ?, ?, ?)');
   $stmt->bind_param('ssii', $course_code, $course_name, $semester, $course_year);
@@ -137,6 +140,7 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
   return $retVal;
 }
 
+//Korey wrote this 
 function getInstructorTermCourses($con, $instructor_id, $semester, $year){
 
   $retVal = array();
@@ -158,7 +162,7 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
   return $retVal;
 
 } 
-
+// korey wrote this 
 function getSurveysFromSingleCourse($con, $course_id){
 
   $retVal = array();
@@ -230,25 +234,47 @@ function getSurveysFromSingleCourse($con, $course_id){
 }
 
 
-function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
-  // Get the current year
-  $currentYear = (int) date('Y');
 
-  
+function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
+  //take in currentSemester only 1,2,3,4
+  //semester Mapping = 'winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
                          INNER JOIN course_instructors ON courses.id = course_instructors.course_id
                          WHERE course_instructors.instructor_id = ?
-                         AND semester = ?
-                         AND year <= ?');  
-   
-  $stmt->bind_param('iii', $instructor_id, $currentSemester, $currentYear);
+                         AND (year < ? OR (year = ? AND semester < ?))');
+
+  $stmt->bind_param('iiii', $instructor_id, $currentYear, $currentYear, $currentSemester);
   $stmt->execute();
   $result = $stmt->get_result();
   $terms = $result->fetch_all(MYSQLI_ASSOC);
   $stmt->close();
+
+  if (empty($terms)) {
+    return "No terms found for the instructor.";
+  } 
+
   return $terms;
 }
+
+
+
+function instructorData($con, $instructor_id,$currentSemester,$currentYear,$course_id){
+  //function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear)
+  //function getInstructorTermCourses($con, $instructor_id, $semester, $year)
+  //function getSurveysFromSingleCourse($con, $course_id)
+
+  $outPutAray = [
+    'previous Instructor Terms' => getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) ,
+    'instructor current Term Courses' => getInstructorTermCourses($con, $instructor_id, $currentSemester, $currentYear),
+    'Instructor surveys from single Course' => getSurveysFromSingleCourse($con, $course_id)
+  ];
+ 
+
+  return $outPutAray;
+  
+}
+
 
 
 ?>
