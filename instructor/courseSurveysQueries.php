@@ -59,6 +59,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $myJSON = json_encode($retVal);
 
   echo $myJSON;
+} else {
+
+    echo "Hi there!";
+    echo "<br>";
+    echo "I need a POST request to work! to display data!";
+
+
 }
-    
 ?>
