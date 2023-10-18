@@ -1,4 +1,7 @@
 <?php
+
+
+
 function addCourse($con, $course_code, $course_name, $semester, $course_year) {
   $stmt = $con->prepare('INSERT INTO courses (code, name, semester, year) VALUES (?, ?, ?, ?)');
   $stmt->bind_param('ssii', $course_code, $course_name, $semester, $course_year);
@@ -48,6 +51,7 @@ function isCourseInstructor($con, $course_id, $instructor_id) {
   $stmt->close();
   return $retVal;
 }
+
 
 function getSurveysForCourses($con, &$terms) {
   $today = new DateTime();
@@ -135,4 +139,142 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
   $stmt->close();
   return $retVal;
 }
+
+//Korey wrote this 
+function getInstructorTermCourses($con, $instructor_id, $semester, $year){
+
+  $retVal = array();
+
+  $stmt = $con->prepare('SELECT id, code, name, semester, year 
+                         FROM courses
+                         INNER JOIN course_instructors ON courses.id=course_instructors.course_id
+                         WHERE instructor_id=? AND semester=? AND year=?
+                         ORDER BY year DESC, semester DESC, code DESC');
+  $stmt->bind_param('iii', $instructor_id, $semester, $year);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if ($result->num_rows > 0){
+    $courses_info = $result->fetch_all(MYSQLI_ASSOC);
+    $retVal = $courses_info;
+  }
+  $stmt->close();
+
+  return $retVal;
+
+} 
+// korey wrote this 
+function getSurveysFromSingleCourse($con, $course_id){
+
+  $retVal = array();
+
+  // Set expected key-value pairs (survey availability) 
+  $retVal["upcoming"] = array();
+  $retVal["active"] = array();
+  $retVal["expired"] = array();
+  
+
+  $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
+                         FROM surveys
+                         LEFT JOIN reviews ON reviews.survey_id=surveys.id
+                         LEFT JOIN evals ON evals.review_id=reviews.id
+                         WHERE course_id=?
+                         GROUP BY name, start_date, end_date, rubric_id
+                         ORDER BY start_date DESC, end_date DESC');
+
+  $stmt->bind_param('i', $course_id);
+  $stmt->execute();
+
+  $result = $stmt->get_result();
+  
+  if ($result->num_rows > 0){
+    $surveys = $result->fetch_all(MYSQLI_ASSOC);
+
+    $today = new DateTime();
+
+    foreach ($surveys as $s){
+
+      $survey_info = array();
+      $survey_info['course_id'] = $course_id;
+      $survey_info['name'] = $s['name'];
+      $survey_info['start_date'] = $s['start_date'];
+      $survey_info['end_date'] = $s['end_date'];
+      $survey_info['rubric_id'] = $s['rubric_id'];
+      $survey_info['id'] = $s['id'];
+      // Generate and store that progress as text
+      $percentage = 0;
+      if ($s['total'] != 0) {
+        $percentage = floor(($s['completed'] / $s['total']) * 100);
+      }
+      $survey_info['completion'] = $percentage . '% completed';
+
+      // determine status of survey. then adjust dates to more friendly format
+      $s = new DateTime($survey_info['start_date']);
+      $e = new DateTime($survey_info['end_date']);
+
+      $survey_info['sort_start_date'] = $survey_info['start_date'];
+      $survey_info['sort_expiration_date'] = $survey_info['end_date'];
+      $survey_info['start_date'] = $s->format('M j').' at '. $s->format('g:i A');
+      $survey_info['end_date'] = $e->format('M j').' at '. $e->format('g:i A');
+
+      if ($today < $s) {
+        $retVal['upcoming'][] = $survey_info;
+      } else if ($today < $e) {
+        $retVal['active'][] = $survey_info;
+      } else {
+        $retVal['expired'][] = $survey_info;
+      }
+
+    }
+    unset($s);
+    
+  }
+  $stmt->close();
+  
+  return $retVal;
+}
+
+
+
+function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
+  //take in currentSemester only 1,2,3,4
+  //semester Mapping = 'winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4
+  $stmt = $con->prepare('SELECT DISTINCT semester, year
+                         FROM courses
+                         INNER JOIN course_instructors ON courses.id = course_instructors.course_id
+                         WHERE course_instructors.instructor_id = ?
+                         AND (year < ? OR (year = ? AND semester < ?))');
+
+  $stmt->bind_param('iiii', $instructor_id, $currentYear, $currentYear, $currentSemester);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $terms = $result->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
+
+  if (empty($terms)) {
+    return "No terms found for the instructor.";
+  } 
+
+  return $terms;
+}
+
+
+
+function instructorData($con, $instructor_id,$currentSemester,$currentYear,$course_id){
+  //function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear)
+  //function getInstructorTermCourses($con, $instructor_id, $semester, $year)
+  //function getSurveysFromSingleCourse($con, $course_id)
+
+  $outPutAray = [
+    'previous Instructor Terms' => getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) ,
+    'instructor current Term Courses' => getInstructorTermCourses($con, $instructor_id, $currentSemester, $currentYear),
+    'Instructor surveys from single Course' => getSurveysFromSingleCourse($con, $course_id)
+  ];
+ 
+
+  return $outPutAray;
+  
+}
+
+
+
 ?>
