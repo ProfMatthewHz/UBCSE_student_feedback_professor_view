@@ -9,6 +9,7 @@ import Library from './pages/Library';
 function App() {
   return (
     <Router basename='/StudentSurvey/react-frontend/build'>
+    {/* <Router > */}
       <div className="app">
         <Navbar />
         <Routes>
