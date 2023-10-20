@@ -14,6 +14,14 @@ require_once "lib/instructorQueries.php";
 
 $con = connectToDatabase();
 
+if (!isset($_SESSION['id'])) {
+    http_response_code(403);
+    echo "Forbidden: You must be logged in to access this page.";
+    exit();
+  }
+  $instructor_id = $_SESSION['id'];
+
+
 //echo "Before require";
 //require_once "instructor/lib/courseQueries.php";
 //echo "After require";
