@@ -70,3 +70,11 @@
 .surveyTable tbody tr:nth-child(even){
     background-color: #F0F0F0;
 }
+
+.courseContainer .no-surveys {
+  padding: 20px;
+}
+
+.courseContainer .no-surveys h1 {
+  color: #225cb5;
+}
