@@ -234,8 +234,14 @@ function getSurveysFromSingleCourse($con, $course_id){
 
 
 function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
-  //take in currentSemester only 1,2,3,4
-  //semester Mapping = 'winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4
+  // Semester mapping
+  $semesterNames = [
+    1 => 'winter',
+    2 => 'spring',
+    3 => 'summer',
+    4 => 'fall',
+  ];
+  
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
                          INNER JOIN course_instructors ON courses.id = course_instructors.course_id
@@ -252,9 +258,13 @@ function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear
     return "No terms found for the instructor.";
   } 
 
+  // Map numeric semesters to string values
+  foreach ($terms as &$term) {
+    $term['semester'] = $semesterNames[$term['semester']];
+  }
+
   return $terms;
 }
-
 
 
 function instructorData($con, $instructor_id,$currentSemester,$currentYear,$course_id){
