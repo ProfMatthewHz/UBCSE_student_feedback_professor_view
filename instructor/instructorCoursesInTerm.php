@@ -19,6 +19,12 @@ $con = connectToDatabase();
 //echo "After require";
 // issues here with the require 
 
+if (!isset($_SESSION['id'])) {
+    http_response_code(403);
+    echo "Forbidden: You must be logged in to access this page.";
+    exit();
+  }
+  $instructor_id = $_SESSION['id'];
 
 
 error_reporting(E_ALL);
