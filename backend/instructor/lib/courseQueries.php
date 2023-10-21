@@ -143,7 +143,7 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
 //Korey wrote this 
 function getInstructorTermCourses($con, $instructor_id, $semester, $year){
 
-  $retVal = array();
+  $retVal = null;
 
   $stmt = $con->prepare('SELECT id, code, name, semester, year 
                          FROM courses
@@ -159,19 +159,18 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
   }
   $stmt->close();
 
+  if (is_null($retVal)){
+    $semesterName = SEMESTER_MAP_REVERSE[$semester];
+    $noCoursesMessage = sprintf("You (instructor_id = %u) do not currently have courses for <b> %s %u! </b>", $instructor_id, $semesterName, $year);
+    echo $noCoursesMessage;
+  }
   return $retVal;
 
 } 
 // korey wrote this 
 function getSurveysFromSingleCourse($con, $course_id){
 
-  $retVal = array();
-
-  // Set expected key-value pairs (survey availability) 
-  $retVal["upcoming"] = array();
-  $retVal["active"] = array();
-  $retVal["expired"] = array();
-  
+  $retVal = null;
 
   $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
                          FROM surveys
@@ -185,11 +184,11 @@ function getSurveysFromSingleCourse($con, $course_id){
   $stmt->execute();
 
   $result = $stmt->get_result();
-  
+
   if ($result->num_rows > 0){
     $surveys = $result->fetch_all(MYSQLI_ASSOC);
 
-    $today = new DateTime();
+    $getSurveys = array();
 
     foreach ($surveys as $s){
 
@@ -210,34 +209,39 @@ function getSurveysFromSingleCourse($con, $course_id){
       // determine status of survey. then adjust dates to more friendly format
       $s = new DateTime($survey_info['start_date']);
       $e = new DateTime($survey_info['end_date']);
-
       $survey_info['sort_start_date'] = $survey_info['start_date'];
       $survey_info['sort_expiration_date'] = $survey_info['end_date'];
       $survey_info['start_date'] = $s->format('M j').' at '. $s->format('g:i A');
       $survey_info['end_date'] = $e->format('M j').' at '. $e->format('g:i A');
 
-      if ($today < $s) {
-        $retVal['upcoming'][] = $survey_info;
-      } else if ($today < $e) {
-        $retVal['active'][] = $survey_info;
-      } else {
-        $retVal['expired'][] = $survey_info;
-      }
+      $getSurveys[] = $survey_info;
 
     }
     unset($s);
     
+    $retVal = $getSurveys;
   }
   $stmt->close();
-  
+
+  if (is_null($retVal)){
+    $noSurveyMessage = sprintf("There are no surveys for this course.");
+    echo $noSurveyMessage;
+  }
+
   return $retVal;
 }
 
 
 
 function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
-  //take in currentSemester only 1,2,3,4
-  //semester Mapping = 'winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4
+  // Semester mapping
+  $semesterNames = [
+    1 => 'winter',
+    2 => 'spring',
+    3 => 'summer',
+    4 => 'fall',
+  ];
+  
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
                          INNER JOIN course_instructors ON courses.id = course_instructors.course_id
@@ -254,9 +258,13 @@ function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear
     return "No terms found for the instructor.";
   } 
 
+  // Map numeric semesters to string values
+  foreach ($terms as &$term) {
+    $term['semester'] = $semesterNames[$term['semester']];
+  }
+
   return $terms;
 }
-
 
 
 function instructorData($con, $instructor_id,$currentSemester,$currentYear,$course_id){

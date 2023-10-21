@@ -19,6 +19,12 @@ $con = connectToDatabase();
 //echo "After require";
 // issues here with the require 
 
+if (!isset($_SESSION['id'])) {
+    http_response_code(403);
+    echo "Forbidden: You must be logged in to access this page.";
+    exit();
+  }
+  $instructor_id = $_SESSION['id'];
 
 
 error_reporting(E_ALL);
@@ -28,7 +34,7 @@ ini_set('display_errors', 1);
 // Check if the request method is POST
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Assuming you are sending parameters in the POST request
-    $instructor_id = $_POST['instructor_id'];
+   
     $semester = $_POST['semester'];
     $year = $_POST['year'];
     
@@ -53,7 +59,3 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
 ?>
-
-
-
-
