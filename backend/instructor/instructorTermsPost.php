@@ -36,7 +36,7 @@ ini_set('display_errors', 1);
 // Check if the request method is POST
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Assuming you are sending parameters in the POST request
-    $instructor_id = $_POST['instructor_id'];
+   
     $currentSemester = $_POST['currentSemester'];
     $currentYear = $_POST['currentYear'];
     
