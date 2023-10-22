@@ -5,7 +5,6 @@ const Course = ({ course, page }) => {
   const [surveys, setSurveys] = useState([]);
 
   useEffect(() => {
-    console.log(course)
     fetch(
       "http://localhost/StudentSurvey/backend/instructor/courseSurveysQueries.php",
       {
