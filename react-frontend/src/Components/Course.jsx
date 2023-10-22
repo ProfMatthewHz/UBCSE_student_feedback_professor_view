@@ -20,7 +20,6 @@ const Course = ({ course, page }) => {
     )
       .then((res) => res.json())
       .then((result) => {
-        console.log(result);
         if (page === "home") {
           setSurveys(result.active);
         } else if (page === "history") {
@@ -30,7 +29,6 @@ const Course = ({ course, page }) => {
       .catch(err => {
         console.log(err)
       })
-    console.log(surveys);
   }, []);
 
   return (

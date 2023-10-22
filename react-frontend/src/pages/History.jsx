@@ -23,7 +23,6 @@ const History = () => {
       .then((res) => res.json())
       .then((result) => {
         setCourses(result);
-        console.log(result);
       })
       .catch(err => {
         console.log(err)
