@@ -37,6 +37,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $course_id = intval($_POST['course-id']);
 
     $retVal = array("error" => "");
+    $retVal["upcoming"] = array();
+    $retVal["active"] = array();
+    $retVal["expired"] = array();
 
     if (!isCourseInstructor($con, $course_id, $instructor_id)) {
         http_response_code(403);
@@ -44,10 +47,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         $error_msg = "Instructor [". $instructor_id . "] does not teach Course: [" . $course_id . "]";
         $retVal["error"] = $error_msg;
+      
     } else {
 
-        $courseSurveys = getSurveysFromSingleCourse($con, $course_id);
 
+        $courseSurveys = getSurveysFromSingleCourse($con, $course_id);
+        
+        $retVal["error"] = $courseSurveys["error"];
         $retVal["upcoming"] = $courseSurveys["upcoming"];
         $retVal["active"] = $courseSurveys["active"];
         $retVal["expired"] = $courseSurveys["expired"];
