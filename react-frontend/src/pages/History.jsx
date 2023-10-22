@@ -15,7 +15,6 @@ const History = () => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-          instructor_id: 1,
           semester: 2,
           year: 2024,
         }),
@@ -25,7 +24,10 @@ const History = () => {
       .then((result) => {
         setCourses(result);
         console.log(result);
-      });
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }, []);
 
   const sidebar_content = {

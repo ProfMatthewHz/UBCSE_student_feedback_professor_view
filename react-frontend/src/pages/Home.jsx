@@ -53,7 +53,6 @@ const Home = () => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-          instructor_id: 1,
           semester: getCurrentSemester(),
           year: getCurrentYear(),
         }),
@@ -63,7 +62,10 @@ const Home = () => {
       .then((result) => {
         setCourses(result);
         console.log(result);
-      });
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }, []);
 
   const sidebar_content = {
