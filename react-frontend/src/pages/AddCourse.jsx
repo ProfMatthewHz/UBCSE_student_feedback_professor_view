@@ -69,13 +69,21 @@ const AddCourse = () => {
       .catch((err) => {
         console.log(err);
       });
+    setYear(getCurrentYear());
+    let currSem = getCurrentSemester();
+    if (currSem === 1) setSemester("winter");
+    if (currSem === 2) setSemester("spring");
+    if (currSem === 3) setSemester("summer");
+    if (currSem === 4) setSemester("fall");
   }, []);
 
   const sidebar_content = {
     Courses: courses ? courses.map((course) => course.code) : [],
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <>
@@ -86,14 +94,20 @@ const AddCourse = () => {
             <div className="formHeader">
               <h2 className="add-header">Add Course</h2>
             </div>
-            <form className="add__form" onSubmit={handleSubmit}>
+            <form
+              className="add__form"
+              onSubmit={handleSubmit}
+              encType="multipart/form-data"
+            >
               <div className="form__item">
                 <label className="form__item--label">Course Code</label>
                 <input
                   type="text"
+                  id="course-code"
                   value={courseCode}
                   onChange={(e) => setCourseCode(e.target.value)}
                   placeholder="CSE115"
+                  required
                 />
               </div>
 
@@ -101,9 +115,11 @@ const AddCourse = () => {
                 <label className="form__item--label">Course Name</label>
                 <input
                   type="text"
+                  id="course-name"
                   value={courseName}
                   onChange={(e) => setCourseName(e.target.value)}
                   placeholder="Introduction to Computer Science"
+                  required
                 />
               </div>
 
@@ -118,6 +134,7 @@ const AddCourse = () => {
                     id="file-input"
                     className="file-input"
                     onChange={(e) => setFile(e.target.files[0])}
+                    required
                   />
                   <label className="custom-file-label" htmlFor="file-input">
                     Choose File
@@ -135,11 +152,14 @@ const AddCourse = () => {
                     value={semester}
                     className="add-course--select"
                     onChange={(e) => setSemester(e.target.value)}
+                    id="semester"
+                    name="semester"
+                    required
                   >
-                    <option value="Fall">Fall</option>
-                    <option value="Spring">Spring</option>
-                    <option value="Winter">Winter</option>
-                    <option value="Summer">Summer</option>
+                    <option value="fall">Fall</option>
+                    <option value="spring">Spring</option>
+                    <option value="winter">Winter</option>
+                    <option value="summer">Summer</option>
                   </select>
                 </div>
 
@@ -147,13 +167,18 @@ const AddCourse = () => {
                   <label className="form__item--label">Course Year</label>
                   <input
                     type="number"
-                    name="year"
-                    id="year"
-                    placeholder="2023"
+                    name="course-year"
+                    id="course-year"
+                    placeholder={year}
+                    value={year}
                     onChange={(e) => setYear(e.target.value)}
+                    required
                   />
                 </div>
               </div>
+
+              <input type="hidden" name="csrf-token" value="" />
+
               <div className="form__submit--container">
                 <button type="submit" className="form__submit">
                   + Add Course
