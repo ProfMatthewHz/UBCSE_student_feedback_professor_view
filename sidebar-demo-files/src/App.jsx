@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import SideBar from './Components/Sidebar';
 import Navbar from './Components/Navbar';
 import Home from './pages/Home';
 import History from './pages/History';
@@ -9,7 +8,7 @@ import Library from './pages/Library';
 function App() {
   return (
     <Router>
-      <div>
+      <div className="app">
         <Navbar />
         <Routes>
           {/* Add Routes here with a component to render at that Route */}

@@ -31,7 +31,7 @@ const Course = ({ course, page }) => {
   }, []);
 
   return (
-    <div className="courseContainer">
+    <div id={course.code} className="courseContainer">
       <div className="courseContent">
         <div className="courseHeader">
           <h2>
@@ -49,7 +49,6 @@ const Course = ({ course, page }) => {
                 <th>Survey Name</th>
                 <th>Dates Available</th>
                 <th>Completion Rate</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -62,7 +61,7 @@ const Course = ({ course, page }) => {
                     Ends: {survey.end_date}
                   </td>
                   <td>{survey.completion}</td>
-                  <td>{/* actions button goes here */}</td>
+                  <td><button>Actions</button></td>
                 </tr>
               ))}
             </tbody>
@@ -71,8 +70,8 @@ const Course = ({ course, page }) => {
           <div className="no-surveys">
             <h1>
               {page === "home"
-                ? `No surveys yet!`
-                : `No surveys for this course!`}
+                ? `No Surveys Yet!`
+                : `No Surveys for This Course!`}
             </h1>
           </div>
         )}

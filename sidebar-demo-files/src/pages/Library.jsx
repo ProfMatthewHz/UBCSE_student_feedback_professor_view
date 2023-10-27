@@ -4,7 +4,7 @@ import SideBar from "../Components/Sidebar";
 const Library = () => {
   return (
     <>
-      <SideBar />
+      <SideBar content_dictionary={{"Rubrics": []}}/>
       <div>Library</div>
     </>
   );
