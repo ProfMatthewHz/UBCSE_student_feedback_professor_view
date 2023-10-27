@@ -125,6 +125,8 @@ label {
 .form__item--select {
   display: flex;
   flex-direction: column;
+  margin-right: 8px;
+  width: 30%;
 }
 
 .form__item--file {
@@ -173,9 +175,5 @@ label {
 .form__year-sem--container {
     display: flex;
     align-items: center;
-    width: 100%;
-}
-
-.form__year-sem--container .form__item {
-    width: 50%;
+    width: 60%;
 }

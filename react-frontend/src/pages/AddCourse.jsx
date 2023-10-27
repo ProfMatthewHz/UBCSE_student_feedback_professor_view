@@ -143,7 +143,7 @@ const AddCourse = () => {
                   </select>
                 </div>
 
-                <div className="form__item">
+                <div className="form__item form__item--year">
                   <label className="form__item--label">Course Year</label>
                   <input
                     type="number"
