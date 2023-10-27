@@ -9,6 +9,24 @@ const AddCourse = () => {
   const [file, setFile] = useState(null);
   const [semester, setSemester] = useState("");
   const [year, setYear] = useState(null);
+  const semesters = [
+    {
+      value: "winter",
+      text: "Winter",
+    },
+    {
+      value: "spring",
+      text: "Spring",
+    },
+    {
+      value: "summer",
+      text: "Summer",
+    },
+    {
+      value: "fall",
+      text: "Fall",
+    },
+  ];
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -48,6 +66,7 @@ const AddCourse = () => {
     return 2; // Spring
   };
 
+  // fetch the courses to display on the sidebar
   useEffect(() => {
     fetch(
       "http://localhost/StudentSurvey/backend/instructor/instructorCoursesInTerm.php",
@@ -156,10 +175,17 @@ const AddCourse = () => {
                     name="semester"
                     required
                   >
-                    <option value="fall">Fall</option>
-                    <option value="spring">Spring</option>
-                    <option value="winter">Winter</option>
-                    <option value="summer">Summer</option>
+                    {semesters.map((sem) => {
+                      return (
+                        <option
+                          key={sem.value}
+                          value={sem.value}
+                          selected={sem.value === semester}
+                        >
+                          {sem.text}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
 
