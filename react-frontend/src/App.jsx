@@ -4,6 +4,7 @@ import Navbar from "./Components/Navbar";
 import Home from "./pages/Home";
 import History from "./pages/History";
 import Library from "./pages/Library";
+import AddCourse from "./pages/AddCourse";
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/history" element={<History />} />
           <Route path="/library" element={<Library />} />
+          <Route path="/course/add" element={<AddCourse />} />
         </Routes>
       </div>
     </Router>

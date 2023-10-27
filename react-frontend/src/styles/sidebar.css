@@ -32,7 +32,7 @@ code {
   margin: 5%;
 }
 
-.sidebar button {
+.sidebar a {
   color: #ffffff;
   font-size: 18px;
   font-weight: 600;
@@ -42,7 +42,7 @@ code {
   border-style: none;
 }
 
-.sidebar button:hover {
+.sidebar a:hover {
   color: #6DA04B;
   background-color: #ffffff;
 }
