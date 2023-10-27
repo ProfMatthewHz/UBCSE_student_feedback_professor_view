@@ -93,6 +93,7 @@ const AddCourse = () => {
                   type="text"
                   value={courseCode}
                   onChange={(e) => setCourseCode(e.target.value)}
+                  placeholder="CSE115"
                 />
               </div>
 
@@ -102,19 +103,9 @@ const AddCourse = () => {
                   type="text"
                   value={courseName}
                   onChange={(e) => setCourseName(e.target.value)}
+                  placeholder="Introduction to Computer Science"
                 />
               </div>
-
-              {/* <div className="form__item">
-                <label className="form__item--label form__item--file">
-                  Roster (CSV File) - Requires Names in Column 1 and Emails in
-                  Column 2
-                </label>
-                <input
-                  type="file"
-                  onChange={(e) => setFile(e.target.files[0])}
-                />
-              </div> */}
 
               <div className="form__item file-input-wrapper">
                 <label className="form__item--label form__item--file">

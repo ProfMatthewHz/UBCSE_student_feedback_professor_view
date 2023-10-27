@@ -82,7 +82,7 @@ input,
 textarea {
   width: 100%;
   background-color: #fff;
-  color: #225cb5;
+  color: #666666;
   outline: none;
   border: none;
   border-bottom: 2px solid #225cb5;
@@ -116,7 +116,7 @@ label {
   padding: 10px;
   border: 1px solid #225cb5;
   border-radius: 5px;
-  color: #225cb5;
+  color: #666666;
   width: 100%;
   max-width: 200px;
   outline: none;
@@ -127,20 +127,9 @@ label {
   flex-direction: column;
 }
 
-.form__item input[type="file"] {
-  /* display: none; */
-}
-
 .form__item--file {
     margin-bottom: 4px;
 }
-
-/* .form__item--file {
-    background-color: #225cb5;
-    padding: 4px 10px;
-    cursor: pointer;
-    display: inline-block;
-} */
 
 /* Style for the wrapper */
 .file-input-wrapper {
@@ -178,6 +167,7 @@ label {
 /* Style for the selected file name */
 .selected-filename {
   margin-left: 20px;
+  color: #666666;
 }
 
 .form__year-sem--container {
