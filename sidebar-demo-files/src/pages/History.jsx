@@ -6,11 +6,25 @@ const History = () => {
   const courses = [
     {
       id: "1",
-      code: "HIS123",
-      name: "Introduction to Computer Science II",
+      code: "CSE442",
+      name: "Software Engineering",
       surveys: [
         {
           id: "1",
+          startDate: "2023-09-19 08:31:19",
+          endDate: "2023-09-19 08:31:19",
+          name: "Dummy Name 1",
+          completion: 67,
+        },
+        {
+          id: "2",
+          startDate: "2023-09-19 08:31:19",
+          endDate: "2023-09-19 08:31:19",
+          name: "Dummy Name 1",
+          completion: 67,
+        },
+        {
+          id: "3",
           startDate: "2023-09-19 08:31:19",
           endDate: "2023-09-19 08:31:19",
           name: "Dummy Name 1",
@@ -20,11 +34,39 @@ const History = () => {
     },
     {
       id: "2",
-      code: "Pizza",
+      code: "CSE116",
       name: "Introduction to Computer Science II",
       surveys: [
         {
           id: "1",
+          startDate: "2023-09-19 08:31:19",
+          endDate: "2023-09-19 08:31:19",
+          name: "Dummy Name 1",
+          completion: 67,
+        },
+        {
+          id: "2",
+          startDate: "2023-09-19 08:31:19",
+          endDate: "2023-09-19 08:31:19",
+          name: "Dummy Name 1",
+          completion: 67,
+        },
+        {
+          id: "3",
+          startDate: "2023-09-19 08:31:19",
+          endDate: "2023-09-19 08:31:19",
+          name: "Dummy Name 1",
+          completion: 67,
+        },
+        {
+          id: "4",
+          startDate: "2023-09-19 08:31:19",
+          endDate: "2023-09-19 08:31:19",
+          name: "Dummy Name 1",
+          completion: 67,
+        },
+        {
+          id: "5",
           startDate: "2023-09-19 08:31:19",
           endDate: "2023-09-19 08:31:19",
           name: "Dummy Name 1",
@@ -34,22 +76,8 @@ const History = () => {
     },
     {
       id: "3",
-      code: "Pizza2",
-      name: "Introduction to Computer Science II",
-      surveys: [
-        {
-          id: "1",
-          startDate: "2023-09-19 08:31:19",
-          endDate: "2023-09-19 08:31:19",
-          name: "Dummy Name 1",
-          completion: 67,
-        },
-      ],
-    },
-    {
-      id: "4",
-      code: "Pizza3",
-      name: "Introduction to Computer Science II",
+      code: "CSE404",
+      name: "Software Project Management",
       surveys: [
         {
           id: "1",
