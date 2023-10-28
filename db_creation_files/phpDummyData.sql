@@ -7,9 +7,16 @@ INSERT INTO `courses` (`id`, `code`, `name`, `semester`, `year`) VALUES
 (10119, 'CSE 115', 'Computer Science 1', 4, '2023'),
 (10120, 'CSE 305', 'Programming Languages', 4, '2023'),
 (10121, 'CSE250', 'Data Structures', 2, '2023'),
-(10122, 'CSE331', 'Algorithms and Complexity', 1, '2023'),
-(10123, 'CSE 365', 'Computer Security', 1, '2023'),
-(42356, 'CSE 442', 'Software Engineering Concepts ', 0, '2023');
+(10122, 'CSE331', 'Algorithms and Complexity', 1, '2022'),
+(10123, 'CSE 365', 'Computer Security', 1, '2022'),
+(10124, 'CSE 220', 'Systems Programming', 3, '2022'),
+(10125, 'CSE 241', 'Digital Systems', 3, '2022'),
+(10126, 'CSE 410', 'Special Topics', 2, '2023'),
+(10127, 'CSE 306', 'Software Quality in Practice', 3, '2022'),
+(10128, 'CSE 234', 'Intro to Blockchain', 3, '2022'),
+(42356, 'CSE 442', 'Software Engineering Concepts ', 0, '2023'),
+(42357, '', '', 3, '2022'),
+(42359, '', '', 3, '2022');
 
 INSERT INTO `course_instructors` (`course_id`, `instructor_id`) VALUES
 (10101, 0),
@@ -22,6 +29,11 @@ INSERT INTO `course_instructors` (`course_id`, `instructor_id`) VALUES
 (10121, 1),
 (10122, 1),
 (10123, 1),
+(10124, 1),
+(10125, 1),
+(10126, 1),
+(10127, 1),
+(10128, 1),
 (42356, 2);
 
 INSERT INTO `enrollments` (`student_id`, `course_id`) VALUES
@@ -101,7 +113,20 @@ INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rub
 (23, 10123, '2023-10-27 01:58:06', '2023-10-28 01:58:06', 'Dummy Name 1', 1, 1),
 (24, 10123, '2023-10-27 02:05:33', '2023-10-28 02:05:33', 'Dummy Name 2', 1, 1),
 (25, 10123, '2023-10-27 02:06:08', '2023-10-28 02:06:08', 'Dummy Name 3', 1, 1),
-(26, 10101, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #1', 0, 0);
+(26, 10101, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #1', 0, 0),
+(27, 10122, '2023-10-27 04:25:09', '2023-10-28 04:25:09', 'Dummy Name 1', 1, 1),
+(28, 10121, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 1', 1, 1),
+(29, 10121, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 2', 1, 1),
+(30, 10121, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 3', 1, 1),
+(31, 10121, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 4', 1, 1),
+(32, 10121, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 5', 1, 1),
+(33, 10127, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 1', 1, 1),
+(34, 10127, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 2', 1, 1),
+(35, 10127, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 3', 1, 1),
+(36, 10128, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 1', 1, 1),
+(37, 10128, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 2', 1, 1),
+(38, 10128, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 3', 1, 1),
+(39, 10122, '2023-10-27 04:46:05', '2023-10-28 04:46:05', 'Dummy Name 2', 1, 1);
 
 INSERT INTO `survey_types` (`id`, `description`, `file_organization`, `display_multiplier`) VALUES
 (1, 'Individual Reviewed by Individual', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0),
