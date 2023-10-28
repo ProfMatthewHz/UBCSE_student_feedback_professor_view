@@ -1,93 +1,110 @@
---
--- Course and student fake data
---
 INSERT INTO `courses` (`id`, `code`, `name`, `semester`, `year`) VALUES
 (10101, '', 'Computer Science 1 ', 0, '2023'),
-(10115, 'CSE 116', '', 2, '2024'),
+(10115, 'CSE 116', 'Computer Science 2', 4, '2023'),
+(10116, 'CSE 312', 'Introduction to Web Applications', 2, '2023'),
+(10117, 'CSE 404', 'Software Project Managment', 4, '2023'),
+(10118, 'CSE199', 'UB Seminar', 4, '2023'),
+(10119, 'CSE 115', 'Computer Science 1', 4, '2023'),
+(10120, 'CSE 305', 'Programming Languages', 4, '2023'),
+(10121, 'CSE250', 'Data Structures', 2, '2023'),
+(10122, 'CSE331', 'Algorithms and Complexity', 1, '2023'),
+(10123, 'CSE 365', 'Computer Security', 1, '2023'),
 (42356, 'CSE 442', 'Software Engineering Concepts ', 0, '2023');
-
-INSERT INTO `instructors` (`id`, `name`, `email`, `session_expiration`, `csrf_token`) VALUES
-(0, 'Matthew Hertz', 'mhertz@buffalo.edu', NULL, NULL),
-(1, '', 'hartloff@buffalo.edu', NULL, NULL),
-(2, 'Paul Dickson', '', NULL, NULL);
 
 INSERT INTO `course_instructors` (`course_id`, `instructor_id`) VALUES
 (10101, 0),
 (10115, 1),
+(10116, 1),
+(10117, 1),
+(10118, 1),
+(10119, 1),
+(10120, 1),
+(10121, 1),
+(10122, 1),
+(10123, 1),
 (42356, 2);
-
-INSERT INTO `students` (`id`, `name`, `email`) VALUES
-(50243400, 'Smitty Johnson', ''),
-(50243479, 'Jim Jones', 'jjones@buffalo.edu'),
-(50243480, 'John Eggert', 'jeggert@buffalo.edu');
 
 INSERT INTO `enrollments` (`student_id`, `course_id`) VALUES
 (50243400, 42356),
 (50243479, 10101),
 (50243480, 10115);
 
-
---
--- Rubric fake data
---
-
-INSERT INTO `rubrics` (`id`, `description`) VALUES
-(0, 'This is rubric Id # Zero'),
-(1, ''),
-(2, 'This is rubric id # three');
-
-INSERT INTO `rubric_topics` (`id`, `rubric_id`, `question`, `question_response`) VALUES
-(0, 0, 'Topic zero', 'multiple_choice'),
-(1, 1, 'Empty topic (also testing with no id) meant to be id of 1', 'multiple_choice'),
-(2, 2, '', 'multiple_choice');
-
-INSERT INTO `rubric_scores` (`id`, `rubric_id`, `name`, `score`) VALUES
-(0, 0, 'Jim Jones', 97),
-(1, 1, 'Smitty JohnSon', 55),
-(2, 2, 'John Eggert', 82);
-
-INSERT INTO `rubric_responses` (`topic_id`, `rubric_score_id`, `response`) VALUES
-(0, 0, 'Hello this was a decent rubric'),
-(1, 1, 'Im smitty JohnSon and I approve of this rubric '),
-(2, 2, '');
-
-
---
--- Survey & survey resopnses fake data
---
-
-INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rubric_id`, `survey_type_id`) VALUES
-(0, 10101, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #1', 0, 0),
-(1, 10115, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #2', 1, 1),
-(2, 42356, '2023-09-19 08:32:44', '2023-09-19 08:32:44', 'Survey #3', 2, 2);
-
-INSERT INTO `reviews` (`id`, `survey_id`, `reviewer_id`, `team_id`, `reviewed_id`, `eval_weight`) VALUES
-(0, 0, 50243480, 55, 50243480, 1),
-(1, 1, 50243479, 67, 50243479, 1),
-(2, 2, 50243400, 12, 50243400, 1);
-
 INSERT INTO `evals` (`id`, `review_id`) VALUES
-(0, 0),
-(1, 1),
-(2, 2);
+(5, 0),
+(1, 1);
 
 INSERT INTO `freeforms` (`eval_id`, `topic_id`, `response`) VALUES
 (0, 0, 'FreeForm One'),
 (1, 1, 'FreeForm two'),
 (2, 2, NULL);
 
+INSERT INTO `instructors` (`id`, `name`, `email`, `session_expiration`, `csrf_token`) VALUES
+(1, '', 'hartloff@buffalo.edu', NULL, '16c861073c150ec14bc65bd63d5e11c1fc76b309e37a1dd034f22875fb4f96f8'),
+(2, 'Paul Dickson', '', NULL, NULL),
+(4, 'Matthew Hertz', 'mhertz@buffalo.edu', NULL, NULL);
+
+INSERT INTO `reviews` (`id`, `survey_id`, `reviewer_id`, `team_id`, `reviewed_id`, `eval_weight`) VALUES
+(1, 1, 50243479, 67, 50243479, 1),
+(2, 2, 50243400, 12, 50243400, 1),
+(5, 0, 50243480, 55, 50243480, 1);
+
+INSERT INTO `rubrics` (`id`, `description`) VALUES
+(1, ''),
+(2, 'This is rubric id # three');
+
+INSERT INTO `rubric_responses` (`topic_id`, `rubric_score_id`, `response`) VALUES
+(0, 0, 'Hello this was a decent rubric'),
+(1, 1, 'Im smitty JohnSon and I approve of this rubric '),
+(2, 2, '');
+
+INSERT INTO `rubric_scores` (`id`, `rubric_id`, `name`, `score`) VALUES
+(1, 1, 'Smitty JohnSon', 55),
+(2, 2, 'John Eggert', 82),
+(5, 0, 'Jim Jones', 97);
+
+INSERT INTO `rubric_topics` (`id`, `rubric_id`, `question`, `question_response`) VALUES
+(1, 1, 'Empty topic (also testing with no id) meant to be id of 1', 'multiple_choice'),
+(2, 2, '', 'multiple_choice'),
+(5, 0, 'Topic zero', 'multiple_choice');
+
 INSERT INTO `scores` (`eval_id`, `topic_id`, `rubric_score_id`) VALUES
 (0, 0, 0),
 (1, 1, 1),
 (2, 2, 2);
 
---
--- Survey tyoes fake data
---
+INSERT INTO `students` (`id`, `name`, `email`) VALUES
+(50243400, 'Smitty Johnson', ''),
+(50243479, 'Jim Jones', 'jjones@buffalo.edu'),
+(50243480, 'John Eggert', 'jeggert@buffalo.edu');
+
+INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rubric_id`, `survey_type_id`) VALUES
+(1, 10115, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #2', 1, 1),
+(2, 42356, '2023-09-19 08:32:44', '2023-09-19 08:32:44', 'Survey #3', 2, 2),
+(5, 10115, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #1', 0, 1),
+(6, 10115, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #2', 1, 1),
+(7, 10115, '2023-10-26 22:39:52', '2023-10-27 22:39:52', 'Survey #4', 1, 1),
+(8, 10115, '2023-10-26 22:41:41', '2023-10-27 22:41:41', 'Survey #5', 1, 1),
+(9, 10115, '2023-09-19 08:32:44', '2023-09-19 08:32:44', 'Survey #3', 2, 2),
+(10, 10116, '2023-10-27 22:46:46', '2023-10-27 22:46:46', 'Dummy Name 2', 1, 1),
+(11, 10116, '2023-10-27 22:44:38', '2023-10-27 22:44:38', 'Dummy Name 1', 1, 1),
+(12, 10119, '2023-10-27 00:37:18', '2023-10-28 00:37:18', 'Dummy Name 1', 1, 1),
+(13, 10119, '2023-10-27 00:37:57', '2023-10-28 00:37:57', 'Dummy Name 2', 1, 1),
+(14, 10120, '2023-10-27 00:39:53', '2023-10-28 00:39:53', 'Dummy Name 1', 1, 1),
+(15, 10120, '2023-10-27 00:40:37', '2023-10-28 00:40:37', 'Dummy Name 2', 1, 1),
+(16, 10120, '2023-10-27 00:40:59', '2023-10-28 00:40:59', 'Dummy Name 3', 1, 1),
+(17, 10120, '2023-10-27 00:41:25', '2023-10-28 00:41:25', 'Dummy Name 4', 1, 1),
+(18, 10117, '2023-10-27 00:42:35', '2023-10-28 00:42:35', 'Dummy Name 1', 1, 1),
+(19, 10117, '2023-10-27 00:43:04', '2023-10-28 00:43:04', 'Dummy Name 2', 1, 1),
+(20, 10118, '2023-10-27 00:43:43', '2023-10-28 00:43:43', 'A Very Very Big Dummy Name 1', 1, 1),
+(21, 10116, '2023-10-27 00:47:03', '2023-10-28 00:47:03', 'Dummy Name 1', 1, 1),
+(22, 10116, '2023-10-27 00:47:25', '2023-10-28 00:47:25', 'Dummy Name 2', 1, 1),
+(23, 10123, '2023-10-27 01:58:06', '2023-10-28 01:58:06', 'Dummy Name 1', 1, 1),
+(24, 10123, '2023-10-27 02:05:33', '2023-10-28 02:05:33', 'Dummy Name 2', 1, 1),
+(25, 10123, '2023-10-27 02:06:08', '2023-10-28 02:06:08', 'Dummy Name 3', 1, 1),
+(26, 10101, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #1', 0, 0);
+
 INSERT INTO `survey_types` (`id`, `description`, `file_organization`, `display_multiplier`) VALUES
 (1, 'Individual Reviewed by Individual', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0),
 (2, 'Each Team Member Reviewed By Entire Team', 'One row per team. Each row contains the email addresses for all team members. Blank columns are ignored', 0),
 (3, 'Each Team Member Reviewed by Entire Team + Manager', 'One row per team. Each row contains the email addresses for all team members with the manager email address listed last. Blank columns are ignored', 1),
 (4, 'Single Individual Reviewed by Each Team Member', 'One row per individual being reviewed. Every row contains the email addresses of the reviewers and the person being reviewed. The person being reviewed MUST be in the final column in the row.', 0);
-
-
