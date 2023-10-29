@@ -5,6 +5,7 @@ const Course = ({ course, page }) => {
   const [surveys, setSurveys] = useState([]);
 
   useEffect(() => {
+
     fetch(
       "http://localhost/StudentSurvey/backend/instructor/courseSurveysQueries.php",
       {
@@ -19,15 +20,12 @@ const Course = ({ course, page }) => {
     )
       .then((res) => res.json())
       .then((result) => {
-        if (page === "home") {
-          setSurveys(result.active);
-        } else if (page === "history") {
-          setSurveys(result.expired);
-        }
+        setSurveys([...result.active, ...result.expired]);
       })
       .catch(err => {
         console.log(err)
       })
+
   }, []);
 
   return (
