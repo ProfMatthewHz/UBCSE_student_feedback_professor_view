@@ -66,11 +66,9 @@ const Course = ({ course, page }) => {
           </table>
         ) : (
           <div className="no-surveys">
-            <h1>
-              {page === "home"
-                ? `No Surveys Yet!`
-                : `No Surveys for This Course!`}
-            </h1>
+            {page === "home"
+              ? `No Surveys Yet`
+              : `No Surveys Created`}
           </div>
         )}
       </div>
