@@ -73,12 +73,14 @@ const History = () => {
     )
       .then((res) => res.json())
       .then((result) => {
-        setTerms(result)
 
-        const all_courses = []
+        const all_courses = {}
 
         const fetchCourses = result.map((term) => {
           
+          const term_key = term.semester.charAt(0).toUpperCase() + term.semester.slice(1) + " " + term.year
+          all_courses[term_key] = []
+
           return fetch(
             "http://localhost/StudentSurvey/backend/instructor/instructorCoursesInTerm.php",
             {
@@ -94,7 +96,7 @@ const History = () => {
           )
             .then((res2) => res2.json())
             .then((result2) => {
-              all_courses.push(...result2)
+              all_courses[term_key].push(...result2)
             })
             .catch(err => {
               console.log(err)
@@ -104,7 +106,9 @@ const History = () => {
 
         Promise.all(fetchCourses)
         .then(() => {
-          setCourses(all_courses); // Update the courses state with all courses
+          const courses_only = Object.values(all_courses).flat();
+          setTerms(all_courses)
+          setCourses(courses_only); // Update the courses state with all courses
         })
         .catch(err => {
           console.log(err);
@@ -117,8 +121,9 @@ const History = () => {
       })
   }, []);
 
+
   const sidebar_content = {
-    Terms: terms.length > 0 ? terms.map((term) => term.semester.charAt(0).toUpperCase() + term.semester.slice(1) + " " + term.year) : [],
+    Terms: Object.keys(terms).length > 0 ? Object.keys(terms): [],
     Courses: courses.length > 0 ? courses.map((course) => course.code) : [],
   };
 
@@ -126,17 +131,39 @@ const History = () => {
     <>
       <SideBar route="/history" content_dictionary={sidebar_content} />
       <div className="container home--container">
-        {courses.length > 0 ? (
+        {Object.entries(terms).length > 0 ? (
+          Object.entries(terms).map(([term, courses]) => {
 
-          courses.map((course) => (
-            <Course key={course.id} course={course} page="history" />
-          ))
-          ) : (
-            <div className="no-course">
-              <h1>No Courses Found</h1>
+            return (
+            
+            <div key={term}>
+              <div className="termContainer">
+                <div className="termContent">
+                  <h1 id={term}>{term}</h1>
+                </div>
+              </div>
+              {courses.length > 0 ? (
+
+                courses.map((course) => (
+                  <Course key={course.id} course={course} page="history" />
+                ))
+                ) : (
+                  <div className="no-course">
+                    <h1>No Courses Found</h1>
+                  </div>
+                )
+              }
             </div>
-          )
-        }
+            )
+          })
+        ) : (
+          <div className="termContainer">
+            <div className="termContent">
+              <h1>No Terms Found</h1>
+            </div>
+          </div>
+        )}
+      
       </div>
     </>
   );
