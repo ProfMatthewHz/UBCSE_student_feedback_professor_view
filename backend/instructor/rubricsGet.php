@@ -11,7 +11,7 @@ session_start();
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "./lib/rubricQueries.php";
+require_once "./lib/pairingFunctions.php";
 
 //query information about the requester
 $con = connectToDatabase();
@@ -31,10 +31,10 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     // Get the course id of the course that is being queried for surveys
 
     $retVal = array("error" => "");
-    $retVal["rubrics"] = array();
+    $retVal["surveyTypes"] = array();
 
     
-    $allRubrics = getRubrics($con);
+    $allSurveyTypes = getRubrics($con);
 
     if (count($allRubrics) == 0) {
         $retVal["error"] = "There are no rubrics! Please add one.";
