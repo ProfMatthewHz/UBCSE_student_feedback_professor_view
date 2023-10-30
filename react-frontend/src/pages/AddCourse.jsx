@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import SideBar from "../Components/Sidebar";
 import "../styles/addcourse.css";
 
@@ -9,6 +10,8 @@ const AddCourse = () => {
   const [file, setFile] = useState(null);
   const [semester, setSemester] = useState("");
   const [year, setYear] = useState(null);
+  const formData = new FormData();
+  const navigate = useNavigate();
   const semesters = [
     {
       value: "winter",
@@ -102,6 +105,22 @@ const AddCourse = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    formData.append("course-code", courseCode);
+    formData.append("course-name", courseName);
+    formData.append("course-year", year);
+    formData.append("roster-file", file); // Assuming `file` is a File object
+    formData.append("semester", semester);
+
+    fetch("http://localhost/StudentSurvey/backend/instructor/courseAdd.php", {
+      method: "POST",
+      body: formData,
+    }).then((res) => {
+      if (res.ok) {
+        console.log("COURSE ADDED", res);
+        navigate("/");
+      }
+    });
   };
 
   return (

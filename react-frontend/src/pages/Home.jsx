@@ -60,6 +60,7 @@ const Home = () => {
     )
       .then((res) => res.json())
       .then((result) => {
+        console.log(result)
         setCourses(result);
       })
       .catch(err => {
