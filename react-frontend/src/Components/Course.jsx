@@ -152,7 +152,7 @@ const Course = ({ course, page }) => {
           </h2>
           {page === "home" ?
           <div className="courseHeader-btns">
-            <button className="btn add-btn">+ Add Survey</button>
+            <button className="btn add-btn" onClick = {openModal}>+ Add Survey</button>
             <button className="btn update-btn">Update Roster</button>
           </div>
             : null
@@ -247,7 +247,6 @@ const Course = ({ course, page }) => {
              </div>
 
          </Modal>
-        </div>
         {surveys.length > 0 ? (
           <table className="surveyTable">
             <thead>
