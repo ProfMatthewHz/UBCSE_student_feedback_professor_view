@@ -10,6 +10,7 @@ const AddCourse = () => {
   const [file, setFile] = useState(null);
   const [semester, setSemester] = useState("");
   const [year, setYear] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
   const formData = new FormData();
   const navigate = useNavigate();
   const semesters = [
@@ -115,12 +116,33 @@ const AddCourse = () => {
     fetch("http://localhost/StudentSurvey/backend/instructor/courseAdd.php", {
       method: "POST",
       body: formData,
-    }).then((res) => {
-      if (res.ok) {
-        console.log("COURSE ADDED", res);
-        navigate("/");
-      }
-    });
+    })
+      .then((res) => {
+        if (
+          res.headers.get("content-type") === "application/json; charset=utf-8"
+        ) {
+          return res.json();
+        } else {
+          return res.text();
+        }
+      })
+      .then((result) => {
+        if (typeof result === "string") {
+          try {
+            const parsedResult = JSON.parse(result);
+            console.log("Parsed as JSON object: ", parsedResult);
+            setFormErrors(parsedResult);
+          } catch (e) {
+            console.log("Failed to parse JSON: ", e);
+          }
+        } else {
+          // Class is valid, so we can just navigate to the home page
+          navigate("/");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -137,6 +159,11 @@ const AddCourse = () => {
               onSubmit={handleSubmit}
               encType="multipart/form-data"
             >
+              {formErrors["duplicate"] && (
+                <div className="add_course--error">
+                  {formErrors["duplicate"]}
+                </div>
+              )}
               <div className="form__item">
                 <label className="form__item--label">Course Code</label>
                 <input
@@ -147,6 +174,11 @@ const AddCourse = () => {
                   placeholder="CSE115"
                   required
                 />
+                {formErrors["course-code"] && (
+                  <div className="add_course--error">
+                    {formErrors["course-code"]}
+                  </div>
+                )}
               </div>
 
               <div className="form__item">
@@ -159,12 +191,17 @@ const AddCourse = () => {
                   placeholder="Introduction to Computer Science"
                   required
                 />
+                {formErrors["course-name"] && (
+                  <div className="add_course--error">
+                    {formErrors["course-name"]}
+                  </div>
+                )}
               </div>
 
               <div className="form__item file-input-wrapper">
                 <label className="form__item--label form__item--file">
-                  Roster (CSV File) - Requires Names in Column 1 and Emails in
-                  Column 2
+                  Roster (CSV File) - Requires Emails in Columns 1, First Names
+                  in Columns 2 and Last Names in Columns 3
                 </label>
                 <div>
                   <input
@@ -181,6 +218,11 @@ const AddCourse = () => {
                     {file ? file.name : "No file chosen"}
                   </span>
                 </div>
+                {formErrors["roster-file"] && (
+                  <div className="add_course--error">
+                    {formErrors["roster-file"]}
+                  </div>
+                )}
               </div>
 
               <div className="form__year-sem--container">
@@ -206,6 +248,11 @@ const AddCourse = () => {
                       );
                     })}
                   </select>
+                  {formErrors["semester"] && (
+                    <div className="add_course--error">
+                      {formErrors["semester"]}
+                    </div>
+                  )}
                 </div>
 
                 <div className="form__item form__item--year">
@@ -219,10 +266,13 @@ const AddCourse = () => {
                     onChange={(e) => setYear(e.target.value)}
                     required
                   />
+                  {formErrors["course-year"] && (
+                    <div className="add_course--error">
+                      {formErrors["course-year"]}
+                    </div>
+                  )}
                 </div>
               </div>
-
-              <input type="hidden" name="csrf-token" value="" />
 
               <div className="form__submit--container">
                 <button type="submit" className="form__submit">

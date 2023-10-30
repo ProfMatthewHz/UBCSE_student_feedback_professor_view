@@ -177,3 +177,7 @@ label {
     align-items: center;
     width: 60%;
 }
+
+.add_course--error {
+  color: #990000;
+}
