@@ -35,10 +35,14 @@ const Course = ({ course, page }) => {
           <h2>
             {course.code}: {course.name}
           </h2>
+          {page === "home" ?
           <div className="courseHeader-btns">
             <button className="btn add-btn">+ Add Survey</button>
             <button className="btn update-btn">Update Roster</button>
           </div>
+          : null
+          }
+          
         </div>
         {surveys.length > 0 ? (
           <table className="surveyTable">
