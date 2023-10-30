@@ -12,6 +12,7 @@ function App() {
     <Router basename="/StudentSurvey/react-frontend/build">
       {/* <Router > */}
       <div className="app">
+        <div className="background-design"></div>
         <Navbar />
         <Routes>
           {/* Add Routes here with a component to render at that Route */}

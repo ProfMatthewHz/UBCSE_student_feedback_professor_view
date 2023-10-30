@@ -7,11 +7,12 @@
 
 body {
     margin: 0;
-    /*
-    background-image: url("../assets/GeometricPattern.png");
+    background-image: url("../assets/geometricdesign.png");
+    background-attachment: fixed;
     background-repeat: no-repeat;
-    background-size: 958px 716px;
-    */
+    background-size: 958px;
+    background-position: bottom left;
+   
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
@@ -23,6 +24,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
-
-
