@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/course.css";
+import "../styles/modal.css";
+import Modal from "./Modal";
 
 const Course = ({ course, page }) => {
   const [surveys, setSurveys] = useState([]);
@@ -153,6 +155,9 @@ const Course = ({ course, page }) => {
             <button className="btn add-btn">+ Add Survey</button>
             <button className="btn update-btn">Update Roster</button>
           </div>
+            : null
+          }
+        </div>
         <Modal open = {modalIsOpen} 
         onRequestClose={closeModal}
         style={{
@@ -233,11 +238,7 @@ const Course = ({ course, page }) => {
                   <input id="subject-line" class="styled-input" type="file" placeholder="Upload The File"></input>
               </div>
 
-
-              
-
-
-             </div>
+           </div>
 
 
              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', gap:'50px', marginBottom: '30px' }}>
@@ -246,9 +247,6 @@ const Course = ({ course, page }) => {
              </div>
 
          </Modal>
-          : null
-          }
-          
         </div>
         {surveys.length > 0 ? (
           <table className="surveyTable">
