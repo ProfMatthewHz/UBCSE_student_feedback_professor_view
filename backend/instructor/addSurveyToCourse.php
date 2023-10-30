@@ -44,11 +44,10 @@ $term = MONTH_MAP_SEMESTER[$month];
 $year = idate('Y');
 
 // get information about the courses
-$all_data = getAllCoursesForInstructor($con, $instructor_id);
+$term_courses = getInstructorTermCourses($con, $instructor_id, $term, $year);
 
 // Only show courses from the current term and future terms
-foreach ($all_data as $row) {
-  if (($row['year'] >= $year) && ($row['semester'] >= $term)) {
+foreach ($term_courses as $row) {
     $course_info = array();
     $course_info['code'] = $row['code'];
     $course_info['name'] = $row['name'];
@@ -56,7 +55,6 @@ foreach ($all_data as $row) {
     $course_info['year'] = $row['year'];
     $course_info['id'] = $row['id'];
     $courses[] = $course_info;
-  }
 }
 
 // store information about rubrics as array of array
@@ -64,6 +62,7 @@ $rubrics = getRubrics($con);
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
+$errorMsg['']
 
 // set flags
 $course_id = NULL;
