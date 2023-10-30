@@ -19,6 +19,7 @@
   padding-bottom: 16px;
   border: 1px solid #225cb5;
   border-radius: 6px;
+  background-color: #fff;
 }
 
 .formHeader {
@@ -82,12 +83,17 @@ input,
 textarea {
   width: 100%;
   background-color: #fff;
-  color: #666666;
+  color: #000;
   outline: none;
   border: none;
   border-bottom: 2px solid #225cb5;
   height: 40px;
   transition: all 250ms ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #666666;
 }
 
 input:hover,

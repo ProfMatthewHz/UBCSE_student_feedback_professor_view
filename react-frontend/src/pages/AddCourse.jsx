@@ -171,7 +171,7 @@ const AddCourse = () => {
                   id="course-code"
                   value={courseCode}
                   onChange={(e) => setCourseCode(e.target.value)}
-                  placeholder="CSE115"
+                  placeholder="CSE 115"
                   required
                 />
                 {formErrors["course-code"] && (
