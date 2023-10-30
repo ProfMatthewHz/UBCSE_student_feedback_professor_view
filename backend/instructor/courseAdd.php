@@ -107,14 +107,15 @@ print_r($semester . "  = Current Semester inputted.  ");
 // define("SEMESTER_MAP_REVERSE", array(1 => 'Winter', 2=> 'Spring', 3 => 'Summer', 4=> 'Fall'));
 // define("MONTH_MAP_SEMESTER", array(1 => 1, 2 => 2, 3 => 2, 4 => 2, 5 => 2, 6 => 3, 7 => 3, 8 => 3, 9 => 4, 10 => 4, 11 => 4, 12 => 4));
 
-
+// accounts for the current year and current semester 
+// so a previous course can not be added. 
 if ($course_year < $currentYear) {
     $errorMsg['course-year'] = 'Course year cannot be in the past.';
-    print_r("Erorr Wrong year");
+    print_r("Course year cannot be in the past");
 } else if ($course_year == $currentYear) {
     if ($semester != $ActualMonth) {
         print_r($semester. " and " . $ActualMonth);
-        $errorMsg['semester'] = 'Cannot add a winter course after Winter.';
+        $errorMsg['semester'] = 'Cannot add a course after term is done';
         print_r("Erorr Wrong semester");
     } 
 }
