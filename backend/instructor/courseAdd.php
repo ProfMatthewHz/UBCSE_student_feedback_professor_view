@@ -18,6 +18,7 @@ require_once "lib/fileParse.php";
 require_once "lib/enrollmentFunctions.php";
 require_once "lib/courseQueries.php";
 
+
 //query information about the requester
 $con = connectToDatabase();
 
@@ -90,26 +91,32 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Fetch current year and month
 
 $currentYear = date('Y');
-$currentMonth = date('n');
+$currentMonthA = date('n');
 $currentMonth = MONTH_MAP_SEMESTER[$currentMonth];
 $currentSemesterMonth = SEMESTER_MAP[$currentMonth];
 
-print_r($currentYear);
-print_r($currentMonth);
-print_r($currentMonthMapped);
+print_r($currentYear . " = Current Year.        ");
+$month = date('m');
+$ActualMonth = MONTH_MAP_SEMESTER[$month];
+$currentActualMonth = SEMESTER_MAP_REVERSE[$ActualMonth];
+print($currentActualMonth . "  = Current Actual MOnth.   ");
+print_r($semester . "  = Current Semester inputted.  ");
+//print_r($currentSemesterMonth);
+
+// define("SEMESTER_MAP", array('winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4));
+// define("SEMESTER_MAP_REVERSE", array(1 => 'Winter', 2=> 'Spring', 3 => 'Summer', 4=> 'Fall'));
+// define("MONTH_MAP_SEMESTER", array(1 => 1, 2 => 2, 3 => 2, 4 => 2, 5 => 2, 6 => 3, 7 => 3, 8 => 3, 9 => 4, 10 => 4, 11 => 4, 12 => 4));
+
 
 if ($course_year < $currentYear) {
     $errorMsg['course-year'] = 'Course year cannot be in the past.';
+    print_r("Erorr Wrong year");
 } else if ($course_year == $currentYear) {
-    if ($semester == 'Winter' && $currentMonthMapped > 3) {
-        $errorMsg['semester'] = 'Cannot add a winter course after March.';
-    } else if ($semester == 'Spring' && $currentMonthMapped > 6) {
-        $errorMsg['semester'] = 'Cannot add a spring course after June.';
-    } else if ($semester == 'Summer' && $currentMonthMapped > 9) {
-        $errorMsg['semester'] = 'Cannot add a summer course after September.';
-    } else if ($semester == 'Fall' && $currentMonthMapped > 12) {
-        $errorMsg['semester'] = 'Cannot add a fall course after December.';
-    }
+    if ($semester != $ActualMonth) {
+        print_r($semester. " and " . $ActualMonth);
+        $errorMsg['semester'] = 'Cannot add a winter course after Winter.';
+        print_r("Erorr Wrong semester");
+    } 
 }
   
 
