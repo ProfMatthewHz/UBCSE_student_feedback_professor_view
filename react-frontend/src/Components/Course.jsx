@@ -16,7 +16,7 @@ const Course = ({ course, page }) => {
 
   const fetchRubrics =() => {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/rubricGet.php",
+      "http://localhost/StudentSurvey/backend/instructor/rubricsGet.php",
       {
         method: "GET",
         headers: {
