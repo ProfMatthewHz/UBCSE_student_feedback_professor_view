@@ -1,0 +1,112 @@
+.sidebar {
+  width: 195px;
+  height: calc(100% - 148px);
+  background: #225CB5;
+  position: fixed;
+  top: 148px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 2%;
+}
+
+.sidebar > div {
+  margin: 5%;
+}
+
+.sidebar button {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  background-color: #6DA04B;
+  padding: 5% 7.5%;
+  border-radius: 5px;
+  border-style: none;
+  transition-duration: 0.4s;
+  transition-property: background-color;
+}
+
+.sidebar button:hover {
+  color: #6DA04B;
+  background-color: #ffffff;
+}
+
+.sidebar-content {
+  width: 85%;
+  max-height: 45%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-list {
+  height: 100%;
+  margin-bottom: 15%;
+  overflow-y: auto;
+}
+
+.sidebar-list ::-webkit-scrollbar {
+  opacity: 100%;
+  width: 5px;
+}
+
+.sidebar-list ::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 15px;
+}
+
+/*
+::-webkit-scrollbar-thumb:hover {
+  background-color: #ff0000;
+  border-radius: 15px;
+  border-style: dotted;
+}
+*/
+
+.sidebar h1 {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  padding-left: 15%;
+  margin-bottom: 15%;
+}
+
+.sidebar-content a {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  text-decoration: none;
+
+}
+
+.sidebar-content a > div {
+  padding: 10% 0% 10% 15%;
+  margin-bottom: 10px;
+}
+
+.sidebar-content a > div:hover {
+  color: #ffffff;
+  background-color: #103876;
+  border-radius: 5px;
+  padding: 10% 0% 10% 15%;
+  transition-duration: 0.4s;
+  transition-property: background-color;
+}
+
+.sidebar-content a .active {
+  color: #154185;
+  background-color: #ffffff;
+  border-radius: 5px;
+  padding: 10% 0% 10% 15%;
+  transition-duration: 0.4s;
+  transition-property: background-color;
+  pointer-events: none;
+}
+
+.sidebar-list .no-content {
+  padding: 10% 0% 10% 15%;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
+  text-decoration: none;
+}
