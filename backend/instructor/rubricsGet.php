@@ -34,7 +34,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     $retVal["surveyTypes"] = array();
 
     
-    $allSurveyTypes = getRubrics($con);
+    $allRubrics = getRubrics($con);
 
     if (count($allRubrics) == 0) {
         $retVal["error"] = "There are no rubrics! Please add one.";
