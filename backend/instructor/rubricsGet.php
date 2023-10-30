@@ -11,7 +11,7 @@ session_start();
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "/lib/rubricQueries.php";
+require_once "./lib/rubricQueries.php";
 
 //query information about the requester
 $con = connectToDatabase();
