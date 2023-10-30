@@ -73,7 +73,6 @@ const History = () => {
     )
       .then((res) => res.json())
       .then((result) => {
-        console.log(result)
         const all_courses = {}
 
         const fetchCourses = result.map((term) => {
