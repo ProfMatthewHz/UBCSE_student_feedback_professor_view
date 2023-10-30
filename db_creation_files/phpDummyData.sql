@@ -61,8 +61,9 @@ INSERT INTO `reviews` (`id`, `survey_id`, `reviewer_id`, `team_id`, `reviewed_id
 (5, 0, 50243480, 55, 50243480, 1);
 
 INSERT INTO `rubrics` (`id`, `description`) VALUES
-(1, ''),
-(2, 'This is rubric id # three');
+(1, 'This is rubric id # one'),
+(2, 'This is rubric id # two'),
+(3, 'This is rubric id # three');
 
 INSERT INTO `rubric_responses` (`topic_id`, `rubric_score_id`, `response`) VALUES
 (0, 0, 'Hello this was a decent rubric'),
