@@ -144,7 +144,7 @@ function parse_roster_file($file_handle) {
       }
       if (empty($error)) {
         // add the fields to the array
-        $ret_val['ids'][$line_text[0]] = $line_text[1] + " " + $line_text[2];
+        $ret_val['ids'][$line_text[0]] = $line_text[1] . " " . $line_text[2];
       } else {
         $ret_val['error'] = $ret_val['error'] . $error;
       }

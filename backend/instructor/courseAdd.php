@@ -41,7 +41,7 @@ $roster_file = NULL;
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
-  if (!isset($_POST['course-code']) || !isset($_POST['course-name']) || !isset($_POST['course-year']) || !isset($_FILES['roster-file']) || !isset($_POST['csrf-token']) ||
+  if (!isset($_POST['course-code']) || !isset($_POST['course-name']) || !isset($_POST['course-year']) || !isset($_FILES['roster-file'])  ||
       !isset($_POST['semester'])) {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
@@ -49,12 +49,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check CSRF token
-  $csrf_token = getCSRFToken($con, $instructor_id);
-  if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
-    http_response_code(403);
-    echo "Forbidden: Incorrect parameters.";
-    exit();
-  }
+  // $csrf_token = getCSRFToken($con, $instructor_id);
+  // if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
+  //   http_response_code(403);
+  //   echo "Forbidden: Incorrect parameters.";
+  //   exit();
+  // }
 
   //check valid formatting
   $course_code = trim($_POST['course-code']);
@@ -78,7 +78,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     //Prevent injections into 'semester' field
     $errorMsg["semester"] = "Please select a valid semester.";
   }
-
+  
   $semester = SEMESTER_MAP[$semester];
 
   $course_year = trim($_POST['course-year']);
@@ -87,6 +87,31 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   } else if(!ctype_digit($course_year) || strlen($course_year) != 4) {
     $errorMsg["course-year"] = "Please enter a valid 4-digit year.";
   }
+  // Fetch current year and month
+
+$currentYear = date('Y');
+$currentMonth = date('n');
+$currentMonth = MONTH_MAP_SEMESTER[$currentMonth];
+$currentSemesterMonth = SEMESTER_MAP[$currentMonth];
+
+print_r($currentYear);
+print_r($currentMonth);
+print_r($currentMonthMapped);
+
+if ($course_year < $currentYear) {
+    $errorMsg['course-year'] = 'Course year cannot be in the past.';
+} else if ($course_year == $currentYear) {
+    if ($semester == 'Winter' && $currentMonthMapped > 3) {
+        $errorMsg['semester'] = 'Cannot add a winter course after March.';
+    } else if ($semester == 'Spring' && $currentMonthMapped > 6) {
+        $errorMsg['semester'] = 'Cannot add a spring course after June.';
+    } else if ($semester == 'Summer' && $currentMonthMapped > 9) {
+        $errorMsg['semester'] = 'Cannot add a summer course after September.';
+    } else if ($semester == 'Fall' && $currentMonthMapped > 12) {
+        $errorMsg['semester'] = 'Cannot add a fall course after December.';
+    }
+}
+  
 
   // now validate the roster file
   if ($_FILES['roster-file']['error'] == UPLOAD_ERR_INI_SIZE) {
@@ -107,6 +132,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $errorMsg['roster-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
       $names_emails = parse_roster_file($file_handle);
+
 
       // Clean up our file handling
       fclose($file_handle);
@@ -143,7 +169,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 }
-$csrf_token = getCSRFToken($con, $instructor_id);
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -196,7 +222,6 @@ $csrf_token = getCSRFToken($con, $instructor_id);
           <label for="roster-file" style="transform: scale(.85) translateY(-.85rem) translateX(.15rem);"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"]; } else { echo "Roster (CSV File):";} ?></label>
         </div>
 
-    <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>" />
 
     <input class="btn btn-success" type="submit" value="Create Course" />
     </div>

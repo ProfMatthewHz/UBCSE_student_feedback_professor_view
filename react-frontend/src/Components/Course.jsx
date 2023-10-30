@@ -5,6 +5,7 @@ const Course = ({ course, page }) => {
   const [surveys, setSurveys] = useState([]);
 
   useEffect(() => {
+
     fetch(
       "http://localhost/StudentSurvey/backend/instructor/courseSurveysQueries.php",
       {
@@ -19,19 +20,16 @@ const Course = ({ course, page }) => {
     )
       .then((res) => res.json())
       .then((result) => {
-        if (page === "home") {
-          setSurveys(result.active);
-        } else if (page === "history") {
-          setSurveys(result.expired);
-        }
+        setSurveys([...result.active, ...result.expired]);
       })
       .catch(err => {
         console.log(err)
       })
+
   }, []);
 
   return (
-    <div className="courseContainer">
+    <div id={course.code} className="courseContainer">
       <div className="courseContent">
         <div className="courseHeader">
           <h2>
@@ -49,7 +47,6 @@ const Course = ({ course, page }) => {
                 <th>Survey Name</th>
                 <th>Dates Available</th>
                 <th>Completion Rate</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -62,18 +59,16 @@ const Course = ({ course, page }) => {
                     Ends: {survey.end_date}
                   </td>
                   <td>{survey.completion}</td>
-                  <td>{/* actions button goes here */}</td>
+                  <td><button>Actions</button></td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
           <div className="no-surveys">
-            <h1>
-              {page === "home"
-                ? `No surveys yet!`
-                : `No surveys for this course!`}
-            </h1>
+            {page === "home"
+              ? `No Surveys Yet`
+              : `No Surveys Created`}
           </div>
         )}
       </div>

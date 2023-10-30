@@ -5,6 +5,7 @@ import "../styles/home.css";
 
 const History = () => {
   const [courses, setCourses] = useState([]);
+  const [terms, setTerms] = useState([]);
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -44,6 +45,18 @@ const History = () => {
     return 2; // Spring
   };
 
+  const getSemestermAsInt = (semester) => {
+    if (semester == 'fall') {
+      return 4;
+    } else if (semester == 'summer') {
+      return 3;
+    } else if (semester == 'spring') {
+      return 2;
+    } else {
+      return 1; // winter
+    }
+  }
+
   useEffect(() => {
     fetch(
       "http://localhost/StudentSurvey/backend/instructor/instructorTermsPost.php",
@@ -60,17 +73,57 @@ const History = () => {
     )
       .then((res) => res.json())
       .then((result) => {
-        if (Array.isArray(result)) {
-          setCourses(result);
-        }
+
+        const all_courses = {}
+
+        const fetchCourses = result.map((term) => {
+          
+          const term_key = term.semester.charAt(0).toUpperCase() + term.semester.slice(1) + " " + term.year
+          all_courses[term_key] = []
+
+          return fetch(
+            "http://localhost/StudentSurvey/backend/instructor/instructorCoursesInTerm.php",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: new URLSearchParams({
+                semester: getSemestermAsInt(term.semester),
+                year: parseInt(term.year),
+              }),
+            }
+          )
+            .then((res2) => res2.json())
+            .then((result2) => {
+              all_courses[term_key].push(...result2)
+            })
+            .catch(err => {
+              console.log(err)
+            })
+
+        });
+
+        Promise.all(fetchCourses)
+        .then(() => {
+          const courses_only = Object.values(all_courses).flat();
+          setTerms(all_courses)
+          setCourses(courses_only); // Update the courses state with all courses
+        })
+        .catch(err => {
+          console.log(err);
+        });
+   
+
       })
       .catch(err => {
         console.log(err)
       })
   }, []);
 
+
   const sidebar_content = {
-    Terms: [],
+    Terms: Object.keys(terms).length > 0 ? Object.keys(terms): [],
     Courses: courses.length > 0 ? courses.map((course) => course.code) : [],
   };
 
@@ -78,15 +131,39 @@ const History = () => {
     <>
       <SideBar route="/history" content_dictionary={sidebar_content} />
       <div className="container home--container">
-        {courses.length > 0 ? (
-          courses.map((course) => (
-            <Course key={course.id} course={course} page="history" />
-          ))
+        {Object.entries(terms).length > 0 ? (
+          Object.entries(terms).map(([term, courses]) => {
+
+            return (
+            
+            <div key={term}>
+              <div className="termContainer">
+                <div className="termContent">
+                  <h1 id={term}>{term}</h1>
+                </div>
+              </div>
+              {courses.length > 0 ? (
+
+                courses.map((course) => (
+                  <Course key={course.id} course={course} page="history" />
+                ))
+                ) : (
+                  <div className="no-course">
+                    <h1>No Courses Found</h1>
+                  </div>
+                )
+              }
+            </div>
+            )
+          })
         ) : (
-          <div className="no-course">
-            <h1>No courses found.</h1>
+          <div className="termContainer">
+            <div className="termContent">
+              <h1>No Terms Found</h1>
+            </div>
           </div>
         )}
+      
       </div>
     </>
   );

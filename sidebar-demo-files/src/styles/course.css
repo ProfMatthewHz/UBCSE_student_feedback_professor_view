@@ -1,21 +1,3 @@
-.termContainer {
-  display: flex;
-  justify-content: center;
-  scroll-margin-top: 148px;
-}
-
-.termContent {
-  color: #154185;
-  max-width: 100vw;
-  width: 80%;
-  margin-top: 50px;
-  margin-bottom: 30px;
-  overflow-y: auto;
-  padding-bottom: 16px;
-  border-radius: 6px;
-}
-
-
 .courseContainer {
   display: flex;
   justify-content: center;
@@ -25,7 +7,7 @@
 .courseContent {
   max-width: 100vw;
   width: 80%;
-  margin-bottom: 50px;
+  margin-top: 50px;
   overflow-y: auto;
   padding-bottom: 16px;
   border: 1px solid #225cb5;
@@ -135,14 +117,4 @@
 
 .surveyTable tbody tr:nth-child(even){
     background-color: #F0F0F0;
-}
-
-.no-surveys {
-  text-align: center;
-  font-style: italic;
-  font-weight: normal;
-  padding: 15px;
-  margin-bottom: -16px;
-  font-size: 20px;
-  color: #123e81;
 }
