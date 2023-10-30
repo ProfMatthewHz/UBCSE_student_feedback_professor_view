@@ -11,7 +11,7 @@ session_start();
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
-require_once "./lib/rubricQueries.php";
+require_once "./lib/pairingFunctions.php";
 
 //query information about the requester
 $con = connectToDatabase();
@@ -27,30 +27,44 @@ $instructor_id = $_SESSION['id'];
 
 if($_SERVER['REQUEST_METHOD'] == 'GET') {
 
-
     // Get the course id of the course that is being queried for surveys
 
     $retVal = array("error" => "");
-    $retVal["rubrics"] = array();
+    $retVal["survey_types"] = array();
+    $retVal["survey_types"]["mult"] = array();
+    $retVal["survey_types"]["no_mult"] = array();
 
     
-    $allRubrics = getRubrics($con);
+    $allSurveyTypes = getSurveyTypes($con);
 
-    if (count($allRubrics) == 0) {
-        $retVal["error"] = "There are no rubrics! Please add one.";
+    if (count($allSurveyTypes) == 0) {
+        $retVal["error"] = "There are no survey types available! :(";
     } else {
+ 
 
-        foreach ($allRubrics as $rubricId => $rubricDesc){
+        foreach ($allSurveyTypes as $surveyTypeId => $surveyTypeInfo){
 
-            $rubricData = array("rubricId" => $rubricId, "rubricDesc" => $rubricDesc);
+            $desc = $surveyTypeInfo[0];
+            $file_org = $surveyTypeInfo[1];
+            $display_mult = $surveyTypeInfo[2];
 
-            $retVal["rubrics"][] = $rubricData;
+            $survey_type = array();
+            $survey_type["id"] = $surveyTypeId;
+            $survey_type["description"] = $desc;
+            $survey_type["file_organization"] = $file_org;
+            $survey_type["display_mult"] = $display_mult;
 
+            if (intval($display_mult) == 1) {
+                $retVal["survey_types"]["mult"][] = $survey_type;
+            } else{
+                $retVal["survey_types"]["no_mult"][] = $survey_type;
+            }
 
         }
-        unset($rubric_id,$rubric_desc);
 
-        }
+        unset($surveyTypeId, $surveyTypeInfo);
+
+    }
     
   header("Content-Type: application/json; charset=UTF-8");
 
