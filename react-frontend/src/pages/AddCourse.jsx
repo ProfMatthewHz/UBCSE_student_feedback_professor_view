@@ -11,6 +11,7 @@ const AddCourse = () => {
   const [semester, setSemester] = useState("");
   const [year, setYear] = useState(null);
   const [formErrors, setFormErrors] = useState({});
+  const [showModal, setShowModal] = useState(false);
   const formData = new FormData();
   const navigate = useNavigate();
   //   const semesters = [
@@ -178,7 +179,18 @@ const AddCourse = () => {
           try {
             const parsedResult = JSON.parse(result);
             console.log("Parsed as JSON object: ", parsedResult);
+            if (parsedResult.hasOwnProperty("roster-file")) {
+              if (
+                parsedResult["roster-file"].includes(
+                  "does not contain an email, first name, and last name"
+                )
+              ) {
+                parsedResult["roster-file"] =
+                  "Make sure each row contains an email in the first column, first name in the second column, and last name in the third column";
+              }
+            }
             setFormErrors(parsedResult);
+            setShowModal(true);
           } catch (e) {
             console.log("Failed to parse JSON: ", e);
           }
@@ -190,6 +202,10 @@ const AddCourse = () => {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false); // Close the modal
   };
 
   return (
@@ -206,11 +222,6 @@ const AddCourse = () => {
               onSubmit={handleSubmit}
               encType="multipart/form-data"
             >
-              {formErrors["duplicate"] && (
-                <div className="add_course--error">
-                  {formErrors["duplicate"]}
-                </div>
-              )}
               <div className="form__item">
                 <label className="form__item--label">Course Code</label>
                 <input
@@ -221,11 +232,6 @@ const AddCourse = () => {
                   placeholder="CSE 115"
                   required
                 />
-                {formErrors["course-code"] && (
-                  <div className="add_course--error">
-                    {formErrors["course-code"]}
-                  </div>
-                )}
               </div>
 
               <div className="form__item">
@@ -238,11 +244,6 @@ const AddCourse = () => {
                   placeholder="Introduction to Computer Science"
                   required
                 />
-                {formErrors["course-name"] && (
-                  <div className="add_course--error">
-                    {formErrors["course-name"]}
-                  </div>
-                )}
               </div>
 
               <div className="form__item file-input-wrapper">
@@ -265,11 +266,6 @@ const AddCourse = () => {
                     {file ? file.name : "No file chosen"}
                   </span>
                 </div>
-                {formErrors["roster-file"] && (
-                  <div className="add_course--error">
-                    {formErrors["roster-file"]}
-                  </div>
-                )}
               </div>
 
               <div className="form__year-sem--container">
@@ -297,16 +293,6 @@ const AddCourse = () => {
                       );
                     })}
                   </select>
-                  {formErrors["semester"] && (
-                    <div className="add_course--error">
-                      {formErrors["semester"]}
-                    </div>
-                  )}
-                  {formErrors["course-year"] && (
-                    <div className="add_course--error">
-                      {formErrors["course-year"]}
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -322,6 +308,18 @@ const AddCourse = () => {
           </div>
         </div>
       </div>
+      {/* Error Modal */}
+      {showModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Error(s)</h2>
+            {Object.keys(formErrors).map((key) => (
+              <p>{formErrors[key]}</p>
+            ))}
+            <button onClick={handleModalClose}>OK</button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

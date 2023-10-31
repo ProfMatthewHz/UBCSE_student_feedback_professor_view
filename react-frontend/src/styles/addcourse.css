@@ -124,7 +124,7 @@ label {
 }
 
 .form__item--file {
-    margin-bottom: 4px;
+  margin-bottom: 4px;
 }
 
 /* Style for the wrapper */
@@ -134,8 +134,8 @@ label {
 }
 
 .file-input-wrapper div {
-    margin-bottom: 8px;
-    margin-top: 8px;
+  margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 /* Hide the default input */
@@ -167,9 +167,9 @@ label {
 }
 
 .form__year-sem--container {
-    display: flex;
-    align-items: center;
-    width: 60%;
+  display: flex;
+  align-items: center;
+  width: 60%;
 }
 
 .add_course--error {
@@ -203,4 +203,38 @@ label {
 .cancel-btn:hover {
   background-color: #990000;
   color: #fff;
+}
+
+/* Modal overall container */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+  z-index: 1000; /* make sure it appears above other elements */
+}
+
+/* Modal content container */
+.modal-content {
+  width: 400px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal button */
+.modal-content button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #225cb5;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
 }
