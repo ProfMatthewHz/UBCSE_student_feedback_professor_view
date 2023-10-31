@@ -64,6 +64,7 @@
 
 .form__item--label {
   color: #225cb5;
+  margin: 0 !important;
 }
 
 input,
@@ -119,7 +120,7 @@ label {
   display: flex;
   flex-direction: column;
   margin-right: 8px;
-  width: 30%;
+  width: 100%;
 }
 
 .form__item--file {

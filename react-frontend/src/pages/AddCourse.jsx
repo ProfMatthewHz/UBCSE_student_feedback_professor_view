@@ -13,24 +13,24 @@ const AddCourse = () => {
   const [formErrors, setFormErrors] = useState({});
   const formData = new FormData();
   const navigate = useNavigate();
-  const semesters = [
-    {
-      value: "winter",
-      text: "Winter",
-    },
-    {
-      value: "spring",
-      text: "Spring",
-    },
-    {
-      value: "summer",
-      text: "Summer",
-    },
-    {
-      value: "fall",
-      text: "Fall",
-    },
-  ];
+  //   const semesters = [
+  //     {
+  //       value: "winter",
+  //       text: "Winter",
+  //     },
+  //     {
+  //       value: "spring",
+  //       text: "Spring",
+  //     },
+  //     {
+  //       value: "summer",
+  //       text: "Summer",
+  //     },
+  //     {
+  //       value: "fall",
+  //       text: "Fall",
+  //     },
+  //   ];
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -70,6 +70,52 @@ const AddCourse = () => {
     return 2; // Spring
   };
 
+  const getFutureSemesters = () => {
+    const date = new Date();
+    const currentYear = getCurrentYear();
+    const currentSemester = getCurrentSemester();
+    const futureSemesters = [];
+
+    let startSem;
+    if (currentSemester === 1) startSem = "winter";
+    if (currentSemester === 2) startSem = "spring";
+    if (currentSemester === 3) startSem = "summer";
+    if (currentSemester === 4) startSem = "fall";
+    let year = currentYear;
+
+    // Include 4 semesters from the current one
+    for (let i = 0; i < 4; i++) {
+      futureSemesters.push({
+        value: `${startSem}_${year}`,
+        text: `${startSem.charAt(0).toUpperCase() + startSem.slice(1)} ${year}`,
+      });
+      startSem = getNextSemester(startSem);
+      if (startSem === "winter") {
+        year++;
+      }
+    }
+
+    return futureSemesters;
+  };
+
+  const getNextSemester = (currentSemester) => {
+    switch (currentSemester) {
+      case "winter":
+        return "spring";
+      case "spring":
+        return "summer";
+      case "summer":
+        return "fall";
+      case "fall":
+        return "winter";
+      default:
+        return "";
+    }
+  };
+
+  const futureSemesters = getFutureSemesters();
+  const [semesters, setSemesters] = useState(futureSemesters);
+
   // fetch the courses to display on the sidebar
   useEffect(() => {
     fetch(
@@ -100,6 +146,15 @@ const AddCourse = () => {
     if (currSem === 4) setSemester("fall");
   }, []);
 
+  const handleSemesterChange = (e) => {
+    const selectedValue = e.target.value; // For example, "fall_2024"
+    const [newSemester, newYear] = selectedValue.split("_"); // Splits to ["fall", "2024"]
+
+    // Update the states
+    setSemester(newSemester);
+    setYear(parseInt(newYear));
+  };
+
   const sidebar_content = {
     Courses: courses ? courses.map((course) => course.code) : [],
   };
@@ -117,17 +172,9 @@ const AddCourse = () => {
       method: "POST",
       body: formData,
     })
-      .then((res) => {
-        if (
-          res.headers.get("content-type") === "application/json; charset=utf-8"
-        ) {
-          return res.json();
-        } else {
-          return res.text();
-        }
-      })
+      .then((res) => res.text())
       .then((result) => {
-        if (typeof result === "string") {
+        if (typeof result === "string" && result !== "") {
           try {
             const parsedResult = JSON.parse(result);
             console.log("Parsed as JSON object: ", parsedResult);
@@ -227,11 +274,13 @@ const AddCourse = () => {
 
               <div className="form__year-sem--container">
                 <div className="form__item form__item--select">
-                  <label className="form__item--label">Course Semester</label>
+                  <label className="form__item--label">
+                    Course Semester and Year
+                  </label>
                   <select
-                    value={semester}
+                    value={`${semester}_${year}`}
                     className="add-course--select"
-                    onChange={(e) => setSemester(e.target.value)}
+                    onChange={handleSemesterChange}
                     id="semester"
                     name="semester"
                     required
@@ -241,7 +290,7 @@ const AddCourse = () => {
                         <option
                           key={sem.value}
                           value={sem.value}
-                          selected={sem.value === semester}
+                          selected={sem.value === `${semester}_${year}`}
                         >
                           {sem.text}
                         </option>
@@ -253,19 +302,6 @@ const AddCourse = () => {
                       {formErrors["semester"]}
                     </div>
                   )}
-                </div>
-
-                <div className="form__item form__item--year">
-                  <label className="form__item--label">Course Year</label>
-                  <input
-                    type="number"
-                    name="course-year"
-                    id="course-year"
-                    placeholder={year}
-                    value={year}
-                    onChange={(e) => setYear(e.target.value)}
-                    required
-                  />
                   {formErrors["course-year"] && (
                     <div className="add_course--error">
                       {formErrors["course-year"]}
@@ -276,7 +312,7 @@ const AddCourse = () => {
 
               <div className="form__submit--container">
                 <Link to="/" className="cancel-btn">
-                    Cancel
+                  Cancel
                 </Link>
                 <button type="submit" className="form__submit">
                   + Add Course
