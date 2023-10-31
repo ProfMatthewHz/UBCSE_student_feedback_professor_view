@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SideBar from "../Components/Sidebar";
 import "../styles/addcourse.css";
 
@@ -275,6 +275,9 @@ const AddCourse = () => {
               </div>
 
               <div className="form__submit--container">
+                <Link to="/" className="cancel-btn">
+                    Cancel
+                </Link>
                 <button type="submit" className="form__submit">
                   + Add Course
                 </button>

@@ -50,19 +50,6 @@
   justify-content: end;
 }
 
-.form__submit {
-  background-color: #6da04b;
-  border: 1px solid #6da04b;
-  border-radius: 5px;
-  color: #fff;
-  font-weight: 500;
-  width: 100%;
-  max-width: 200px;
-  padding: 9px 18px;
-  font-size: 16px;
-  transition: all 200ms ease;
-}
-
 .form__submit:hover {
   border-color: #6da04b;
   color: #6da04b;
@@ -186,4 +173,33 @@ label {
 
 .add_course--error {
   color: #990000;
+}
+
+.cancel-btn {
+  background-color: #fff;
+  border: 1px solid #990000;
+  color: #990000;
+  text-decoration: none;
+  margin-right: 12px;
+  text-align: center;
+}
+
+.form__submit {
+  background-color: #6da04b;
+  border: 1px solid #6da04b;
+  color: #fff;
+}
+
+.cancel-btn,
+.form__submit {
+  border-radius: 5px;
+  font-weight: 500;
+  padding: 9px 18px;
+  font-size: 16px;
+  transition: all 200ms ease;
+}
+
+.cancel-btn:hover {
+  background-color: #990000;
+  color: #fff;
 }

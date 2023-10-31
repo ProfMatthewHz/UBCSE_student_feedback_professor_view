@@ -51,7 +51,7 @@ function SideBar(props){
                 <div className="no-content">No {title}</div>
               )}
             </div>
-            {props.route === "/" ? <Link to="/course/add">+ Add Course</Link> : null}
+            {props.route === "/" ? <Link className="add_course-btn" to="/course/add">+ Add Course</Link> : null}
           </div>
         );
       })}
