@@ -18,7 +18,7 @@ $con = connectToDatabase();
 //$instructor_id = $_SESSION['id'];
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $instructors = array();
 
     // Fetch all instructors
@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         while ($row = mysqli_fetch_assoc($result)) {
             // Create a sub-array for each instructor with their name and email
             $instructor = array(
+                $row['id'],
                 $row['name'],
                 $row['email']
                 // Add other instructor details as needed
