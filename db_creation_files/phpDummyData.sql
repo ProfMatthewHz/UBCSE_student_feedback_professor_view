@@ -102,7 +102,13 @@ INSERT INTO `students` (`id`, `name`, `email`) VALUES
 (50243488, 'Student Eight', 'student8@buffalo.edu'),
 (50243489, 'Student Nine', 'student9@buffalo.edu'),
 (50243490, 'Student Ten', 'student10@buffalo.edu'),
-(50243491, 'Student Eleven', 'student11@buffalo.edu');
+(50243491, 'Student Eleven', 'student11@buffalo.edu'),
+(50243492, 'Student Manager', 'manager@buffalo.edu'),
+(50243493, 'Team Member One', 'teammember1@buffalo.edu'),
+(50243494, 'Team Member Two', 'teammember2@buffalo.edu'),
+(50243495, 'Team Member Three', 'teammember3@buffalo.edu'),
+(50243496, 'Team Member Four', 'teammember4@buffalo.edu'),
+;
 
 INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rubric_id`, `survey_type_id`) VALUES
 (1, 10115, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #2', 1, 1),
