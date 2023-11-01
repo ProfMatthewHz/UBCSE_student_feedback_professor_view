@@ -14,15 +14,9 @@ const AddCourse = () => {
   const [formErrors, setFormErrors] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [instructors, setInstructors] = useState([]);
+  const [allInstructors, setAllInstructors] = useState([]);
   const formData = new FormData();
   const navigate = useNavigate();
-  const allInstructors = [
-    { label: "First", value: 1 },
-    { label: "Second", value: 2 },
-    { label: "Third", value: 3 },
-    { label: "Fourth", value: 4 },
-    { label: "Fifth", value: 5 },
-  ];
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -136,6 +130,32 @@ const AddCourse = () => {
     if (currSem === 2) setSemester("spring");
     if (currSem === 3) setSemester("summer");
     if (currSem === 4) setSemester("fall");
+
+    // Fetch all instructors
+    fetch(
+      "http://localhost/StudentSurvey/backend/instructor/getInstructors.php",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        let fetchedInstructors = [];
+        result.map((instructor) => {
+          let currentInstructor = {
+            label: instructor[1],
+            value: instructor[0],
+          };
+          fetchedInstructors.push(currentInstructor)
+        });
+        setAllInstructors(fetchedInstructors)
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   const handleSemesterChange = (e) => {
@@ -198,10 +218,6 @@ const AddCourse = () => {
   const handleModalClose = () => {
     setShowModal(false); // Close the modal
   };
-
-  useEffect(() => {
-    console.log(instructors);
-  }, [instructors]);
 
   return (
     <>
