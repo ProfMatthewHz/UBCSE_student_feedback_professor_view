@@ -13,8 +13,9 @@ const AddCourse = () => {
   const [year, setYear] = useState(null);
   const [formErrors, setFormErrors] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const [instructors, setInstructors] = useState([]);
-  const [allInstructors, setAllInstructors] = useState([]);
+  const [instructors, setInstructors] = useState([]); // array of instructor objects selected including their id and name
+  const [allInstructors, setAllInstructors] = useState([]); // array of all instructors in the database
+  const [selectedInstructors, setSelectedInstructors] = useState([]); // array of selected instructor ids to send to backend
   const formData = new FormData();
   const navigate = useNavigate();
 
@@ -149,14 +150,23 @@ const AddCourse = () => {
             label: instructor[1],
             value: instructor[0],
           };
-          fetchedInstructors.push(currentInstructor)
+          fetchedInstructors.push(currentInstructor);
         });
-        setAllInstructors(fetchedInstructors)
+        setAllInstructors(fetchedInstructors);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
+
+  // Everytime an instructor is selected/deselected the selectedInstructors state updates
+  useEffect(() => {
+    let instructorIds = [];
+    instructors.map((instructor) => {
+      instructorIds.push(+instructor.value);
+    });
+    setSelectedInstructors(instructorIds);
+  }, [instructors]);
 
   const handleSemesterChange = (e) => {
     const selectedValue = e.target.value; // For example, "fall_2024"
@@ -179,6 +189,7 @@ const AddCourse = () => {
     formData.append("course-year", year);
     formData.append("roster-file", file); // Assuming `file` is a File object
     formData.append("semester", semester);
+    formData.append("additional-instructors", selectedInstructors)
 
     fetch("http://localhost/StudentSurvey/backend/instructor/courseAdd.php", {
       method: "POST",
