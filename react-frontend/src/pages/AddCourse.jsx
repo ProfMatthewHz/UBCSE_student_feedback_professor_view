@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SideBar from "../Components/Sidebar";
 import "../styles/addcourse.css";
+import { Select } from "../Components/Select";
 
 const AddCourse = () => {
   const [courses, setCourses] = useState([]);
@@ -12,26 +13,16 @@ const AddCourse = () => {
   const [year, setYear] = useState(null);
   const [formErrors, setFormErrors] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [instructors, setInstructors] = useState([]);
   const formData = new FormData();
   const navigate = useNavigate();
-  //   const semesters = [
-  //     {
-  //       value: "winter",
-  //       text: "Winter",
-  //     },
-  //     {
-  //       value: "spring",
-  //       text: "Spring",
-  //     },
-  //     {
-  //       value: "summer",
-  //       text: "Summer",
-  //     },
-  //     {
-  //       value: "fall",
-  //       text: "Fall",
-  //     },
-  //   ];
+  const allInstructors = [
+    { label: "First", value: 1 },
+    { label: "Second", value: 2 },
+    { label: "Third", value: 3 },
+    { label: "Fourth", value: 4 },
+    { label: "Fifth", value: 5 },
+  ];
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -208,6 +199,10 @@ const AddCourse = () => {
     setShowModal(false); // Close the modal
   };
 
+  useEffect(() => {
+    console.log(instructors);
+  }, [instructors]);
+
   return (
     <>
       <SideBar route="/" content_dictionary={sidebar_content} />
@@ -294,6 +289,18 @@ const AddCourse = () => {
                     })}
                   </select>
                 </div>
+              </div>
+
+              <div className="form__item">
+                <label className="form__item--label">
+                  Additional Instructor(s)
+                </label>
+                <Select
+                  multiple
+                  options={allInstructors}
+                  value={instructors}
+                  onChange={(o) => setInstructors(o)}
+                />
               </div>
 
               <div className="form__submit--container">
