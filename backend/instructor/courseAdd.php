@@ -39,6 +39,8 @@ $semester = NULL;
 $course_year = NULL;
 $roster_file = NULL;
 
+
+
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
@@ -48,6 +50,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "Bad Request: Missing parmeters.";
     exit();
   }
+
+
+
 
   // check CSRF token
   // $csrf_token = getCSRFToken($con, $instructor_id);
@@ -95,12 +100,12 @@ $currentMonthA = date('n');
 $currentMonth = MONTH_MAP_SEMESTER[$currentMonth];
 $currentSemesterMonth = SEMESTER_MAP[$currentMonth];
 
-print_r($currentYear . " = Current Year.        ");
+//print_r($currentYear . " = Current Year.        ");
 $month = date('m');
 $ActualMonth = MONTH_MAP_SEMESTER[$month];
 $currentActualMonth = SEMESTER_MAP_REVERSE[$ActualMonth];
-print($currentActualMonth . "  = Current Actual MOnth.   ");
-print_r($semester . "  = Current Semester inputted.  ");
+//print($currentActualMonth . "  = Current Actual MOnth.   ");
+//print_r($semester . "  = Current Semester inputted.  ");
 //print_r($currentSemesterMonth);
 
 // define("SEMESTER_MAP", array('winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4));
@@ -111,12 +116,12 @@ print_r($semester . "  = Current Semester inputted.  ");
 // so a previous course can not be added. 
 if ($course_year < $currentYear) {
     $errorMsg['course-year'] = 'Course year cannot be in the past.';
-    print_r("Course year cannot be in the past");
+    //print_r("Course year cannot be in the past");
 } else if ($course_year == $currentYear) {
     if ($semester != $ActualMonth) {
-        print_r($semester. " and " . $ActualMonth);
-        $errorMsg['semester'] = 'Cannot add a course after term is done';
-        print_r("Erorr Wrong semester");
+        //print_r($semester. " and " . $ActualMonth);
+        $errorMsg['semester'] = 'incorrect semester';
+       //print_r("Erorr Wrong semester");
     } 
 }
   
@@ -158,16 +163,19 @@ if ($course_year < $currentYear) {
 
             // Add the instructor to the course
             // look into making this a loop if you are receiving an array 
+            
             addInstructor($con, $course_id, $instructor_id);
 
             // Upload the course roster for later use
             addStudents($con, $course_id, $names_emails['ids']);
 
             // redirect to course page with message
-            $_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);
+            //$_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);
+            echo "Course added successfully";
 
-            http_response_code(302);
-            header("Location: ".INSTRUCTOR_HOME."surveys.php");
+
+            //http_response_code(302);
+            //header("Location: ".INSTRUCTOR_HOME."surveys.php");
             exit();
 
           } else {
