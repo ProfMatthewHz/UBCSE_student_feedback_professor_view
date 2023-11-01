@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     $row['id'],
                     $row['name'],
                     $row['email']
+                    
                 );
                 $instructors[] = $instructor;
             }
