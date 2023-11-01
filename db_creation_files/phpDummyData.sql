@@ -63,7 +63,10 @@ INSERT INTO `reviews` (`id`, `survey_id`, `reviewer_id`, `team_id`, `reviewed_id
 INSERT INTO `rubrics` (`id`, `description`) VALUES
 (1, 'This is rubric id # one'),
 (2, 'This is rubric id # two'),
-(3, 'This is rubric id # three');
+(3, 'This is rubric id # three')
+(4, 'This is rubric id # four')
+(5, 'This is rubric id # five')
+;
 
 INSERT INTO `rubric_responses` (`topic_id`, `rubric_score_id`, `response`) VALUES
 (0, 0, 'Hello this was a decent rubric'),
@@ -88,7 +91,18 @@ INSERT INTO `scores` (`eval_id`, `topic_id`, `rubric_score_id`) VALUES
 INSERT INTO `students` (`id`, `name`, `email`) VALUES
 (50243400, 'Smitty Johnson', ''),
 (50243479, 'Jim Jones', 'jjones@buffalo.edu'),
-(50243480, 'John Eggert', 'jeggert@buffalo.edu');
+(50243480, 'John Eggert', 'jeggert@buffalo.edu'),
+(50243481, 'Student One', 'student1@buffalo.edu'),
+(50243482, 'Student Two', 'student2@buffalo.edu'),
+(50243483, 'Student Three', 'student3@buffalo.edu'),
+(50243484, 'Student Four', 'student4@buffalo.edu'),
+(50243485, 'Student Five', 'student5@buffalo.edu'),
+(50243486, 'Student Six', 'student6@buffalo.edu'),
+(50243487, 'Student Seven', 'student7@buffalo.edu'),
+(50243488, 'Student Eight', 'student8@buffalo.edu'),
+(50243489, 'Student Nine', 'student9@buffalo.edu'),
+(50243490, 'Student Ten', 'student10@buffalo.edu'),
+(50243491, 'Student Eleven', 'student11@buffalo.edu');
 
 INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rubric_id`, `survey_type_id`) VALUES
 (1, 10115, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #2', 1, 1),

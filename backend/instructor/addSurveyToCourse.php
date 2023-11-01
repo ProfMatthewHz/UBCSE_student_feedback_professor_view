@@ -62,7 +62,7 @@ $rubrics = getRubrics($con);
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
-$errorMsg['']
+
 
 // set flags
 $course_id = NULL;
@@ -90,7 +90,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
-  if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || !isset($_POST['start-date']) || !isset($_POST['start-time']) || !isset($_POST['end-date']) || !isset($_POST['end-time']) || !isset($_POST['csrf-token']) ||
+  if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || !isset($_POST['start-date']) || !isset($_POST['start-time']) || !isset($_POST['end-date']) || !isset($_POST['end-time']) || // !isset($_POST['csrf-token']) ||
       !isset($_POST['course-id']) || !isset($_POST['survey-name']) || !isset($_POST['rubric-id']))
   {
     http_response_code(400);
