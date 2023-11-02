@@ -35,33 +35,22 @@ if (!isset($_SESSION['id'])) {
 }
 $instructor_id = $_SESSION['id'];
 
-// store information about courses as array of array
-$courses = array();
 
 // Find out the term that we are currently in
 $month = idate('m');
 $term = MONTH_MAP_SEMESTER[$month];
 $year = idate('Y');
 
-// get information about the courses
-$term_courses = getInstructorTermCourses($con, $instructor_id, $term, $year);
-
-// Only show courses from the current term and future terms
-foreach ($term_courses as $row) {
-    $course_info = array();
-    $course_info['code'] = $row['code'];
-    $course_info['name'] = $row['name'];
-    $course_info['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
-    $course_info['year'] = $row['year'];
-    $course_info['id'] = $row['id'];
-    $courses[] = $course_info;
-}
-
 // store information about rubrics as array of array
 $rubrics = getRubrics($con);
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
+
+# set up json response
+$response = array();
+$response['data'] = array();
+$response['errors'] = array();
 
 
 // set flags
@@ -79,19 +68,34 @@ $pm_mult = 1;
 if($_SERVER['REQUEST_METHOD'] == 'GET') {
   // respond not found on no query string parameter
   if (isset($_GET['course'])) {
+
     $course_id = intval($_GET['course']);
+    
+    if (!isCourseInstructor($con, $course_id, $instructor_id)){
+      http_response_code(400);
+      echo "You do not teach this course!";
+      exit();
+    }
+
+
   } else {
     http_response_code(400);
     echo "Bad Request: Missing parameters.";
     exit();
   }
+
+  echo "Success! This is the page to add a suvey to course " . $course_id . "<br>";
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
-  if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || !isset($_POST['start-date']) || !isset($_POST['start-time']) || !isset($_POST['end-date']) || !isset($_POST['end-time']) || // !isset($_POST['csrf-token']) ||
-      !isset($_POST['course-id']) || !isset($_POST['survey-name']) || !isset($_POST['rubric-id']))
+  if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || 
+      !isset($_POST['start-date']) || !isset($_POST['start-time']) || 
+      !isset($_POST['end-date']) || !isset($_POST['end-time']) || 
+      // !isset($_POST['csrf-token']) || 
+      !isset($_POST['course-id']) || 
+      !isset($_POST['survey-name']) || !isset($_POST['rubric-id']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parameters.";
@@ -99,13 +103,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check CSRF token
-  $csrf_token = getCSRFToken($con, $instructor_id);
-  if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['pairing-file']['tmp_name']))
-  {
-    http_response_code(403);
-    echo "Forbidden: Incorrect parameters.";
-    exit();
-  }
+  // $csrf_token = getCSRFToken($con, $instructor_id);
+  // if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['pairing-file']['tmp_name']))
+  // {
+  //   http_response_code(403);
+  //   echo "Forbidden: Incorrect parameters.";
+  //   exit();
+  // }
 
   // get the name of this survey
   $survey_name = trim($_POST['survey-name']);
@@ -120,11 +124,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   // check rubric is not empty
   $rubric_id = $_POST['rubric-id'];
   $rubric_id = intval($rubric_id);
-  if ($rubric_id === 0) {
+  if (($rubric_id === 0) or (!array_key_exists($rubric_id, $rubrics))){
     $errorMsg['rubric-id'] = "Please choose a valid rubric.";
-  } else if (!array_key_exists($rubric_id, $rubrics)) {
-    $errorMsg['rubric-id'] = "Please choose a valid rubric.";
-  }
+  } 
 
   if (!isCourseInstructor($con, $course_id, $instructor_id)) {
     $errorMsg['course-id'] = "Please choose a valid course.";
@@ -223,6 +225,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
 
     // catch errors or continue parsing the file
+
+
     if (!$file_handle) {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
@@ -233,17 +237,39 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       fclose($file_handle);
 
       // check for any errors
-      if (!empty($pairings['error'])) {
+      if (!empty($file_data['error'])) { #
         $errorMsg['pairing-file'] = $file_data['error'];
+      } 
+      
+      if (!empty($errorMsg)){
+        
+        $response['errors'] = $errorMsg;
+
       } else if (empty($errorMsg)) {
+
+        $surveyInfo = array();
+
+        $surveyInfo["survey_course_id"] = $course_id;
+        $surveyInfo["survey_file"] = $file_data['rows'];
+        $surveyInfo['survey_students'] = $file_data['individuals'];
+        $surveyInfo["survey_data"] = array(
+          'start' => $s, 
+          'end' => $e, 
+          'pairing_mode' => $pairing_mode, 
+          'multiplier' => $pm_mult, 
+          'rubric' => $rubric_id, 
+          'name' => $survey_name);
+        
+        $response['data'] = $surveyInfo;
         // Save the data we will need for the confirmation page
-        $_SESSION["survey_course_id"] = $course_id;
-        $_SESSION["survey_file"] = $file_data['rows'];
-        $_SESSION["survey_students"] = $file_data['individuals'];
-        $_SESSION["survey_data"] = array('start' => $s, 'end' => $e, 'pairing_mode' => $pairing_mode, 'multiplier' => $pm_mult, 'rubric' => $rubric_id, 'name' => $survey_name);
-        http_response_code(302);
-        header("Location: ".INSTRUCTOR_HOME."surveyConfirm.php");
-        exit();
+        
+        // $_SESSION["survey_course_id"] = $course_id;
+        // $_SESSION["survey_file"] = $file_data['rows'];
+        // $_SESSION["survey_students"] = $file_data['individuals'];
+        // $_SESSION["survey_data"] = array('start' => $s, 'end' => $e, 'pairing_mode' => $pairing_mode, 'multiplier' => $pm_mult, 'rubric' => $rubric_id, 'name' => $survey_name);
+        // http_response_code(302);
+        // header("Location: ".INSTRUCTOR_HOME."surveyConfirm.php");
+        // exit();
         // finally add the pairings to the database if no other error message were set so far
         // first add the survey details to the database
         // if (empty($errorMsg)) {
@@ -258,9 +284,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       }
     }
   }
+
+  header("Content-Type: application/json; charset=UTF-8");
+
+  // $response['errors'] = $errorMsg;
+  $responseJSON = json_encode($response);
+
+  echo $responseJSON;
+  
 }
 if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
   $rubric_id = array_key_first($rubrics);
 }
-// $csrf_token = createCSRFToken($con, $instructor_id);
+$csrf_token = createCSRFToken($con, $instructor_id);
 ?>

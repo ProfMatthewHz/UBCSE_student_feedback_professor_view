@@ -63,10 +63,9 @@ INSERT INTO `reviews` (`id`, `survey_id`, `reviewer_id`, `team_id`, `reviewed_id
 INSERT INTO `rubrics` (`id`, `description`) VALUES
 (1, 'This is rubric id # one'),
 (2, 'This is rubric id # two'),
-(3, 'This is rubric id # three')
-(4, 'This is rubric id # four')
-(5, 'This is rubric id # five')
-;
+(3, 'This is rubric id # three'),
+(4, 'This is rubric id # four'),
+(5, 'This is rubric id # five');
 
 INSERT INTO `rubric_responses` (`topic_id`, `rubric_score_id`, `response`) VALUES
 (0, 0, 'Hello this was a decent rubric'),
@@ -111,8 +110,7 @@ INSERT INTO `students` (`id`, `name`, `email`) VALUES
 (50243497, 'Student Manager Two', 'manager2@buffalo.edu'),
 (50243498, 'Team Two Member One', 'team2_member1@buffalo.edu'),
 (50243499, 'Team Two Member Two', 'team2_member2@buffalo.edu'),
-(50243500, 'Team Two Member Three', 'team2_member3@buffalo.edu'),
-;
+(50243500, 'Team Two Member Three', 'team2_member3@buffalo.edu');
 
 INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rubric_id`, `survey_type_id`) VALUES
 (1, 10115, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #2', 1, 1),
