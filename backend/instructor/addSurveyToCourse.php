@@ -84,7 +84,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     exit();
   }
 
-  echo "Success! This is the page to add a suvey to course " . $course_id . "<br>";
+  echo "Success! This is the page to add a survey to course " . $course_id . "<br>";
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -258,7 +258,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           'pairing_mode' => $pairing_mode, 
           'multiplier' => $pm_mult, 
           'rubric' => $rubric_id, 
-          'name' => $survey_name);
+          'name' => $survey_name
+        );
         
         $response['data'] = $surveyInfo;
         // Save the data we will need for the confirmation page
