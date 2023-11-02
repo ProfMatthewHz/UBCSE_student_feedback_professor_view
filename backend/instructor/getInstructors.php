@@ -27,14 +27,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     if ($result) {
         while ($row = mysqli_fetch_assoc($result)) {
-            // Create a sub-array for each instructor with their name and email
-            $instructor = array(
-                $row['id'],
-                $row['name'],
-                $row['email']
-                // Add other instructor details as needed
-            );
-            $instructors[] = $instructor;
+            if($row['id'] == $_SESSION['id']){
+                continue;
+            }else {
+                $instructor = array(
+                    $row['id'],
+                    $row['name'],
+                    $row['email']
+                    
+                );
+                $instructors[] = $instructor;
+            }
         }
         // Output the array of arrays for instructor details
         header('Content-Type: application/json');
