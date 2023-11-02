@@ -7,7 +7,7 @@ function SideBar(props){
 
   const [activeButton, setActiveButton] = useState(false);
   const [dropdown_value, setDropDownValue] = useState('');
-  const sidebar_items = Object.values(props.content_dictionary["Courses"])
+  const sidebar_items = props.content_dictionary["Courses"] ? Object.values(props.content_dictionary["Courses"]) : []
   const [termContents, setTermContents] = useState([]); 
 
 
@@ -38,7 +38,7 @@ function SideBar(props){
   }, [sidebar_items]);
 
   useEffect(() => {
-    if (props.route !== "/") {
+    if (props.route === "/history") {
       if (!dropdown_value) {
         props.updateCurrentTerm('');
       } else if (dropdown_value && props.content_dictionary["Terms"][dropdown_value]) {
@@ -102,7 +102,7 @@ function SideBar(props){
               )
               }
             </div>
-            <button>+ Add Course</button> 
+            {props.route === '/' ? <button>+ Add Course</button> : null}
           </div>
           )
         )
