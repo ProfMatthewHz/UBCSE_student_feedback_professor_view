@@ -1,5 +1,5 @@
 <?php
-define("SITE_HOME","http://localhost/StudentSurvey/backend");
+define("SITE_HOME","http://localhost/StudentSurvey/backend/");
 define("INSTRUCTOR_HOME","http://localhost/StudentSurvey/backend/instructor/");
 define("SESSIONS_SALT", "session-salt");
 define("PBKDF2_ITERS", 50000);

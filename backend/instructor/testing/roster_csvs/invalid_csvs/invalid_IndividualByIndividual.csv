@@ -1,0 +1,11 @@
+s1@buffalo.edu,s2@buffalo.edu,s3@buffalo.edu
+s2@buffalo.edu
+s2@buffalo.edu,,
+s100@buffalo.edu,s1@buffalo.edu
+s1@buffalo.edu,s100@buffalo.edu
+s100@buffalo.edu,fake_s200@buffalo.edu
+s4@buffalo.ed,s3@buffalo.ed
+
+s3@buffalo.edu,s4@buffalo.edu
+s5@buffalo.edu,s6@buffalo.edu
+s6@buffalo.edu,s5@buffalo.edu
