@@ -38,6 +38,7 @@ $course_name = NULL;
 $semester = NULL;
 $course_year = NULL;
 $roster_file = NULL;
+$additional_instructors = NULL;
 
 
 
@@ -45,7 +46,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
   if (!isset($_POST['course-code']) || !isset($_POST['course-name']) || !isset($_POST['course-year']) || !isset($_FILES['roster-file'])  ||
-      !isset($_POST['semester'])) {
+      !isset($_POST['semester']) || !isset($_POST['additional-instructors'])) {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
     exit();
@@ -93,7 +94,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   } else if(!ctype_digit($course_year) || strlen($course_year) != 4) {
     $errorMsg["course-year"] = "Please enter a valid 4-digit year.";
   }
-  // Fetch current year and month
+
+  // additonal instructors will be  incoming as an array of instructor ids.
+  $additional_instructors = $_POST['additional-instructors'];
+
+  
+
+  // check for valid semester and year
+
+  
+
 
 $currentYear = date('Y');
 $currentMonthA = date('n');
@@ -161,11 +171,16 @@ if ($course_year < $currentYear) {
             // Create the course in the database
             $course_id = addCourse($con, $course_code, $course_name, $semester, $course_year);
 
-            // Add the instructor to the course
-            // look into making this a loop if you are receiving an array 
             
-            addInstructor($con, $course_id, $instructor_id);
-
+              //loop through additional instructors and add them to the course
+              if(!empty($additional_instructors)){
+                foreach($additional_instructors as $instructor){
+                  addInstructor($con,$course_id, $instructor);
+                }
+              }
+              addInstructor($con,$course_id, $instructor_id);
+            
+          
             // Upload the course roster for later use
             addStudents($con, $course_id, $names_emails['ids']);
 
