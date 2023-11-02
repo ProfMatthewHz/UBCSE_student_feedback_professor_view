@@ -1,3 +1,7 @@
+.containerOfCourses {
+  padding-bottom: 50px;
+}
+
 .termContainer {
   display: flex;
   justify-content: center;
@@ -7,7 +11,8 @@
 .termContent {
   color: #154185;
   max-width: 100vw;
-  width: 80%;
+  width: 100%;
+  padding-left: 50px;
   margin-top: 40px;
   margin-bottom: -20px;
   overflow-y: auto;
