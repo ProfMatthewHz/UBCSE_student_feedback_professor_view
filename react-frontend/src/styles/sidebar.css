@@ -45,12 +45,12 @@
   overflow-y: auto;
 }
 
-.sidebar-list ::-webkit-scrollbar {
+.sidebar-list::-webkit-scrollbar {
   opacity: 100%;
   width: 5px;
 }
 
-.sidebar-list ::-webkit-scrollbar-thumb {
+.sidebar-list::-webkit-scrollbar-thumb {
   background-color: #ffffff;
   border-radius: 15px;
 }

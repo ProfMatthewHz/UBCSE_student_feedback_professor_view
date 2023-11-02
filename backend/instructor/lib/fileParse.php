@@ -171,8 +171,8 @@ function processReviewFile($con, $require_pairs, $file_handle) {
       continue;
     }
     // Check for an incorrect number of entries on the current line
-    if ( $require_pairs && (count($line_text) > 2) ) {
-      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain a proper review assignment';
+    if ( $require_pairs && (count($line_text) !== 2) ) {
+      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain a proper review assignment<br>';
     } else {
       // Verify the entries on the current line
       $line_data = getIdsFromEmails($con, $line_num, $line_text);

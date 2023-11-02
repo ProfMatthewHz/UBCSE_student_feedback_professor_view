@@ -153,7 +153,7 @@ const Course = ({ course, page }) => {
           {page === "home" ?
           <div className="courseHeader-btns">
             <button className="btn add-btn" onClick = {openModal}>+ Add Survey</button>
-            <button className="btn update-btn">Update Roster</button>
+            {/*<button className="btn update-btn">Update Roster</button>*/}
           </div>
             : null
           }
@@ -266,7 +266,7 @@ const Course = ({ course, page }) => {
                     Ends: {survey.end_date}
                   </td>
                   <td>{survey.completion}</td>
-                  <td><button>Actions</button></td>
+                  {/*<td><button>Actions</button></td>*/}
                 </tr>
               ))}
             </tbody>
