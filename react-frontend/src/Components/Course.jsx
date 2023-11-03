@@ -153,7 +153,7 @@ const Course = ({ course, page }) => {
           {page === "home" ?
           <div className="courseHeader-btns">
             <button className="btn add-btn" onClick = {openModal}>+ Add Survey</button>
-            {/*<button className="btn update-btn">Update Roster</button>*/}
+            <button className="btn update-btn">Update Roster</button>
           </div>
             : null
           }
