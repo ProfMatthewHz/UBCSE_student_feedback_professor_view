@@ -13,6 +13,7 @@ const Course = ({ course, page }) => {
   const [rosterFile, setRosterFile] = useState(null);
   const [updateRosterOption, setUpdateRosterOption] = useState("replace");
   const [updateRosterError, setUpdateRosterError] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [showToast, setShowToast] = useState(false)
   const [rubricNames, setNames] = useState([]);
   //const [rubricIDandDescriptions, setIDandDescriptions] = useState([]);
@@ -79,6 +80,11 @@ const Course = ({ course, page }) => {
     setModalIsOpen(false);
   };
 
+  const handleErrorModalClose = () => {
+    setShowErrorModal(false) // close the error modal
+    setShowUpdateModal(true) // open the update modal again
+  }
+
   const getInitialStateRubric = () => {
     const value = "Select Rubric";
     return value;
@@ -143,6 +149,8 @@ const Course = ({ course, page }) => {
                   "Make sure each row contains an email in the first column, first name in the second column, and last name in the third column";
               }
               setUpdateRosterError(parsedResult["error"])
+              setShowUpdateModal(false) // close the update modal
+              setShowErrorModal(true) // show the error modal
             }else{
               // no error
               // Roster is valid to update, so we can close the pop-up modal
@@ -520,6 +528,17 @@ const Course = ({ course, page }) => {
           </div>
         </div>
       )}
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Error(s)</h2>
+            <p>{updateRosterError}</p>
+            <button onClick={handleErrorModalClose}>OK</button>
+          </div>
+        </div>
+      )}
+
       <Toast
         message={`Roster for ${course.code} ${course.name} successfully updated!`}
         isVisible={showToast}
