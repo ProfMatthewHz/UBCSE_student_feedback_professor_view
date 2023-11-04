@@ -12,7 +12,7 @@ const Course = ({ course, page }) => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [rosterFile, setRosterFile] = useState(null);
   const [updateRosterOption, setUpdateRosterOption] = useState("replace");
-  const [updateRosterErrors, setUpdateRosterErrors] = useState({});
+  const [updateRosterError, setUpdateRosterError] = useState("");
   const [showToast, setShowToast] = useState(false)
   const [rubricNames, setNames] = useState([]);
   //const [rubricIDandDescriptions, setIDandDescriptions] = useState([]);
@@ -133,7 +133,7 @@ const Course = ({ course, page }) => {
           try {
             const parsedResult = JSON.parse(result);
             console.log("Parsed as JSON object: ", parsedResult);
-            if (parsedResult.hasOwnProperty("error")) {
+            if (parsedResult.hasOwnProperty("error") && parsedResult["error"] !== "") {
               if (
                 parsedResult["error"].includes(
                   "does not contain an email, first name, and last name"
@@ -142,16 +142,17 @@ const Course = ({ course, page }) => {
                 parsedResult["error"] =
                   "Make sure each row contains an email in the first column, first name in the second column, and last name in the third column";
               }
+              setUpdateRosterError(parsedResult["error"])
+            }else{
+              // no error
+              // Roster is valid to update, so we can close the pop-up modal
+              setShowUpdateModal(false);
+              // show toast on success
+              setShowToast(true)
             }
-            setFormErrors(parsedResult);
           } catch (e) {
             console.log("Failed to parse JSON: ", e);
           }
-        } else {
-          // Roster is valid to update, so we can close the pop-up modal
-          setShowUpdateModal(false);
-          // show toast on success
-          setShowToast(true)
         }
       })
       .catch((err) => {
