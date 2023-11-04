@@ -175,8 +175,9 @@ if ($course_year < $currentYear) {
               //loop through additional instructors and add them to the course
               if(!empty($additional_instructors)){
                 foreach($additional_instructors as $instructor){
-                  addInstructor($con,$course_id, $instructor);
+                  addInstructor($con,$course_id, $instructor); 
                 }
+                echo "Instructors added successfully\n";
               }
               addInstructor($con,$course_id, $instructor_id);
             
@@ -188,6 +189,9 @@ if ($course_year < $currentYear) {
             //$_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);
             echo "Course added successfully";
 
+            foreach($instructor_id as $instructor){
+              echo $instructor . "\n";
+            }
 
             //http_response_code(302);
             //header("Location: ".INSTRUCTOR_HOME."surveys.php");
