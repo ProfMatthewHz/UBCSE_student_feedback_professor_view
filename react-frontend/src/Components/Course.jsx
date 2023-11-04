@@ -17,6 +17,8 @@ const Course = ({ course, page }) => {
   const [pairingModesFull, setPairingModesFull] = useState([]);
   const [pairingModesNames, setPairingModesNames] = useState([]);
 
+  const formData = new FormData()
+
   const fetchRubrics = () => {
     fetch("http://localhost/StudentSurvey/backend/instructor/rubricsGet.php", {
       method: "GET",
@@ -115,7 +117,43 @@ const Course = ({ course, page }) => {
   const handleUpdateRosterSubmit = (e) => {
     e.preventDefault();
 
-    setShowUpdateModal(false);
+    formData.append('roster-file', rosterFile)
+    formData.append('course-id', course.id)
+    formData.append('update-type', updateRosterOption)
+
+    fetch("http://localhost/StudentSurvey/backend/instructor/rosterUpdate.php", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.text())
+      .then((result) => {
+        if (typeof result === "string" && result !== "") {
+          try {
+            const parsedResult = JSON.parse(result);
+            console.log("Parsed as JSON object: ", parsedResult);
+            if (parsedResult.hasOwnProperty("error")) {
+              if (
+                parsedResult["error"].includes(
+                  "does not contain an email, first name, and last name"
+                )
+              ) {
+                parsedResult["error"] =
+                  "Make sure each row contains an email in the first column, first name in the second column, and last name in the third column";
+              }
+            }
+            setFormErrors(parsedResult);
+          } catch (e) {
+            console.log("Failed to parse JSON: ", e);
+          }
+        } else {
+          // Roster is valid to update, so we can close the pop-up modal
+          setShowUpdateModal(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
   };
 
   //MODAL CODE
