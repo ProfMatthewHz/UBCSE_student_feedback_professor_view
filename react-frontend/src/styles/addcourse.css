@@ -67,8 +67,7 @@
   margin: 0 !important;
 }
 
-input,
-textarea {
+.add__form .form__item input {
   width: 100%;
   background-color: #fff;
   color: #000;
@@ -79,18 +78,15 @@ textarea {
   transition: all 250ms ease;
 }
 
-input::placeholder,
-textarea::placeholder {
+.add__form .form__item input::placeholder {
   color: #666666;
 }
 
-input:hover,
-textarea:hover {
+.add__form .form__item input:hover {
   border-color: #225cb5;
 }
 
-input:focus,
-textarea:focus {
+.add__form .form__item input:focus {
   border-color: #225cb5;
 }
 
@@ -100,7 +96,7 @@ textarea {
   margin-top: 8px;
 }
 
-label {
+.form__item--label {
   font-size: 14px;
   font-weight: 700;
 }

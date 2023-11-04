@@ -10,6 +10,7 @@ const Course = ({ course, page }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [rosterFile, setRosterFile] = useState(null);
+  const [updateRosterOption, setUpdateRosterOption] = useState("replace");
   const [updateRosterErrors, setUpdateRosterErrors] = useState({});
   const [rubricNames, setNames] = useState([]);
   //const [rubricIDandDescriptions, setIDandDescriptions] = useState([]);
@@ -112,10 +113,10 @@ const Course = ({ course, page }) => {
   };
 
   const handleUpdateRosterSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    setShowUpdateModal(false)
-  }
+    setShowUpdateModal(false);
+  };
 
   //MODAL CODE
 
@@ -411,6 +412,7 @@ const Course = ({ course, page }) => {
               Update Roster for {course.code} {course.name}
             </h2>
             <form onSubmit={handleUpdateRosterSubmit}>
+              {/* File input */}
               <div className="update-form__item update-file-input-wrapper">
                 <label className="form__item--label form__item--file">
                   Roster (CSV File) - Requires Emails in Columns 1, First Names
@@ -432,9 +434,45 @@ const Course = ({ course, page }) => {
                   </span>
                 </div>
               </div>
+              {/* Radio Buttons */}
+              <div className="update-form__item">
+                <div className="update-radio-options">
+                  <label htmlFor="replace" className="update-radio--label">
+                    <input
+                      type="radio"
+                      value="replace"
+                      id="replace"
+                      checked={updateRosterOption === "replace"}
+                      onChange={(e) => setUpdateRosterOption(e.target.value)}
+                    />
+                    Replace Roster
+                    <span></span>
+                  </label>
+
+                  <label htmlFor="expand" className="update-radio--label">
+                    <input
+                      type="radio"
+                      value="expand"
+                      id="expand"
+                      checked={updateRosterOption === "expand"}
+                      onChange={(e) => setUpdateRosterOption(e.target.value)}
+                    />
+                    Expand Roster
+                    <span></span>
+                  </label>
+                </div>
+              </div>
               <div className="form__submit--container">
-                <button onClick={handleUpdateModalChange} type="button" className="update-cancel-btn">Cancel</button>
-                <button type="submit" className="update-form__submit">Update</button>
+                <button
+                  onClick={handleUpdateModalChange}
+                  type="button"
+                  className="update-cancel-btn"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="update-form__submit">
+                  Update
+                </button>
               </div>
             </form>
           </div>
