@@ -81,6 +81,7 @@ const Course = ({ course, page }) => {
   };
 
   const handleErrorModalClose = () => {
+    setRosterFile(null) // sets the file to null
     setShowErrorModal(false) // close the error modal
     setShowUpdateModal(true) // open the update modal again
   }
