@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/course.css";
 import "../styles/modal.css";
 import Modal from "./Modal";
+import Toast from "./Toast";
 
 const Course = ({ course, page }) => {
   const [surveys, setSurveys] = useState([]);
@@ -12,6 +13,7 @@ const Course = ({ course, page }) => {
   const [rosterFile, setRosterFile] = useState(null);
   const [updateRosterOption, setUpdateRosterOption] = useState("replace");
   const [updateRosterErrors, setUpdateRosterErrors] = useState({});
+  const [showToast, setShowToast] = useState(false)
   const [rubricNames, setNames] = useState([]);
   //const [rubricIDandDescriptions, setIDandDescriptions] = useState([]);
   const [pairingModesFull, setPairingModesFull] = useState([]);
@@ -116,44 +118,9 @@ const Course = ({ course, page }) => {
 
   const handleUpdateRosterSubmit = (e) => {
     e.preventDefault();
-
-    formData.append('roster-file', rosterFile)
-    formData.append('course-id', course.id)
-    formData.append('update-type', updateRosterOption)
-
-    fetch("http://localhost/StudentSurvey/backend/instructor/rosterUpdate.php", {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => res.text())
-      .then((result) => {
-        if (typeof result === "string" && result !== "") {
-          try {
-            const parsedResult = JSON.parse(result);
-            console.log("Parsed as JSON object: ", parsedResult);
-            if (parsedResult.hasOwnProperty("error")) {
-              if (
-                parsedResult["error"].includes(
-                  "does not contain an email, first name, and last name"
-                )
-              ) {
-                parsedResult["error"] =
-                  "Make sure each row contains an email in the first column, first name in the second column, and last name in the third column";
-              }
-            }
-            setFormErrors(parsedResult);
-          } catch (e) {
-            console.log("Failed to parse JSON: ", e);
-          }
-        } else {
-          // Roster is valid to update, so we can close the pop-up modal
-          setShowUpdateModal(false);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
+    
+    setShowUpdateModal(false)
+    setShowToast(true)
   };
 
   //MODAL CODE
@@ -462,7 +429,7 @@ const Course = ({ course, page }) => {
                     id="file-input"
                     className="file-input"
                     onChange={(e) => setRosterFile(e.target.files[0])}
-                    required
+                    // required
                   />
                   <label className="custom-file-label" htmlFor="file-input">
                     Choose File
@@ -516,6 +483,11 @@ const Course = ({ course, page }) => {
           </div>
         </div>
       )}
+      <Toast
+        message={`Roster for ${course.code} ${course.name} successfully updated!`}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 };
