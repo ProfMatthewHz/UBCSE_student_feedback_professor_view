@@ -1,0 +1,9 @@
+t1m1@buffalo.edu, t1m2@buffalo.edu, t1m3@buffalo.edu
+t1m4@buffalo.edu, t1m1@buffalo.edu,, t1m3@buffalo.edu
+t1m3@buffalo.edu, t1m4@buffalo.edu, t1m1@buffalo.edu, t1m5@buffalo.edu
+t1m2@buffalo.edu, t1m3@buffalo.edu, t1m4@buffalo.edu, t1m1@buffalo.edu
+t2m1@buffalo.edu,, t2m3@buffalo.edu
+t2m3@buffalo.edu, t2m1@buffalo.edu, t2m2@buffalo.edu
+t2m2@buffalo.edu, t2m3@buffalo.edu, t2m1@buffalo.edu
+t3m1@buffalo.edu, t3m2@buffalo.edu
+
