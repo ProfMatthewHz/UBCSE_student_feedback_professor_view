@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // make sure values exist
   if (
     !isset($_POST['course-code']) || !isset($_POST['course-name']) || !isset($_POST['course-year']) || !isset($_FILES['roster-file']) ||
-    !isset($_POST['semester']) || !isset($_POST['additional-instructors'])
+    !isset($_POST['semester']) && !empty($_POST['additional-instructors'])
   ) {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
@@ -112,8 +112,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg["course-year"] = "Please enter a valid 4-digit year.";
   }
 
-  // additonal instructors will be  incoming as an array of instructor ids.
-  $additional_instructors = $_POST['additional-instructors'];
+  if($additional_instructors == NULL){
+    $additional_instructors = array();
+  }else{
+    $additional_instructors = $_POST['additional-instructors'];
+  }
+ 
+   $additional_instructors = $_POST['additional-instructors'];
 
 
 
@@ -179,17 +184,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       // Clean up our file handling
       fclose($file_handle);
 
-
-
-      $differences = array_diff($additional_instructors, $instructor_ids);
+      
+      if($additional_instructors == NULL){
+        
+      }else {
+        $differences = array_diff($additional_instructors, $instructor_ids);
+      }
+      // $differences = array_diff($additional_instructors, $instructor_ids);
 
       foreach ($differences as $difference) {
         $errorMsg['additional-instructors'] = "unkown intstructors found";
       }
 
-      echo empty($differences);
+      // echo empty($differences);
       // check for any errors
-      if (!empty(($names_emails['error'])) && (empty($differences))) {
+      if (!empty(($names_emails['error'])) && !(empty($differences))) {
         $errorMsg['additional-instructors'] = "unkown intstructors found";
         $errorMsg['roster-file'] = $names_emails['error'];
       } else {
@@ -199,9 +208,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           if (!courseExists($con, $course_code, $course_name, $semester, $course_year, $_SESSION['id'])) {
 
 
-
-
-            
             // Create the course in the database
             $course_id = addCourse($con, $course_code, $course_name, $semester, $course_year);
 
@@ -214,6 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               }
               echo "Instructors added successfully\n";
             }
+            
             addInstructor($con, $course_id, $instructor_id);
 
 
