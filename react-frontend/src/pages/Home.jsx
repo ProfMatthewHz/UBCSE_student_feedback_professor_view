@@ -75,15 +75,17 @@ const Home = () => {
     <>
       <SideBar route="/" content_dictionary={sidebar_content} />
       <div className="container home--container">
-        {courses.length > 0 ? (
-          courses.map((course) => (
-            <Course key={course.id} course={course} page="home" />
-          ))
-        ) : (
-          <div className="no-course">
-            <h1>No Courses Yet!</h1>
-          </div>
-        )}
+        <div className="containerOfCourses">
+          {courses.length > 0 ? (
+            courses.map((course) => (
+              <Course key={course.id} course={course} page="home" />
+            ))
+          ) : (
+            <div className="no-course">
+              <h1>No Courses Yet!</h1>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

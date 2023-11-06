@@ -5,7 +5,12 @@ import "../styles/home.css";
 
 const History = () => {
   const [courses, setCourses] = useState([]);
-  const [terms, setTerms] = useState([]);
+  const [terms, setTerms] = useState({});
+  const [currentTerm, setCurrentTerm] = useState('');
+
+  const updateCurrentTerm = (newValue) => { 
+    setCurrentTerm(newValue)
+  }
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -73,7 +78,6 @@ const History = () => {
     )
       .then((res) => res.json())
       .then((result) => {
-
         const all_courses = {}
 
         const fetchCourses = result.map((term) => {
@@ -106,6 +110,7 @@ const History = () => {
 
         Promise.all(fetchCourses)
         .then(() => {
+          
           const courses_only = Object.values(all_courses).flat();
           setTerms(all_courses)
           setCourses(courses_only); // Update the courses state with all courses
@@ -121,49 +126,39 @@ const History = () => {
       })
   }, []);
 
-
   const sidebar_content = {
-    Terms: Object.keys(terms).length > 0 ? Object.keys(terms): [],
+    Terms: Object.entries(terms).length > 0 ? Object.fromEntries(Object.entries(terms)): [],
     Courses: courses.length > 0 ? courses.map((course) => course.code) : [],
   };
 
   return (
     <>
-      <SideBar route="/history" content_dictionary={sidebar_content} />
+      <SideBar route="/history" content_dictionary={sidebar_content} currentTerm={currentTerm} updateCurrentTerm={updateCurrentTerm}/>
       <div className="container home--container">
-        {Object.entries(terms).length > 0 ? (
-          Object.entries(terms).map(([term, courses]) => {
-
-            return (
-            
-            <div key={term}>
-              <div className="termContainer">
-                <div className="termContent">
-                  <h1 id={term}>{term}</h1>
-                </div>
-              </div>
-              {courses.length > 0 ? (
-
-                courses.map((course) => (
-                  <Course key={course.id} course={course} page="history" />
-                ))
+        {currentTerm !== "" && Object.entries(terms).length > 0 ? (
+          Object.entries(terms).map(([term, courses]) => (
+            term === currentTerm ? (
+              <div key={term} className="containerOfCourses">
+                {courses.length > 0 ? (
+                  courses.map((course) => (
+                    <Course key={course.id} course={course} page="history" />
+                  ))
                 ) : (
                   <div className="no-course">
                     <h1>No Courses Found</h1>
                   </div>
-                )
-              }
-            </div>
-            )
-          })
+                )}
+              </div>
+            ) : 
+            null
+          ))
         ) : (
           <div className="termContainer">
             <div className="termContent">
-              <h1>No Terms Found</h1>
+              {currentTerm === "" && Object.entries(terms).length > 0 ? <h1>No Terms Selected</h1> : <h1>No Terms Found</h1>}
             </div>
           </div>
         )}
-      
       </div>
     </>
   );

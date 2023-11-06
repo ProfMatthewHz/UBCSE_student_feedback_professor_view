@@ -42,6 +42,18 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 
 
+
+$query = "SELECT * FROM instructors";
+$result = mysqli_query($con, $query);
+$instructor_ids = array();
+while ($row = mysqli_fetch_assoc($result)) {
+  $instructor_ids[] = $row['id'];
+}
+
+
+
+
+
 $instructor_id = $_SESSION['id'];
 //stores error messages corresponding to form fields
 $errorMsg = array();
@@ -53,12 +65,18 @@ $semester = NULL;
 $course_year = NULL;
 $roster_file = NULL;
 $additional_instructors = NULL;
+$additional_instructors = NULL;
 
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
+  if (
+    !isset($_POST['course-code']) || !isset($_POST['course-name']) || !isset($_POST['course-year']) || !isset($_FILES['roster-file']) ||
+    !isset($_POST['semester']) && !empty($_POST['additional-instructors'])
+  ) {
   if (
     !isset($_POST['course-code']) || !isset($_POST['course-name']) || !isset($_POST['course-year']) || !isset($_FILES['roster-file']) ||
     !isset($_POST['semester']) && !empty($_POST['additional-instructors'])
@@ -67,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "Bad Request: Missing parmeters.";
     exit();
   }
+
 
 
 
@@ -103,14 +122,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg["semester"] = "Please select a valid semester.";
   }
 
+
   $semester = SEMESTER_MAP[$semester];
 
   $course_year = trim($_POST['course-year']);
   if (empty($course_year)) {
     $errorMsg['course-year'] = 'Course year cannot be blank.';
   } else if (!ctype_digit($course_year) || strlen($course_year) != 4) {
+  } else if (!ctype_digit($course_year) || strlen($course_year) != 4) {
     $errorMsg["course-year"] = "Please enter a valid 4-digit year.";
   }
+
+  if($additional_instructors == NULL){
+    $additional_instructors = array();
+  }else{
+    $additional_instructors = $_POST['additional-instructors'];
+  }
+ 
+   $additional_instructors = $_POST['additional-instructors'];
+
+
+
+
+
+  // check for valid semester and year
+
+
+
 
   if($additional_instructors == NULL){
     $additional_instructors = array();
@@ -133,7 +171,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $currentMonthA = date('n');
   $currentMonth = MONTH_MAP_SEMESTER[$currentMonth];
   $currentSemesterMonth = SEMESTER_MAP[$currentMonth];
+  $currentYear = date('Y');
+  $currentMonthA = date('n');
+  $currentMonth = MONTH_MAP_SEMESTER[$currentMonth];
+  $currentSemesterMonth = SEMESTER_MAP[$currentMonth];
 
+  //print_r($currentYear . " = Current Year.        ");
+  $month = date('m');
+  $ActualMonth = MONTH_MAP_SEMESTER[$month];
+  $currentActualMonth = SEMESTER_MAP_REVERSE[$ActualMonth];
+  //print($currentActualMonth . "  = Current Actual MOnth.   ");
   //print_r($currentYear . " = Current Year.        ");
   $month = date('m');
   $ActualMonth = MONTH_MAP_SEMESTER[$month];
@@ -143,14 +190,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //print_r($currentSemesterMonth);
 
   // define("SEMESTER_MAP", array('winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4));
+  // define("SEMESTER_MAP", array('winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4));
 // define("SEMESTER_MAP_REVERSE", array(1 => 'Winter', 2=> 'Spring', 3 => 'Summer', 4=> 'Fall'));
 // define("MONTH_MAP_SEMESTER", array(1 => 1, 2 => 2, 3 => 2, 4 => 2, 5 => 2, 6 => 3, 7 => 3, 8 => 3, 9 => 4, 10 => 4, 11 => 4, 12 => 4));
 
   // accounts for the current year and current semester 
+  // accounts for the current year and current semester 
 // so a previous course can not be added. 
+  if ($course_year < $currentYear) {
   if ($course_year < $currentYear) {
     $errorMsg['course-year'] = 'Course year cannot be in the past.';
     //print_r("Course year cannot be in the past");
+  } else if ($course_year == $currentYear) {
   } else if ($course_year == $currentYear) {
     if ($semester != $ActualMonth) {
       //print_r($semester. " and " . $ActualMonth);
@@ -197,7 +248,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       }
 
       // echo empty($differences);
+      
+      if($additional_instructors == NULL){
+        
+      }else {
+        $differences = array_diff($additional_instructors, $instructor_ids);
+      }
+      // $differences = array_diff($additional_instructors, $instructor_ids);
+
+      foreach ($differences as $difference) {
+        $errorMsg['additional-instructors'] = "unkown intstructors found";
+      }
+
+      // echo empty($differences);
       // check for any errors
+      if (!empty(($names_emails['error'])) && !(empty($differences))) {
+        $errorMsg['additional-instructors'] = "unkown intstructors found";
       if (!empty(($names_emails['error'])) && !(empty($differences))) {
         $errorMsg['additional-instructors'] = "unkown intstructors found";
         $errorMsg['roster-file'] = $names_emails['error'];
@@ -206,6 +272,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (empty($errorMsg)) {
           // Verify this course does not already exist
           if (!courseExists($con, $course_code, $course_name, $semester, $course_year, $_SESSION['id'])) {
+
+
 
 
             // Create the course in the database
@@ -222,6 +290,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             
             addInstructor($con, $course_id, $instructor_id);
+
 
 
             // Upload the course roster for later use

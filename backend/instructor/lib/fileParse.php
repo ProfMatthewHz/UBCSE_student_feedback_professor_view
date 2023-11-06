@@ -130,17 +130,17 @@ function parse_roster_file($file_handle) {
 
     // Verify the current line's data seems reasonable while allowing us to skip blank lines
     if ($line_fields != 0 && $line_fields != 3) {
-      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain an email, first name, and last name<br>';
+      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain an email, first name, and last name';
     } else if ($line_fields == 3) {
       $error = '';
       if (!filter_var($line_text[0], FILTER_VALIDATE_EMAIL)) {
-        $error = $error . 'Line '. $line_num . ' includes an improperly formatted email address (' . $line_text[0] . ')<br>';
+        $error = $error . 'Line '. $line_num . ' includes an improperly formatted email address (' . $line_text[0] . ')';
       }
       if (!ctype_print($line_text[1])) {
-        $error = 'Line '. $line_num . ' includes a first name with unprintable characters (' . $line_text[1] . ')<br>';
+        $error = 'Line '. $line_num . ' includes a first name with unprintable characters (' . $line_text[1] . ')';
       }
       if (!ctype_print($line_text[2])) {
-        $error = 'Line '. $line_num . ' includes a last name with unprintable characters (' . $line_text[2] . ')<br>';
+        $error = 'Line '. $line_num . ' includes a last name with unprintable characters (' . $line_text[2] . ')';
       }
       if (empty($error)) {
         // add the fields to the array
@@ -171,7 +171,7 @@ function processReviewFile($con, $require_pairs, $file_handle) {
       continue;
     }
     // Check for an incorrect number of entries on the current line
-    if ( $require_pairs && (count($line_text) > 2) ) {
+    if ( $require_pairs && (count($line_text) !== 2) ) {
       $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain a proper review assignment<br>';
     } else {
       // Verify the entries on the current line
