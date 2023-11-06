@@ -17,10 +17,6 @@ $con = connectToDatabase();
 
 //$instructor_id = $_SESSION['id'];
 
-<<<<<<< HEAD
-=======
-
->>>>>>> dev
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $instructors = array();
 
@@ -52,12 +48,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 
-<<<<<<< HEAD
 ?>
-=======
-?>
-
-
-
-
->>>>>>> dev
