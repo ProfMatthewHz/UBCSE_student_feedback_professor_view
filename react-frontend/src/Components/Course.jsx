@@ -152,16 +152,16 @@ const Course = ({ course, page }) => {
               setUpdateRosterError(parsedResult["error"])
               setShowUpdateModal(false) // close the update modal
               setShowErrorModal(true) // show the error modal
-            }else{
-              // no error
-              // Roster is valid to update, so we can close the pop-up modal
-              setShowUpdateModal(false);
-              // show toast on success
-              setShowToast(true)
             }
           } catch (e) {
             console.log("Failed to parse JSON: ", e);
           }
+        }else{
+          // no error
+          // Roster is valid to update, so we can close the pop-up modal
+          setShowUpdateModal(false);
+          // show toast on success
+          setShowToast(true)
         }
       })
       .catch((err) => {
