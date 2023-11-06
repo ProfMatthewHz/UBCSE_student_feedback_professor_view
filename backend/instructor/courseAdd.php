@@ -85,7 +85,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     //Prevent injections into 'semester' field
     $errorMsg["semester"] = "Please select a valid semester.";
   }
-  
+
   $semester = SEMESTER_MAP[$semester];
 
   $course_year = trim($_POST['course-year']);
@@ -125,7 +125,7 @@ if ($course_year < $currentYear) {
        //print_r("Erorr Wrong semester");
     } 
 }
-  
+
 
   // now validate the roster file
   if ($_FILES['roster-file']['error'] == UPLOAD_ERR_INI_SIZE) {
@@ -162,10 +162,16 @@ if ($course_year < $currentYear) {
             // Create the course in the database
             $course_id = addCourse($con, $course_code, $course_name, $semester, $course_year);
 
-            // Add the instructor to the course
-            // look into making this a loop if you are receiving an array 
-            
-            addInstructor($con, $course_id, $instructor_id);
+
+              //loop through additional instructors and add them to the course
+              if(!empty($additional_instructors)){
+                foreach($additional_instructors as $instructor){
+                  addInstructor($con,$course_id, $instructor); 
+                }
+                //echo "Instructors added successfully\n";
+              }
+              addInstructor($con,$course_id, $instructor_id);
+
 
             // Upload the course roster for later use
             addStudents($con, $course_id, $names_emails['ids']);
