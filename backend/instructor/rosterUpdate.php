@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "4 \n";
     $ret_val['error'] = 'An error occured when uploading the file. Please try again.';
   } else {
-    echo "running \n";
+    // Open the file
     $file_handle = @fopen($_FILES['roster-file']['tmp_name'], "r");
     // catch errors or continue parsing the file
     if (!$file_handle) {
@@ -101,12 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           $new_students = $breakOutRos['new'];
           addStudents($con, $course_id, $new_students);
           removeFromRoster($con, $course_id, $remove_students);
+          echo "Students have been successfully replaced. \n";
         }
         if($update_type == "expand"){ // expand on original roster works correctly 
           $course_roster = getRoster($con, $course_id);
           $breakOutRos = breakoutRosters($course_roster, $names_emails["ids"]);
           $new_students = $breakOutRos['new'];
           addStudents($con, $course_id, $new_students);
+          echo "Students have been successfully added. \n" ;
         }
 
 
@@ -128,7 +130,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // We can open the file, so lets start setting up the header
   header("Content-Type: application/json; charset=UTF-8");
   // Now lets dump the data we found
-  $myJSON = json_encode($ret_val);
+  if (isset($ret_val['error']) && $ret_val['error'] === "") {
+    echo "Success \n ";
+    $myJSON = json_encode($ret_val);
+  } else {
+    $myJSON = json_encode($ret_val);
   echo $myJSON;
+  }
+ 
 }
 ?>
