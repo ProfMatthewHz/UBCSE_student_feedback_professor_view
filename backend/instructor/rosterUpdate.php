@@ -60,16 +60,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   //echo "error on line\n" ;
   $ret_val = array("error" => "");
   if ($_FILES['roster-file']['error'] == UPLOAD_ERR_INI_SIZE) {
-    echo "1 \n";
+    //echo "1 \n";
     $ret_val['error'] = 'The selected file is too large.';
   } else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_PARTIAL) {
-    echo "2 \n";
+    //echo "2 \n";
     $ret_val['error'] = 'The selected file was only paritally uploaded. Please try again.';
   } else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_NO_FILE) {
-    echo "3 \n";
+    //echo "3 \n";
     $ret_val['error'] = 'A roster file must be provided.';
   } else if ($_FILES['roster-file']['error'] != UPLOAD_ERR_OK) {
-    echo "4 \n";
+    //echo "4 \n";
     $ret_val['error'] = 'An error occured when uploading the file. Please try again.';
   } else {
     // Open the file
@@ -101,14 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           $new_students = $breakOutRos['new'];
           addStudents($con, $course_id, $new_students);
           removeFromRoster($con, $course_id, $remove_students);
-          echo "Students have been successfully replaced. \n";
+          //echo "Students have been successfully replaced. \n";
         }
         if($update_type == "expand"){ // expand on original roster works correctly 
           $course_roster = getRoster($con, $course_id);
           $breakOutRos = breakoutRosters($course_roster, $names_emails["ids"]);
           $new_students = $breakOutRos['new'];
           addStudents($con, $course_id, $new_students);
-          echo "Students have been successfully added. \n" ;
+         // echo "Students have been successfully added. \n" ;
         }
 
 
