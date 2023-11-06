@@ -172,7 +172,7 @@ if ($course_year < $currentYear) {
 
             // redirect to course page with message
             //$_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);
-            echo "Course added successfully";
+            //echo "Course added successfully";
 
 
             //http_response_code(302);
