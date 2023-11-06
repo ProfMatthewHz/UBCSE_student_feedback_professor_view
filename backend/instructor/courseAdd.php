@@ -62,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (
     !isset($_POST['course-code']) || !isset($_POST['course-name']) || !isset($_POST['course-year']) || !isset($_FILES['roster-file']) ||
     !isset($_POST['semester']) && !empty($_POST['additional-instructors'])
+    //addiional-instructors being sent as comma seprated string not array
   ) {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
