@@ -218,7 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               foreach ($additional_instructors as $instructor) {
                 addInstructor($con, $course_id, $instructor);
               }
-              echo "Instructors added successfully\n";
+              //echo "Instructors added successfully\n";
             }
             
             addInstructor($con, $course_id, $instructor_id);
@@ -229,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // redirect to course page with message
             //$_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);
-            echo "Course added successfully";
+            //echo "Course added successfully";
 
             
 
