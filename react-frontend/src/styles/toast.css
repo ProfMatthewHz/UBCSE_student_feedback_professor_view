@@ -1,0 +1,19 @@
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* Make sure it's above other items */
+  overflow: hidden;
+}
+
+.toast-bar {
+  height: 5px; /* Adjust the height of the bar */
+  background-color: #6da04b; /* Choose a color that stands out */
+  width: 100%; /* Initial full width */
+  transition: width linear; /* Animate the width change */
+}

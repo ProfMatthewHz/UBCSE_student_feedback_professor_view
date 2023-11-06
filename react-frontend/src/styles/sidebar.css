@@ -14,7 +14,7 @@
   margin: 5%;
 }
 
-.sidebar button {
+.sidebar .add_course-btn {
   color: #ffffff;
   font-size: 18px;
   font-weight: 600;
@@ -24,9 +24,10 @@
   border-style: none;
   transition-duration: 0.4s;
   transition-property: background-color;
+  text-align: center;
 }
 
-.sidebar button:hover {
+.sidebar .add_course-btn:hover {
   color: #6DA04B;
   background-color: #ffffff;
 }
@@ -44,12 +45,12 @@
   overflow-y: auto;
 }
 
-.sidebar-list ::-webkit-scrollbar {
+.sidebar-list::-webkit-scrollbar {
   opacity: 100%;
   width: 5px;
 }
 
-.sidebar-list ::-webkit-scrollbar-thumb {
+.sidebar-list::-webkit-scrollbar-thumb {
   background-color: #ffffff;
   border-radius: 15px;
 }

@@ -61,8 +61,11 @@ INSERT INTO `reviews` (`id`, `survey_id`, `reviewer_id`, `team_id`, `reviewed_id
 (5, 0, 50243480, 55, 50243480, 1);
 
 INSERT INTO `rubrics` (`id`, `description`) VALUES
-(1, ''),
-(2, 'This is rubric id # three');
+(1, 'This is rubric id # one'),
+(2, 'This is rubric id # two'),
+(3, 'This is rubric id # three'),
+(4, 'This is rubric id # four'),
+(5, 'This is rubric id # five');
 
 INSERT INTO `rubric_responses` (`topic_id`, `rubric_score_id`, `response`) VALUES
 (0, 0, 'Hello this was a decent rubric'),
@@ -87,7 +90,27 @@ INSERT INTO `scores` (`eval_id`, `topic_id`, `rubric_score_id`) VALUES
 INSERT INTO `students` (`id`, `name`, `email`) VALUES
 (50243400, 'Smitty Johnson', ''),
 (50243479, 'Jim Jones', 'jjones@buffalo.edu'),
-(50243480, 'John Eggert', 'jeggert@buffalo.edu');
+(50243480, 'John Eggert', 'jeggert@buffalo.edu'),
+(50243481, 'Student One', 's1@buffalo.edu'),
+(50243482, 'Student Two', 's2@buffalo.edu'),
+(50243483, 'Student Three', 's3@buffalo.edu'),
+(50243484, 'Student Four', 's4@buffalo.edu'),
+(50243485, 'Student Five', 's5@buffalo.edu'),
+(50243486, 'Student Six', 's6@buffalo.edu'),
+(50243487, 'Student Seven', 's7@buffalo.edu'),
+(50243488, 'Student Eight', 's8@buffalo.edu'),
+(50243489, 'Student Nine', 's9@buffalo.edu'),
+(50243490, 'Student Ten', 's10@buffalo.edu'),
+(50243491, 'Student Eleven', 's11@buffalo.edu'),
+(50243492, 'Student Manager One', 'manager1@buffalo.edu'),
+(50243493, 'Team One Member One', 't1m1@buffalo.edu'),
+(50243494, 'Team One Member Two', 't1m2@buffalo.edu'),
+(50243495, 'Team One Member Three', 't1m3@buffalo.edu'),
+(50243496, 'Team One Member Four', 't1m4@buffalo.edu'),
+(50243497, 'Student Manager Two', 'manager2@buffalo.edu'),
+(50243498, 'Team Two Member One', 't2m1@buffalo.edu'),
+(50243499, 'Team Two Member Two', 't2m2@buffalo.edu'),
+(50243500, 'Team Two Member Three', 't2m3@buffalo.edu');
 
 INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rubric_id`, `survey_type_id`) VALUES
 (1, 10115, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #2', 1, 1),

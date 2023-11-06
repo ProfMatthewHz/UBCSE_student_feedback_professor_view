@@ -1,6 +1,7 @@
 import React from "react";
 import SideBar from "../Components/Sidebar";
 import Course from "../Components/Course";
+import BarChart from "../Components/Barchart";
 
 const History = () => {
   const courses = [
@@ -103,7 +104,9 @@ const History = () => {
         ) : (
           <h1>No courses yet.</h1>
         )}
+          <BarChart/>
       </div>
+    
     </>
   );
 };
