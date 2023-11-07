@@ -2,7 +2,7 @@
 
 //error logging
 error_reporting(-1); // reports all errors
-ini_set("display_errors", 0); // shows all errors
+ini_set("display_errors", 1); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
@@ -70,8 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 
-
-
   // check CSRF token
   // $csrf_token = getCSRFToken($con, $instructor_id);
   // if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
@@ -112,14 +110,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg["course-year"] = "Please enter a valid 4-digit year.";
   }
 
-  if($additional_instructors == NULL){
-    $additional_instructors = array();
-  }else{
-    $additional_instructors = $_POST['additional-instructors'];
-  }
- 
-   $additional_instructors = $_POST['additional-instructors'];
+  // if($additional_instructors == NULL){
+  //   $additional_instructors = array();
+  // }else{
+  //   $additional_instructors = $_POST['additional-instructors'];
 
+  //   $instructorSplitString = explode(',', $additional_instructors);
+
+  //   $additional_instructors = $instructorSplitString;
+  // }
+
+  $additional_instructors = $_POST['additional-instructors'];
+  var_dump($additional_instructors);
+  if(!empty($additional_instructors)) {
+    $instructorSplit = explode(',', $additional_instructors);
+    $additional_instructors = $instructorSplit;
+  }else {
+    $additional_instructors = array();
+  }
+
+ 
+   
+   // have to take a comma seperated string and split them. 
 
 
 
