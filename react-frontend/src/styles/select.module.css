@@ -23,13 +23,14 @@
 }
 
 .clear-btn {
-  background: none;
-  color: #225CB5;
+  background: none !important;
+  color: #225CB5 !important;
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 0;
   font-size: 1.25em;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .clear-btn:focus,
@@ -86,30 +87,32 @@
 }
 
 .option-badge {
+  background-color: #fff !important;
   display: flex;
   align-items: center;
-  border: 0.05em solid #225CB5;
-  border-radius: 0.25em;
-  padding: 0.15em 0.25em;
+  border: 0.05em solid #225CB5 !important;
+  border-radius: 0.25em !important;
+  padding: 0.15em 0.25em !important;
   gap: 0.25em;
   cursor: pointer;
   background: none;
   outline: none;
-  color: #000;
+  color: #000 !important;
+  margin: 0 !important;
 }
 
 .option-badge:hover,
 .option-badge:focus {
-  background-color: hsl(0, 100%, 90%);
-  border-color: #990000;
+  background-color: hsl(0, 100%, 90%) !important;
+  border-color: #990000 !important;
 }
 
 .option-badge:hover > .remove-btn,
 .option-badge:focus > .remove-btn {
-  color: #990000;
+  color: #990000 !important;
 }
 
 .option-badge > .remove-btn {
-  font-size: 1.25em;
-  color: #225CB5;
+  font-size: 1.25em !important;
+  color: #225CB5 !important;
 }

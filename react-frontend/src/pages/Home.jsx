@@ -44,7 +44,7 @@ const Home = () => {
     return 2; // Spring
   };
 
-  useEffect(() => {
+  const fetchCourses = () => {
     fetch(
       "http://localhost/StudentSurvey/backend/instructor/instructorCoursesInTerm.php",
       {
@@ -62,9 +62,13 @@ const Home = () => {
       .then((result) => {
         setCourses(result);
       })
-      .catch(err => {
-        console.log(err)
-      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    fetchCourses()
   }, []);
 
   const sidebar_content = {
@@ -73,7 +77,7 @@ const Home = () => {
 
   return (
     <>
-      <SideBar route="/" content_dictionary={sidebar_content} />
+      <SideBar route="/" content_dictionary={sidebar_content} getCourses={fetchCourses} />
       <div className="container home--container">
         <div className="containerOfCourses">
           {courses.length > 0 ? (
