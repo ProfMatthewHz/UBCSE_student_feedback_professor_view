@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { CSVLink } from "react-csv";
 import "../styles/course.css";
 import "../styles/modal.css";
 import Modal from "./Modal";
 import Toast from "./Toast";
+import BarChart from "./Barchart";
 
 const Course = ({ course, page }) => {
   const [surveys, setSurveys] = useState([]);
@@ -16,6 +18,7 @@ const Course = ({ course, page }) => {
   const [viewingCurrentSurvey, setViewingCurrentSurvey] = useState(null)
   const [showRawSurveyResults, setShowRawSurveyResults] = useState(null)
   const [showNormalizedSurveyResults, setShowNormalizedSurveyResults] = useState(null)
+  const [currentCSVData, setCurrentCSVData] = useState(null)
 
   const [rosterFile, setRosterFile] = useState(null);
 
@@ -238,10 +241,41 @@ const Course = ({ course, page }) => {
         if (surveytype == "raw-full") {
           setShowRawSurveyResults(result)
           setShowNormalizedSurveyResults(null)
+          setCurrentCSVData(result)
         } else { // else if surveytype == "average" (For Normalized Results)
           setShowNormalizedSurveyResults(result)
           setShowRawSurveyResults(null)
-          console.log("Normalized Data", result)
+
+          const results_without_headers = result.slice(1);
+          const maxValue = Math.max(...results_without_headers.map(result => result[1]));
+
+          let labels = {};
+          let startLabel = 0.0;
+          let endLabel = 0.2;
+          labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0
+
+          while (endLabel < maxValue) {
+            startLabel += 0.21;
+            endLabel += 0.2;
+            labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0;
+          }
+
+          for (let individual_data of results_without_headers) {
+            for (let key of Object.keys(labels)) {
+              const label_split = key.split("-");
+              const current_min = parseFloat(label_split[0]);
+              const current_max = parseFloat(label_split[1]);
+
+              if (individual_data[1] >= current_min && individual_data[1] <= current_max) {
+                labels[key] += 1;
+              }
+            }
+          }
+
+          labels = Object.entries(labels)
+          labels.unshift(["Normalized Averages", "Number of Students"])
+
+          setCurrentCSVData(labels)
         }
       })
       .catch((err) => {
@@ -516,32 +550,39 @@ const Course = ({ course, page }) => {
             <h2 className="viewresults-modal--heading">
               Results for {course.code} Survey: {viewingCurrentSurvey.name}
             </h2>
-            <div className="viewresults-modal--button-container">
+            <div className="viewresults-modal--main-button-container">
               <button className={showRawSurveyResults? "survey-result--option-active" : "survey-result--option"} onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "raw-full")}>Raw Results</button>
               <button className={showNormalizedSurveyResults? "survey-result--option-active" : "survey-result--option"} onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average")}>Normalized Results</button>
             </div>
             {
               showRawSurveyResults && (
-                <table className="rawresults--table">
-                  <thead>
-                    <tr>
-                      {showRawSurveyResults[0].map((header, index) => (
-                        <th key={index}>{header}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {showRawSurveyResults.slice(1).map((rowData, rowIndex) => (
-                      <tr key={rowIndex}>
-                        {rowData.map((cellData, cellIndex) => (
-                          cellData ? <td key={cellIndex}>{cellData}</td> 
-                          : <td key={cellIndex}>--</td>
-
+                <div>
+                  <div className="viewresults-modal--other-button-container">
+                    <CSVLink className="downloadbtn" filename="surveyresults.csv" data={currentCSVData}>
+                      Download Results
+                    </CSVLink>
+                  </div>
+                  <table className="rawresults--table">
+                    <thead>
+                      <tr>
+                        {showRawSurveyResults[0].map((header, index) => (
+                          <th key={index}>{header}</th>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {showRawSurveyResults.slice(1).map((rowData, rowIndex) => (
+                        <tr key={rowIndex}>
+                          {rowData.map((cellData, cellIndex) => (
+                            cellData ? <td key={cellIndex}>{cellData}</td> 
+                            : <td key={cellIndex}>--</td>
+
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )
             }
             <div className="viewresults-modal--cancel-button-container">
