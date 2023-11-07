@@ -202,8 +202,6 @@ const Course = ({ course, page }) => {
         const activeSurveys = result.active.map(survey_info => ({...survey_info, expired: false}));
         const expiredSurveys = result.expired.map(survey_info => ({...survey_info, expired: true}));
 
-        console.log(activeSurveys)
-        console.log(expiredSurveys)
         setSurveys([...activeSurveys, ...expiredSurveys]);
       })
       .catch((err) => {
@@ -249,7 +247,6 @@ const Course = ({ course, page }) => {
           const results_without_headers = result.slice(1);
           const maxValue = Math.max(...results_without_headers.map(result => result[1]));
 
-         // const labels = { "Normalized Averages-Number of Students": 0 }; // Initialize with your first label
           let labels = {};
           let startLabel = 0.0;
           let endLabel = 0.2;
@@ -589,6 +586,11 @@ const Course = ({ course, page }) => {
             {
               showNormalizedSurveyResults && (
                 <div>
+                  <div className="viewresults-modal--other-button-container">
+                    <CSVLink className="downloadbtn" filename="surveyresults.csv" data={currentCSVData}>
+                      Download Results
+                    </CSVLink>
+                  </div>
                   <div className="viewresults-modal--barchart-container">
                     <BarChart survey_data={currentCSVData}/>
                   </div>
