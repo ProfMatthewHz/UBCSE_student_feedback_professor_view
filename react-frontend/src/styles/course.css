@@ -371,7 +371,7 @@
   font-size: 22px;
 }
 
-.viewresults-modal--button-container {
+.viewresults-modal--main-button-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -379,6 +379,7 @@
   margin-bottom: 30px;
 }
 
+.viewresults-modal--other-button-container,
 .viewresults-modal--cancel-button-container {
   display: flex;
   justify-content: center;
@@ -386,7 +387,25 @@
   gap: 10px;
 }
 
-.viewresults-modal--button-container .survey-result--option {
+.viewresults-modal--other-button-container a.downloadbtn {
+  background-color: #6da04b;
+  border: solid 1.5px #6da04b;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 2px;
+  text-decoration: none;
+  font-size: 18px;
+  transition-duration: 0.4s;
+  transition-property: background-color;
+}
+
+.viewresults-modal--other-button-container a.downloadbtn:hover {
+  background-color: #fff;
+  border: solid 1.5px #6da04b;
+  color: #6da04b;
+}
+
+.viewresults-modal--main-button-container .survey-result--option {
   background-color: #225cb5;
   color: #fff;
   padding: 5px 10px;
@@ -397,7 +416,12 @@
   transition-property: background-color;
 }
 
-.viewresults-modal--button-container .survey-result--option-active {
+.viewresults-modal--main-button-container .survey-result--option:hover {
+  background-color: #fff;
+  color: #225cb5;
+}
+
+.viewresults-modal--main-button-container .survey-result--option-active {
   background-color: #fff;
   color: #225cb5;
   padding: 5px 10px;
@@ -408,6 +432,12 @@
   transition-property: background-color;
 }
 
+.viewresults-modal--barchart-container {
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 table.rawresults--table {
   width: 100%;
