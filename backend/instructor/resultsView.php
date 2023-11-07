@@ -31,21 +31,21 @@ $instructor_id = $_SESSION['id'];
 
 // respond not found on no query string parameters
 $survey_id = NULL;
-if ((!isset($_GET['survey'])) || (!isset($_GET['type']))) {
+if ((!isset($_POST['survey'])) || (!isset($_POST['type']))) {
   http_response_code(400);
   echo "400: Improper request made.";
   exit();
 }
 
 // make sure the type query is one of the valid types. if not, respond not found
-if ($_GET['type'] !== 'raw-full' && $_GET['type'] !== 'individual' && $_GET['type'] !== 'average') {
+if ($_POST['type'] !== 'raw-full' && $_POST['type'] !== 'individual' && $_POST['type'] !== 'average') {
   http_response_code(404);
   echo "404: Not found.";
   exit();
 }
 
 // make sure the query string is an integer, reply 404 otherwise
-$survey_id = intval($_GET['survey']);
+$survey_id = intval($_POST['survey']);
 
 if ($survey_id === 0) {
   http_response_code(404);
@@ -85,9 +85,9 @@ $team_data = getReviewerPerTeamResults($con, $survey_id);
 
 $results = NULL;
 // now generate the raw scores output
-if ($_GET['type'] === 'individual') {
+if ($_POST['type'] === 'individual') {
   $results = getIndividualsAverages($teammates, $scores, $topics);
-} else if ($_GET['type'] === 'raw-full') {
+} else if ($_POST['type'] === 'raw-full') {
   $results = getRawResults($teammates, $scores, $topics, $reviewers, $team_data);
 } else {
   $results = getFinalResults($teammates, $scores, $topics, $team_data);
