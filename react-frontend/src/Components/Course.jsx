@@ -517,8 +517,8 @@ const Course = ({ course, page }) => {
               Results for {course.code} Survey: {viewingCurrentSurvey.name}
             </h2>
             <div className="viewresults-modal--button-container">
-              <button className="survey-result--option" onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "raw-full")}>Raw Results</button>
-              <button className="survey-result--option" onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average")}>Normalized Results</button>
+              <button className={showRawSurveyResults? "survey-result--option-active" : "survey-result--option"} onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "raw-full")}>Raw Results</button>
+              <button className={showNormalizedSurveyResults? "survey-result--option-active" : "survey-result--option"} onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average")}>Normalized Results</button>
             </div>
             {
               showRawSurveyResults && (
