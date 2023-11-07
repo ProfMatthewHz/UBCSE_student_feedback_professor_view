@@ -397,9 +397,15 @@
   transition-property: background-color;
 }
 
-.viewresults-modal--button-container .survey-result--option:hover {
-  background-color: #ffffff;
+.viewresults-modal--button-container .survey-result--option-active {
+  background-color: #fff;
   color: #225cb5;
+  padding: 5px 10px;
+  border-radius: 3px;
+  border: solid 1.5px #225cb5;
+  font-size: 20px;
+  transition-duration: 0.4s;
+  transition-property: background-color;
 }
 
 
