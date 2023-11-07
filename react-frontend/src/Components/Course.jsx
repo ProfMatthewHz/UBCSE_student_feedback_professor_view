@@ -249,6 +249,7 @@ const Course = ({ course, page }) => {
           const results_without_headers = result.slice(1);
           const maxValue = Math.max(...results_without_headers.map(result => result[1]));
 
+         // const labels = { "Normalized Averages-Number of Students": 0 }; // Initialize with your first label
           let labels = {};
           let startLabel = 0.0;
           let endLabel = 0.2;
@@ -584,6 +585,16 @@ const Course = ({ course, page }) => {
                   </table>
                 </div>
               )
+            }
+            {
+              showNormalizedSurveyResults && (
+                <div>
+                  <div className="viewresults-modal--barchart-container">
+                    <BarChart survey_data={currentCSVData}/>
+                  </div>
+                </div>
+
+             )
             }
             <div className="viewresults-modal--cancel-button-container">
               <button className="cancel-btn" onClick={() => handleViewResultsModalChange(null)}>Cancel</button>
