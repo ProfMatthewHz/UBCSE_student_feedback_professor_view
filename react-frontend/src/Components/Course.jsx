@@ -9,13 +9,23 @@ const Course = ({ course, page }) => {
 
   // MODAL CODE
   const [modalIsOpen, setModalIsOpen] = useState(false);
+
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+  const [showViewResultsModal, setViewResultsModal] = useState(false);
+  const [viewingCurrentSurvey, setViewingCurrentSurvey] = useState(null)
+  const [showRawSurveyResults, setShowRawSurveyResults] = useState(null)
+  const [showNormalizedSurveyResults, setShowNormalizedSurveyResults] = useState(null)
+
   const [rosterFile, setRosterFile] = useState(null);
+
   const [updateRosterOption, setUpdateRosterOption] = useState("replace");
   const [updateRosterError, setUpdateRosterError] = useState("");
+
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showToast, setShowToast] = useState(false)
   const [rubricNames, setNames] = useState([]);
+
   //const [rubricIDandDescriptions, setIDandDescriptions] = useState([]);
   const [pairingModesFull, setPairingModesFull] = useState([]);
   const [pairingModesNames, setPairingModesNames] = useState([]);
@@ -186,7 +196,12 @@ const Course = ({ course, page }) => {
     )
       .then((res) => res.json())
       .then((result) => {
-        setSurveys([...result.active, ...result.expired]);
+        const activeSurveys = result.active.map(survey_info => ({...survey_info, expired: false}));
+        const expiredSurveys = result.expired.map(survey_info => ({...survey_info, expired: true}));
+
+        console.log(activeSurveys)
+        console.log(expiredSurveys)
+        setSurveys([...activeSurveys, ...expiredSurveys]);
       })
       .catch((err) => {
         console.log(err);
@@ -196,6 +211,44 @@ const Course = ({ course, page }) => {
   const handleUpdateModalChange = () => {
     setShowUpdateModal((prev) => !prev);
   };
+
+  const handleViewResultsModalChange = (survey) => {
+    setViewResultsModal((prev) => !prev);
+    setViewingCurrentSurvey(survey);
+    setShowRawSurveyResults(null);
+    setShowNormalizedSurveyResults(null);
+  };
+
+  const handleSelectedSurveyResultsModalChange = (surveyid, surveytype) => {
+    fetch(
+      "http://localhost/StudentSurvey/backend/instructor/resultsView.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          survey: surveyid,
+          type: surveytype
+        }),
+      }
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        if (surveytype == "raw-full") {
+          setShowRawSurveyResults(result)
+          setShowNormalizedSurveyResults(null)
+        } else { // else if surveytype == "average" (For Normalized Results)
+          setShowNormalizedSurveyResults(result)
+          setShowRawSurveyResults(null)
+          console.log("Normalized Data", result)
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
 
   return (
     <div id={course.code} className="courseContainer">
@@ -444,7 +497,8 @@ const Course = ({ course, page }) => {
                     Ends: {survey.end_date}
                   </td>
                   <td>{survey.completion}</td>
-                  {/*<td><button>Actions</button></td>*/}
+                  {survey.expired ? <td><button onClick={() => handleViewResultsModalChange(survey)}>View Results</button></td>
+                  : <td><button>Actions</button></td>}
                 </tr>
               ))}
             </tbody>
@@ -455,6 +509,47 @@ const Course = ({ course, page }) => {
           </div>
         )}
       </div>
+      {/* View Results Modal*/}
+      {showViewResultsModal && (
+        <div className="viewresults-modal">
+          <div className="viewresults-modal-content">
+            <h2 className="viewresults-modal--heading">
+              Results for {course.code} Survey: {viewingCurrentSurvey.name}
+            </h2>
+            <div className="viewresults-modal--button-container">
+              <button className="survey-result--option" onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "raw-full")}>Raw Results</button>
+              <button className="survey-result--option" onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average")}>Normalized Results</button>
+            </div>
+            {
+              showRawSurveyResults && (
+                <table className="rawresults--table">
+                  <thead>
+                    <tr>
+                      {showRawSurveyResults[0].map((header, index) => (
+                        <th key={index}>{header}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {showRawSurveyResults.slice(1).map((rowData, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {rowData.map((cellData, cellIndex) => (
+                          cellData ? <td key={cellIndex}>{cellData}</td> 
+                          : <td key={cellIndex}>--</td>
+
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
+            }
+            <div className="viewresults-modal--cancel-button-container">
+              <button className="cancel-btn" onClick={() => handleViewResultsModalChange(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Error Modal for updating roster */}
       {showUpdateModal && (
         <div className="update-modal">
