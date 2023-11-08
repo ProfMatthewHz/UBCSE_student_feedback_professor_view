@@ -371,7 +371,7 @@
   font-size: 22px;
 }
 
-.viewresults-modal--button-container {
+.viewresults-modal--main-button-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -379,6 +379,7 @@
   margin-bottom: 30px;
 }
 
+.viewresults-modal--other-button-container,
 .viewresults-modal--cancel-button-container {
   display: flex;
   justify-content: center;
@@ -386,7 +387,33 @@
   gap: 10px;
 }
 
-.viewresults-modal--button-container .survey-result--option {
+.viewresults-modal--cancel-button-container .cancel-btn {
+  border-radius: 5px;
+  font-weight: 500;
+  padding: 8px 16px!important;
+  transition: all .2s ease;
+  font-size: 20px;
+}
+
+.viewresults-modal--other-button-container a.downloadbtn {
+  background-color: #6da04b;
+  border: solid 1.5px #6da04b;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 2px;
+  text-decoration: none;
+  font-size: 20px;
+  transition-duration: 0.4s;
+  transition-property: background-color;
+}
+
+.viewresults-modal--other-button-container a.downloadbtn:hover {
+  background-color: #fff;
+  border: solid 1.5px #6da04b;
+  color: #6da04b;
+}
+
+.viewresults-modal--main-button-container .survey-result--option {
   background-color: #225cb5;
   color: #fff;
   padding: 5px 10px;
@@ -397,7 +424,12 @@
   transition-property: background-color;
 }
 
-.viewresults-modal--button-container .survey-result--option-active {
+.viewresults-modal--main-button-container .survey-result--option:hover {
+  background-color: #fff;
+  color: #225cb5;
+}
+
+.viewresults-modal--main-button-container .survey-result--option-active {
   background-color: #fff;
   color: #225cb5;
   padding: 5px 10px;
@@ -408,6 +440,22 @@
   transition-property: background-color;
 }
 
+.viewresults-modal--no-options-selected-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 20px 30px 20px;
+  font-size: 20px;
+  font-style: italic;
+  color: #225cb5;
+}
+
+.viewresults-modal--barchart-container {
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 table.rawresults--table {
   width: 100%;
