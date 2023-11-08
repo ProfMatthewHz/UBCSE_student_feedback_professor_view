@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { CSVLink } from "react-csv";
 import "../styles/course.css";
 import "../styles/modal.css";
 import Modal from "./Modal";
 import Toast from "./Toast";
+import BarChart from "./Barchart";
 
 const Course = ({ course, page }) => {
   const [surveys, setSurveys] = useState([]);
@@ -12,9 +14,18 @@ const Course = ({ course, page }) => {
   const [modalIsOpenError, setModalIsOpenError] = useState(false);
   const [errorsList, setErrorsList] = useState([]);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+  const [showViewResultsModal, setViewResultsModal] = useState(false);
+  const [viewingCurrentSurvey, setViewingCurrentSurvey] = useState(null)
+  const [showRawSurveyResults, setShowRawSurveyResults] = useState(null)
+  const [showNormalizedSurveyResults, setShowNormalizedSurveyResults] = useState(null)
+  const [currentCSVData, setCurrentCSVData] = useState(null)
+
   const [rosterFile, setRosterFile] = useState(null);
+
   const [updateRosterOption, setUpdateRosterOption] = useState("replace");
   const [updateRosterError, setUpdateRosterError] = useState("");
+
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [rubricNames, setNames] = useState([]);
@@ -404,7 +415,10 @@ const Course = ({ course, page }) => {
     )
       .then((res) => res.json())
       .then((result) => {
-        setSurveys([...result.active, ...result.expired]);
+        const activeSurveys = result.active.map(survey_info => ({...survey_info, expired: false}));
+        const expiredSurveys = result.expired.map(survey_info => ({...survey_info, expired: true}));
+
+        setSurveys([...activeSurveys, ...expiredSurveys]);
       })
       .catch((err) => {
         console.log(err);
@@ -414,6 +428,75 @@ const Course = ({ course, page }) => {
   const handleUpdateModalChange = () => {
     setShowUpdateModal((prev) => !prev);
   };
+
+  const handleViewResultsModalChange = (survey) => {
+    setViewResultsModal((prev) => !prev);
+    setViewingCurrentSurvey(survey);
+    setShowRawSurveyResults(null);
+    setShowNormalizedSurveyResults(null);
+  };
+
+  const handleSelectedSurveyResultsModalChange = (surveyid, surveytype) => {
+    fetch(
+      "http://localhost/StudentSurvey/backend/instructor/resultsView.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          survey: surveyid,
+          type: surveytype
+        }),
+      }
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        if (surveytype == "raw-full") {
+          setShowRawSurveyResults(result)
+          setShowNormalizedSurveyResults(null)
+          setCurrentCSVData(result)
+        } else { // else if surveytype == "average" (For Normalized Results)
+          setShowNormalizedSurveyResults(result)
+          setShowRawSurveyResults(null)
+
+          const results_without_headers = result.slice(1);
+          const maxValue = Math.max(...results_without_headers.map(result => result[1]));
+
+          let labels = {};
+          let startLabel = 0.0;
+          let endLabel = 0.2;
+          labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0
+
+          while (endLabel < maxValue) {
+            startLabel += 0.21;
+            endLabel += 0.2;
+            labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0;
+          }
+
+          for (let individual_data of results_without_headers) {
+            for (let key of Object.keys(labels)) {
+              const label_split = key.split("-");
+              const current_min = parseFloat(label_split[0]);
+              const current_max = parseFloat(label_split[1]);
+
+              if (individual_data[1] >= current_min && individual_data[1] <= current_max) {
+                labels[key] += 1;
+              }
+            }
+          }
+
+          labels = Object.entries(labels)
+          labels.unshift(["Normalized Averages", "Number of Students"])
+
+          setCurrentCSVData(labels)
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
 
   return (
     <div id={course.code} className="courseContainer">
@@ -713,7 +796,8 @@ const Course = ({ course, page }) => {
                     Ends: {survey.end_date}
                   </td>
                   <td>{survey.completion}</td>
-                  {/*<td><button>Actions</button></td>*/}
+                  {survey.expired ? <td><button onClick={() => handleViewResultsModalChange(survey)}>View Results</button></td>
+                  : <td><button>Actions</button></td>}
                 </tr>
               ))}
             </tbody>
@@ -724,6 +808,69 @@ const Course = ({ course, page }) => {
           </div>
         )}
       </div>
+      {/* View Results Modal*/}
+      {showViewResultsModal && (
+        <div className="viewresults-modal">
+          <div className="viewresults-modal-content">
+            <h2 className="viewresults-modal--heading">
+              Results for {course.code} Survey: {viewingCurrentSurvey.name}
+            </h2>
+            <div className="viewresults-modal--main-button-container">
+              <button className={showRawSurveyResults? "survey-result--option-active" : "survey-result--option"} onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "raw-full")}>Raw Results</button>
+              <button className={showNormalizedSurveyResults? "survey-result--option-active" : "survey-result--option"} onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average")}>Normalized Results</button>
+            </div>
+            {
+              showRawSurveyResults && (
+                <div>
+                  <div className="viewresults-modal--other-button-container">
+                    <CSVLink className="downloadbtn" filename="surveyresults.csv" data={currentCSVData}>
+                      Download Results
+                    </CSVLink>
+                  </div>
+                  <table className="rawresults--table">
+                    <thead>
+                      <tr>
+                        {showRawSurveyResults[0].map((header, index) => (
+                          <th key={index}>{header}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {showRawSurveyResults.slice(1).map((rowData, rowIndex) => (
+                        <tr key={rowIndex}>
+                          {rowData.map((cellData, cellIndex) => (
+                            cellData ? <td key={cellIndex}>{cellData}</td> 
+                            : <td key={cellIndex}>--</td>
+
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            }
+            {
+              showNormalizedSurveyResults && (
+                <div>
+                  <div className="viewresults-modal--other-button-container">
+                    <CSVLink className="downloadbtn" filename="surveyresults.csv" data={currentCSVData}>
+                      Download Results
+                    </CSVLink>
+                  </div>
+                  <div className="viewresults-modal--barchart-container">
+                    <BarChart survey_data={currentCSVData}/>
+                  </div>
+                </div>
+
+             )
+            }
+            <div className="viewresults-modal--cancel-button-container">
+              <button className="cancel-btn" onClick={() => handleViewResultsModalChange(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Error Modal for updating roster */}
       {showUpdateModal && (
         <div className="update-modal">

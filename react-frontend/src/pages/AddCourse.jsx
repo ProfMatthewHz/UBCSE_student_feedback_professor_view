@@ -169,6 +169,7 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
     })
       .then((res) => res.text())
       .then((result) => {
+        
         if (typeof result === "string" && result !== "") {
           try {
             const parsedResult = JSON.parse(result);
