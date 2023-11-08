@@ -140,7 +140,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // check the date's validity
-  if (!isset($errorMsg['end-date']))
+  if (!isset($errorMsg['end-date'])){
   
     $end = DateTime::createFromFormat('Y-m-d', $end_date);
     if (!$end) {
