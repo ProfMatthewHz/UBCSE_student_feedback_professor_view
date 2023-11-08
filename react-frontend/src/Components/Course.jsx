@@ -453,43 +453,52 @@ const Course = ({ course, page }) => {
       .then((res) => res.json())
       .then((result) => {
         if (surveytype == "raw-full") {
-          setShowRawSurveyResults(result)
           setShowNormalizedSurveyResults(null)
-          setCurrentCSVData(result)
+          setShowRawSurveyResults(result)
+          if (result.length > 1) {
+            setCurrentCSVData(result)
+          } else {
+            setCurrentCSVData(null)
+          }
         } else { // else if surveytype == "average" (For Normalized Results)
-          setShowNormalizedSurveyResults(result)
           setShowRawSurveyResults(null)
 
-          const results_without_headers = result.slice(1);
-          const maxValue = Math.max(...results_without_headers.map(result => result[1]));
+          if (result.length > 1) {
+            const results_without_headers = result.slice(1);
+            const maxValue = Math.max(...results_without_headers.map(result => result[1]));
 
-          let labels = {};
-          let startLabel = 0.0;
-          let endLabel = 0.2;
-          labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0
+            let labels = {};
+            let startLabel = 0.0;
+            let endLabel = 0.2;
+            labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0
 
-          while (endLabel < maxValue) {
-            startLabel += 0.21;
-            endLabel += 0.2;
-            labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0;
-          }
+            while (endLabel < maxValue) {
+              startLabel += 0.21;
+              endLabel += 0.2;
+              labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0;
+            }
 
-          for (let individual_data of results_without_headers) {
-            for (let key of Object.keys(labels)) {
-              const label_split = key.split("-");
-              const current_min = parseFloat(label_split[0]);
-              const current_max = parseFloat(label_split[1]);
+            for (let individual_data of results_without_headers) {
+              for (let key of Object.keys(labels)) {
+                const label_split = key.split("-");
+                const current_min = parseFloat(label_split[0]);
+                const current_max = parseFloat(label_split[1]);
 
-              if (individual_data[1] >= current_min && individual_data[1] <= current_max) {
-                labels[key] += 1;
+                if (individual_data[1] >= current_min && individual_data[1] <= current_max) {
+                  labels[key] += 1;
+                }
               }
             }
+
+            labels = Object.entries(labels)
+            labels.unshift(["Normalized Averages", "Number of Students"])
+
+            setCurrentCSVData(result)
+            setShowNormalizedSurveyResults(labels)
+          } else {
+            setCurrentCSVData(null)
+            setShowNormalizedSurveyResults(true)
           }
-
-          labels = Object.entries(labels)
-          labels.unshift(["Normalized Averages", "Number of Students"])
-
-          setCurrentCSVData(labels)
         }
       })
       .catch((err) => {
@@ -819,11 +828,14 @@ const Course = ({ course, page }) => {
               <button className={showRawSurveyResults? "survey-result--option-active" : "survey-result--option"} onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "raw-full")}>Raw Results</button>
               <button className={showNormalizedSurveyResults? "survey-result--option-active" : "survey-result--option"} onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average")}>Normalized Results</button>
             </div>
+            {!showRawSurveyResults && !showNormalizedSurveyResults ? 
+              <div className="viewresults-modal--no-options-selected-text">Select Option to View Results</div>
+            : null}
             {
-              showRawSurveyResults && (
+              showRawSurveyResults && currentCSVData ? (
                 <div>
                   <div className="viewresults-modal--other-button-container">
-                    <CSVLink className="downloadbtn" filename="surveyresults.csv" data={currentCSVData}>
+                    <CSVLink className="downloadbtn" filename={"survey-" + viewingCurrentSurvey.id + "-raw-results.csv"} data={currentCSVData}>
                       Download Results
                     </CSVLink>
                   </div>
@@ -849,22 +861,27 @@ const Course = ({ course, page }) => {
                   </table>
                 </div>
               )
-            }
+              : (showRawSurveyResults && !currentCSVData) ? (
+                <div className="viewresults-modal--no-options-selected-text">No Results Found</div>
+              )
+              : null}
             {
-              showNormalizedSurveyResults && (
+              showNormalizedSurveyResults && currentCSVData ? (
                 <div>
                   <div className="viewresults-modal--other-button-container">
-                    <CSVLink className="downloadbtn" filename="surveyresults.csv" data={currentCSVData}>
+                    <CSVLink className="downloadbtn" filename={"survey-" + viewingCurrentSurvey.id + "-normalized-averages.csv"} data={currentCSVData}>
                       Download Results
                     </CSVLink>
                   </div>
                   <div className="viewresults-modal--barchart-container">
-                    <BarChart survey_data={currentCSVData}/>
+                    <BarChart survey_data={showNormalizedSurveyResults}/>
                   </div>
                 </div>
-
              )
-            }
+            : (showNormalizedSurveyResults && !currentCSVData) ? (
+              <div className="viewresults-modal--no-options-selected-text">No Results Found</div>
+            ) 
+            : null}
             <div className="viewresults-modal--cancel-button-container">
               <button className="cancel-btn" onClick={() => handleViewResultsModalChange(null)}>Cancel</button>
             </div>
