@@ -190,13 +190,13 @@ const AddCourse = () => {
     formData.append("roster-file", file); // Assuming `file` is a File object
     formData.append("semester", semester);
     formData.append("additional-instructors", selectedInstructors)
-
     fetch("http://localhost/StudentSurvey/backend/instructor/courseAdd.php", {
       method: "POST",
       body: formData,
     })
       .then((res) => res.text())
       .then((result) => {
+        
         if (typeof result === "string" && result !== "") {
           try {
             const parsedResult = JSON.parse(result);
