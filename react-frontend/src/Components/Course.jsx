@@ -11,7 +11,8 @@ const Course = ({ course, page }) => {
 
   // MODAL CODE
   const [modalIsOpen, setModalIsOpen] = useState(false);
-
+  const [modalIsOpenError, setModalIsOpenError] = useState(false);
+  const [errorsList, setErrorsList] = useState([]);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   const [showViewResultsModal, setViewResultsModal] = useState(false);
@@ -26,14 +27,13 @@ const Course = ({ course, page }) => {
   const [updateRosterError, setUpdateRosterError] = useState("");
 
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showToast, setShowToast] = useState(false)
+  const [showToast, setShowToast] = useState(false);
   const [rubricNames, setNames] = useState([]);
-
-  //const [rubricIDandDescriptions, setIDandDescriptions] = useState([]);
+  const [rubricIDandDescriptions, setIDandDescriptions] = useState([]);
   const [pairingModesFull, setPairingModesFull] = useState([]);
   const [pairingModesNames, setPairingModesNames] = useState([]);
 
-  const formData = new FormData()
+  const updateRosterformData = new FormData();
 
   const fetchRubrics = () => {
     fetch("http://localhost/StudentSurvey/backend/instructor/rubricsGet.php", {
@@ -93,11 +93,15 @@ const Course = ({ course, page }) => {
     setModalIsOpen(false);
   };
 
+  const closeModalError = () => {
+    setModalIsOpenError(false);
+  };
+
   const handleErrorModalClose = () => {
-    setRosterFile(null) // sets the file to null
-    setShowErrorModal(false) // close the error modal
-    setShowUpdateModal(true) // open the update modal again
-  }
+    setRosterFile(null); // sets the file to null
+    setShowErrorModal(false); // close the error modal
+    setShowUpdateModal(true); // open the update modal again
+  };
 
   const getInitialStateRubric = () => {
     const value = "Select Rubric";
@@ -136,24 +140,236 @@ const Course = ({ course, page }) => {
     setMultiplier(boolean);
   };
 
+  async function getAddSurveyResponse(formData) {
+    console.log("this is before the addsurveyResponse function fetch call");
+
+    let fetchHTTP =
+      "http://localhost/StudentSurvey/backend/instructor/addSurveyToCourse.php?course=" +
+      course.id;
+    //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
+    try {
+      const response = await fetch(fetchHTTP, {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.json();
+
+      return result; // Return the result directly
+    } catch (err) {
+      console.error(err);
+      throw err; // Re-throw to be handled by the caller
+    }
+  }
+
+  async function verifySurvey() {
+    var surveyName = document.getElementById("survey-name").value;
+    var startTime = document.getElementById("start-time").value;
+    var endTime = document.getElementById("end-time").value;
+    var startDate = document.getElementById("start-date").value;
+    var endDate = document.getElementById("end-date").value;
+    var csvFile = document.getElementById("csv-file").value;
+    var rubric = document.getElementById("rubric-type").value;
+
+    var dictNameToInputValue = {
+      "Survey name": surveyName,
+      "Start time": startTime,
+      "End time": endTime,
+      "Start date": startDate,
+      "End date": endDate,
+      "Csv file": csvFile,
+    };
+
+    for (let k in dictNameToInputValue) {
+      if (dictNameToInputValue[k] === "") {
+        alert(k + " cannot be empty. Please fill in.");
+        return;
+      }
+    }
+
+    //date and time keyboard typing bound checks.
+
+    let minDateObject = new Date("2023-08-31T00:00:00"); //first day of class
+    let maxDateObject = new Date("2023-12-09T00:00:00"); //last day of class
+    let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
+    let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
+    if (startDateObject < minDateObject) {
+      alert("Start Date is too early. Must start atleast at August 31");
+      return;
+    }
+    if (startDateObject > maxDateObject) {
+      alert("Start Date is too late. Must be at or before December 9");
+      return;
+    }
+    if (endDateObject < minDateObject) {
+      alert("End Date is too early. Must start atleast at August 31");
+      return;
+    }
+    if (endDateObject > maxDateObject) {
+      alert("End Date is too late. Must be at or before December 9");
+      return;
+    }
+    //END:date and time keyboard typing bound checks.
+
+    //special startdate case. Startdate cannot be before the current day.
+    let timestamp = new Date(Date.now());
+
+    timestamp.setHours(0, 0, 0, 0); //set hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
+    if (startDateObject < timestamp) {
+      alert("Survey start date cannot be before the current day.");
+      return;
+    }
+    //END:special startdate case. Startdate cannot be before the current day.
+
+    //Start date cannot be greater than End date.
+    if (startDateObject > endDateObject) {
+      alert("Start date cannot be greater than the end date");
+      return;
+    }
+    //END:Start date cannot be greater than End date.
+
+    //If on the same day, start time must be before end time
+    if (startDate === endDate) {
+      if (startTime === endTime) {
+        alert(
+          "If start and end days are the same, Start and End times must differ"
+        );
+        return;
+      }
+      let startHour = parseInt(startTime.split(":")[0]);
+      let endHour = parseInt(endTime.split(":")[0]);
+      if (startHour === endHour) {
+        alert(
+          "If start and end days are the same, Start and End time hours must differ"
+        );
+        return;
+      }
+      if (startHour > endHour) {
+        alert(
+          "If start and end days are the same, Start time cannot be after End time"
+        );
+        return;
+      }
+    }
+    //Start time must be after current time if start date is the current day.
+
+    console.log("if conditional line 243");
+    if (
+      startDateObject.getDay(startDateObject) === timestamp.getDay(timestamp)
+    ) {
+      let timestampWithHour = new Date(Date.now());
+      let currentHour = timestampWithHour.getHours(timestampWithHour);
+      let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
+      let startHourNew = parseInt(startTime.split(":")[0]);
+      let startMinutes = parseInt(startTime.split(":")[1]);
+
+      if (startHourNew < currentHour) {
+        alert("Start time hour cannot be before the current hour");
+        return;
+      }
+      if (startHourNew === currentHour) {
+        if (startMinutes < currentMinutes) {
+          alert("Start time minutes cannot be before current minutes");
+          return;
+        }
+      }
+      //End:Start time must be after current time
+    }
+
+    //Now it's time to send data to the backend
+
+    let formData = new FormData();
+    let rubricId;
+    let pairingId;
+    let multiplier;
+
+    for (const element of rubricIDandDescriptions) {
+      if (element.rubricDesc === rubric) {
+        rubricId = element.rubricId;
+      }
+    }
+
+    for (const element in pairingModesFull.no_mult) {
+      if (
+        pairingModesFull.no_mult[element].description ===
+        document.getElementById("pairing-mode").value
+      ) {
+        pairingId = pairingModesFull.no_mult[element].id;
+        multiplier = 1;
+      }
+    }
+    for (const element in pairingModesFull.mult) {
+      if (
+        pairingModesFull.mult[element].description ===
+        document.getElementById("pairing-mode").value
+      ) {
+        pairingId = pairingModesFull.mult[element].id;
+        multiplier = document.getElementById("multiplier-type").value;
+      }
+    }
+
+    let file = document.getElementById("csv-file").files[0];
+
+    formData.append("survey-name", surveyName);
+    formData.append("course-id", course.id);
+    formData.append("rubric-id", rubricId);
+    formData.append("pairing-mode", pairingId);
+    formData.append("start-date", startDate);
+    formData.append("start-time", startTime);
+    formData.append("end-date", endDate);
+    formData.append("end-time", endTime);
+    formData.append("pm-mult", multiplier);
+    formData.append("pairing-file", file);
+
+    //form data is set. Call the post request
+    let awaitedResponse = await getAddSurveyResponse(formData);
+    console.log(awaitedResponse);
+
+    //let errorsObject = errorOrSuccessResponse.errors;
+    let errorsObject = awaitedResponse.errors;
+    let dataObject = awaitedResponse.data;
+
+    if (errorsObject.length === 0) {
+      //succesful survey. Alert user
+      alert("Survey has no errors");
+      return;
+    }
+
+    if (dataObject.length === 0) {
+      let errorString = errorsObject["pairing-file"];
+      setErrorsList(errorString.split("<br>"));
+      closeModal();
+      setModalIsOpenError(true);
+
+      return;
+    }
+
+    return;
+  }
+
   const handleUpdateRosterSubmit = (e) => {
     e.preventDefault();
 
-    formData.append('roster-file', rosterFile)
-    formData.append('course-id', course.id)
-    formData.append('update-type', updateRosterOption)
+    updateRosterformData.append("roster-file", rosterFile);
+    updateRosterformData.append("course-id", course.id);
+    updateRosterformData.append("update-type", updateRosterOption);
 
-    fetch("http://localhost/StudentSurvey/backend/instructor/rosterUpdate.php", {
-      method: "POST",
-      body: formData,
-    })
+    fetch(
+      "http://localhost/StudentSurvey/backend/instructor/rosterUpdate.php",
+      {
+        method: "POST",
+        body: updateRosterformData,
+      }
+    )
       .then((res) => res.text())
       .then((result) => {
         if (typeof result === "string" && result !== "") {
           try {
             const parsedResult = JSON.parse(result);
             console.log("Parsed as JSON object: ", parsedResult);
-            if (parsedResult.hasOwnProperty("error") && parsedResult["error"] !== "") {
+            if (
+              parsedResult.hasOwnProperty("error") &&
+              parsedResult["error"] !== ""
+            ) {
               if (
                 parsedResult["error"].includes(
                   "does not contain an email, first name, and last name"
@@ -162,19 +378,19 @@ const Course = ({ course, page }) => {
                 parsedResult["error"] =
                   "Make sure each row contains an email in the first column, first name in the second column, and last name in the third column";
               }
-              setUpdateRosterError(parsedResult["error"])
-              setShowUpdateModal(false) // close the update modal
-              setShowErrorModal(true) // show the error modal
+              setUpdateRosterError(parsedResult["error"]);
+              setShowUpdateModal(false); // close the update modal
+              setShowErrorModal(true); // show the error modal
             }
           } catch (e) {
             console.log("Failed to parse JSON: ", e);
           }
-        }else{
+        } else {
           // no error
           // Roster is valid to update, so we can close the pop-up modal
           setShowUpdateModal(false);
           // show toast on success
-          setShowToast(true)
+          setShowToast(true);
         }
       })
       .catch((err) => {
@@ -202,8 +418,6 @@ const Course = ({ course, page }) => {
         const activeSurveys = result.active.map(survey_info => ({...survey_info, expired: false}));
         const expiredSurveys = result.expired.map(survey_info => ({...survey_info, expired: true}));
 
-        console.log(activeSurveys)
-        console.log(expiredSurveys)
         setSurveys([...activeSurveys, ...expiredSurveys]);
       })
       .catch((err) => {
@@ -239,44 +453,52 @@ const Course = ({ course, page }) => {
       .then((res) => res.json())
       .then((result) => {
         if (surveytype == "raw-full") {
-          setShowRawSurveyResults(result)
           setShowNormalizedSurveyResults(null)
-          setCurrentCSVData(result)
+          setShowRawSurveyResults(result)
+          if (result.length > 1) {
+            setCurrentCSVData(result)
+          } else {
+            setCurrentCSVData(null)
+          }
         } else { // else if surveytype == "average" (For Normalized Results)
-          setShowNormalizedSurveyResults(result)
           setShowRawSurveyResults(null)
 
-          const results_without_headers = result.slice(1);
-          const maxValue = Math.max(...results_without_headers.map(result => result[1]));
+          if (result.length > 1) {
+            const results_without_headers = result.slice(1);
+            const maxValue = Math.max(...results_without_headers.map(result => result[1]));
 
-         // const labels = { "Normalized Averages-Number of Students": 0 }; // Initialize with your first label
-          let labels = {};
-          let startLabel = 0.0;
-          let endLabel = 0.2;
-          labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0
+            let labels = {};
+            let startLabel = 0.0;
+            let endLabel = 0.2;
+            labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0
 
-          while (endLabel < maxValue) {
-            startLabel += 0.21;
-            endLabel += 0.2;
-            labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0;
-          }
+            while (endLabel < maxValue) {
+              startLabel += 0.21;
+              endLabel += 0.2;
+              labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0;
+            }
 
-          for (let individual_data of results_without_headers) {
-            for (let key of Object.keys(labels)) {
-              const label_split = key.split("-");
-              const current_min = parseFloat(label_split[0]);
-              const current_max = parseFloat(label_split[1]);
+            for (let individual_data of results_without_headers) {
+              for (let key of Object.keys(labels)) {
+                const label_split = key.split("-");
+                const current_min = parseFloat(label_split[0]);
+                const current_max = parseFloat(label_split[1]);
 
-              if (individual_data[1] >= current_min && individual_data[1] <= current_max) {
-                labels[key] += 1;
+                if (individual_data[1] >= current_min && individual_data[1] <= current_max) {
+                  labels[key] += 1;
+                }
               }
             }
+
+            labels = Object.entries(labels)
+            labels.unshift(["Normalized Averages", "Number of Students"])
+
+            setCurrentCSVData(result)
+            setShowNormalizedSurveyResults(labels)
+          } else {
+            setCurrentCSVData(null)
+            setShowNormalizedSurveyResults(true)
           }
-
-          labels = Object.entries(labels)
-          labels.unshift(["Normalized Averages", "Number of Students"])
-
-          setCurrentCSVData(labels)
         }
       })
       .catch((err) => {
@@ -287,6 +509,262 @@ const Course = ({ course, page }) => {
 
   return (
     <div id={course.code} className="courseContainer">
+      <Modal open={modalIsOpenError} onRequestClose={closeModalError}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            borderBottom: "thin solid #225cb5",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              width: "1250px",
+              marginTop: "2px",
+              paddingBottom: "2px",
+              justifyContent: "center",
+              gap: "4px",
+              borderBottom: "thin solid #225cb5",
+            }}
+          >
+            <h2 style={{ color: "#225cb5" }}>Survey Errors</h2>
+          </div>
+          {errorsList.map((string, index) => (
+            <div key={index} className="string-list-item">
+              {string}
+            </div>
+          ))}
+        </div>
+
+        <button
+          className="Cancel"
+          style={{
+            borderRadius: "5px",
+            fontSize: "18px",
+            fontWeight: "700",
+            padding: "5px 12px",
+          }}
+          onClick={closeModalError}
+        >
+          Close
+        </button>
+      </Modal>
+      <Modal
+        open={modalIsOpen}
+        onRequestClose={closeModal}
+        style={{
+          content: {
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            bottom: "auto",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "white",
+            borderRadius: "10px",
+            padding: "20px",
+            width: "80%",
+            maxWidth: "600px",
+          },
+          overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          },
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            borderBottom: "thin solid #225cb5",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              width: "1250px",
+              marginTop: "2px",
+              paddingBottom: "2px",
+              justifyContent: "center",
+              gap: "4px",
+              borderBottom: "thin solid #225cb5",
+            }}
+          >
+            <h2 style={{ color: "#225cb5" }}>
+              Add A New Survey To The Following Course: {course.code}
+            </h2>
+          </div>
+
+          <div marginLeft="10px" class="input-wrapper">
+            <label style={{ color: "#225cb5" }} for="subject-line">
+              Survey Name
+            </label>
+            <input
+              id="survey-name"
+              class="styled-input"
+              type="text"
+              placeholder="Survey Name"
+            ></input>
+          </div>
+
+          <div class="input-wrapper">
+            <label style={{ color: "#225cb5" }} for="subject-line">
+              Rubrics
+            </label>
+            <select
+              style={{ color: "black" }}
+              value={valueRubric}
+              onChange={handleChangeRubric}
+              id="rubric-type"
+              class="styled-input"
+              placeholder="Select a rubric"
+            >
+              {rubricNames.map((rubric) => (
+                <option value={rubric}>{rubric}</option>
+              ))}
+            </select>
+          </div>
+
+          <div class="input-wrapper1">
+            <label style={{ color: "#225cb5" }} for="subject-line">
+              Start Time
+            </label>
+            <input
+              id="start-time"
+              class="styled-input1"
+              type="time"
+              placeholder="Enter Start Time"
+            ></input>
+          </div>
+
+          <div class="input-wrapper1">
+            <label style={{ color: "#225cb5" }} for="subject-line">
+              End Time
+            </label>
+            <input
+              id="end-time"
+              class="styled-input1"
+              type="time"
+              placeholder="Enter End Time"
+            ></input>
+          </div>
+
+          <div class="input-wrapper1">
+            <label style={{ color: "#225cb5" }} for="subject-line">
+              Start Date
+            </label>
+            <input
+              id="start-date"
+              class="styled-input1"
+              type="date"
+              min="2023-08-31"
+              max="2023-12-09"
+              placeholder="Enter Start Date"
+            ></input>
+          </div>
+
+          <div class="input-wrapper1">
+            <label style={{ color: "#225cb5" }} for="subject-line">
+              End Date
+            </label>
+            <input
+              id="end-date"
+              class="styled-input1"
+              type="date"
+              min="2023-08-31"
+              max="2023-12-09"
+              placeholder="Enter End Date"
+            ></input>
+          </div>
+
+          <div class="input-wrapper">
+            <label style={{ color: "#225cb5" }} for="subject-line">
+              Pairing Modes
+            </label>
+            <select
+              style={{ color: "black" }}
+              value={valuePairing}
+              onChange={handleChangePairing}
+              id="pairing-mode"
+              class="styled-input"
+            >
+              {pairingModesNames.map((pairing) => (
+                <option value={pairing}>{pairing}</option>
+              ))}
+            </select>
+          </div>
+
+          <div class="input-wrapper">
+            <label style={{ color: "#225cb5" }} for="subject-line">
+              CSV File Upload
+            </label>
+            <input
+              id="csv-file"
+              class="styled-input"
+              type="file"
+              placeholder="Upload The File"
+            ></input>
+          </div>
+
+          {validPairingModeForMultiplier ? (
+            <div class="input-wrapper">
+              <label style={{ color: "#225cb5" }} for="subject-line">
+                Multiplier
+              </label>
+              <select
+                style={{ color: "black" }}
+                value={multiplierNumber}
+                onChange={handleChangeMultiplierNumber}
+                id="multiplier-type"
+                class="styled-input"
+              >
+                <option value="one">1</option>
+                <option value="two">2</option>
+                <option value="three">3</option>
+                <option value="four">4</option>
+              </select>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "20px",
+            gap: "50px",
+            marginBottom: "30px",
+          }}
+        >
+          <button
+            className="Cancel"
+            style={{
+              borderRadius: "5px",
+              fontSize: "18px",
+              fontWeight: "700",
+              padding: "5px 12px",
+            }}
+            onClick={closeModal}
+          >
+            Cancel
+          </button>
+          <button
+            className="CompleteSurvey"
+            style={{
+              borderRadius: "5px",
+              fontSize: "18px",
+              fontWeight: "700",
+              padding: "5px 12px",
+            }}
+            onClick={verifySurvey}
+          >
+            Verify Survey
+          </button>
+        </div>
+      </Modal>
       <div className="courseContent">
         <div className="courseHeader">
           <h2>
@@ -307,212 +785,7 @@ const Course = ({ course, page }) => {
             </div>
           ) : null}
         </div>
-        <Modal
-          open={modalIsOpen}
-          onRequestClose={closeModal}
-          style={{
-            content: {
-              top: "50%",
-              left: "50%",
-              right: "auto",
-              bottom: "auto",
-              transform: "translate(-50%, -50%)",
-              backgroundColor: "white",
-              borderRadius: "10px",
-              padding: "20px",
-              width: "80%",
-              maxWidth: "600px",
-            },
-            overlay: {
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            },
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "5px",
-              borderBottom: "thin solid #225cb5",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                marginTop: "20px",
-                paddingBottom: "10px",
-                justifyContent: "center",
-                gap: "10px",
-                borderBottom: "thin solid #225cb5",
-              }}
-            >
-              <h2 style={{ color: "#225cb5" }}>
-                Add A New Survey To The Following Course: {course.code}
-              </h2>
-            </div>
 
-            <div style={{ marginLeft: "60px" }} class="input-wrapper">
-              <label style={{ color: "#225cb5" }} for="survey-title">
-                Survey Course
-              </label>
-              <div id="survey-title" class="styled-input" type="text">
-                {course.code} {course.name} - Fall 2023
-              </div>
-            </div>
-            <div style={{ marginLeft: "60px" }} class="input-wrapper">
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                Survey Name
-              </label>
-              <input
-                id="subject-line"
-                class="styled-input"
-                type="text"
-                placeholder="Survey Name"
-              ></input>
-            </div>
-            <div style={{ marginLeft: "60px" }} class="input-wrapper">
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                Start Date
-              </label>
-              <input
-                id="subject-line"
-                class="styled-input"
-                type="date"
-                placeholder="Enter Start Date"
-              ></input>
-            </div>
-            <div style={{ marginLeft: "60px" }} class="input-wrapper">
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                End Date
-              </label>
-              <input
-                id="subject-line"
-                class="styled-input"
-                type="date"
-                placeholder="Enter End Date"
-              ></input>
-            </div>
-            <div style={{ marginLeft: "60px" }} class="input-wrapper">
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                Start Time
-              </label>
-              <input
-                id="subject-line"
-                class="styled-input"
-                type="time"
-                placeholder="Enter Start Time"
-              ></input>
-            </div>
-            <div style={{ marginLeft: "60px" }} class="input-wrapper">
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                End Time
-              </label>
-              <input
-                id="subject-line"
-                class="styled-input"
-                type="time"
-                placeholder="Enter End Time"
-              ></input>
-            </div>
-            <div style={{ marginLeft: "60px" }} class="input-wrapper">
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                Rubrics
-              </label>
-              <select
-                value={valueRubric}
-                onChange={handleChangeRubric}
-                id="rubric-type"
-                class="styled-input"
-                placeholder="Select a rubric"
-              >
-                {rubricNames.map((rubric) => (
-                  <option value={rubric}>{rubric}</option>
-                ))}
-              </select>
-            </div>
-            <div style={{ marginLeft: "60px" }} class="input-wrapper">
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                Pairing Modes
-              </label>
-              <select
-                value={valuePairing}
-                onChange={handleChangePairing}
-                id="rubric-type"
-                class="styled-input"
-              >
-                {pairingModesNames.map((pairing) => (
-                  <option value={pairing}>{pairing}</option>
-                ))}
-              </select>
-            </div>
-            {validPairingModeForMultiplier ? (
-              <div style={{ marginLeft: "60px" }} class="input-wrapper">
-                <label style={{ color: "#225cb5" }} for="subject-line">
-                  Multiplier
-                </label>
-                <select
-                  value={multiplierNumber}
-                  onChange={handleChangeMultiplierNumber}
-                  id="rubric-type"
-                  class="styled-input"
-                >
-                  <option value="one">1</option>
-                  <option value="two">2</option>
-                  <option value="three">3</option>
-                  <option value="four">4</option>
-                </select>
-              </div>
-            ) : (
-              ""
-            )}
-
-            <div style={{ marginLeft: "60px" }} class="input-wrapper">
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                CSV File Upload
-              </label>
-              <input
-                id="subject-line"
-                class="styled-input"
-                type="file"
-                placeholder="Upload The File"
-              ></input>
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
-              gap: "50px",
-              marginBottom: "30px",
-            }}
-          >
-            <button
-              className="Cancel"
-              style={{
-                borderRadius: "5px",
-                fontSize: "18px",
-                fontWeight: "700",
-                padding: "5px 12px",
-              }}
-              onClick={closeModal}
-            >
-              Cancel
-            </button>
-            <button
-              className="CompleteSurvey"
-              style={{
-                borderRadius: "5px",
-                fontSize: "18px",
-                fontWeight: "700",
-                padding: "5px 12px",
-              }}
-            >
-              Verify Survey
-            </button>
-          </div>
-        </Modal>
         {surveys.length > 0 ? (
           <table className="surveyTable">
             <thead>
@@ -555,11 +828,14 @@ const Course = ({ course, page }) => {
               <button className={showRawSurveyResults? "survey-result--option-active" : "survey-result--option"} onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "raw-full")}>Raw Results</button>
               <button className={showNormalizedSurveyResults? "survey-result--option-active" : "survey-result--option"} onClick={() => handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average")}>Normalized Results</button>
             </div>
+            {!showRawSurveyResults && !showNormalizedSurveyResults ? 
+              <div className="viewresults-modal--no-options-selected-text">Select Option to View Results</div>
+            : null}
             {
-              showRawSurveyResults && (
+              showRawSurveyResults && currentCSVData ? (
                 <div>
                   <div className="viewresults-modal--other-button-container">
-                    <CSVLink className="downloadbtn" filename="surveyresults.csv" data={currentCSVData}>
+                    <CSVLink className="downloadbtn" filename={"survey-" + viewingCurrentSurvey.id + "-raw-results.csv"} data={currentCSVData}>
                       Download Results
                     </CSVLink>
                   </div>
@@ -585,17 +861,27 @@ const Course = ({ course, page }) => {
                   </table>
                 </div>
               )
-            }
+              : (showRawSurveyResults && !currentCSVData) ? (
+                <div className="viewresults-modal--no-options-selected-text">No Results Found</div>
+              )
+              : null}
             {
-              showNormalizedSurveyResults && (
+              showNormalizedSurveyResults && currentCSVData ? (
                 <div>
+                  <div className="viewresults-modal--other-button-container">
+                    <CSVLink className="downloadbtn" filename={"survey-" + viewingCurrentSurvey.id + "-normalized-averages.csv"} data={currentCSVData}>
+                      Download Results
+                    </CSVLink>
+                  </div>
                   <div className="viewresults-modal--barchart-container">
-                    <BarChart survey_data={currentCSVData}/>
+                    <BarChart survey_data={showNormalizedSurveyResults}/>
                   </div>
                 </div>
-
              )
-            }
+            : (showNormalizedSurveyResults && !currentCSVData) ? (
+              <div className="viewresults-modal--no-options-selected-text">No Results Found</div>
+            ) 
+            : null}
             <div className="viewresults-modal--cancel-button-container">
               <button className="cancel-btn" onClick={() => handleViewResultsModalChange(null)}>Cancel</button>
             </div>
