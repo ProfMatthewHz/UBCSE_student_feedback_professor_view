@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import SideBar from "../Components/Sidebar";
 import "../styles/addcourse.css";
 import { Select } from "../Components/Select";
 
-const AddCourse = () => {
-  const [courses, setCourses] = useState([]);
+const AddCourse = ({ handleAddCourseModal, getCourses }) => {
   const [courseCode, setCourseCode] = useState("");
   const [courseName, setCourseName] = useState("");
   const [file, setFile] = useState(null);
@@ -17,7 +14,6 @@ const AddCourse = () => {
   const [allInstructors, setAllInstructors] = useState([]); // array of all instructors in the database
   const [selectedInstructors, setSelectedInstructors] = useState([]); // array of selected instructor ids to send to backend
   const formData = new FormData();
-  const navigate = useNavigate();
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -105,26 +101,6 @@ const AddCourse = () => {
 
   // fetch the courses to display on the sidebar
   useEffect(() => {
-    fetch(
-      "http://localhost/StudentSurvey/backend/instructor/instructorCoursesInTerm.php",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          semester: getCurrentSemester(),
-          year: getCurrentYear(),
-        }),
-      }
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        setCourses(result);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
     setYear(getCurrentYear());
     let currSem = getCurrentSemester();
     if (currSem === 1) setSemester("winter");
@@ -177,10 +153,6 @@ const AddCourse = () => {
     setYear(parseInt(newYear));
   };
 
-  const sidebar_content = {
-    Courses: courses ? courses.map((course) => course.code) : [],
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -189,7 +161,7 @@ const AddCourse = () => {
     formData.append("course-year", year);
     formData.append("roster-file", file); // Assuming `file` is a File object
     formData.append("semester", semester);
-    formData.append("additional-instructors", selectedInstructors)
+    formData.append("additional-instructors", selectedInstructors);
 
     fetch("http://localhost/StudentSurvey/backend/instructor/courseAdd.php", {
       method: "POST",
@@ -197,10 +169,10 @@ const AddCourse = () => {
     })
       .then((res) => res.text())
       .then((result) => {
+        
         if (typeof result === "string" && result !== "") {
           try {
             const parsedResult = JSON.parse(result);
-            console.log("Parsed as JSON object: ", parsedResult);
             if (parsedResult.hasOwnProperty("roster-file")) {
               if (
                 parsedResult["roster-file"].includes(
@@ -218,7 +190,8 @@ const AddCourse = () => {
           }
         } else {
           // Class is valid, so we can just navigate to the home page
-          navigate("/");
+          handleAddCourseModal();
+          getCourses();
         }
       })
       .catch((err) => {
@@ -232,18 +205,17 @@ const AddCourse = () => {
 
   return (
     <>
-      <SideBar route="/" content_dictionary={sidebar_content} />
-      <div className="container">
-        <div className="formContainer">
-          <div className="formContent">
-            <div className="formHeader">
-              <h2 className="add-header">Add Course</h2>
-            </div>
-            <form
-              className="add__form"
-              onSubmit={handleSubmit}
-              encType="multipart/form-data"
-            >
+      <div className="formContainer">
+        <div className="formContent">
+          <div className="formHeader">
+            <h2 className="add-header">Add Course</h2>
+          </div>
+          <form
+            className="add__form"
+            onSubmit={handleSubmit}
+            encType="multipart/form-data"
+          >
+            <div className="addcourse-form__item--container">
               <div className="form__item">
                 <label className="form__item--label">Course Code</label>
                 <input
@@ -329,17 +301,21 @@ const AddCourse = () => {
                   onChange={(o) => setInstructors(o)}
                 />
               </div>
+            </div>
 
-              <div className="form__submit--container">
-                <Link to="/" className="cancel-btn">
-                  Cancel
-                </Link>
-                <button type="submit" className="form__submit">
-                  + Add Course
-                </button>
-              </div>
-            </form>
-          </div>
+            <div className="add-form__submit--container">
+              <button
+                type="button"
+                onClick={handleAddCourseModal}
+                className="cancel-btn"
+              >
+                Cancel
+              </button>
+              <button type="submit" className="form__submit">
+                + Add Course
+              </button>
+            </div>
+          </form>
         </div>
       </div>
       {/* Error Modal */}

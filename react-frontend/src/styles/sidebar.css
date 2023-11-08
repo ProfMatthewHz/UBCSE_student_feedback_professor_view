@@ -25,6 +25,7 @@
   transition-duration: 0.4s;
   transition-property: background-color;
   text-align: center;
+  cursor: pointer;
 }
 
 .sidebar .add_course-btn:hover {

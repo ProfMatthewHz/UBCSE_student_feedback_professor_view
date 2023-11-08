@@ -2,7 +2,7 @@
 
 //error logging
 error_reporting(-1); // reports all errors
-ini_set("display_errors", 0); // shows all errors
+ini_set("display_errors", 1); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
@@ -70,8 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 
-
-
   // check CSRF token
   // $csrf_token = getCSRFToken($con, $instructor_id);
   // if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
@@ -112,40 +110,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg["course-year"] = "Please enter a valid 4-digit year.";
   }
 
-  if($additional_instructors == NULL){
-    $additional_instructors = array();
-  }else{
-    $additional_instructors = $_POST['additional-instructors'];
+  // if($additional_instructors == NULL){
+  //   $additional_instructors = array();
+  // }else{
+  //   $additional_instructors = $_POST['additional-instructors'];
+
+  //   $instructorSplitString = explode(',', $additional_instructors);
+
+  //   $additional_instructors = $instructorSplitString;
+  // }
+
+  $additional_instructors = $_POST['additional-instructors'];
+
+  if(!empty($additional_instructors)) {
+    $instructorSplit = explode(',', $additional_instructors);
+    $additional_instructors = $instructorSplit;
+  }else {
+    $additional_instructors = [];
   }
+
  
-   $additional_instructors = $_POST['additional-instructors'];
+   
+   // have to take a comma seperated string and split them. 
 
 
 
 
-
-  // check for valid semester and year
-
-
-
+ 
 
   $currentYear = date('Y');
-  $currentMonthA = date('n');
-  $currentMonth = MONTH_MAP_SEMESTER[$currentMonth];
-  $currentSemesterMonth = SEMESTER_MAP[$currentMonth];
+  //$currentMonthA = date('n');
+  //$currentMonth = MONTH_MAP_SEMESTER[$currentMonth];
+  //$currentSemesterMonth = SEMESTER_MAP[$currentMonth];
 
   //print_r($currentYear . " = Current Year.        ");
   $month = date('m');
   $ActualMonth = MONTH_MAP_SEMESTER[$month];
   $currentActualMonth = SEMESTER_MAP_REVERSE[$ActualMonth];
-  //print($currentActualMonth . "  = Current Actual MOnth.   ");
-//print_r($semester . "  = Current Semester inputted.  ");
-//print_r($currentSemesterMonth);
-
-  // define("SEMESTER_MAP", array('winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4));
-// define("SEMESTER_MAP_REVERSE", array(1 => 'Winter', 2=> 'Spring', 3 => 'Summer', 4=> 'Fall'));
-// define("MONTH_MAP_SEMESTER", array(1 => 1, 2 => 2, 3 => 2, 4 => 2, 5 => 2, 6 => 3, 7 => 3, 8 => 3, 9 => 4, 10 => 4, 11 => 4, 12 => 4));
-
+  
   // accounts for the current year and current semester 
 // so a previous course can not be added. 
   if ($course_year < $currentYear) {
@@ -185,22 +187,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       fclose($file_handle);
 
       
-      if($additional_instructors == NULL){
-        
-      }else {
-        $differences = array_diff($additional_instructors, $instructor_ids);
-      }
-      // $differences = array_diff($additional_instructors, $instructor_ids);
+     
+      
 
-      foreach ($differences as $difference) {
-        $errorMsg['additional-instructors'] = "unkown intstructors found";
-      }
-
-      // echo empty($differences);
-      // check for any errors
+     
       if (!empty(($names_emails['error'])) && !(empty($differences))) {
-        $errorMsg['additional-instructors'] = "unkown intstructors found";
-        $errorMsg['roster-file'] = $names_emails['error'];
+        //$errorMsg['additional-instructors'] = "unkown intstructors found";
+       // $errorMsg['roster-file'] = $names_emails['error'];
       } else {
         // now add the roster to the database if no other errors were set after adding the course to the database
         if (empty($errorMsg)) {
