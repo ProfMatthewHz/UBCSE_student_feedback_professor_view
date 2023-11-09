@@ -54,6 +54,7 @@ $response['errors'] = array();
 
 
 // set flags
+$survey_id = NULL;
 $course_id = NULL;
 $end_date = NULL;
 $end_time = NULL;
@@ -61,16 +62,15 @@ $end_time = NULL;
 // check for the query string or post parameter
 if($_SERVER['REQUEST_METHOD'] == 'GET') {
   // respond not found on no query string parameter
-  if (isset($_GET['course'])) {
+  if (isset($_GET['survey'])) {
 
-    $course_id = intval($_GET['course']);
+    $survey_id = intval($_GET['survey']);
     
-    if (!isCourseInstructor($con, $course_id, $instructor_id)){
+    if (!isSurveyInstructor($con, $survey_id, $instructor_id)){
       http_response_code(400);
-      echo "You do not teach this course!";
+      echo "You cannot modify this survey!";
       exit();
     }
-
 
   } else {
     http_response_code(400);
@@ -78,7 +78,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     exit();
   }
 
-  echo "Success! This is the page to add a survey to course " . $course_id . "<br>";
+  echo "Success! This is the page to extend survey " . $survey_id . "<br>";
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -86,21 +86,23 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   // make sure values exist
   if (!isset($_POST['course-id']) || !isset($_POST['survey-id'])
       || !isset($_POST['end-date']) || !isset($_POST['end-time'])
-      || !isset($_POST['csrf-token'])) 
+      // || !isset($_POST['csrf-token'])
+      )
   {
+    print_r($_POST);
     http_response_code(400);
     echo "Bad Request: Missing parameters.";
     exit();
   }
 
   // check CSRF token
-  $csrf_token = getCSRFToken($con, $instructor_id);
-  if ((!hash_equals($csrf_token, $_POST['csrf-token'])))
-  {
-    http_response_code(403);
-    echo "Forbidden: Incorrect parameters.";
-    exit();
-  }
+  // $csrf_token = getCSRFToken($con, $instructor_id);
+  // if ((!hash_equals($csrf_token, $_POST['csrf-token'])))
+  // {
+  //   http_response_code(403);
+  //   echo "Forbidden: Incorrect parameters.";
+  //   exit();
+  // }
 
   // get the name of this survey
 
@@ -111,6 +113,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg['course-id'] = "Please choose a valid course.";
   }
 
+  $survey_id = $_POST['survey-id'];
+
+
+  $end_date = trim($_POST['end-date']);
 
   // check survey
   if ((!isSurveyInstructor($con, $survey_id, $instructor_id)) ||
@@ -126,7 +132,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg["survey-id"] = "Please choose a valid survey"; 
   }
 
-  $current_end_date = $survey_data["end_date"];
+  $current_start_date = $survey_data['start_date'];
+  $current_end_date = $survey_data['end_date'];
 
 
   if (empty($end_date)) {
@@ -163,7 +170,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // check dates and times
   if (!isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
-    $s = new DateTime($start_date . ' ' . $start_time);
+    // $start = new Datetime($survey_data['start_date']);  
+    $s = new DateTime($current_start_date);
     $e = new DateTime($end_date . ' ' . $end_time);
     $today = new DateTime();
 
@@ -176,21 +184,36 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $errorMsg['end-date'] = "End date and time must occur in the future.";
       $errorMsg['end-time'] = "End date and time must occur in the future.";
     }
-      
-    if (empty($errorMsg)){
-      
-      $extend_success = extendSurvey($con, $survey_id, $e);
-
-      $survey_data = getSurveyData($con, $survey_id);
-      
-      $response['data']['survey-data'] = $survey_data;
-
-    } 
-      $response['errors'] = $errorMsg;
-
+    
   }
-  
 
+  if (empty($errorMsg)){
+
+    $end_date = new DateTime($end_date);
+    $end_time = new DateTime($end_time);
+
+    $end = $end_date->format('Y-m-d') . ' ' . $end_time->format('H:i');
+
+
+    $extend_success = extendSurvey($con, $survey_id, $end);
+    if (!$extend_success) {
+      $response['errors']['survey-update'] = "Database error. Could not update survey.";
+    } else {
+      $survey_data = getSurveyData($con, $survey_id);
+
+      $survey_name = $survey_data['name'];
+      $survey_end = $survey_data['end_date'];
+      
+      $survey_success_msg = $survey_name . " extended from " . $end . " to " . $survey_end;
+      
+      $response['data']['survey-update'] = $survey_success_msg;
+      $response['data']['survey-data'] = $survey_data;
+    }
+
+
+  } 
+  
+  $response['errors'] = $errorMsg;
 
   header("Content-Type: application/json; charset=UTF-8");
   $responseJSON = json_encode($response);
