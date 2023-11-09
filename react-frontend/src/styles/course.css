@@ -487,3 +487,43 @@ table.rawresults--table tr {
 table.rawresults--table tr:nth-child(odd):not(:first-child) {
   background-color: #F0F0F0;
 }
+
+/* PHONES AND SMALL DEVICES */
+@media screen and (max-width: 800px) {
+  .courseHeader h2 {
+    font-size: 16px;
+  }
+
+  .courseHeader .add-btn,
+  .courseHeader .update-btn {
+    display: none;
+  }
+
+  .courseContent {
+    width: 90%;
+  }
+
+  /* Survey styles */
+  .surveyTable th,
+  .surveyTable td {
+    padding: 12px 12px;
+  }
+
+  .no-surveys,
+  .surveyTable th {
+    font-size: 16px;
+  }
+
+  .surveyTable td {
+    font-size: 12px;
+  }
+
+  .surveyTable td button {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
+  .surveyTable {
+    max-width: 90%;
+  }
+}
