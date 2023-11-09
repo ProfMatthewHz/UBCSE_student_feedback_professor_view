@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import UBLogo from "../assets/UBLogo.png";
 import "../styles/navbar.css";
 
 const Navbar = () => {
+  const [clicked, setClicked] = useState(false)
+
+  const handleClick = () => {
+    setClicked((prev) => !prev)
+  }
+
   return (
     <>
       <div className="topbar" />
@@ -17,17 +23,26 @@ const Navbar = () => {
             </div>
           </Link>
         </div>
-        <ul>
+        <ul className={`${clicked ? "open" : ""}`}>
           <li>
             <NavLink to="/">Home</NavLink>
           </li>
           <li>
-            <NavLink to="/history">History</NavLink>
+            {/* disable history in navbar */}
+            <NavLink to="/history" className="mobile-disable">History</NavLink>
           </li>
           <li>
             <NavLink to="/library">Library</NavLink>
           </li>
         </ul>
+
+        {/* Hamburger menu for phone */}
+        <div id="nav-mobile" onClick={handleClick}>
+          <i
+            id="nav-bar"
+            className={`fas ${clicked ? "fa-times" : "fa-bars"}`}
+          ></i>
+        </div>
       </nav>
     </>
   );
