@@ -69,3 +69,79 @@ nav ul li a {
     height: 30px;
     width: 100vw;
 }
+
+/* Hamburger menu for phone */
+#nav-mobile{
+    display: none;
+}
+
+#nav-mobile i{
+    color: #225CB5;
+}
+
+/* PHONES AND SMALL DEVICES */
+@media screen and (max-width: 800px){
+    nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        position: fixed;
+        top: 148px;
+        right: -300px;
+        width: 300px;
+        height: 100vh;
+        background: #225CB5;
+        box-shadow: 0 40px 60px rgba(0, 0, 0, 0.2);
+        padding: 40px 0 0 10px;
+        transition: 300ms ease-in-out;
+    }
+
+    nav ul.open {
+        right: 0px
+    }
+
+    nav ul li {
+        margin-bottom: 25px;
+    }
+
+    nav ul li a {
+        color: #fff;
+    }
+
+    #nav-mobile {
+        display: block;
+    }
+
+    #nav-mobile i {
+        font-size: 28px;
+        cursor: pointer;
+    }
+
+    .active {
+        background-color: #fff;
+        color: #225CB5;
+    }
+
+    .mobile-disable {
+        display: none;
+    }
+}
+
+/* small devices */
+@media screen and (max-width: 550px) {
+    .logo {
+        width: 100px;
+    }
+
+    nav ul {
+       top: 129px; 
+    }
+
+    nav .title {
+        font-size: 28px;
+    }
+    
+    nav {
+        padding: 1.25rem;
+    }
+}
