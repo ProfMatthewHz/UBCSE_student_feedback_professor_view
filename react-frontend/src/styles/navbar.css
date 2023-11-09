@@ -126,3 +126,18 @@ nav ul li a {
         display: none;
     }
 }
+
+/* small devices */
+@media screen and (max-width: 550px) {
+    .logo {
+        width: 100px;
+    }
+
+    nav .title {
+        font-size: 28px;
+    }
+    
+    nav {
+        padding: 1.25rem;
+    }
+}
