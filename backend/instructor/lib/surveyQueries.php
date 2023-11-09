@@ -1,4 +1,4 @@
-<?
+<?php
 function deleteSurvey($con, $survey_id) {
   $stmt = $con->prepare('DELETE FROM surveys WHERE id=?');
   $stmt->bind_param('i', $survey_id);

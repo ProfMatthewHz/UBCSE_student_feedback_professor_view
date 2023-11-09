@@ -143,7 +143,7 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
 //Korey wrote this 
 function getInstructorTermCourses($con, $instructor_id, $semester, $year){
 
-  $retVal = array();
+  $retVal = null;
 
   $stmt = $con->prepare('SELECT id, code, name, semester, year 
                          FROM courses
@@ -159,6 +159,11 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
   }
   $stmt->close();
 
+  if (is_null($retVal)){
+    $semesterName = SEMESTER_MAP_REVERSE[$semester];
+    $noCoursesMessage = sprintf("You (instructor_id = %u) do not currently have courses for <b> %s %u! </b>", $instructor_id, $semesterName, $year);
+    echo $noCoursesMessage;
+  }
   return $retVal;
 
 } 
@@ -167,7 +172,8 @@ function getSurveysFromSingleCourse($con, $course_id){
 
   $retVal = array();
 
-  // Set expected key-value pairs (survey availability) 
+  // Set expected key-value pairs (survey availability)  and error if there is one.
+  $retVal["error"] = "";
   $retVal["upcoming"] = array();
   $retVal["active"] = array();
   $retVal["expired"] = array();
@@ -227,6 +233,8 @@ function getSurveysFromSingleCourse($con, $course_id){
     }
     unset($s);
     
+  } else {
+    $retVal['error'] = "There is no survey data for course [" . $course_id . "]";
   }
   $stmt->close();
   
@@ -236,8 +244,14 @@ function getSurveysFromSingleCourse($con, $course_id){
 
 
 function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
-  //take in currentSemester only 1,2,3,4
-  //semester Mapping = 'winter' => 1, 'spring' => 2, 'summer' => 3, 'fall' => 4
+  // Semester mapping
+  $semesterNames = [
+    1 => 'winter',
+    2 => 'spring',
+    3 => 'summer',
+    4 => 'fall',
+  ];
+  
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
                          INNER JOIN course_instructors ON courses.id = course_instructors.course_id
@@ -254,9 +268,13 @@ function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear
     return "No terms found for the instructor.";
   } 
 
+  // Map numeric semesters to string values
+  foreach ($terms as &$term) {
+    $term['semester'] = $semesterNames[$term['semester']];
+  }
+
   return $terms;
 }
-
 
 
 function instructorData($con, $instructor_id,$currentSemester,$currentYear,$course_id){

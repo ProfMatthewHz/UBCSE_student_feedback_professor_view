@@ -1,0 +1,237 @@
+.container {
+  width: 100%;
+  height: calc(100vh - 148px);
+  padding-left: 195px;
+  padding-top: 145px;
+  padding-bottom: 20px;
+}
+
+.formContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.formContent {
+  width: 100%;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+.formHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #fff;
+  border-bottom: 1px solid #225cb5;
+}
+
+.add__form {
+  padding: 20px;
+}
+
+.formHeader h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #225cb5;
+}
+
+/* FORM */
+.form__item {
+  margin-bottom: 20px;
+}
+
+.addcourse-form__item--container {
+  border-bottom: 1px solid #225cb5;
+}
+
+.add-form__submit--container {
+  display: flex;
+  align-items: center;
+  justify-content: center !important;
+}
+
+.form__submit:hover {
+  border-color: #6da04b !important;
+  color: #6da04b !important;
+  background-color: transparent !important;
+  cursor: pointer !important;
+}
+
+.form__submit:active {
+  border-color: #225cb5 !important;
+  color: #225cb5 !important;
+}
+
+.form__item--label {
+  color: #225cb5;
+  margin: 0 !important;
+}
+
+.add__form .form__item input {
+  width: 100%;
+  background-color: #fff;
+  color: #000;
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #225cb5;
+  height: 40px;
+  transition: all 250ms ease;
+}
+
+.add__form .form__item input::placeholder {
+  color: #666666;
+}
+
+.add__form .form__item input:hover {
+  border-color: #225cb5;
+}
+
+.add__form .form__item input:focus {
+  border-color: #225cb5;
+}
+
+textarea {
+  resize: vertical;
+  height: 100px;
+  margin-top: 8px;
+}
+
+.form__item--label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.add-course--select {
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #225cb5;
+  border-radius: 5px;
+  color: #000;
+  width: 100%;
+  max-width: 200px;
+  outline: none;
+}
+
+.form__item--select {
+  display: flex;
+  flex-direction: column;
+  margin-right: 8px;
+  width: 100%;
+}
+
+.form__item--file {
+  margin-bottom: 4px;
+}
+
+/* Style for the wrapper */
+.file-input-wrapper {
+  position: relative;
+  border-bottom: 2px solid #225cb5;
+}
+
+.file-input-wrapper div {
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+
+/* Hide the default input */
+.file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Custom styling for the button */
+.custom-file-label {
+  display: inline-block;
+  background-color: #225cb5; /* Blue background color */
+  color: white; /* Text color */
+  padding: 8px 16px; /* Adjust padding as needed */
+  border: none;
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer;
+}
+
+/* Style for the selected file name */
+.selected-filename {
+  margin-left: 20px;
+  color: #000;
+}
+
+.form__year-sem--container {
+  display: flex;
+  align-items: center;
+  width: 60%;
+}
+
+.add_course--error {
+  color: #990000;
+}
+
+.cancel-btn {
+  background-color: #fff !important;
+  border: 1px solid #990000 !important;
+  color: #990000 !important;
+  text-decoration: none !important;
+  margin-right: 12px;
+  text-align: center;
+}
+
+.form__submit {
+  background-color: #6da04b !important;
+  border: 1px solid #6da04b !important;
+  color: #fff !important;
+}
+
+.cancel-btn,
+.form__submit {
+  border-radius: 5px;
+  font-weight: 500;
+  padding: 9px 18px !important;
+  font-size: 16px;
+  transition: all 200ms ease;
+}
+
+.cancel-btn:hover {
+  background-color: #990000 !important;
+  color: #fff !important;
+}
+
+/* Modal overall container */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+  z-index: 1000; /* make sure it appears above other elements */
+}
+
+/* Modal content container */
+.modal-content {
+  width: 400px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal button */
+.modal-content button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #225cb5;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+}

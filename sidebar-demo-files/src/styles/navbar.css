@@ -1,14 +1,15 @@
-* {
-    margin: 0;
-    padding: 0;
-}
-
 nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem;
     border-bottom: 1px solid #225CB5;
+    background-color: #fff;
+    position: fixed;
+    top: 30px;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .nav-left {
@@ -47,7 +48,7 @@ nav ul li a {
     color: #225CB5;
     padding: 0.5rem 3rem;
     margin: 0 2rem;
-    border-radius: 8px;
+    border-radius: 5px;
     font-weight: 500;
     font-size: 18px;
 }
@@ -55,13 +56,15 @@ nav ul li a {
 .active {
     background-color: #225CB5;
     color: #fff;
+    transition-duration: 0.4s;
+    transition-property: background-color;
 }
 
 .topbar {
-    /* position: absolute; */
-    /* top: 0; */
-    /* left: 0; */
-    /* right: 0; */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     background-color: #225CB5;
     height: 30px;
     width: 100vw;
