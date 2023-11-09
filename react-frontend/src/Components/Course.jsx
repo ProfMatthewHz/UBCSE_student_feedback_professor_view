@@ -463,19 +463,22 @@ const Course = ({ course, page }) => {
         } else { // else if surveytype == "average" (For Normalized Results)
           setShowRawSurveyResults(null)
 
+          console.log("Normalized Results", result)
           if (result.length > 1) {
             const results_without_headers = result.slice(1);
             const maxValue = Math.max(...results_without_headers.map(result => result[1]));
+
 
             let labels = {};
             let startLabel = 0.0;
             let endLabel = 0.2;
             labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0
 
+            startLabel = 0.01
             while (endLabel < maxValue) {
-              startLabel += 0.21;
+              startLabel += 0.2;
               endLabel += 0.2;
-              labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0;
+              labels[`${startLabel.toFixed(2)}-${endLabel.toFixed(1)}`] = 0;
             }
 
             for (let individual_data of results_without_headers) {
@@ -483,8 +486,9 @@ const Course = ({ course, page }) => {
                 const label_split = key.split("-");
                 const current_min = parseFloat(label_split[0]);
                 const current_max = parseFloat(label_split[1]);
+                const current_normalized_average = individual_data[1].toFixed(1)
 
-                if (individual_data[1] >= current_min && individual_data[1] <= current_max) {
+                if (current_normalized_average >= current_min && current_normalized_average <= current_max) {
                   labels[key] += 1;
                 }
               }
@@ -493,6 +497,7 @@ const Course = ({ course, page }) => {
             labels = Object.entries(labels)
             labels.unshift(["Normalized Averages", "Number of Students"])
 
+            console.log(labels)
             setCurrentCSVData(result)
             setShowNormalizedSurveyResults(labels)
           } else {
