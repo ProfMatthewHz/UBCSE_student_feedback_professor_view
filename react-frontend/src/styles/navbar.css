@@ -133,6 +133,10 @@ nav ul li a {
         width: 100px;
     }
 
+    nav ul {
+       top: 129px; 
+    }
+
     nav .title {
         font-size: 28px;
     }
