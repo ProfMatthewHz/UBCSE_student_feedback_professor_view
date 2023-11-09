@@ -522,8 +522,20 @@ table.rawresults--table tr:nth-child(odd):not(:first-child) {
     padding: 4px 10px;
     font-size: 12px;
   }
-
+  
   .surveyTable {
-    max-width: 90%;
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .no-surveys,
+  .surveyTable th {
+    font-size: 14px;
+  }
+
+  .surveyTable th,
+  .surveyTable td {
+    padding: 10px;
   }
 }
