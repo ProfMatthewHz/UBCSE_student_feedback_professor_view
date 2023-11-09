@@ -55,14 +55,8 @@ $response['errors'] = array();
 
 // set flags
 $course_id = NULL;
-$rubric_id = NULL;
-$start_date = NULL;
 $end_date = NULL;
-$start_time = NULL;
 $end_time = NULL;
-$pairing_mode = NULL;
-$survey_name = NULL;
-$pm_mult = 1;
 
 // check for the query string or post parameter
 if($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -90,9 +84,9 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
-  if (!isset($_POST['course-id']) || !isset($_POST['survey-id']) || 
-      !isset($_POST['end-date']) || !isset($_POST['end-time']) ||
-      !isset($_POST['csrf-token'])) 
+  if (!isset($_POST['course-id']) || !isset($_POST['survey-id'])
+      || !isset($_POST['end-date']) || !isset($_POST['end-time'])
+      || !isset($_POST['csrf-token'])) 
   {
     http_response_code(400);
     echo "Bad Request: Missing parameters.";
@@ -182,14 +176,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $errorMsg['end-date'] = "End date and time must occur in the future.";
       $errorMsg['end-time'] = "End date and time must occur in the future.";
     }
+      
+    if (empty($errorMsg)){
+      
+      $extend_success = extendSurvey($con, $survey_id, $e);
+
+      $survey_data = getSurveyData($con, $survey_id);
+      
+      $response['data']['survey-data'] = $survey_data;
+
+    } 
+      $response['errors'] = $errorMsg;
+
   }
   
 
+
   header("Content-Type: application/json; charset=UTF-8");
-
-  // $response['errors'] = $errorMsg;
   $responseJSON = json_encode($response);
-
   echo $responseJSON;
   
 }
