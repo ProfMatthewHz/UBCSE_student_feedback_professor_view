@@ -489,6 +489,51 @@ table.rawresults--table tr:nth-child(odd):not(:first-child) {
   background-color: #F0F0F0;
 }
 
+/* Pagination */
+.rawresults--pagination-container {
+  margin-bottom: 20px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+}
+
+.page-active .page-link {
+  background-color: #225cb5;
+  color: #fff;
+  border-color: #225cb5;
+}
+
+.page-link {
+  color: #225cb5;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  border: 1px solid #225cb5;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.page-link-prev {
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
+}
+
+.page-link-next {
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.page-link:hover {
+  background-color: #225cb5;
+  color: #fff;
+  border-color: #225cb5;
+}
+
+
 /* PHONES AND SMALL DEVICES */
 @media screen and (max-width: 800px) {
   .courseHeader h2 {

@@ -436,6 +436,36 @@ const Course = ({ course, page }) => {
     setShowNormalizedSurveyResults(null);
   };
 
+  // States/variables for Pagination for Raw Results
+  const [rawResultsCurrentPage, setRawResultsCurrentPage] = useState(1)
+  const [rawResultsNumOfPages, setRawResultsNumOfPages] = useState(1)
+  const [rawResultNumbers, setRawResultNumbers] = useState([...Array(rawResultsNumOfPages + 1).keys()].slice(1))
+  const rawResultsPerPage = 5
+  const rawResultsLastIndex = rawResultsCurrentPage * rawResultsPerPage
+  const rawResultsFirstIndex = (rawResultsLastIndex - rawResultsPerPage) + 1
+  const rawResultsRecords = showRawSurveyResults !== null ? showRawSurveyResults.slice(rawResultsFirstIndex, rawResultsLastIndex) : []
+
+  const changeRawResultsPage = (number) => {
+    setRawResultsCurrentPage(number)
+  }
+
+  const rawResultsPrevPage = () => {
+    if(rawResultsCurrentPage !== rawResultsFirstIndex) {
+      setRawResultsCurrentPage(rawResultsCurrentPage - 1)
+    }
+  }
+
+  const rawResultsNextPage = () => {
+    if(rawResultsCurrentPage !== rawResultsLastIndex) {
+      setRawResultsCurrentPage(rawResultsCurrentPage + 1)
+    }
+  }
+
+  useEffect(() => {
+    console.log(typeof showRawSurveyResults)
+    setRawResultNumbers([...Array(rawResultsNumOfPages + 1).keys()].slice(1))
+  }, [showRawSurveyResults])
+
   const handleSelectedSurveyResultsModalChange = (surveyid, surveytype) => {
     fetch(
       "http://localhost/StudentSurvey/backend/instructor/resultsView.php",
@@ -454,7 +484,9 @@ const Course = ({ course, page }) => {
       .then((result) => {
         if (surveytype == "raw-full") {
           setShowNormalizedSurveyResults(null)
+          console.log(result)
           setShowRawSurveyResults(result)
+          setRawResultsNumOfPages(Math.ceil((result.length - 1) / rawResultsPerPage))
           if (result.length > 1) {
             setCurrentCSVData(result)
           } else {
@@ -853,7 +885,7 @@ const Course = ({ course, page }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {showRawSurveyResults.slice(1).map((rowData, rowIndex) => (
+                      {rawResultsRecords.map((rowData, rowIndex) => (
                         <tr key={rowIndex}>
                           {rowData.map((cellData, cellIndex) => (
                             cellData ? <td key={cellIndex}>{cellData}</td> 
@@ -864,6 +896,25 @@ const Course = ({ course, page }) => {
                       ))}
                     </tbody>
                   </table>
+
+                  {/* Pagination */}
+                  <div className="rawresults--pagination-container">
+                    <ul className="pagination">
+                      <li className="page-item">
+                        <div className="page-link page-link-prev" onClick={rawResultsPrevPage}>Prev</div>
+                      </li>
+                      {
+                        rawResultNumbers.map((pageNumber, index) => (
+                          <li className={`page-item ${rawResultsCurrentPage === pageNumber ? 'page-active' : ''}`} key={index}>
+                            <div className="page-link" onClick={() => changeRawResultsPage(pageNumber)}>{pageNumber}</div>
+                          </li>
+                        ))
+                      }
+                      <li className="page-item">
+                        <div className="page-link page-link-next" onClick={rawResultsNextPage}>Next</div>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               )
               : (showRawSurveyResults && !currentCSVData) ? (
