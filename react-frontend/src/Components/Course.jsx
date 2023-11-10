@@ -450,13 +450,13 @@ const Course = ({ course, page }) => {
   }
 
   const rawResultsPrevPage = () => {
-    if(rawResultsCurrentPage !== rawResultsFirstIndex) {
+    if(rawResultsFirstIndex >= rawResultsCurrentPage) {
       setRawResultsCurrentPage(rawResultsCurrentPage - 1)
     }
   }
 
   const rawResultsNextPage = () => {
-    if(rawResultsCurrentPage !== rawResultsLastIndex) {
+    if(rawResultsCurrentPage < rawResultNumbers.length) {
       setRawResultsCurrentPage(rawResultsCurrentPage + 1)
     }
   }
