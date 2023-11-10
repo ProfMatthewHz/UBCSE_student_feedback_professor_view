@@ -19,3 +19,10 @@
 .container .no-course h1 {
     color: #225CB5;
 }
+
+/* PHONES AND SMALL DEVICES */
+@media screen and (max-width: 800px) {
+    .container {
+        padding-left: 0px;
+    }
+}

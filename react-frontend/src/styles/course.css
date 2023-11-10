@@ -353,8 +353,8 @@
 }
 
 .viewresults-modal-content {
-  max-width: 70%;
-  width: 1000px;
+  max-width: 1200px;
+  width: 100%;
   padding-bottom: 20px;
   background-color: #fff;
   border-radius: 8px;
@@ -460,8 +460,9 @@
 
 table.rawresults--table {
   width: 100%;
-  margin: 20px;
+  margin: 20px 0;
   border-collapse: collapse;
+  align-self: center;
 }
 
 table.rawresults--table th {
@@ -486,4 +487,82 @@ table.rawresults--table tr {
 
 table.rawresults--table tr:nth-child(odd):not(:first-child) {
   background-color: #F0F0F0;
+}
+
+/* PHONES AND SMALL DEVICES */
+@media screen and (max-width: 800px) {
+  .courseHeader h2 {
+    font-size: 16px;
+  }
+
+  .courseHeader .add-btn,
+  .courseHeader .update-btn {
+    display: none;
+  }
+
+  .courseContent {
+    width: 90%;
+  }
+
+  /* Survey styles */
+  .surveyTable th,
+  .surveyTable td {
+    padding: 12px 12px;
+  }
+
+  .no-surveys,
+  .surveyTable th {
+    font-size: 16px;
+  }
+
+  .surveyTable td {
+    font-size: 12px;
+  }
+
+  .surveyTable td button {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+  
+  .surveyTable {
+    max-width: 100%;
+  }
+
+  /* View Results */
+  .viewresults-modal-content {
+    max-width: 90%;
+  }
+
+  .viewresults-modal--other-button-container {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .no-surveys,
+  .surveyTable th {
+    font-size: 14px;
+  }
+
+  .surveyTable th,
+  .surveyTable td {
+    padding: 10px;
+  }
+
+  /* View Results */
+  .viewresults-modal--heading {
+    font-size: 16px;
+  }
+
+  .survey-result--option {
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+
+  table.rawresults--table td,
+  table.rawresults--table th {
+    padding: 2px;
+    font-size: 11px;
+    width: calc(100% / 4);
+  }
 }
