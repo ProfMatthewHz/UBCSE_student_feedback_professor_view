@@ -488,7 +488,6 @@ const Course = ({ course, page }) => {
       .then((result) => {
         if (surveytype == "raw-full") {
           setShowNormalizedSurveyResults(null)
-          console.log(result)
           setShowRawSurveyResults(result)
           setRawResultsNumOfPages(Math.ceil((result.length - 1) / rawResultsPerPage))
           if (result.length > 1) {
