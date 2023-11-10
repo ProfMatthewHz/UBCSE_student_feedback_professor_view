@@ -610,4 +610,9 @@ table.rawresults--table tr:nth-child(odd):not(:first-child) {
     font-size: 11px;
     width: calc(100% / 4);
   }
+
+  .page-link {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
 }

@@ -451,15 +451,38 @@ const Course = ({ course, page }) => {
 
   const rawResultsPrevPage = () => {
     if(rawResultsFirstIndex >= rawResultsCurrentPage) {
-      setRawResultsCurrentPage(rawResultsCurrentPage - 1)
+      setRawResultsCurrentPage((prevPage) => prevPage - 1);
     }
   }
 
   const rawResultsNextPage = () => {
     if(rawResultsCurrentPage < rawResultNumbers.length) {
-      setRawResultsCurrentPage(rawResultsCurrentPage + 1)
+      setRawResultsCurrentPage((prevPage) => prevPage + 1);
     }
   }
+
+  const displayPageNumbers = () => {
+    const totalPages = rawResultNumbers.length;
+    const maxDisplayedPages = 4;
+
+    if (totalPages <= maxDisplayedPages) {
+      return rawResultNumbers;
+    }
+
+    const middleIndex = Math.floor(maxDisplayedPages / 2);
+    const startIndex = Math.max(0, rawResultsCurrentPage - middleIndex);
+    const endIndex = Math.min(totalPages, startIndex + maxDisplayedPages);
+
+    const displayedNumbers = [
+      1,
+      ...(startIndex > 1 ? ['...'] : []),
+      ...rawResultNumbers.slice(startIndex, endIndex),
+      ...(endIndex < totalPages ? ['...'] : []),
+      totalPages
+    ];
+    
+    return Array.from(new Set(displayedNumbers));
+  };
 
   useEffect(() => {
     setRawResultNumbers([...Array(rawResultsNumOfPages + 1).keys()].slice(1))
@@ -906,13 +929,15 @@ const Course = ({ course, page }) => {
                       <li className="page-item">
                         <div className="page-link page-link-prev" onClick={rawResultsPrevPage}>Prev</div>
                       </li>
-                      {
-                        rawResultNumbers.map((pageNumber, index) => (
-                          <li className={`page-item ${rawResultsCurrentPage === pageNumber ? 'page-active' : ''}`} key={index}>
+                      {displayPageNumbers().map((pageNumber, index) => (
+                        <li className={`page-item ${rawResultsCurrentPage === pageNumber ? 'page-active' : ''}`} key={index}>
+                          {pageNumber === '...' ? (
+                            <div className="page-link">...</div>
+                          ) : (
                             <div className="page-link" onClick={() => changeRawResultsPage(pageNumber)}>{pageNumber}</div>
-                          </li>
-                        ))
-                      }
+                          )}
+                        </li>
+                      ))}
                       <li className="page-item">
                         <div className="page-link page-link-next" onClick={rawResultsNextPage}>Next</div>
                       </li>
