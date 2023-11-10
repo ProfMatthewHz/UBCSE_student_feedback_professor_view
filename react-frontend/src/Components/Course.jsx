@@ -440,10 +440,10 @@ const Course = ({ course, page }) => {
   const [rawResultsCurrentPage, setRawResultsCurrentPage] = useState(1)
   const [rawResultsNumOfPages, setRawResultsNumOfPages] = useState(1)
   const [rawResultNumbers, setRawResultNumbers] = useState([...Array(rawResultsNumOfPages + 1).keys()].slice(1))
+  const [rawResultsRecords, setRawResultsRecords] = useState([])
   const rawResultsPerPage = 5
   const rawResultsLastIndex = rawResultsCurrentPage * rawResultsPerPage
-  const rawResultsFirstIndex = (rawResultsLastIndex - rawResultsPerPage) + 1
-  const rawResultsRecords = showRawSurveyResults !== null ? showRawSurveyResults.slice(rawResultsFirstIndex, rawResultsLastIndex) : []
+  const rawResultsFirstIndex = (rawResultsLastIndex - rawResultsPerPage)
 
   const changeRawResultsPage = (number) => {
     setRawResultsCurrentPage(number)
@@ -462,9 +462,14 @@ const Course = ({ course, page }) => {
   }
 
   useEffect(() => {
-    console.log(typeof showRawSurveyResults)
     setRawResultNumbers([...Array(rawResultsNumOfPages + 1).keys()].slice(1))
-  }, [showRawSurveyResults])
+    if(showRawSurveyResults !== null){
+      const showRawSurveyResultsWithoutFirstElement = showRawSurveyResults.slice(1); // Exclude the first element
+      const rawResultsRecordsAtCurrentPage = showRawSurveyResultsWithoutFirstElement.slice(rawResultsFirstIndex, rawResultsLastIndex)
+      setRawResultsRecords(rawResultsRecordsAtCurrentPage)
+    }
+    console.log(rawResultsRecords)
+  }, [showRawSurveyResults, rawResultsCurrentPage])
 
   const handleSelectedSurveyResultsModalChange = (surveyid, surveytype) => {
     fetch(
@@ -885,7 +890,7 @@ const Course = ({ course, page }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {rawResultsRecords.map((rowData, rowIndex) => (
+                      {rawResultsRecords && rawResultsRecords.map((rowData, rowIndex) => (
                         <tr key={rowIndex}>
                           {rowData.map((cellData, cellIndex) => (
                             cellData ? <td key={cellIndex}>{cellData}</td> 
