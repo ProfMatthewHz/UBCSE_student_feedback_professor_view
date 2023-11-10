@@ -33,73 +33,92 @@ $sid = NULL;
 if($_SERVER['REQUEST_METHOD'] == 'GET') {
   // respond not found on no query string parameter
   if (!isset($_GET['survey'])) {
-    http_response_code(404);   
+    http_response_code(404);
     echo "404: Not found.";
     exit();
   }
+
+  $response = array('data' => array(), 'errors' => array());
 
   // make sure the query string is an integer, reply 404 otherwise
   $sid = intval($_GET['survey']);
 
   if ($sid === 0) {
     http_response_code(404);   
-    echo "404: Not found.";
-    exit();
-  }
-} else {
-  // respond bad request if bad post parameters
-  if (!isset($_POST['survey']) or !isset($_POST['csrf-token'])) {
-    http_response_code(400);
-    echo "Bad Request: Missing parmeters.";
-    exit();
-  }
-  
-  // check CSRF token
-  $csrf_token = getCSRFToken($con, $instructor_id);
-  if (!hash_equals($csrf_token, $_POST['csrf-token'])) {
-    http_response_code(403);
-    echo "Forbidden: Incorrect parameters.";
+    echo "404: Not found. Survey must be an integer";
     exit();
   }
 
-  // make sure the post survey id is an integer, reply 400 otherwise
-  $sid = intval($_POST['survey']);
+  $survey_id = $sid;
 
-  if ($sid === 0) {
-    http_response_code(400);
-    echo "Bad Request: Invalid parameters.";
-    exit();
+  $survey_data = getSurveyData($con, $survey_id);
+
+  $errorMsg = array();
+
+  if (empty($survey_data)) {
+    $errorMsg['survey'] = "Please choose a valid survey";
+  } 
+  if (!isSurveyInstructor($con, $survey_id, $instructor_id)){
+    $errorMsg['survey'] = "Please choose a valid survey";
   }
-  
+
+  $survey_course_id = $survey_data['course_id'];
+  $course_data = getSingleCourseInfo($con, $survey_course_id, $instructor_id);
+
+  if (empty($course_data)){
+    $errorMsg['course'] = "Please choose a valid course";
+  }
+
+  if (empty($errorMsg)){
+
+    # return data for frontend to present
+
+    $course_code = $course_data['code'];
+    $course_name = $course_data['name'];
+    $course_term = SEMESTER_MAP_REVERSE[$course_data['semester']];
+    $course_year = $course_data['year'];
+
+    $courseData = array();
+    $courseData['code'] = $course_code;
+    $courseData['name'] = $course_name;
+    $courseData['term'] = $course_term;
+    $courseData['year'] = $course_year;
+
+    $surveyData = array();
+    $survey_name = $survey_data['name'];
+    $surveyData['name'] = $survey_name;
+    $surveyData['id'] = $survey_id;
+    
+    $response['data']['survey'] = $surveyData;
+    $response['data']['course'] = $courseData;
+
+    $_SESSION['survey-id'] = $survey_id;
+
+  } else {
+    $response['errors'] = $errorMsg;
+  }
+
+  header("Content-Type: application/json; charset=UTF-8");
+  $responseJSON = json_encode($response);
+  echo $responseJSON;
+
 }
-
-// try to look up info about the requested survey
-$survey_info = getSurveyData($con, $sid);
-if (empty($survey_info)) {
-  http_response_code(403);
-  echo "403: Forbidden.";
-  exit();
-}
-$survey_name = $survey_info['name'];
-
-// Get the info for the course that this instructor teaches 
-$course_info = getSingleCourseInfo($con, $survey_info['course_id'], $instructor_id);
-if (empty($course_info)) {
-  http_response_code(403);
-  echo "403: Forbidden.";
-  exit();
-}
-$course_name = $course_info['name'];
-$course_code = $course_info['code'];
-$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
-$course_year = $course_info['year'];
-
-// now perform the possible deletion function
-// first set some flags
-$errorMsg = array();
 
 // now perform the basic checks
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+  if (!isset($_SESSION['survey-id'])){
+    http_response_code(403);
+    echo "403 Forbidden.";
+    exit();
+  }
+
+  $survey_id = $_SESSION['survey-id'];
+
+  $response = array('data' => array(), 'errors' => array());
+
+  $errorMsg = array();
+
   // now check for the agreement checkbox
   if (!isset($_POST['agreement'])) {
     $errorMsg['agreement'] = 'Please read the statement next to the checkbox and check it if you agree.';
@@ -111,14 +130,20 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (empty($errorMsg)) {
     if (deleteSurvey($con, $sid)) { 
       // redirect to next page and set message
-      $_SESSION['survey-delete'] = "Successfully deleted survey.";
+      $response['data']['delete-message'] = "Successfully deleted survey.";
     } else {
-      $_SESSION['survey-delete'] = "Error: Could not delete survey.";
+      $response['data']['delete-message'] = "Error: Could not delete survey.";
     }
-    http_response_code(302);   
-    header("Location: ".INSTRUCTOR_HOME."surveys.php");
-    exit();
-  } 
+    unset($_SESSION['survey-id']);
+
+  } else {
+    $response['errors'] = $errorMsg;
+  }
+
+  header("Content-Type: application/json; charset=UTF-8");
+  $responseJSON = json_encode($response);
+  echo $responseJSON;
+  
 }
 // $csrf_token = createCSRFToken($con, $instructor_id);
 ?>

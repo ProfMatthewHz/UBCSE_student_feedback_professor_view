@@ -128,6 +128,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
       );
       $roster_students[] = $student_data;
     }
+    // good php practice to unset loop vars
+    unset($email, $student_data);
 
     # get non-roster students data
     foreach($non_roster as $email => $student_data){
@@ -146,6 +148,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
       );
       $non_roster_students[] = $student_data;
     }
+    // good php practice to unset loop vars
     unset($email, $student_data);
 
 
