@@ -468,7 +468,6 @@ const Course = ({ course, page }) => {
       const rawResultsRecordsAtCurrentPage = showRawSurveyResultsWithoutFirstElement.slice(rawResultsFirstIndex, rawResultsLastIndex)
       setRawResultsRecords(rawResultsRecordsAtCurrentPage)
     }
-    console.log(rawResultsRecords)
   }, [showRawSurveyResults, rawResultsCurrentPage])
 
   const handleSelectedSurveyResultsModalChange = (surveyid, surveytype) => {
