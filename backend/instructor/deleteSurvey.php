@@ -128,7 +128,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   
   // now delete the survey if agreement
   if (empty($errorMsg)) {
-    if (deleteSurvey($con, $sid)) { 
+    if (deleteSurvey($con, $survey_id)) { 
       // redirect to next page and set message
       $response['data']['delete-message'] = "Successfully deleted survey.";
     } else {
