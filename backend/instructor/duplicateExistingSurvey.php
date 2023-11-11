@@ -69,43 +69,43 @@ if (empty($survey_info)) {
     exit();
 }
 
+$course_id = $survey_info['course_id'];
+$course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
+if (empty($course_info)) {
+  http_response_code(403);
+  echo "403: Forbidden.";
+  exit();
+}
+
+$survey_name = $survey_info['name'] . ' copy';
+$start_date = $survey_info['start_date'];
+$end_date = $survey_info['end_date'];
+$rubric_id = $survey_info['rubric_id'];
+$survey_type = $survey_info['survey_type_id'];
+$course_name = $course_info['name'];
+$course_code = $course_info['code'];
+$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+$course_year = $course_info['year'];
+
+$s = new DateTimeImmutable($start_date);
+$e = new DateTimeImmutable($end_date);
+$length = $s->diff($e);
+$now = new DateTimeImmutable($end_date);
+$new_start = null;
+if ($e > $now) {
+  $new_start = $e;
+} else {
+  $new_start = $now;
+}
+$new_end = $new_start->add($length);
+$start_date = $new_start->format('Y-m-d');
+$start_time = $new_start->format('H:i');
+$end_date = $new_end->format('Y-m-d');
+$end_time = $new_end->format('H:i');
+
 if (($_SERVER['REQUEST_METHOD'] == 'GET')){
-    
-  $course_id = $survey_info['course_id'];
 
-    // Get the info for the course that this instructor teaches 
-  $course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
-  if (empty($course_info)) {
-    http_response_code(403);
-    echo "403: Forbidden.";
-    exit();
-  }
-
-  $survey_name = $survey_info['name'] . ' copy';
-  $start_date = $survey_info['start_date'];
-  $end_date = $survey_info['end_date'];
-  $rubric_id = $survey_info['rubric_id'];
-  $survey_type = $survey_info['survey_type_id'];
-  $course_name = $course_info['name'];
-  $course_code = $course_info['code'];
-  $course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
-  $course_year = $course_info['year'];
-
-  $s = new DateTimeImmutable($start_date);
-  $e = new DateTimeImmutable($end_date);
-  $length = $s->diff($e);
-  $now = new DateTimeImmutable($end_date);
-  $new_start = null;
-  if ($e > $now) {
-    $new_start = $e;
-  } else {
-    $new_start = $now;
-  }
-  $new_end = $new_start->add($length);
-  $start_date = $new_start->format('Y-m-d');
-  $start_time = $new_start->format('H:i');
-  $end_date = $new_end->format('Y-m-d');
-  $end_time = $new_end->format('H:i');
+  $response = array('data' => array(), 'errors' => array());
 
   $surveyData = array();
   $surveyData['survey-name'] = $survey_name;
@@ -230,10 +230,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     $success = addReviewsToSurvey($con, $survey_id, $pairings);
 
-    if (!$success) {
+    if ($success) {
       $response['data']['survey-update'] = "Success: Added reviews to survey: " . $survey_name;
     } else{
-      $reponse['data']['survey-update'] = "Failed: Adding reviews to survey: " . $survey_name;
+      $response['data']['survey-update'] = "Failed: Adding reviews to survey: " . $survey_name;
     }
 
   } else {
