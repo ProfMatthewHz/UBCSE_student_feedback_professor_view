@@ -227,10 +227,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (empty($errorMsg)) {
     $pairings = getReviewsForSurvey($con, $survey_id);
     $survey_id = insertSurvey($con, $course_id, $survey_name, $s, $e, $rubric_id, $survey_type);
-    addReviewsToSurvey($con, $survey_id, $pairings);
-    http_response_code(302);
-    header("Location: ".INSTRUCTOR_HOME."surveys.php");
-    exit();
+    
+    $success = addReviewsToSurvey($con, $survey_id, $pairings);
+
+    if (!$success) {
+      $response['data']['survey-update'] = "Success: Added reviews to survey: " . $survey_name;
+    } else{
+      $reponse['data']['survey-update'] = "Failed: Adding reviews to survey: " . $survey_name;
+    }
+
   } else {
 
     $response['errors'] = $errorMsg;
@@ -238,9 +243,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   header("Content-Type: application/json; charset=UTF-8");
-
   $responseJSON = json_encode($response);
-
   echo $responseJSON;
 
 }
