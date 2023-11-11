@@ -35,7 +35,6 @@ if (!isset($_SESSION['id'])) {
 $instructor_id = $_SESSION['id'];
 
 //stores error messages corresponding to form fields
-$errorMsg = array();
 
 // set flags
 $course_id = NULL;
@@ -50,13 +49,13 @@ $end_time = NULL;
 
 // check for the survey number we are working with
 if (($_SERVER['REQUEST_METHOD'] == 'GET') && isset($_GET['survey'])) {
-  $survey_id = intval($_GET['survey']);
+    $survey_id = intval($_GET['survey']);
 } else if (($_SERVER['REQUEST_METHOD'] == 'POST') && isset($_POST['survey-id'])) {
-  $survey_id = intval($_POST['survey-id']);
+    $survey_id = intval($_POST['survey-id']);
 } else {
-  http_response_code(400);
-  echo "Bad Request: Missing parameters.";
-  exit();
+    http_response_code(400);
+    echo "Bad Request: Missing parameters.";
+    exit();
 }
 
 // Get rubric info
@@ -65,62 +64,86 @@ $rubrics = getRubrics($con);
 // try to look up info about the requested survey
 $survey_info = getSurveyData($con, $survey_id);
 if (empty($survey_info)) {
-  http_response_code(403);
-  echo "403: Forbidden.";
-  exit();
+    http_response_code(403);
+    echo "403: Forbidden.";
+    exit();
 }
-$course_id = $survey_info['course_id'];
 
-// Get the info for the course that this instructor teaches 
-$course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
-if (empty($course_info)) {
-  http_response_code(403);
-  echo "403: Forbidden.";
-  exit();
-}
-$survey_name = $survey_info['name'] . ' copy';
-$start_date = $survey_info['start_date'];
-$end_date = $survey_info['end_date'];
-$rubric_id = $survey_info['rubric_id'];
-$survey_type = $survey_info['survey_type_id'];
-$course_name = $course_info['name'];
-$course_code = $course_info['code'];
-$course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
-$course_year = $course_info['year'];
+if (($_SERVER['REQUEST_METHOD'] == 'GET')){
+    
+  $course_id = $survey_info['course_id'];
 
-$s = new DateTimeImmutable($start_date);
-$e = new DateTimeImmutable($end_date);
-$length = $s->diff($e);
-$now = new DateTimeImmutable($end_date);
-$new_start = null;
-if ($e > $now) {
-  $new_start = $e;
-} else {
-  $new_start = $now;
+    // Get the info for the course that this instructor teaches 
+  $course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
+  if (empty($course_info)) {
+    http_response_code(403);
+    echo "403: Forbidden.";
+    exit();
+  }
+
+  $survey_name = $survey_info['name'] . ' copy';
+  $start_date = $survey_info['start_date'];
+  $end_date = $survey_info['end_date'];
+  $rubric_id = $survey_info['rubric_id'];
+  $survey_type = $survey_info['survey_type_id'];
+  $course_name = $course_info['name'];
+  $course_code = $course_info['code'];
+  $course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
+  $course_year = $course_info['year'];
+
+  $s = new DateTimeImmutable($start_date);
+  $e = new DateTimeImmutable($end_date);
+  $length = $s->diff($e);
+  $now = new DateTimeImmutable($end_date);
+  $new_start = null;
+  if ($e > $now) {
+    $new_start = $e;
+  } else {
+    $new_start = $now;
+  }
+  $new_end = $new_start->add($length);
+  $start_date = $new_start->format('Y-m-d');
+  $start_time = $new_start->format('H:i');
+  $end_date = $new_end->format('Y-m-d');
+  $end_time = $new_end->format('H:i');
+
+  $surveyData = array();
+  $surveyData['survey-name'] = $survey_name;
+  $surveyData['start-date'] = $start_date;
+  $surveyData['start-time'] = $start_time;
+  $surveyData['end-date'] = $end_date;
+  $surveyData['end-time'] = $end_time;
+  $surveyData['course-name'] = $course_name;
+  $surveyData['course-code'] = $course_code;
+  $surveyData['course-term'] = $course_term;
+  $surveyData['course-year'] = $course_year;
+  $surveyData['rubric-id'] = $rubric_id;
+
+
+  $response['data'] = $surveyData;
+
+  header("Content-Type: application/json; charset=UTF-8");
+  $responseJSON = json_encode($response);
+  echo $responseJSON;
+
+
 }
-$new_end = $new_start->add($length);
-$start_date = $new_start->format('Y-m-d');
-$start_time = $new_start->format('H:i');
-$end_date = $new_end->format('Y-m-d');
-$end_time = $new_end->format('H:i');
+
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // make sure values exist
-  if (!isset($_POST['start-date']) || !isset($_POST['start-time']) || !isset($_POST['end-date']) || !isset($_POST['end-time']) || !isset($_POST['csrf-token']) ||
-      !isset($_POST['survey-name'])) {
+  if (!isset($_POST['start-date']) || !isset($_POST['start-time']) || 
+      !isset($_POST['end-date']) || !isset($_POST['end-time']) || 
+      !isset($_POST['survey-name']) || !isset($_POST['rubric-id'])) 
+  {
     http_response_code(400);
     echo "Bad Request: Missing parameters.";
     exit();
   }
 
-  // check CSRF token
-  $csrf_token = getCSRFToken($con, $instructor_id);
-  if (!hash_equals($csrf_token, $_POST['csrf-token'])) {
-    http_response_code(403);
-    echo "Forbidden: Incorrect parameters.";
-    exit();
-  }
+  $response = array('data' => array(), 'errors' => array());
+  $errorMsg = array();
 
   // The survey name and end date can always be updated, so we check them first
     
@@ -208,6 +231,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     http_response_code(302);
     header("Location: ".INSTRUCTOR_HOME."surveys.php");
     exit();
+  } else {
+
+    $response['errors'] = $errorMsg;
+
   }
+
+  header("Content-Type: application/json; charset=UTF-8");
+
+  $responseJSON = json_encode($response);
+
+  echo $responseJSON;
+
 }
-$csrf_to
