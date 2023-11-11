@@ -902,26 +902,28 @@ const Course = ({ course, page }) => {
                       Download Results
                     </CSVLink>
                   </div>
-                  <table className="rawresults--table">
-                    <thead>
-                      <tr>
-                        {showRawSurveyResults[0].map((header, index) => (
-                          <th key={index}>{header}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rawResultsRecords && rawResultsRecords.map((rowData, rowIndex) => (
-                        <tr key={rowIndex}>
-                          {rowData.map((cellData, cellIndex) => (
-                            cellData ? <td key={cellIndex}>{cellData}</td> 
-                            : <td key={cellIndex}>--</td>
-
+                  <div className="rawresults--table-container">
+                    <table className="rawresults--table">
+                      <thead>
+                        <tr>
+                          {showRawSurveyResults[0].map((header, index) => (
+                            <th key={index}>{header}</th>
                           ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {rawResultsRecords && rawResultsRecords.map((rowData, rowIndex) => (
+                          <tr key={rowIndex}>
+                            {rowData.map((cellData, cellIndex) => (
+                              cellData ? <td key={cellIndex}>{cellData}</td> 
+                              : <td key={cellIndex}>--</td>
+
+                              ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
 
                   {/* Pagination */}
                   <div className="rawresults--pagination-container">

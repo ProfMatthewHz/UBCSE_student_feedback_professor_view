@@ -533,6 +533,10 @@ table.rawresults--table tr:nth-child(odd):not(:first-child) {
   border-color: #225cb5;
 }
 
+.rawresults--table-container {
+  overflow-x: auto;
+  max-width: 100%;
+}
 
 /* PHONES AND SMALL DEVICES */
 @media screen and (max-width: 800px) {
