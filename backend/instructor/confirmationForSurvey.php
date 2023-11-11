@@ -152,8 +152,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     unset($email, $student_data);
 
 
-    $rosterData['roster_students'] = $roster_students;
-    $rosterData['non_roster_students'] = $non_roster_students;
+    $rosterData['roster-students'] = $roster_students;
+    $rosterData['non-roster-students'] = $non_roster_students;
     $rosterData['pairings'] = $file_results['pairings'];
 
     $response['data'] = $rosterData;
