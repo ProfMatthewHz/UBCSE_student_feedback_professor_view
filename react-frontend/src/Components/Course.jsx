@@ -681,8 +681,8 @@ const Course = ({ course, page }) => {
       let rosterDataAll = await fetchRosterNonRoster();
       let rosterData= rosterDataAll.data;
       if(rosterData){
-        let rostersArrayHere=rosterData.roster_students;
-        let nonRosterArrayHere = rosterData.non_roster_students;
+        let rostersArrayHere=rosterData['roster-students'];
+        let nonRosterArrayHere = rosterData['non-roster-students'];
         setRosterArray(rostersArrayHere);
         setNonRosterArray(nonRosterArrayHere);
         setSurveyNameConfirm(surveyName);
@@ -864,6 +864,7 @@ async function verifyDeleteBackend(formdata,id){
 
 }
 
+
 async function extendSurveyBackendGet(id){
   let fetchHTTP =
   "http://localhost/StudentSurvey/backend/instructor/extendSurvey.php?survey="+id
@@ -912,6 +913,7 @@ async function verifyExtendModal(){
   formData5.append('end-time', newEndTime);
 
   let pre = await extendSurveyBackendGet(surveyId);
+  //console.log(pre);
   let post = await extendSurveyBackendPost(surveyId,formData5);
   if(post.errors['end-date'] || post.errors['end-time']){
     //there are errors 
