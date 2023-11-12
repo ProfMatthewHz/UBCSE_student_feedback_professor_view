@@ -1248,7 +1248,7 @@ function deleteModalClose() {
             }}
           >
             <h2 style={{ color: "#225cb5" }}>
-              Duplicate Chosen Survey:{currentSurvey.name}
+              Duplicate Chosen Survey: {currentSurvey.name}
             </h2>
             </div>
           <div style={{
