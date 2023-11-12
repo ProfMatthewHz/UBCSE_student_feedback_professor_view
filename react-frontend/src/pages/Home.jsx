@@ -46,7 +46,7 @@ const Home = () => {
 
   const fetchCourses = () => {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/instructorCoursesInTerm.php",
+      process.env.REACT_APP_API_URL + "instructorCoursesInTerm.php",
       {
         method: "POST",
         headers: {

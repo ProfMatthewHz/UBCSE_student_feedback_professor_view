@@ -13,7 +13,7 @@ const Course = ({ course, page }) => {
 
   function updateAllSurveys() {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/courseSurveysQueries.php",
+      process.env.REACT_APP_API_URL + "courseSurveysQueries.php",
       {
         method: "POST",
         headers: {
@@ -102,7 +102,7 @@ const Course = ({ course, page }) => {
   
 
   const fetchRubrics = () => {
-    fetch("http://localhost/StudentSurvey/backend/instructor/rubricsGet.php", {
+    fetch(process.env.REACT_APP_API_URL + "rubricsGet.php", {
       method: "GET",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -123,7 +123,7 @@ const Course = ({ course, page }) => {
   };
   const fetchPairingModes = () => {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/surveyTypesGet.php",
+      process.env.REACT_APP_API_URL + "surveyTypesGet.php",
       {
         method: "GET",
         headers: {
@@ -210,9 +210,8 @@ const Course = ({ course, page }) => {
     setMultiplier(boolean);
   };
 
-
   async function fetchRosterNonRoster() {
-    let fetchHTTP = "http://localhost/StudentSurvey/backend/instructor/confirmationForSurvey.php";
+    let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
     console.log(fetchHTTP);
     //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
     try {
@@ -235,7 +234,7 @@ const Course = ({ course, page }) => {
   async function fetchAddSurveyToDatabaseComplete(data){
     console.log(data);
     let fetchHTTP =
-    "http://localhost/StudentSurvey/backend/instructor/confirmationForSurvey.php"
+    process.env.REACT_APP_API_URL + "confirmationForSurvey.php"
   //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
   try {
     const response = await fetch(fetchHTTP, {
@@ -265,7 +264,7 @@ const Course = ({ course, page }) => {
     console.log("this is before the addsurveyResponse function fetch call");
 
     let fetchHTTP =
-      "http://localhost/StudentSurvey/backend/instructor/addSurveyToCourse.php?course=" +
+      process.env.REACT_APP_API_URL + "addSurveyToCourse.php?course=" +
       course.id;
     //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
     try {
@@ -283,7 +282,7 @@ const Course = ({ course, page }) => {
   }
   async function duplicateSurveyBackend(formdata){
     let fetchHTTP =
-      "http://localhost/StudentSurvey/backend/instructor/duplicateExistingSurvey.php?survey=" +
+      process.env.REACT_APP_API_URL + "duplicateExistingSurvey.php?survey=" +
       currentSurvey.id;
     //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
     try {
@@ -750,7 +749,7 @@ const Course = ({ course, page }) => {
     updateRosterformData.append("update-type", updateRosterOption);
 
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/rosterUpdate.php",
+      process.env.REACT_APP_API_URL + "rosterUpdate.php",
       {
         method: "POST",
         body: updateRosterformData,
@@ -798,7 +797,7 @@ const Course = ({ course, page }) => {
 
   useEffect(() => {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/courseSurveysQueries.php",
+      process.env.REACT_APP_API_URL + "courseSurveysQueries.php",
       {
         method: "POST",
         headers: {
@@ -828,7 +827,7 @@ function closeModalDuplicate(){
 
 async function verifyDeleteBackendGet(id){
   let fetchHTTP =
-    "http://localhost/StudentSurvey/backend/instructor/deleteSurvey.php?survey="+id
+    process.env.REACT_APP_API_URL + "deleteSurvey.php?survey="+id
   //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
   try {
     const response = await fetch(fetchHTTP, {
@@ -847,7 +846,7 @@ async function verifyDeleteBackendGet(id){
 
 async function verifyDeleteBackend(formdata,id){
   let fetchHTTP =
-    "http://localhost/StudentSurvey/backend/instructor/deleteSurvey.php?survey="+id
+    process.env.REACT_APP_API_URL + "deleteSurvey.php?survey="+id
   //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
   try {
     const response = await fetch(fetchHTTP, {
@@ -867,7 +866,7 @@ async function verifyDeleteBackend(formdata,id){
 
 async function extendSurveyBackendGet(id){
   let fetchHTTP =
-  "http://localhost/StudentSurvey/backend/instructor/extendSurvey.php?survey="+id
+  process.env.REACT_APP_API_URL + "extendSurvey.php?survey="+id
 //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
 try {
   const response = await fetch(fetchHTTP, {
@@ -884,7 +883,7 @@ try {
 }
 async function extendSurveyBackendPost(id, formdata){
   let fetchHTTP =
-  "http://localhost/StudentSurvey/backend/instructor/extendSurvey.php?survey="+id
+  process.env.REACT_APP_API_URL + "extendSurvey.php?survey="+id
 //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
 try {
   const response = await fetch(fetchHTTP, {
@@ -1028,7 +1027,7 @@ function deleteModalClose() {
 
   const handleSelectedSurveyResultsModalChange = (surveyid, surveytype) => {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/resultsView.php",
+      process.env.REACT_APP_API_URL + "resultsView.php",
       {
         method: "POST",
         headers: {

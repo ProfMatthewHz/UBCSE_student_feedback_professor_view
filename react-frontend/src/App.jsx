@@ -8,7 +8,7 @@ import Library from "./pages/Library";
 function App() {
 
   return (
-    <Router basename="/StudentSurvey/react-frontend/build">
+    <Router basename={process.env.REACT_APP_BASE_URL}>
       {/* <Router > */}
       <div className="app">
         <div className="background-design"></div>
