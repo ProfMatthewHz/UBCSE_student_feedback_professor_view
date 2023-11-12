@@ -4,7 +4,7 @@ import "../styles/modal.css";
 
 
 
-export default function Modal({open,children}) {
+export default function Modal({open,children,width}) {
 
 
 
@@ -14,7 +14,7 @@ export default function Modal({open,children}) {
 
     return (
       <div className="modal">
-        <div style= {{width:'1300px '}}className="modal-content">
+        <div style= {{width: width}}className="modal-content">
           {children}
         </div>
       </div>

@@ -26,6 +26,14 @@ function updateSurvey($con, $survey_id, $name, $start, $end, $rubric_id) {
   return $retVal;
 }
 
+function extendSurvey($con, $survey_id, $end) {
+  $stmt = $con->prepare('UPDATE surveys SET end_date = ? WHERE id = ?');
+  $stmt->bind_param('si', $end, $survey_id);
+  $retVal = $stmt->execute();
+  $stmt->close();
+  return $retVal;
+}
+
 function updateSurveyPairing($con, $survey_id, $survey_type) {
   $stmt = $con->prepare('UPDATE surveys SET survey_type_id = ? WHERE id = ?');
   $stmt->bind_param('ii', $survey_type, $survey_id);
@@ -47,6 +55,29 @@ function isSurveyInstructor($con, $survey_id, $instructor_id) {
   $retVal = $result->num_rows > 0;
   $stmt->close();
   return $retVal;
+}
+
+function getSurveyCourse($con, $survey_id){
+
+  # no courses where course-id is 0
+  $retVal = 0;
+  $stmt = $con->prepare('SELECT surveys.course_id
+                        FROM surveys
+                        WHERE id=?');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if (!($result->num_rows < 1)){
+
+    $data = $result->fetch_assoc();
+    $course_id = $data['course_id'];
+    $retVal = $course_id;
+  }
+  $stmt->close();
+
+  return $retVal;
+  
 }
 
 function getSurveyData($con, $survey_id) {
