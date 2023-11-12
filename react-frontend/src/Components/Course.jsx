@@ -1071,6 +1071,8 @@ function deleteModalClose() {
               id="new-endDate"
               class="styled-input2"
               type="date"
+              min="2023-08-31"
+              max="2023-12-09"
               width = '50px'
               placeholder="New End Date"
             ></input>
@@ -1236,6 +1238,8 @@ function deleteModalClose() {
               id="start-date"
               class="styled-input1"
               type="date"
+              min="2023-08-31"
+              max="2023-12-09"
               placeholder="Enter New Start Date"
             ></input>
           </div>
@@ -1250,6 +1254,8 @@ function deleteModalClose() {
               id="end-date"
               class="styled-input1"
               type="date"
+              min="2023-08-31"
+              max="2023-12-09"
               placeholder="Enter New End Date"
             ></input>
           </div>
