@@ -150,6 +150,8 @@ INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rub
 (37, 10128, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 2', 1, 1),
 (38, 10128, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 3', 1, 1),
 (39, 10122, '2023-10-27 04:46:05', '2023-10-28 04:46:05', 'Dummy Name 2', 1, 1);
+(40, 10118, '2023-11-08 04:38:21', '2023-12-01 04:38:21', 'Active Survey 1', 1, 1),
+(41, 10118, '2023-11-10 04:46:05', '2023-11-28 04:46:05', 'Active Survey 2', 1, 1);
 
 INSERT INTO `survey_types` (`id`, `description`, `file_organization`, `display_multiplier`) VALUES
 (1, 'Individual Reviewed by Individual', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0),
