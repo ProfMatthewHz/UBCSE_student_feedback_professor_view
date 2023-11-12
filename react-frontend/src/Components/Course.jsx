@@ -370,23 +370,19 @@ const Course = ({ course, page }) => {
     let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
     let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
     if (startDateObject < minDateObject) {
-      setStartDateBoundError(true)
-      alert("Start Date is too early. Must start atleast at August 31");
+      setStartDateBoundError(true);
       return;
     }
     if (startDateObject > maxDateObject) {
-      setStartDateBound1Error(true)
-      alert("Start Date is too late. Must be at or before December 9");
+      setStartDateBound1Error(true);
       return;
     }
     if (endDateObject < minDateObject) {
-      setEndDateBoundError(true)
-      alert("End Date is too early. Must start atleast at August 31");
+      setEndDateBoundError(true);
       return;
     }
     if (endDateObject > maxDateObject) {
-      setStartDateBound1Error(true)
-      alert("End Date is too late. Must be at or before December 9");
+      setStartDateBound1Error(true);
       return;
     }
     //END:date and time keyboard typing bound checks.
@@ -397,7 +393,6 @@ const Course = ({ course, page }) => {
     timestamp.setHours(0, 0, 0, 0); //set hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
     if (startDateObject < timestamp) {
       setStartAfterCurrentError(true);
-      alert("Survey start date cannot be before the current day.");
       return;
     }
     //END:special startdate case. Startdate cannot be before the current day.
@@ -405,7 +400,6 @@ const Course = ({ course, page }) => {
     //Start date cannot be greater than End date.
     if (startDateObject > endDateObject) {
       setStartDateGreaterError(true);
-      alert("Start date cannot be greater than the end date");
       return;
     }
     //END:Start date cannot be greater than End date.
@@ -414,25 +408,16 @@ const Course = ({ course, page }) => {
     if (startDate === endDate) {
       if (startTime === endTime) {
         setStartTimeSameDayError(true);
-        alert(
-          "If start and end days are the same, Start and End times must differ"
-        );
         return;
       }
       let startHour = parseInt(startTime.split(":")[0]);
       let endHour = parseInt(endTime.split(":")[0]);
       if (startHour === endHour) {
         setStartHourSameDayError(true);
-        alert(
-          "If start and end days are the same, Start and End time hours must differ"
-        );
         return;
       }
       if (startHour > endHour) {
         setStartHourAfterEndHourError(true);
-        alert(
-          "If start and end days are the same, Start time cannot be after End time"
-        );
         return;
       }
     }
@@ -450,13 +435,11 @@ const Course = ({ course, page }) => {
 
       if (startHourNew < currentHour) {
         setStartTimeHoursBeforeCurrent(true);
-        alert("Start time hour cannot be before the current hour");
         return;
       }
       if (startHourNew === currentHour) {
         if (startMinutes < currentMinutes) {
           setStartTimeMinutesBeforeCurrent(true);
-          alert("Start time minutes cannot be before current minutes");
           return;
         }
       }
@@ -566,22 +549,18 @@ const Course = ({ course, page }) => {
     let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
     if (startDateObject < minDateObject) {
       setStartDateBoundError(true)
-      alert("Start Date is too early. Must start atleast at August 31");
       return;
     }
     if (startDateObject > maxDateObject) {
-      setStartDateBound1Error(true)
-      alert("Start Date is too late. Must be at or before December 9");
+      setStartDateBound1Error(true); 
       return;
     }
     if (endDateObject < minDateObject) {
       setEndDateBoundError(true)
-      alert("End Date is too early. Must start atleast at August 31");
       return;
     }
     if (endDateObject > maxDateObject) {
       setStartDateBound1Error(true)
-      alert("End Date is too late. Must be at or before December 9");
       return;
     }
     //END:date and time keyboard typing bound checks.
@@ -592,7 +571,6 @@ const Course = ({ course, page }) => {
     timestamp.setHours(0, 0, 0, 0); //set hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
     if (startDateObject < timestamp) {
       setStartAfterCurrentError(true);
-      alert("Survey start date cannot be before the current day.");
       return;
     }
     //END:special startdate case. Startdate cannot be before the current day.
@@ -600,7 +578,6 @@ const Course = ({ course, page }) => {
     //Start date cannot be greater than End date.
     if (startDateObject > endDateObject) {
       setStartDateGreaterError(true);
-      alert("Start date cannot be greater than the end date");
       return;
     }
     //END:Start date cannot be greater than End date.
@@ -609,25 +586,16 @@ const Course = ({ course, page }) => {
     if (startDate === endDate) {
       if (startTime === endTime) {
         setStartTimeSameDayError(true);
-        alert(
-          "If start and end days are the same, Start and End times must differ"
-        );
         return;
       }
       let startHour = parseInt(startTime.split(":")[0]);
       let endHour = parseInt(endTime.split(":")[0]);
       if (startHour === endHour) {
         setStartHourSameDayError(true);
-        alert(
-          "If start and end days are the same, Start and End time hours must differ"
-        );
         return;
       }
       if (startHour > endHour) {
         setStartHourAfterEndHourError(true);
-        alert(
-          "If start and end days are the same, Start time cannot be after End time"
-        );
         return;
       }
     }
@@ -645,13 +613,11 @@ const Course = ({ course, page }) => {
 
       if (startHourNew < currentHour) {
         setStartTimeHoursBeforeCurrent(true);
-        alert("Start time hour cannot be before the current hour");
         return;
       }
       if (startHourNew === currentHour) {
         if (startMinutes < currentMinutes) {
           setStartTimeMinutesBeforeCurrent(true);
-          alert("Start time minutes cannot be before current minutes");
           return;
         }
       }
