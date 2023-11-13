@@ -13,7 +13,7 @@ const Course = ({ course, page }) => {
 
   function updateAllSurveys() {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/courseSurveysQueries.php",
+      process.env.REACT_APP_API_URL + "courseSurveysQueries.php",
       {
         method: "POST",
         headers: {
@@ -102,7 +102,7 @@ const Course = ({ course, page }) => {
   
 
   const fetchRubrics = () => {
-    fetch("http://localhost/StudentSurvey/backend/instructor/rubricsGet.php", {
+    fetch(process.env.REACT_APP_API_URL + "rubricsGet.php", {
       method: "GET",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -123,7 +123,7 @@ const Course = ({ course, page }) => {
   };
   const fetchPairingModes = () => {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/surveyTypesGet.php",
+      process.env.REACT_APP_API_URL + "surveyTypesGet.php",
       {
         method: "GET",
         headers: {
@@ -210,9 +210,8 @@ const Course = ({ course, page }) => {
     setMultiplier(boolean);
   };
 
-
   async function fetchRosterNonRoster() {
-    let fetchHTTP = "http://localhost/StudentSurvey/backend/instructor/confirmationForSurvey.php";
+    let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
     console.log(fetchHTTP);
     //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
     try {
@@ -235,7 +234,7 @@ const Course = ({ course, page }) => {
   async function fetchAddSurveyToDatabaseComplete(data){
     console.log(data);
     let fetchHTTP =
-    "http://localhost/StudentSurvey/backend/instructor/confirmationForSurvey.php"
+    process.env.REACT_APP_API_URL + "confirmationForSurvey.php"
   //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
   try {
     const response = await fetch(fetchHTTP, {
@@ -265,7 +264,7 @@ const Course = ({ course, page }) => {
     console.log("this is before the addsurveyResponse function fetch call");
 
     let fetchHTTP =
-      "http://localhost/StudentSurvey/backend/instructor/addSurveyToCourse.php?course=" +
+      process.env.REACT_APP_API_URL + "addSurveyToCourse.php?course=" +
       course.id;
     //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
     try {
@@ -283,7 +282,7 @@ const Course = ({ course, page }) => {
   }
   async function duplicateSurveyBackend(formdata){
     let fetchHTTP =
-      "http://localhost/StudentSurvey/backend/instructor/duplicateExistingSurvey.php?survey=" +
+      process.env.REACT_APP_API_URL + "duplicateExistingSurvey.php?survey=" +
       currentSurvey.id;
     //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
     try {
@@ -750,7 +749,7 @@ const Course = ({ course, page }) => {
     updateRosterformData.append("update-type", updateRosterOption);
 
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/rosterUpdate.php",
+      process.env.REACT_APP_API_URL + "rosterUpdate.php",
       {
         method: "POST",
         body: updateRosterformData,
@@ -798,7 +797,7 @@ const Course = ({ course, page }) => {
 
   useEffect(() => {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/courseSurveysQueries.php",
+      process.env.REACT_APP_API_URL + "courseSurveysQueries.php",
       {
         method: "POST",
         headers: {
@@ -828,7 +827,7 @@ function closeModalDuplicate(){
 
 async function verifyDeleteBackendGet(id){
   let fetchHTTP =
-    "http://localhost/StudentSurvey/backend/instructor/deleteSurvey.php?survey="+id
+    process.env.REACT_APP_API_URL + "deleteSurvey.php?survey="+id
   //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
   try {
     const response = await fetch(fetchHTTP, {
@@ -847,7 +846,7 @@ async function verifyDeleteBackendGet(id){
 
 async function verifyDeleteBackend(formdata,id){
   let fetchHTTP =
-    "http://localhost/StudentSurvey/backend/instructor/deleteSurvey.php?survey="+id
+    process.env.REACT_APP_API_URL + "deleteSurvey.php?survey="+id
   //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
   try {
     const response = await fetch(fetchHTTP, {
@@ -867,7 +866,7 @@ async function verifyDeleteBackend(formdata,id){
 
 async function extendSurveyBackendGet(id){
   let fetchHTTP =
-  "http://localhost/StudentSurvey/backend/instructor/extendSurvey.php?survey="+id
+  process.env.REACT_APP_API_URL + "extendSurvey.php?survey="+id
 //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
 try {
   const response = await fetch(fetchHTTP, {
@@ -884,7 +883,7 @@ try {
 }
 async function extendSurveyBackendPost(id, formdata){
   let fetchHTTP =
-  "http://localhost/StudentSurvey/backend/instructor/extendSurvey.php?survey="+id
+  process.env.REACT_APP_API_URL + "extendSurvey.php?survey="+id
 //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
 try {
   const response = await fetch(fetchHTTP, {
@@ -903,9 +902,7 @@ try {
 
 async function verifyExtendModal(){
   let newEndDate = document.getElementById("new-endDate").value;
-  console.log(newEndDate);
   let newEndTime = document.getElementById("new-endTime").value;
-  console.log(newEndTime);
   let surveyId = currentSurvey.id;
   let formData5 = new FormData();
   formData5.append('survey-id',surveyId);
@@ -919,8 +916,6 @@ async function verifyExtendModal(){
 
   formData5.append('start-time', currentTime)
   let pre = await extendSurveyBackendGet(surveyId);
-  //console.log(pre);
-  console.log(currentSurvey);
   let post = await extendSurveyBackendPost(surveyId,formData5);
   if(post.errors['end-date'] || post.errors['end-time'] || post.errors['start-date'] || post.errors['start-time']){
     //there are errors 
@@ -982,9 +977,66 @@ function deleteModalClose() {
     setShowNormalizedSurveyResults(null);
   };
 
+  // States/variables for Pagination for Raw Results
+  const [rawResultsCurrentPage, setRawResultsCurrentPage] = useState(1)
+  const [rawResultsNumOfPages, setRawResultsNumOfPages] = useState(1)
+  const [rawResultNumbers, setRawResultNumbers] = useState([...Array(rawResultsNumOfPages + 1).keys()].slice(1))
+  const [rawResultsRecords, setRawResultsRecords] = useState([])
+  const rawResultsPerPage = 5
+  const rawResultsLastIndex = rawResultsCurrentPage * rawResultsPerPage
+  const rawResultsFirstIndex = (rawResultsLastIndex - rawResultsPerPage)
+
+  const changeRawResultsPage = (number) => {
+    setRawResultsCurrentPage(number)
+  }
+
+  const rawResultsPrevPage = () => {
+    if(rawResultsFirstIndex >= rawResultsCurrentPage) {
+      setRawResultsCurrentPage((prevPage) => prevPage - 1);
+    }
+  }
+
+  const rawResultsNextPage = () => {
+    if(rawResultsCurrentPage < rawResultNumbers.length) {
+      setRawResultsCurrentPage((prevPage) => prevPage + 1);
+    }
+  }
+
+  const displayPageNumbers = () => {
+    const totalPages = rawResultNumbers.length;
+    const maxDisplayedPages = 4;
+
+    if (totalPages <= maxDisplayedPages) {
+      return rawResultNumbers;
+    }
+
+    const middleIndex = Math.floor(maxDisplayedPages / 2);
+    const startIndex = Math.max(0, rawResultsCurrentPage - middleIndex);
+    const endIndex = Math.min(totalPages, startIndex + maxDisplayedPages);
+
+    const displayedNumbers = [
+      1,
+      ...(startIndex > 1 ? ['...'] : []),
+      ...rawResultNumbers.slice(startIndex, endIndex),
+      ...(endIndex < totalPages ? ['...'] : []),
+      totalPages
+    ];
+    
+    return Array.from(new Set(displayedNumbers));
+  };
+
+  useEffect(() => {
+    setRawResultNumbers([...Array(rawResultsNumOfPages + 1).keys()].slice(1))
+    if(showRawSurveyResults !== null){
+      const showRawSurveyResultsWithoutFirstElement = showRawSurveyResults.slice(1); // Exclude the first element
+      const rawResultsRecordsAtCurrentPage = showRawSurveyResultsWithoutFirstElement.slice(rawResultsFirstIndex, rawResultsLastIndex)
+      setRawResultsRecords(rawResultsRecordsAtCurrentPage)
+    }
+  }, [showRawSurveyResults, rawResultsCurrentPage])
+
   const handleSelectedSurveyResultsModalChange = (surveyid, surveytype) => {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/resultsView.php",
+      process.env.REACT_APP_API_URL + "resultsView.php",
       {
         method: "POST",
         headers: {
@@ -1001,6 +1053,7 @@ function deleteModalClose() {
         if (surveytype == "raw-full") {
           setShowNormalizedSurveyResults(null)
           setShowRawSurveyResults(result)
+          setRawResultsNumOfPages(Math.ceil((result.length - 1) / rawResultsPerPage))
           if (result.length > 1) {
             setCurrentCSVData(result)
           } else {
@@ -1009,19 +1062,22 @@ function deleteModalClose() {
         } else { // else if surveytype == "average" (For Normalized Results)
           setShowRawSurveyResults(null)
 
+          console.log("Normalized Results", result)
           if (result.length > 1) {
             const results_without_headers = result.slice(1);
             const maxValue = Math.max(...results_without_headers.map(result => result[1]));
+
 
             let labels = {};
             let startLabel = 0.0;
             let endLabel = 0.2;
             labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0
 
+            startLabel = 0.01
             while (endLabel < maxValue) {
-              startLabel += 0.21;
+              startLabel += 0.2;
               endLabel += 0.2;
-              labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0;
+              labels[`${startLabel.toFixed(2)}-${endLabel.toFixed(1)}`] = 0;
             }
 
             for (let individual_data of results_without_headers) {
@@ -1029,8 +1085,9 @@ function deleteModalClose() {
                 const label_split = key.split("-");
                 const current_min = parseFloat(label_split[0]);
                 const current_max = parseFloat(label_split[1]);
+                const current_normalized_average = individual_data[1].toFixed(1)
 
-                if (individual_data[1] >= current_min && individual_data[1] <= current_max) {
+                if (current_normalized_average >= current_min && current_normalized_average <= current_max) {
                   labels[key] += 1;
                 }
               }
@@ -1039,6 +1096,7 @@ function deleteModalClose() {
             labels = Object.entries(labels)
             labels.unshift(["Normalized Averages", "Number of Students"])
 
+            console.log(labels)
             setCurrentCSVData(result)
             setShowNormalizedSurveyResults(labels)
           } else {
@@ -1839,26 +1897,49 @@ function deleteModalClose() {
                       Download Results
                     </CSVLink>
                   </div>
-                  <table className="rawresults--table">
-                    <thead>
-                      <tr>
-                        {showRawSurveyResults[0].map((header, index) => (
-                          <th key={index}>{header}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {showRawSurveyResults.slice(1).map((rowData, rowIndex) => (
-                        <tr key={rowIndex}>
-                          {rowData.map((cellData, cellIndex) => (
-                            cellData ? <td key={cellIndex}>{cellData}</td> 
-                            : <td key={cellIndex}>--</td>
-
+                  <div className="rawresults--table-container">
+                    <table className="rawresults--table">
+                      <thead>
+                        <tr>
+                          {showRawSurveyResults[0].map((header, index) => (
+                            <th key={index}>{header}</th>
                           ))}
                         </tr>
+                      </thead>
+                      <tbody>
+                        {rawResultsRecords && rawResultsRecords.map((rowData, rowIndex) => (
+                          <tr key={rowIndex}>
+                            {rowData.map((cellData, cellIndex) => (
+                              cellData ? <td key={cellIndex}>{cellData}</td> 
+                              : <td key={cellIndex}>--</td>
+
+                              ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination */}
+                  <div className="rawresults--pagination-container">
+                    <ul className="pagination">
+                      <li className="page-item">
+                        <div className="page-link page-link-prev" onClick={rawResultsPrevPage}>Prev</div>
+                      </li>
+                      {displayPageNumbers().map((pageNumber, index) => (
+                        <li className={`page-item ${rawResultsCurrentPage === pageNumber ? 'page-active' : ''}`} key={index}>
+                          {pageNumber === '...' ? (
+                            <div className="page-link">...</div>
+                          ) : (
+                            <div className="page-link" onClick={() => changeRawResultsPage(pageNumber)}>{pageNumber}</div>
+                          )}
+                        </li>
                       ))}
-                    </tbody>
-                  </table>
+                      <li className="page-item">
+                        <div className="page-link page-link-next" onClick={rawResultsNextPage}>Next</div>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               )
               : (showRawSurveyResults && !currentCSVData) ? (

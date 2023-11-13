@@ -64,7 +64,7 @@ const History = () => {
 
   useEffect(() => {
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/instructorTermsPost.php",
+      process.env.REACT_APP_API_URL + "instructorTermsPost.php",
       {
         method: "POST",
         headers: {
@@ -86,7 +86,7 @@ const History = () => {
           all_courses[term_key] = []
 
           return fetch(
-            "http://localhost/StudentSurvey/backend/instructor/instructorCoursesInTerm.php",
+            process.env.REACT_APP_API_URL + "instructorCoursesInTerm.php",
             {
               method: "POST",
               headers: {

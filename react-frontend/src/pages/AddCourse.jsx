@@ -110,7 +110,7 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
 
     // Fetch all instructors
     fetch(
-      "http://localhost/StudentSurvey/backend/instructor/getInstructors.php",
+      process.env.REACT_APP_API_URL + "getInstructors.php",
       {
         method: "GET",
         headers: {
@@ -163,7 +163,7 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
     formData.append("semester", semester);
     formData.append("additional-instructors", selectedInstructors);
 
-    fetch("http://localhost/StudentSurvey/backend/instructor/courseAdd.php", {
+    fetch(process.env.REACT_APP_API_URL + "courseAdd.php", {
       method: "POST",
       body: formData,
     })

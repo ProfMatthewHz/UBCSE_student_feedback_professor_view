@@ -70,6 +70,7 @@ function SideBar(props) {
       <Modal
         open={showAddCourseModal}
         onRequestClose={handleAddCourseModal}
+        width = {'1000px'}
         style={{
           content: {
             top: "50%",
@@ -80,8 +81,6 @@ function SideBar(props) {
             backgroundColor: "white",
             borderRadius: "10px",
             padding: "20px",
-            width: "80%",
-            maxWidth: "600px",
           },
           overlay: {
             backgroundColor: "rgba(0, 0, 0, 0.5)",
