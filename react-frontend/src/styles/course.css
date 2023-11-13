@@ -594,6 +594,10 @@ table.rawresults--table tr:nth-child(odd):not(:first-child) {
   .surveyactions--option {
     font-size: 12px !important;
   }
+
+  .mobile-disable {
+    display: none;
+  }
 }
 
 @media screen and (max-width: 550px) {
