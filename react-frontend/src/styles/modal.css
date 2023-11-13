@@ -200,4 +200,8 @@ caption {
   .modal-phone {
     max-width: 90%;
   }
+
+  .styled-input1 {
+    width: 100%;
+  }
 }

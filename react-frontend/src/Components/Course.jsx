@@ -1280,15 +1280,18 @@ function deleteModalClose() {
          <div
             style={{
               display: "flex",
-              width: "1250px",
               marginTop: "2px",
               paddingBottom: "2px",
               justifyContent: "center",
               gap: "4px",
               borderBottom: "thin solid #225cb5",
+
+              '@media (max-width: 550px)': {
+                maxWidth: "90%",
+              }
             }}
           >
-            <h2 style={{ color: "#225cb5" }}>
+            <h2 className="modal-title" style={{ color: "#225cb5" }}>
               Duplicate Chosen Survey: {currentSurvey.name}
             </h2>
             </div>
@@ -1857,10 +1860,10 @@ function deleteModalClose() {
                     Ends: {survey.end_date}
                   </td>
                   <td>{survey.completion}</td>
-                  <td>< select className="surveyactions--select" style={{ backgroundColor: '#EF6C22', color: 'white',fontSize:'18px', fontWeight:'bold',textAlign:'center' }} onChange={(e) => handleActionButtonChange(e, survey)}>
-                  <option className="surveyactions--option" value="" disabled selected>Actions</option>
+                  <td>< select className="surveyactions--select" style={{ backgroundColor: '#EF6C22', color: 'white',fontSize:'18px', fontWeight:'bold',textAlign:'center' }} onChange={(e) => handleActionButtonChange(e, survey)} defaultValue="">
+                  <option className="surveyactions--option" value="" disabled>Actions</option>
                   <option className="surveyactions--option" value="View Results">View Results</option>
-                  <option className="surveyactions--option mobile-disable" value="Duplicate">Duplicate</option>
+                  <option className="surveyactions--option" value="Duplicate">Duplicate</option>
                   <option className="surveyactions--option" value="Extend">Extend</option>
                   <option className="surveyactions--option" value="Delete">Delete</option>
                   {/* Add more options as needed */}
