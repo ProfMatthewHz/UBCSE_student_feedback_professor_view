@@ -902,26 +902,35 @@ try {
 
 async function verifyExtendModal(){
   let newEndDate = document.getElementById("new-endDate").value;
-  console.log(newEndDate);
   let newEndTime = document.getElementById("new-endTime").value;
-  console.log(newEndTime);
   let surveyId = currentSurvey.id;
   let formData5 = new FormData();
   formData5.append('survey-id',surveyId);
   formData5.append('end-date',newEndDate);
   formData5.append('end-time', newEndTime);
+  formData5.append('rubric-id', currentSurvey.rubric_id)
+  formData5.append('start-date', currentSurvey.sort_expiration_date.split(' ')[0]);
+  let currentTime = currentSurvey.sort_expiration_date.split(' ')[1]
+  currentTime = currentTime.split(':');
+  currentTime = currentTime[0] + ':' + currentTime[1];
 
+  formData5.append('start-time', currentTime)
   let pre = await extendSurveyBackendGet(surveyId);
-  //console.log(pre);
   let post = await extendSurveyBackendPost(surveyId,formData5);
-  if(post.errors['end-date'] || post.errors['end-time']){
+  if(post.errors['end-date'] || post.errors['end-time'] || post.errors['start-date'] || post.errors['start-time']){
     //there are errors 
     let errorList = [];
     if(post.errors['end-date']){
       errorList.push(post.errors['end-date']);
     }
+    if(post.errors['start-date']){
+      errorList.push(post.errors['start-date']);
+    }
     if(post.errors['end-time']){
       errorList.push(post.errors['end-time']);
+    }
+    if(post.errors['start-time']){
+      errorList.push(post.errors['start-time']);
     }
     extendModalClose();
     setErrorsList(errorList)
