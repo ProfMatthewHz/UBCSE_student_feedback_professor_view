@@ -912,8 +912,8 @@ async function verifyExtendModal(){
   formData5.append('end-date',newEndDate);
   formData5.append('end-time', newEndTime);
   formData5.append('rubric-id', currentSurvey.rubric_id)
-  formData5.append('start-date', currentSurvey.sort_expiration_date.split(' ')[0]);
-  let currentTime = currentSurvey.sort_expiration_date.split(' ')[1]
+  formData5.append('start-date', currentSurvey.sort_start_date.split(' ')[0]);
+  let currentTime = currentSurvey.sort_start_date.split(' ')[1]
   currentTime = currentTime.split(':');
   currentTime = currentTime[0] + ':' + currentTime[1];
 
