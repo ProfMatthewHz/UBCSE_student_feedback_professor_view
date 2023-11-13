@@ -14,7 +14,7 @@ export default function Modal({open,children,width}) {
 
     return (
       <div className="modal">
-        <div style= {{width: width}}className="modal-content">
+        <div style= {{width: width}}className="modal-content modal-phone">
           {children}
         </div>
       </div>

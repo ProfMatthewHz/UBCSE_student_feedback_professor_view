@@ -1132,7 +1132,7 @@ function deleteModalClose() {
               borderBottom: "thin solid #225cb5",
             }}
           >
-            <h2 style={{ color: "#225cb5" }}>
+            <h2 className="modal-title" style={{ color: "#225cb5" }}>
               Extend Chosen Survey: {currentSurvey.name}
             </h2>
             </div>
@@ -1222,7 +1222,7 @@ function deleteModalClose() {
               borderBottom: "thin solid #225cb5",
             }}
           >
-            <h2 style={{ color: "#225cb5" }}>
+            <h2 className="modal-title" style={{ color: "#225cb5" }}>
               Delete Chosen Survey: {currentSurvey.name}
             </h2>
             </div>
@@ -1844,11 +1844,12 @@ function deleteModalClose() {
                 <th>Survey Name</th>
                 <th>Dates Available</th>
                 <th>Completion Rate</th>
+                <th>Survey Actions</th>
               </tr>
             </thead>
             <tbody>
               {surveys.map((survey) => (
-                <tr key={survey.id}>
+                <tr className="survey-row" key={survey.id}>
                   <td>{survey.name}</td>
                   <td>
                     Begins: {survey.start_date}
@@ -1856,12 +1857,12 @@ function deleteModalClose() {
                     Ends: {survey.end_date}
                   </td>
                   <td>{survey.completion}</td>
-                  <td>< select style={{ backgroundColor: '#EF6C22', color: 'white',fontSize:'18px', fontWeight:'bold',textAlign:'center' }} onChange={(e) => handleActionButtonChange(e, survey)}>
-                  <option value="" disabled selected>Actions</option>
-                  <option value="View Results">View Results</option>
-                  <option value="Duplicate">Duplicate</option>
-                  <option value="Extend">Extend</option>
-                  <option value="Delete">Delete</option>
+                  <td>< select className="surveyactions--select" style={{ backgroundColor: '#EF6C22', color: 'white',fontSize:'18px', fontWeight:'bold',textAlign:'center' }} onChange={(e) => handleActionButtonChange(e, survey)}>
+                  <option className="surveyactions--option" value="" disabled selected>Actions</option>
+                  <option className="surveyactions--option" value="View Results">View Results</option>
+                  <option className="surveyactions--option mobile-disable" value="Duplicate">Duplicate</option>
+                  <option className="surveyactions--option" value="Extend">Extend</option>
+                  <option className="surveyactions--option" value="Delete">Delete</option>
                   {/* Add more options as needed */}
                 </select>
                 </td>

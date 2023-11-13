@@ -585,6 +585,15 @@ table.rawresults--table tr:nth-child(odd):not(:first-child) {
   .viewresults-modal--other-button-container {
     display: none;
   }
+
+  .survey-row {
+    width: calc(100% / 4);
+  }
+
+  .surveyactions--select,
+  .surveyactions--option {
+    font-size: 12px !important;
+  }
 }
 
 @media screen and (max-width: 550px) {
@@ -593,9 +602,14 @@ table.rawresults--table tr:nth-child(odd):not(:first-child) {
     font-size: 14px;
   }
 
+  .surveyactions--select,
+  .surveyactions--option {
+    font-size: 10px !important;
+  }
+
   .surveyTable th,
   .surveyTable td {
-    padding: 10px;
+    padding: 7px;
   }
 
   /* View Results */
@@ -618,5 +632,9 @@ table.rawresults--table tr:nth-child(odd):not(:first-child) {
   .page-link {
     padding: 4px 8px;
     font-size: 12px;
+  }
+
+  .modal-title {
+    font-size: 16px
   }
 }

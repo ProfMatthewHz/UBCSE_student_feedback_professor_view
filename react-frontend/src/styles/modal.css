@@ -195,3 +195,9 @@ caption {
   background-color: green; 
   color: white;
 }
+
+@media screen and (max-width: 550px){
+  .modal-phone {
+    max-width: 90%;
+  }
+}
