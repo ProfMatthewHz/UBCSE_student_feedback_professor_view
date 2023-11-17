@@ -312,18 +312,6 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
           }}
         >
           <button
-            className="Cancel"
-            style={{
-              borderRadius: "5px",
-              fontSize: "18px",
-              fontWeight: "700",
-              padding: "5px 12px",
-            }}
-            onClick={handleAddCourseModal}
-          >
-            Cancel
-          </button>
-          <button
             className="CompleteSurvey"
             style={{
               borderRadius: "5px",
