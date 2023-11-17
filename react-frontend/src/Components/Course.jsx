@@ -1117,7 +1117,7 @@ function deleteModalClose() {
       <Modal open={extendModal} onRequestClose={extendModalClose}
       width = {'500px'}>
         <div className="CancelContainer">
-          <button className="CancelButton" onClick={extendModalClose}>x</button>
+          <button className="CancelButton" onClick={extendModalClose}>×</button>
         </div>
         <div style={{
             display: "flex",
@@ -1197,7 +1197,7 @@ function deleteModalClose() {
       <Modal open={deleteModal} onRequestClose={deleteModalClose}
       width = {'750px'}>
         <div className="CancelContainer">
-          <button className="CancelButton" onClick={deleteModalClose}>x</button>
+          <button className="CancelButton" onClick={deleteModalClose}>×</button>
         </div>
         <div style={{
             display: "flex",
@@ -1261,7 +1261,7 @@ function deleteModalClose() {
       <Modal open={duplicateModal} onRequestClose={closeModalDuplicate}
       width = {'1250px'}>
         <div className="CancelContainer">
-          <button className="CancelButton" onClick={closeModalDuplicate}>x</button>
+          <button className="CancelButton" onClick={closeModalDuplicate}>×</button>
         </div>
          <div
             style={{
@@ -1586,7 +1586,7 @@ function deleteModalClose() {
         }}
       >
         <div className="CancelContainer">
-          <button className="CancelButton" onClick={closeModal}>x</button>
+          <button className="CancelButton" onClick={closeModal}>×</button>
         </div>
         <div
           style={{
@@ -1849,7 +1849,7 @@ function deleteModalClose() {
         <div className="viewresults-modal">
           <div className="viewresults-modal-content">
             <div className="CancelContainer">
-              <button className="CancelButton" style={{top: "0px"}} onClick={() => handleViewResultsModalChange(null)}>x</button>
+              <button className="CancelButton" style={{top: "0px"}} onClick={() => handleViewResultsModalChange(null)}>×</button>
             </div>
             <h2 className="viewresults-modal--heading">
               Results for {course.code} Survey: {viewingCurrentSurvey.name}
@@ -1944,7 +1944,7 @@ function deleteModalClose() {
         <div className="update-modal">
           <div className="update-modal-content">
             <div className="CancelContainer">
-              <button className="CancelButton" style={{top: "0px"}} onClick={handleUpdateModalChange}>x</button>
+              <button className="CancelButton" style={{top: "0px"}} onClick={handleUpdateModalChange}>×</button>
             </div>
             <h2 className="update-modal--heading">
               Update Roster for {course.code} {course.name}
