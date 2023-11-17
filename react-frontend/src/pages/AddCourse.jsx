@@ -210,7 +210,7 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
       onClick={handleAddCourseModal}
       className="cancel-btn"
       >
-      x
+      ×
     </button>
       <div className="formContainer">
         <div className="formContent">
