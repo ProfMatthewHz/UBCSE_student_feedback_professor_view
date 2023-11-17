@@ -1,6 +1,6 @@
 {
   "name": "react-frontend",
-  "homepage": "./",
+  "homepage": "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
