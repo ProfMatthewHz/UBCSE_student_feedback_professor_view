@@ -65,22 +65,35 @@ INSERT INTO `rubrics` (`id`, `description`) VALUES
 (2, 'This is rubric id # two'),
 (3, 'This is rubric id # three'),
 (4, 'This is rubric id # four'),
-(5, 'This is rubric id # five');
+(5, 'This is rubric id # five'),
+(6, 'rubric test');
 
 INSERT INTO `rubric_responses` (`topic_id`, `rubric_score_id`, `response`) VALUES
 (0, 0, 'Hello this was a decent rubric'),
 (1, 1, 'Im smitty JohnSon and I approve of this rubric '),
 (2, 2, '');
+(6, 6, 'mastermind'),
+(6, 7, 'amateur techincal skills'),
+(6, 8, 'no technical skills'),
+(7, 6, 'loved by all'),
+(7, 7, 'has some friends'),
+(7, 8, 'hated');
+
 
 INSERT INTO `rubric_scores` (`id`, `rubric_id`, `name`, `score`) VALUES
 (1, 1, 'Smitty JohnSon', 55),
 (2, 2, 'John Eggert', 82),
-(5, 0, 'Jim Jones', 97);
+(5, 0, 'Jim Jones', 97),
+(6, 6, 'best', 10),
+(7, 6, 'ok', 5),
+(8, 6, 'bad', 1);
 
 INSERT INTO `rubric_topics` (`id`, `rubric_id`, `question`, `question_response`) VALUES
 (1, 1, 'Empty topic (also testing with no id) meant to be id of 1', 'multiple_choice'),
 (2, 2, '', 'multiple_choice'),
-(5, 0, 'Topic zero', 'multiple_choice');
+(5, 0, 'Topic zero', 'multiple_choice'),
+(6, 6, 'technical', 'multiple_choice'),
+(7, 6, 'charistmatic', 'multiple_choice');
 
 INSERT INTO `scores` (`eval_id`, `topic_id`, `rubric_score_id`) VALUES
 (0, 0, 0),
