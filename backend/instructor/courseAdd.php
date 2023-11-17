@@ -191,9 +191,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       
 
      
-      if (!empty(($names_emails['error'])) && !(empty($differences))) {
+      if (!empty(($names_emails['error'])) || !(empty($differences))) {
         //$errorMsg['additional-instructors'] = "unkown intstructors found";
-       // $errorMsg['roster-file'] = $names_emails['error'];
+       $errorMsg['roster-file'] = $names_emails['error'];
       } else {
         // now add the roster to the database if no other errors were set after adding the course to the database
         if (empty($errorMsg)) {
