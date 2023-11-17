@@ -973,7 +973,9 @@ function deleteModalClose() {
   const handleViewResultsModalChange = (survey) => {
     setViewResultsModal((prev) => !prev);
     setViewingCurrentSurvey(survey);
-    setShowRawSurveyResults(null);
+    if (survey) {
+      handleSelectedSurveyResultsModalChange(survey.id, "raw-full")
+    }
     setShowNormalizedSurveyResults(null);
   };
 
@@ -1114,6 +1116,9 @@ function deleteModalClose() {
     <div id={course.code} className="courseContainer">
       <Modal open={extendModal} onRequestClose={extendModalClose}
       width = {'500px'}>
+        <div className="CancelContainer">
+          <button className="CancelButton" onClick={extendModalClose}>x</button>
+        </div>
         <div style={{
             display: "flex",
             flexDirection: "row",
@@ -1174,18 +1179,6 @@ function deleteModalClose() {
           }}
         >
               <button
-                className="CancelExtend"
-                style={{
-                  borderRadius: "5px",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  padding: "5px 12px",
-                }}
-                onClick={extendModalClose}
-              >
-                Cancel
-              </button>
-              <button
                 className="CompleteSurveyExtend"
                 style={{
                   borderRadius: "5px",
@@ -1203,7 +1196,9 @@ function deleteModalClose() {
       </Modal>
       <Modal open={deleteModal} onRequestClose={deleteModalClose}
       width = {'750px'}>
-
+        <div className="CancelContainer">
+          <button className="CancelButton" onClick={deleteModalClose}>x</button>
+        </div>
         <div style={{
             display: "flex",
             flexDirection: "row",
@@ -1250,18 +1245,6 @@ function deleteModalClose() {
           }}
         >
               <button
-                className="CancelDelete"
-                style={{
-                  borderRadius: "5px",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  padding: "5px 12px",
-                }}
-                onClick={deleteModalClose}
-              >
-                Cancel
-              </button>
-              <button
                 className="CompleteSurveyDelete"
                 style={{
                   borderRadius: "5px",
@@ -1277,6 +1260,9 @@ function deleteModalClose() {
             </Modal>
       <Modal open={duplicateModal} onRequestClose={closeModalDuplicate}
       width = {'1250px'}>
+        <div className="CancelContainer">
+          <button className="CancelButton" onClick={closeModalDuplicate}>x</button>
+        </div>
          <div
             style={{
               display: "flex",
@@ -1406,18 +1392,6 @@ function deleteModalClose() {
             marginBottom: "30px",
           }}
         >
-              <button
-                className="CancelDuplicate"
-                style={{
-                  borderRadius: "5px",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  padding: "5px 12px",
-                }}
-                onClick={closeModalDuplicate}
-              >
-                Cancel
-              </button>
               <button
                 className="CompleteSurveyDuplicate"
                 style={{
@@ -1611,6 +1585,9 @@ function deleteModalClose() {
           },
         }}
       >
+        <div className="CancelContainer">
+          <button className="CancelButton" onClick={closeModal}>x</button>
+        </div>
         <div
           style={{
             display: "flex",
@@ -1793,18 +1770,6 @@ function deleteModalClose() {
           }}
         >
           <button
-            className="Cancel"
-            style={{
-              borderRadius: "5px",
-              fontSize: "18px",
-              fontWeight: "700",
-              padding: "5px 12px",
-            }}
-            onClick={closeModal}
-          >
-            Cancel
-          </button>
-          <button
             className="CompleteSurvey"
             style={{
               borderRadius: "5px",
@@ -1883,6 +1848,9 @@ function deleteModalClose() {
       {showViewResultsModal && (
         <div className="viewresults-modal">
           <div className="viewresults-modal-content">
+            <div className="CancelContainer">
+              <button className="CancelButton" style={{top: "0px"}} onClick={() => handleViewResultsModalChange(null)}>x</button>
+            </div>
             <h2 className="viewresults-modal--heading">
               Results for {course.code} Survey: {viewingCurrentSurvey.name}
             </h2>
@@ -1967,16 +1935,17 @@ function deleteModalClose() {
               <div className="viewresults-modal--no-options-selected-text">No Results Found</div>
             ) 
             : null}
-            <div className="viewresults-modal--cancel-button-container">
-              <button className="cancel-btn" onClick={() => handleViewResultsModalChange(null)}>Cancel</button>
-            </div>
           </div>
         </div>
       )}
       {/* Error Modal for updating roster */}
       {showUpdateModal && (
+        
         <div className="update-modal">
           <div className="update-modal-content">
+            <div className="CancelContainer">
+              <button className="CancelButton" style={{top: "0px"}} onClick={handleUpdateModalChange}>x</button>
+            </div>
             <h2 className="update-modal--heading">
               Update Roster for {course.code} {course.name}
             </h2>
@@ -2032,13 +2001,6 @@ function deleteModalClose() {
                 </div>
               </div>
               <div className="form__submit--container">
-                <button
-                  onClick={handleUpdateModalChange}
-                  type="button"
-                  className="update-cancel-btn"
-                >
-                  Cancel
-                </button>
                 <button type="submit" className="update-form__submit">
                   Update
                 </button>
