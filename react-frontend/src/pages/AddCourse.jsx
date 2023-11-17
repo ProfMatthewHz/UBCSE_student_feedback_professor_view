@@ -205,6 +205,13 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
 
   return (
     <>
+     <button
+      type="button"
+      onClick={handleAddCourseModal}
+      className="cancel-btn"
+      >
+      x
+    </button>
       <div className="formContainer">
         <div className="formContent">
           <div className="formHeader">
@@ -304,13 +311,6 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
             </div>
 
             <div className="add-form__submit--container">
-              <button
-                type="button"
-                onClick={handleAddCourseModal}
-                className="cancel-btn"
-              >
-                Cancel
-              </button>
               <button type="submit" className="form__submit">
                 + Add Course
               </button>
