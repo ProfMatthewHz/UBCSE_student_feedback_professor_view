@@ -6,8 +6,6 @@ import Toast from "./Toast";
 import ViewResults from "./ViewResults";
 
 
-
-
 const Course = ({ course, page }) => {
   const [surveys, setSurveys] = useState([]);
 
@@ -41,6 +39,9 @@ const Course = ({ course, page }) => {
   };
 
   // MODAL CODE
+  
+  const [actionsButtonValue, setActionsButtonValue] = useState("")
+
   const [extendModal, setExtendModal] = useState(false);
   const [duplicateModal,setDuplicateModel] = useState(false);
   const [emptyOrWrongDeleteNameError,setemptyOrWrongDeleteNameError]= useState(false);
@@ -714,6 +715,8 @@ const Course = ({ course, page }) => {
   }
   
   const handleActionButtonChange = (e,survey) => {
+    setActionsButtonValue(e.target.value)
+
     if(e.target.value === 'Duplicate'){
       fetchRubrics();
       setCurrentSurvey(survey);
@@ -731,6 +734,7 @@ const Course = ({ course, page }) => {
     if(e.target.value == 'View Results'){
       handleViewResultsModalChange(survey);
     }
+    setActionsButtonValue("")
   }
 
   const handleUpdateRosterSubmit = (e) => {
@@ -1683,7 +1687,7 @@ function deleteModalClose() {
                   <td>{survey.completion}</td>
                   <td>
                   {page === "home" ? (
-                    <select className="surveyactions--select" style={{ backgroundColor: '#EF6C22', color: 'white',fontSize:'18px', fontWeight:'bold',textAlign:'center' }} onChange={(e) => handleActionButtonChange(e, survey)} defaultValue="">
+                    <select className="surveyactions--select" style={{ backgroundColor: '#EF6C22', color: 'white',fontSize:'18px', fontWeight:'bold',textAlign:'center' }} onChange={(e) => handleActionButtonChange(e, survey)} value={actionsButtonValue} defaultValue="">
                       <option className="surveyactions--option" value="" disabled>Actions</option>
                       <option className="surveyactions--option" value="View Results">View Results</option>
                       <option className="surveyactions--option" value="Duplicate">Duplicate</option>
