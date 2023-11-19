@@ -41,6 +41,7 @@ const Course = ({ course, page }) => {
   // MODAL CODE
   
   const [actionsButtonValue, setActionsButtonValue] = useState("")
+  const[currentSurveyEndDate, setCurrentSurveyEndDate] = useState("")
 
   const [extendModal, setExtendModal] = useState(false);
   const [duplicateModal,setDuplicateModel] = useState(false);
@@ -155,6 +156,23 @@ const Course = ({ course, page }) => {
 
   const closeModal = () => {
     setModalIsOpen(false);
+    setEmptyNameError(false);    
+    setEmptyStartTimeError(false);   
+    setEmptyEndTimeError(false);
+    setEmptyStartDateError(false);
+    setEmptyEndDateError(false);
+    setEmptyCSVFileError(false);
+    setStartDateBoundError(false);
+    setStartDateBound1Error(false);   
+    setEndDateBoundError(false);
+    setEndDateBound1Error(false);
+    setStartAfterCurrentError(false);
+    setStartDateGreaterError(false);
+    setStartTimeSameDayError(false);
+    setStartHourSameDayError(false);
+    setStartHourAfterEndHourError(false);
+    setStartTimeHoursBeforeCurrent(false);
+    setStartTimeMinutesBeforeCurrent(false);
   };
 
   const closeModalError = () => {
@@ -285,7 +303,7 @@ const Course = ({ course, page }) => {
         method: "POST",
         body: formdata,
       });
-      const result = await response.json();
+      const result = await response.text();
       console.log(currentSurvey)
       console.log(result);
 
@@ -635,6 +653,7 @@ const Course = ({ course, page }) => {
         document.getElementById("pairing-mode").value
       ) {
         pairingId = pairingModesFull.no_mult[element].id;
+        console.log(pairingId);
         multiplier = 1;
       }
     }
@@ -644,6 +663,7 @@ const Course = ({ course, page }) => {
         document.getElementById("pairing-mode").value
       ) {
         pairingId = pairingModesFull.mult[element].id;
+        console.log(pairingId);
         multiplier = document.getElementById("multiplier-type").value;
       }
     }
@@ -713,6 +733,8 @@ const Course = ({ course, page }) => {
 
     return;
   }
+
+
   
   const handleActionButtonChange = (e,survey) => {
     setActionsButtonValue(e.target.value)
@@ -724,7 +746,6 @@ const Course = ({ course, page }) => {
     };
     if(e.target.value === 'Delete'){
       setCurrentSurvey(survey);
-      console.log(currentSurvey);
       setDeleteModal(true);
     };
     if(e.target.value === 'Extend'){
@@ -819,6 +840,23 @@ const Course = ({ course, page }) => {
 
 function closeModalDuplicate(){
     setDuplicateModel(false);
+    setEmptyNameError(false);    
+    setEmptyStartTimeError(false);   
+    setEmptyEndTimeError(false);
+    setEmptyStartDateError(false);
+    setEmptyEndDateError(false);
+    setEmptyCSVFileError(false);
+    setStartDateBoundError(false);
+    setStartDateBound1Error(false);   
+    setEndDateBoundError(false);
+    setEndDateBound1Error(false);
+    setStartAfterCurrentError(false);
+    setStartDateGreaterError(false);
+    setStartTimeSameDayError(false);
+    setStartHourSameDayError(false);
+    setStartHourAfterEndHourError(false);
+    setStartTimeHoursBeforeCurrent(false);
+    setStartTimeMinutesBeforeCurrent(false);
 }
 
 async function verifyDeleteBackendGet(id){
@@ -907,6 +945,7 @@ async function verifyExtendModal(){
   formData5.append('rubric-id', currentSurvey.rubric_id)
   formData5.append('start-date', currentSurvey.sort_start_date.split(' ')[0]);
   let currentTime = currentSurvey.sort_start_date.split(' ')[1]
+  console.log(currentSurvey);
   currentTime = currentTime.split(':');
   currentTime = currentTime[0] + ':' + currentTime[1];
 
@@ -988,17 +1027,21 @@ function deleteModalClose() {
          <div
             style={{
               display: "flex",
+              flexDirection: "column",
               width: "500px",
               marginTop: "2px",
               marginBottom: '12px',
               paddingBottom: '2px',
               justifyContent: "center",
-              gap: "4px",
+              gap: "12px",
               borderBottom: "thin solid #225cb5",
             }}
           >
             <h2 className="modal-title" style={{ color: "#225cb5" }}>
               Extend Chosen Survey: {currentSurvey.name}
+            </h2>
+            <h2 className="modal-title" style={{ color: "#225cb5" }}>
+              From Old Date: {currentSurvey.end_date}
             </h2>
             </div>
             <div class="input-wrapper1" style = {{width: '100%', marginBottom:'0%', marginTop: '3px'}}>
@@ -1147,72 +1190,19 @@ function deleteModalClose() {
             flexWrap: "wrap",
             borderBottom: "thin solid #225cb5",
           }}>
+
           <div class="input-wrapper1">
-          {StartDateGreaterError? <label style= {{color:'red'}}>Start date cannot be greater than the end date</label> : null}
-          {StartAfterCurrentError? <label style= {{color:'red'}}>Survey start date cannot be before the current day</label> : null}
-          {emptyStartDateError? <label style= {{color:'red'}}>Start Date cannot be empty</label> : null}
-          {startDateBoundError?  <label style= {{color:'red'}}>Start Date is too early. Must start atleast at August 31 </label> : null}
-          {startDateBound1Error? <label style= {{color:'red'}}>Start Date is too late. Must be at or before December 9</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              New Start Date
-            </label>
-            <input
-              id="start-date"
-              class="styled-input1"
-              type="date"
-              min="2023-08-31"
-              max="2023-12-09"
-              placeholder="Enter New Start Date"
-            ></input>
-          </div>
-          <div class="input-wrapper1">
-          {emptyEndDateError? <label style= {{color:'red'}}>End Date cannot be empty</label> : null}
-          {endDateBoundError? <label style= {{color:'red'}}>End Date is too early. Must start atleast at August 31</label> : null}
-          {endDateBound1Error? <label style= {{color:'red'}}>End Date is too late. Must be at or before December 9</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              New End Date
-            </label>
-            <input
-              id="end-date"
-              class="styled-input1"
-              type="date"
-              min="2023-08-31"
-              max="2023-12-09"
-              placeholder="Enter New End Date"
-            ></input>
-          </div>
-          <div class="input-wrapper1">
-          {StartHourAfterEndHourError? <label style= {{color:'red'}}>If start and end days are the same, Start time cannot be after End time</label> : null}
-          {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
-          {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
-          {emptyStartTimeError? <label style= {{color:'red'}}>Start Time cannot be empty</label> : null}
-          {StartTimeHoursBeforeCurrent? <label style= {{color:'red'}}>Start time hour cannot be before the current hour</label> : null}
-          {StartTimeMinutesBeforeCurrent? <label style= {{color:'red'}}>Start time minutes cannot be before current minutes</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              New Start Time
-            </label>
-            <input
-              id="start-time"
-              class="styled-input1"
-              type="time"
-              placeholder="Enter New Start Time"
-            ></input>
-          </div>
-          
-          <div class="input-wrapper1">
-          {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
-          {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
-          {emptyEndTimeError? <label style= {{color:'red'}}>End Time cannot be empty</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              New End Time
-            </label>
-            <input
-              id="end-time"
-              class="styled-input1"
-              type="time"
-              placeholder="Enter New End Time"
-            ></input>
-          </div>
+            {emptySurveyNameError? <label style= {{color:'red'}}>Survey Name cannot be empty</label> : null}
+              <label style={{ color: "#225cb5" }} for="subject-line">
+                New Survey Name
+              </label>
+              <input
+                id="survey-name"
+                class="styled-input1"
+                type="text"
+                placeholder="New Name"
+              ></input>
+          </div>  
           <div class="input-wrapper">
             <label style={{ color: "#225cb5" }} for="subject-line">
               Choose Rubric
@@ -1231,17 +1221,63 @@ function deleteModalClose() {
             </select>
           </div>
           <div class="input-wrapper1">
-          {emptySurveyNameError? <label style= {{color:'red'}}>Survey Name cannot be empty</label> : null}
+          {StartDateGreaterError? <label style= {{color:'red'}}>Start date cannot be greater than the end date</label> : null}
+          {StartAfterCurrentError? <label style= {{color:'red'}}>Survey start date cannot be before the current day</label> : null}
+          {emptyStartDateError? <label style= {{color:'red'}}>Start Date cannot be empty</label> : null}
+          {startDateBoundError?  <label style= {{color:'red'}}>Start Date is too early. Must start atleast at August 31 </label> : null}
+          {startDateBound1Error? <label style= {{color:'red'}}>Start Date is too late. Must be at or before December 9</label> : null}
+          {StartHourAfterEndHourError? <label style= {{color:'red'}}>If start and end days are the same, Start time cannot be after End time</label> : null}
+          {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
+          {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
+          {emptyStartTimeError? <label style= {{color:'red'}}>Start Time cannot be empty</label> : null}
+          {StartTimeHoursBeforeCurrent? <label style= {{color:'red'}}>Start time hour cannot be before the current hour</label> : null}
+          {StartTimeMinutesBeforeCurrent? <label style= {{color:'red'}}>Start time minutes cannot be before current minutes</label> : null}
             <label style={{ color: "#225cb5" }} for="subject-line">
-              New Survey Name
+              New Start Date & Time
             </label>
             <input
-              id="survey-name"
+              id="start-date"
               class="styled-input1"
-              type="text"
-              placeholder="New Name"
+              type="date"
+              min="2023-08-31"
+              max="2023-12-09"
+              placeholder="Enter New Start Date"
+            ></input>
+             <input
+              id="start-time"
+              class="styled-input1"
+              type="time"
+              placeholder="Enter New Start Time"
             ></input>
           </div>
+          <div class="input-wrapper1">
+          {emptyEndDateError? <label style= {{color:'red'}}>End Date cannot be empty</label> : null}
+          {endDateBoundError? <label style= {{color:'red'}}>End Date is too early. Must start atleast at August 31</label> : null}
+          {endDateBound1Error? <label style= {{color:'red'}}>End Date is too late. Must be at or before December 9</label> : null}
+          {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
+          {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
+          {emptyEndTimeError? <label style= {{color:'red'}}>End Time cannot be empty</label> : null}
+            <label style={{ color: "#225cb5" }} for="subject-line">
+              New End Date & Time
+            </label>
+            <input
+              id="end-date"
+              class="styled-input1"
+              type="date"
+              min="2023-08-31"
+              max="2023-12-09"
+              placeholder="Enter New End Date"
+            ></input>
+            <input
+              id="end-time"
+              class="styled-input1"
+              type="time"
+              placeholder="Enter New End Time"
+            ></input>
+          </div>
+          
+          
+         
           </div>
           <div
           style={{
@@ -1503,6 +1539,11 @@ function deleteModalClose() {
             </select>
           </div>
           <div class="input-wrapper1">
+          {StartDateGreaterError? <label style= {{color:'red'}}>Start date cannot be greater than the end date</label> : null}
+          {StartAfterCurrentError? <label style= {{color:'red'}}>Survey start date cannot be before the current day</label> : null}
+          {emptyStartDateError? <label style= {{color:'red'}}>Start Date cannot be empty</label> : null}
+          {startDateBoundError?  <label style= {{color:'red'}}>Start Date is too early. Must start atleast at August 31 </label> : null}
+          {startDateBound1Error? <label style= {{color:'red'}}>Start Date is too late. Must be at or before December 9</label> : null} 
           {StartHourAfterEndHourError? <label style= {{color:'red'}}>If start and end days are the same, Start time cannot be after End time</label> : null}
           {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
           {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
@@ -1510,37 +1551,7 @@ function deleteModalClose() {
           {StartTimeHoursBeforeCurrent? <label style= {{color:'red'}}>Start time hour cannot be before the current hour</label> : null}
           {StartTimeMinutesBeforeCurrent? <label style= {{color:'red'}}>Start time minutes cannot be before current minutes</label> : null}
             <label style={{ color: "#225cb5" }} for="subject-line">
-              Start Time
-            </label>
-            <input
-              id="start-time"
-              class="styled-input1"
-              type="time"
-              placeholder="Enter Start Time"
-            ></input>
-          </div>
-          <div class="input-wrapper1">
-          {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
-          {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
-          {emptyEndTimeError? <label style= {{color:'red'}}>End Time cannot be empty</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              End Time
-            </label>
-            <input
-              id="end-time"
-              class="styled-input1"
-              type="time"
-              placeholder="Enter End Time"
-            ></input>
-          </div>    
-          <div class="input-wrapper1">
-          {StartDateGreaterError? <label style= {{color:'red'}}>Start date cannot be greater than the end date</label> : null}
-          {StartAfterCurrentError? <label style= {{color:'red'}}>Survey start date cannot be before the current day</label> : null}
-          {emptyStartDateError? <label style= {{color:'red'}}>Start Date cannot be empty</label> : null}
-          {startDateBoundError?  <label style= {{color:'red'}}>Start Date is too early. Must start atleast at August 31 </label> : null}
-          {startDateBound1Error? <label style= {{color:'red'}}>Start Date is too late. Must be at or before December 9</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              Start Date
+              Start Date & Time
             </label>
             <input
               id="start-date"
@@ -1550,13 +1561,22 @@ function deleteModalClose() {
               max="2023-12-09"
               placeholder="Enter Start Date"
             ></input>
+            <input
+              id="start-time"
+              class="styled-input1"
+              type="time"
+              placeholder="Enter Start Time"
+            ></input>
           </div>
           <div class="input-wrapper1">
           {emptyEndDateError? <label style= {{color:'red'}}>End Date cannot be empty</label> : null}
           {endDateBoundError? <label style= {{color:'red'}}>End Date is too early. Must start atleast at August 31</label> : null}
           {endDateBound1Error? <label style= {{color:'red'}}>End Date is too late. Must be at or before December 9</label> : null}
+          {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
+          {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
+          {emptyEndTimeError? <label style= {{color:'red'}}>End Time cannot be empty</label> : null}
             <label style={{ color: "#225cb5" }} for="subject-line">
-              End Date
+              End Date & Time
             </label>
             <input
               id="end-date"
@@ -1566,12 +1586,22 @@ function deleteModalClose() {
               max="2023-12-09"
               placeholder="Enter End Date"
             ></input>
-          </div>
-
+            <input
+              id="end-time"
+              class="styled-input1"
+              type="time"
+              placeholder="Enter End Time"
+            ></input>
+          </div>    
           <div class="input-wrapper">
-            <label style={{ color: "#225cb5" }} for="subject-line">
+            <div style={{ display: "flex", flexDirection: "row"}}>
+            <label  style={{ color: "#225cb5"}}  for="subject-line">
               Pairing Modes
             </label>
+            <div class = "pairingLabel" style={{ color: "#225cb5", width:'25px', fontSize:'14px', marginLeft: '450px',fontWeight:'bolder'}}>
+              (i)
+            </div>
+            </div>
             <select
               style={{ color: "black" }}
               value={valuePairing}
@@ -1600,9 +1630,14 @@ function deleteModalClose() {
 
           {validPairingModeForMultiplier ? (
             <div class="input-wrapper">
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                Multiplier
-              </label>
+              <div style={{ display: "flex", flexDirection: "row"}}>
+            <label  style={{ color: "#225cb5"}}  for="subject-line">
+              Multiplier
+            </label>
+            <div class = "multiplierLabel" style={{ color: "#225cb5", width:'25px', fontSize:'14px', marginLeft: '485px',fontWeight:'bolder'}}>
+              (i)
+            </div>
+            </div>
               <select
                 style={{ color: "black" }}
                 value={multiplierNumber}
