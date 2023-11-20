@@ -54,14 +54,14 @@
  - DATABASE_HOST = 'oceanus.cse.buffalo.edu:3306'; 
  - $DATABASE_USER = 'UBIT'; 
  - $DATABASE_PASS = UBITPASSWORD;  
- - $DATABASE_NAME = 'cse203_2023_fall_team_aj_db';
+ - $DATABASE_NAME = 'cse302_2023_fall_team_aj_db';
  - Within StudentSurvey/documentation/ChesireDocumentationAndNeededFiles, you will see a file called database.php
  - This is how the database.php file should look after you have made your changes
  - After these changes have been to the database.php file in StudentSurvey/backend/lib/ save the file
  - You are going to want to make sure this file is saved and uploaded into cheshire during the initial uploading of the entirety of StudentSurvey to cheshire. 
  - If it is not uploaded initially, you can just update the file and upload to cheshire using the methods explained above. 
  - 
-**instructions on what database file is needed.** 
+**instructions on testing whether you have successfully uploaded StudentSurvey To Cheshire.** 
 
  - Click on this link https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/backend/instructor/fake_shibboleth.php
  - You will be prompted to enter a UBIT: Enter hartloff and press pretend login
