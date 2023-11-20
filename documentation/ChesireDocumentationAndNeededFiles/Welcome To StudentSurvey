@@ -11,8 +11,7 @@
  - Run npm run build, wait for that to finish
  - Close that terminal and open another session.
  - In your terminal type cd and paste StudentSurvey location
- - If uploading single file run: scp filename UBIT@cheshire.cse.buffalo.edu:/web/CSE442-542/2023-Fall/cse-302a/
- - If uploading folder(s) run: scp -r folder  UBIT@cheshire.cse.buffalo.edu:/web/CSE442-542/2023-Fall/cse-302a/
+ - Upload entirety of StudentSurvey: scp -r StudentSurvey  UBIT@cheshire.cse.buffalo.edu:/web/CSE442-542/2023-Fall/cse-302a/
 
 
 **Instructions on uploading individual files to StudentSurvey on cheshire - do this** 
