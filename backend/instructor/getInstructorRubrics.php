@@ -99,7 +99,66 @@ if (!isset($_SESSION['id'])) {
 $instructor_id = $_SESSION['id'];
 
 
+# get all rubrics and return json
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    $rubrics = getRubrics($con);
 
+    $rubrics_array = array();
+    foreach ($rubrics as $id => $desc) {
+        $single_rubric = array("id" => $id, "description" => $desc);
+        $rubrics_array[] = $single_rubric;
+    }
+    unset($id, $desc);
+
+    header("Content-Type: application/json; charset=UTF-8");
+    $response = $rubrics_array;
+    $responseJSON = json_encode($response);
+    echo $responseJSON;
+
+    
+}
+
+# post the rubric-id
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $response['data'] = array();
+    $response['errors'] = array();
+
+
+    if (!isset($_POST['rubric-id'])) {
+
+        $response['errors']['rubric'] = "Please choose a valid rubric.";
+
+    }
+
+    $rubric_id = $_POST['rubric-id'];
+    $rubrics = getRubrics($con);
+    if (!array_key_exists($rubric_id, $rubrics)) {
+
+        $response['errors']['rubric'] = "Please choose a valid rubric.";
+    }
+
+    if (empty($response['errors'])){
+
+        $rubric_name = getRubricName($con, $rubric_id);
+        $rubric_scores = getRubricScores($con, $rubric_id);
+        $rubric_topics = getRubricTopics($con, $rubric_id);
+        $topics_data = create_topics_array($rubric_topics);
+    
+        $rubric_data = array();
+        $rubric_data['name'] = $rubric_name;
+        $rubric_data['levels'] = $rubric_scores;
+        $rubric_data['topics'] = $topics_data;
+
+
+        $response['data'] = $rubric_data;
+    
+    }
+
+    header("Content-Type: application/json; charset=UTF-8");
+    $responseJSON = json_encode($response);
+    echo $responseJSON;
+
+}
 
 
 
