@@ -53,8 +53,9 @@ export function Select({ multiple, value, onChange, options }) {
       className={styles.container}
     >
       <span className={styles.value}>
-        {multiple
-          ? value.map((v) => (
+        {multiple ? (
+          value.length > 0 ? (
+            value.map((v) => (
               <button
                 key={v.value}
                 onClick={(e) => {
@@ -67,7 +68,12 @@ export function Select({ multiple, value, onChange, options }) {
                 <span className={styles["remove-btn"]}>&times;</span>
               </button>
             ))
-          : value?.label}
+          ) : (
+            <span>Select an option to add additional instructor(s)</span>
+          )
+        ) : (
+          value?.label
+        )}
       </span>
       <button
         onClick={(e) => {
