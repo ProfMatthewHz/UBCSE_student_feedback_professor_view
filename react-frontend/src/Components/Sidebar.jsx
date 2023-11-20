@@ -70,7 +70,7 @@ function SideBar(props) {
       <Modal
         open={showAddCourseModal}
         onRequestClose={handleAddCourseModal}
-        width = {'1000px'}
+        width={"1000px"}
         style={{
           content: {
             top: "50%",
@@ -87,6 +87,11 @@ function SideBar(props) {
           },
         }}
       >
+        <div className="CancelContainer">
+          <button className="CancelButton" onClick={handleAddCourseModal}>
+            ×
+          </button>
+        </div>
         <AddCourse
           handleAddCourseModal={handleAddCourseModal}
           getCourses={props.getCourses}
