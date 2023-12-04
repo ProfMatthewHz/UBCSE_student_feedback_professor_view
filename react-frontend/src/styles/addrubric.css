@@ -56,6 +56,7 @@ label.addrubric--rubric-name input {
 table.addrubric--table {
     border-collapse: collapse;
     padding-top: 65px;
+    width: 100%;
 }
 
 table.addrubric--table thead tr {
