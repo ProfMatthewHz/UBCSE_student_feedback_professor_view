@@ -4,7 +4,7 @@ import "../styles/modal.css";
 
 
 
-export default function Modal({open,children,width}) {
+export default function Modal({open,children,width,maxWidth}) {
 
 
 
@@ -14,7 +14,7 @@ export default function Modal({open,children,width}) {
 
     return (
       <div className="modal">
-        <div style= {{width: width}}className="modal-content modal-phone">
+        <div style= {{width: width, maxWidth: maxWidth}} className="modal-content modal-phone">
           {children}
         </div>
       </div>
