@@ -179,7 +179,7 @@ const AddRubric = ({ getRubrics }) => {
     <div className="addrubric--container">
       {showCreateLevelsModal ? (
         <div className="addrubric--contents-container">
-          <h2>+ Add Rubric: Create Rubric Levels</h2>
+          <h2>Create Rubric Levels</h2>
           <label className="addrubric--rubric-name">
             Rubric Name
             <input 
@@ -301,7 +301,7 @@ const AddRubric = ({ getRubrics }) => {
         // (Modal 2) Create Rubric Criteria
         : (showCreateCriteriaModal ? (
           <div className="addrubric--contents-container">
-            <h2>+ Add Rubric: Create Rubric Criteria</h2>
+            <h2>Create Rubric Criteria</h2>
             {rubricData["topics"] && rubricData["topics"].length === 1 && (
               <div className="addrubric--min-max-notification">
                 A minimum of 1 criterion is required
@@ -397,7 +397,7 @@ const AddRubric = ({ getRubrics }) => {
         ) :
         // (Modal 3) Preview Rubric
         <div className="addrubric--contents-container">
-            <h2>+ Add Rubric: Preview Rubric</h2>
+            <h2>Preview {rubricData.name}</h2>
             <div className="addrubric-table-overflow-container">
               <table className="addrubric--table">
                 <tbody>
