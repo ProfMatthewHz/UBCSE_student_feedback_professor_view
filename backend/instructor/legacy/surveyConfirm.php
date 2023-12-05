@@ -9,16 +9,16 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 //bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "../lib/studentQueries.php";
-require_once "lib/rubricQueries.php";
-require_once "lib/courseQueries.php";
-require_once "lib/surveyQueries.php";
-require_once "lib/reviewQueries.php";
-require_once "lib/enrollmentFunctions.php";
-require_once "lib/fileParse.php";
-require_once "lib/pairingFunctions.php";
+require_once "../../lib/database.php";
+require_once "../../lib/constants.php";
+require_once "../../lib/studentQueries.php";
+require_once "../lib/rubricQueries.php";
+require_once "../lib/courseQueries.php";
+require_once "../lib/surveyQueries.php";
+require_once "../lib/reviewQueries.php";
+require_once "../lib/enrollmentFunctions.php";
+require_once "../lib/fileParse.php";
+require_once "../lib/pairingFunctions.php";
 
 //query information about the requester
 $con = connectToDatabase();

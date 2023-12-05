@@ -10,11 +10,11 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 // bring in required code
-require_once "../lib/random.php";
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "lib/pairingFunctions.php";
-require_once "lib/instructorQueries.php";
+require_once "../../lib/random.php";
+require_once "../../lib/database.php";
+require_once "../../lib/constants.php";
+require_once "../lib/pairingFunctions.php";
+require_once "../lib/instructorQueries.php";
 
 // query information about the requester
 $con = connectToDatabase();
