@@ -1,44 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: localhost
--- Generation Time: Nov 09, 2023 at 10:55 AM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `test`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `courses`
---
-
-CREATE TABLE `courses` (
-  `id` int(11) NOT NULL,
-  `code` text NOT NULL,
-  `name` text NOT NULL,
-  `semester` tinyint(4) NOT NULL,
-  `year` year(4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `courses`
---
-
 INSERT INTO `courses` (`id`, `code`, `name`, `semester`, `year`) VALUES
 (10101, '', 'Computer Science 1 ', 0, '2023'),
 (10115, 'CSE 116', 'Computer Science 2', 4, '2023'),
@@ -59,21 +18,6 @@ INSERT INTO `courses` (`id`, `code`, `name`, `semester`, `year`) VALUES
 (42357, '', '', 3, '2022'),
 (42359, '', '', 3, '2022');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `course_instructors`
---
-
-CREATE TABLE `course_instructors` (
-  `course_id` int(11) NOT NULL,
-  `instructor_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `course_instructors`
---
-
 INSERT INTO `course_instructors` (`course_id`, `instructor_id`) VALUES
 (10101, 0),
 (10115, 1),
@@ -92,50 +36,24 @@ INSERT INTO `course_instructors` (`course_id`, `instructor_id`) VALUES
 (10128, 1),
 (42356, 2);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `enrollments`
---
-
-CREATE TABLE `enrollments` (
-  `student_id` int(11) NOT NULL,
-  `course_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `enrollments`
---
-
 INSERT INTO `enrollments` (`student_id`, `course_id`) VALUES
 (50243400, 42356),
 (50243479, 10101),
 (50243480, 10115),
 (50243535, 10117),
 (50243535, 10118),
+(50243535, 10121),
 (50243536, 10117),
 (50243536, 10118),
+(50243536, 10121),
 (50243537, 10117),
 (50243537, 10118),
 (50243538, 10117),
 (50243538, 10118);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `evals`
---
-
-CREATE TABLE `evals` (
-  `id` int(11) NOT NULL,
-  `review_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `evals`
---
-
 INSERT INTO `evals` (`id`, `review_id`) VALUES
+(3, 3),
+(4, 4),
 (94, 39),
 (95, 40),
 (96, 41),
@@ -185,69 +103,18 @@ INSERT INTO `evals` (`id`, `review_id`) VALUES
 (152, 85),
 (153, 86);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `freeforms`
---
-
-CREATE TABLE `freeforms` (
-  `eval_id` int(11) NOT NULL,
-  `topic_id` int(11) NOT NULL,
-  `response` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `freeforms`
---
-
 INSERT INTO `freeforms` (`eval_id`, `topic_id`, `response`) VALUES
 (0, 0, 'FreeForm One');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `instructors`
---
-
-CREATE TABLE `instructors` (
-  `id` int(11) NOT NULL,
-  `name` text NOT NULL,
-  `email` varchar(20) NOT NULL,
-  `session_expiration` int(11) DEFAULT NULL,
-  `csrf_token` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `instructors`
---
-
 INSERT INTO `instructors` (`id`, `name`, `email`, `session_expiration`, `csrf_token`) VALUES
-(1, '', 'hartloff@buffalo.edu', NULL, '16c861073c150ec14bc65bd63d5e11c1fc76b309e37a1dd034f22875fb4f96f8'),
+(1, '', 'hartloff@buffalo.edu', NULL, '9c54606c7268fd9f694b4e0e8cf40aea3a46c142fff1e80908848b4a23ad982d'),
 (2, 'Paul Dickson', '', NULL, NULL),
 (4, 'Matthew Hertz', 'mhertz@buffalo.edu', NULL, NULL);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `reviews`
---
-
-CREATE TABLE `reviews` (
-  `id` int(11) NOT NULL,
-  `survey_id` int(11) NOT NULL,
-  `reviewer_id` int(11) NOT NULL,
-  `team_id` int(11) NOT NULL,
-  `reviewed_id` int(11) NOT NULL,
-  `eval_weight` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `reviews`
---
-
 INSERT INTO `reviews` (`id`, `survey_id`, `reviewer_id`, `team_id`, `reviewed_id`, `eval_weight`) VALUES
 (2, 2, 50243400, 12, 50243400, 1),
+(3, 28, 50243535, 1, 50243536, 1),
+(4, 28, 50243536, 1, 50243535, 1),
 (5, 0, 50243480, 55, 50243480, 1),
 (39, 20, 50243535, 15, 50243535, 1),
 (40, 20, 50243535, 15, 50243536, 1),
@@ -298,62 +165,31 @@ INSERT INTO `reviews` (`id`, `survey_id`, `reviewer_id`, `team_id`, `reviewed_id
 (85, 19, 50243538, 17, 50243536, 1),
 (86, 19, 50243538, 17, 50243537, 1);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `rubrics`
---
-
-CREATE TABLE `rubrics` (
-  `id` int(11) NOT NULL,
-  `description` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `rubrics`
---
-
 INSERT INTO `rubrics` (`id`, `description`) VALUES
 (1, 'This is rubric id # one'),
 (2, 'This is rubric id # two'),
-(3, 'This is rubric id # three');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `rubric_responses`
---
-
-CREATE TABLE `rubric_responses` (
-  `topic_id` int(11) NOT NULL,
-  `rubric_score_id` int(11) NOT NULL,
-  `response` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `rubric_responses`
---
+(3, 'This is rubric id # three'),
+(4, 'Arianna\'s Rubric'),
+(5, 'Test');
 
 INSERT INTO `rubric_responses` (`topic_id`, `rubric_score_id`, `response`) VALUES
 (0, 0, 'Hello this was a decent rubric'),
-(1, 1, 'Im smitty JohnSon and I approve of this rubric ');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `rubric_scores`
---
-
-CREATE TABLE `rubric_scores` (
-  `id` int(11) NOT NULL,
-  `rubric_id` int(11) NOT NULL,
-  `name` text NOT NULL,
-  `score` tinyint(4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `rubric_scores`
---
+(1, 1, 'Im smitty JohnSon and I approve of this rubric '),
+(6, 41, 'You definitely talk a lot'),
+(6, 42, 'You talk sometimes'),
+(6, 43, 'You don\'t talk at all'),
+(7, 41, 'You make a lot of progress'),
+(7, 42, 'You make progress sometimes'),
+(7, 43, 'You don\'t make any progress'),
+(8, 41, 'You lead the team'),
+(8, 42, 'You lead the team sometimes'),
+(8, 43, 'You don\'t lead the team at all'),
+(9, 82, 'excellent'),
+(9, 83, 'good'),
+(9, 84, 'bad'),
+(10, 82, 'u\'r great'),
+(10, 83, 'u\'r good'),
+(10, 84, 'u\'r bad');
 
 INSERT INTO `rubric_scores` (`id`, `rubric_id`, `name`, `score`) VALUES
 (1, 1, 'Smitty JohnSon', 55),
@@ -386,47 +222,35 @@ INSERT INTO `rubric_scores` (`id`, `rubric_id`, `name`, `score`) VALUES
 (37, 1, 'Low Review Three', 10),
 (38, 1, 'Low Review Four', 4),
 (39, 1, 'Low Review Five', 8),
-(40, 1, 'Zero Scored', 1);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `rubric_topics`
---
-
-CREATE TABLE `rubric_topics` (
-  `id` int(11) NOT NULL,
-  `rubric_id` int(11) NOT NULL,
-  `question` text NOT NULL,
-  `question_response` enum('multiple_choice','text') NOT NULL DEFAULT 'multiple_choice'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `rubric_topics`
---
+(40, 1, 'Zero Scored', 1),
+(41, 4, 'Excellent', 4),
+(42, 4, 'Good', 2),
+(43, 4, 'Bad', 0),
+(72, 1, 'Student One', 45),
+(73, 1, 'Student One', 67),
+(74, 1, 'Student One', 14),
+(75, 1, 'Student One', 89),
+(76, 1, 'Student One', 31),
+(77, 1, 'Student Two', 90),
+(78, 1, 'Student Two', 92),
+(79, 1, 'Student Two', 82),
+(80, 1, 'Student Two', 95),
+(81, 1, 'Student Two', 93),
+(82, 5, 'Excellent', 7),
+(83, 5, 'Good', 4),
+(84, 5, 'Bad', 0);
 
 INSERT INTO `rubric_topics` (`id`, `rubric_id`, `question`, `question_response`) VALUES
 (1, 1, 'Teamwork ', 'multiple_choice'),
 (2, 1, 'Leadership', 'multiple_choice'),
 (3, 1, 'Participation', 'multiple_choice'),
 (4, 1, 'Professionalism', 'multiple_choice'),
-(5, 1, 'Quality', 'multiple_choice');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `scores`
---
-
-CREATE TABLE `scores` (
-  `eval_id` int(11) NOT NULL,
-  `topic_id` int(11) NOT NULL,
-  `rubric_score_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `scores`
---
+(5, 1, 'Quality', 'multiple_choice'),
+(6, 4, 'Communication', 'multiple_choice'),
+(7, 4, 'Preparedness', 'multiple_choice'),
+(8, 4, 'Leadership', 'multiple_choice'),
+(9, 5, 'Teamwork', 'multiple_choice'),
+(10, 5, 'Leadership', 'multiple_choice');
 
 INSERT INTO `scores` (`eval_id`, `topic_id`, `rubric_score_id`) VALUES
 (125, 2, 1),
@@ -668,23 +492,17 @@ INSERT INTO `scores` (`eval_id`, `topic_id`, `rubric_score_id`) VALUES
 (128, 1, 40),
 (131, 3, 40),
 (140, 5, 40),
-(153, 1, 40);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `students`
---
-
-CREATE TABLE `students` (
-  `id` int(11) NOT NULL,
-  `name` text NOT NULL,
-  `email` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `students`
---
+(153, 1, 40),
+(3, 1, 72),
+(3, 2, 73),
+(3, 3, 74),
+(3, 4, 75),
+(3, 5, 76),
+(4, 1, 77),
+(4, 2, 78),
+(4, 3, 79),
+(4, 4, 80),
+(4, 5, 81);
 
 INSERT INTO `students` (`id`, `name`, `email`) VALUES
 (50243400, 'Smitty Johnson', ''),
@@ -694,26 +512,6 @@ INSERT INTO `students` (`id`, `name`, `email`) VALUES
 (50243536, 'Student Two', 'two@buffalo.edu'),
 (50243537, 'Student Three', 'three@buffalo.edu'),
 (50243538, 'Student Four', 'four@buffalo.edu');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `surveys`
---
-
-CREATE TABLE `surveys` (
-  `id` int(11) NOT NULL,
-  `course_id` int(11) NOT NULL,
-  `start_date` datetime NOT NULL,
-  `end_date` datetime NOT NULL,
-  `name` varchar(30) NOT NULL,
-  `rubric_id` int(11) NOT NULL,
-  `survey_type_id` tinyint(4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `surveys`
---
 
 INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rubric_id`, `survey_type_id`) VALUES
 (1, 10115, '2023-09-19 08:31:19', '2023-09-19 08:31:19', 'Survey #2', 1, 1),
@@ -754,285 +552,8 @@ INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rub
 (38, 10128, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 3', 1, 1),
 (39, 10122, '2023-10-27 04:46:05', '2023-10-28 04:46:05', 'Dummy Name 2', 1, 1);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `survey_types`
---
-
-CREATE TABLE `survey_types` (
-  `id` tinyint(4) NOT NULL,
-  `description` text NOT NULL,
-  `file_organization` text NOT NULL,
-  `display_multiplier` tinyint(4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `survey_types`
---
-
 INSERT INTO `survey_types` (`id`, `description`, `file_organization`, `display_multiplier`) VALUES
 (1, 'Individual Reviewed by Individual', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0),
 (2, 'Each Team Member Reviewed By Entire Team', 'One row per team. Each row contains the email addresses for all team members. Blank columns are ignored', 0),
 (3, 'Each Team Member Reviewed by Entire Team + Manager', 'One row per team. Each row contains the email addresses for all team members with the manager email address listed last. Blank columns are ignored', 1),
 (4, 'Single Individual Reviewed by Each Team Member', 'One row per individual being reviewed. Every row contains the email addresses of the reviewers and the person being reviewed. The person being reviewed MUST be in the final column in the row.', 0);
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `courses`
---
-ALTER TABLE `courses`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `course_instructors`
---
-ALTER TABLE `course_instructors`
-  ADD PRIMARY KEY (`course_id`,`instructor_id`),
-  ADD KEY `course_instructors_course_idx` (`course_id`),
-  ADD KEY `course_instructors_instructor_idx` (`instructor_id`);
-
---
--- Indexes for table `enrollments`
---
-ALTER TABLE `enrollments`
-  ADD PRIMARY KEY (`student_id`,`course_id`),
-  ADD KEY `enrollments_student_idx` (`student_id`),
-  ADD KEY `enrollments_course_idx` (`course_id`);
-
---
--- Indexes for table `evals`
---
-ALTER TABLE `evals`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `evals_review_idx` (`review_id`);
-
---
--- Indexes for table `freeforms`
---
-ALTER TABLE `freeforms`
-  ADD PRIMARY KEY (`eval_id`,`topic_id`),
-  ADD KEY `freeforms_eval_idx` (`eval_id`),
-  ADD KEY `freeforms_topic_idx` (`topic_id`);
-
---
--- Indexes for table `instructors`
---
-ALTER TABLE `instructors`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `csrf_token` (`csrf_token`);
-
---
--- Indexes for table `reviews`
---
-ALTER TABLE `reviews`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `reviews_survey_idx` (`survey_id`),
-  ADD KEY `reviews_reviewer_idx` (`reviewer_id`),
-  ADD KEY `reviews_reviewed_idx` (`reviewed_id`);
-
---
--- Indexes for table `rubrics`
---
-ALTER TABLE `rubrics`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `rubric_responses`
---
-ALTER TABLE `rubric_responses`
-  ADD PRIMARY KEY (`topic_id`,`rubric_score_id`),
-  ADD KEY `rubric_responses_topic_idx` (`topic_id`),
-  ADD KEY `rubric_responses_rubric_score_idx` (`rubric_score_id`);
-
---
--- Indexes for table `rubric_scores`
---
-ALTER TABLE `rubric_scores`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `rubric_scores_rubric_idx` (`rubric_id`);
-
---
--- Indexes for table `rubric_topics`
---
-ALTER TABLE `rubric_topics`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `rubric_topics_rubric_idx` (`rubric_id`);
-
---
--- Indexes for table `scores`
---
-ALTER TABLE `scores`
-  ADD PRIMARY KEY (`eval_id`,`topic_id`),
-  ADD KEY `scores_eval_idx` (`eval_id`),
-  ADD KEY `scores_topic_idx` (`topic_id`),
-  ADD KEY `scores_rubric_score_idx` (`rubric_score_id`);
-
---
--- Indexes for table `students`
---
-ALTER TABLE `students`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
--- Indexes for table `surveys`
---
-ALTER TABLE `surveys`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `surveys_course_idx` (`course_id`),
-  ADD KEY `surveys_rubric_idx` (`rubric_id`),
-  ADD KEY `surveys_survey_type_constraint` (`survey_type_id`);
-
---
--- Indexes for table `survey_types`
---
-ALTER TABLE `survey_types`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `courses`
---
-ALTER TABLE `courses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98084020;
-
---
--- AUTO_INCREMENT for table `evals`
---
-ALTER TABLE `evals`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
-
---
--- AUTO_INCREMENT for table `instructors`
---
-ALTER TABLE `instructors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50243487;
-
---
--- AUTO_INCREMENT for table `reviews`
---
-ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
-
---
--- AUTO_INCREMENT for table `rubrics`
---
-ALTER TABLE `rubrics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `rubric_scores`
---
-ALTER TABLE `rubric_scores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
-
---
--- AUTO_INCREMENT for table `rubric_topics`
---
-ALTER TABLE `rubric_topics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `students`
---
-ALTER TABLE `students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50243539;
-
---
--- AUTO_INCREMENT for table `surveys`
---
-ALTER TABLE `surveys`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
-
---
--- AUTO_INCREMENT for table `survey_types`
---
-ALTER TABLE `survey_types`
-  MODIFY `id` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `course_instructors`
---
-ALTER TABLE `course_instructors`
-  ADD CONSTRAINT `course_instructors_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  ADD CONSTRAINT `course_instructors_instructor_constraint` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Constraints for table `enrollments`
---
-ALTER TABLE `enrollments`
-  ADD CONSTRAINT `enrollments_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  ADD CONSTRAINT `enrollments_student_constraint` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
-
---
--- Constraints for table `evals`
---
-ALTER TABLE `evals`
-  ADD CONSTRAINT `evals_review_constraint` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
-
---
--- Constraints for table `freeforms`
---
-ALTER TABLE `freeforms`
-  ADD CONSTRAINT `freeforms_eval_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `freeforms_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `reviews`
---
-ALTER TABLE `reviews`
-  ADD CONSTRAINT `reviews_reviewed_constraint` FOREIGN KEY (`reviewed_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  ADD CONSTRAINT `reviews_reviewer_constraint` FOREIGN KEY (`reviewer_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  ADD CONSTRAINT `reviews_survey_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
-
---
--- Constraints for table `rubric_responses`
---
-ALTER TABLE `rubric_responses`
-  ADD CONSTRAINT `rubric_responses_rubric_score_constraint` FOREIGN KEY (`rubric_score_id`) REFERENCES `rubric_scores` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  ADD CONSTRAINT `rubric_responses_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
-
---
--- Constraints for table `rubric_scores`
---
-ALTER TABLE `rubric_scores`
-  ADD CONSTRAINT `rubric_scores_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
-
---
--- Constraints for table `rubric_topics`
---
-ALTER TABLE `rubric_topics`
-  ADD CONSTRAINT `rubric_topics_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
-
---
--- Constraints for table `scores`
---
-ALTER TABLE `scores`
-  ADD CONSTRAINT `scores_eval_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `scores_rubric_score_constraint` FOREIGN KEY (`rubric_score_id`) REFERENCES `rubric_scores` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `scores_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `surveys`
---
-ALTER TABLE `surveys`
-  ADD CONSTRAINT `surveys_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  ADD CONSTRAINT `surveys_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  ADD CONSTRAINT `surveys_survey_type_constraint` FOREIGN KEY (`survey_type_id`) REFERENCES `survey_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
