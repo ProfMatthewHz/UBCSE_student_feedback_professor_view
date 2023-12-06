@@ -1,0 +1,76 @@
+# Welcome to StudentSurvey!
+
+**Instructions to upload StudentSurvey to cheshire**
+
+ - Verify that you are currently within Dev in local repo in IDE
+ - Verify you have most up to date version of Dev: Pull from dev in IDE 
+ - Locate StudentSurvey/react-frontend directory file location in local repo. 
+ - Open a terminal session. 
+ - Copy the location of StudentSurvey/react-frontend directory
+ - Run npm install, wait for that to finish
+ - Run npm run build, wait for that to finish
+ - Close that terminal and open another session.
+ - In your terminal type cd and paste StudentSurvey location
+ - Upload entirety of StudentSurvey: scp -r StudentSurvey  UBIT@cheshire.cse.buffalo.edu:/web/CSE442-542/2023-Fall/cse-302a/
+
+
+**Instructions on uploading individual files to StudentSurvey on cheshire - do this** 
+
+ - Open a terminal session. 
+ - Copy the location of whatever you plan to upload to StudentSurvey on cheshire 
+ - In your terminal type cd and paste the location 
+ - Example if you want to add a documentation file from your computer into documentation on StudentSurvey in cheshire.
+ - Cd into where you have the file on you computer, so you have access 
+ - You would then run the command like this scp filename UBIT@cheshire.cse.buffalo.edu:/web/CSE442-542/2023-Fall/cse-302a/StudentSurvey/documentation
+ - Enter your UBIT password (password to get into UB hub)
+ - if uploading a folder(s) run: scp -r filename  UBIT@cheshire.cse.buffalo.edu:/web/CSE442-542/2023-Fall/cse-302a/StudentSurvey/documentation
+ - Enter your UBIT password (password to get into UB hub)
+ - ***Both examples above show you how to explicitly upload a file/folder(s) from your computer into a certain location within StudentSurvey in cheshire. This same format can be used to upload file/folder(s) in any location within StudentSurvey.
+
+**Instructions remove individual files/folders within folders - do this** 
+
+ - Open a new terminal session 
+ - Enter ssh UBIT@cheshire.cse.buffalo.edu
+ - Enter your UBIT password (password to get into UB hub)
+ - Enter cd .. , reenter this until you see this cheshire {/} > 
+ - Enter cd web/CSE442-542/2023-Fall/cse-302a/ 
+ - Now you are in the main directory of web/CSE442-542/2023-Fall/cse-302a/ 
+ - If you type ls you will see StudentSurvey
+ - To remove a single file, you first have to cd into that location. For example if you want to remove a file from StudentSurvey/documentation 
+ - Enter cd StudentSurvey/documentation/ 
+ - Removing one file: run rm filename 
+ - Removing folder: run rm Folder -r
+
+**instructions on what database file is needed.** 
+
+ - Within the StudentSurvey repo, in the location StudentSurvey/backend/lib/ you will find a database.php file 
+ - Open the file and you will see following function connectToDatabase()
+ - Within that function you will see four variables with certain values, we need to update those values as they will only work for XAMPP
+ - DATABASE_HOST = 'localhost'; 
+ - $DATABASE_USER = 'root'; 
+ - $DATABASE_PASS = null;  
+ - $DATABASE_NAME = 'test';
+ - These values need to be updated to hold the following 
+ - DATABASE_HOST = 'oceanus.cse.buffalo.edu:3306'; 
+ - $DATABASE_USER = 'UBIT'; 
+ - $DATABASE_PASS = UBITPASSWORD;  
+ - $DATABASE_NAME = 'cse302_2023_fall_team_aj_db';
+ - Within StudentSurvey/documentation/ChesireDocumentationAndNeededFiles, you will see a file called database.php
+ - This is how the database.php file should look after you have made your changes
+ - After these changes have been to the database.php file in StudentSurvey/backend/lib/ save the file
+ - You are going to want to make sure this file is saved and uploaded into cheshire during the initial uploading of the entirety of StudentSurvey to cheshire. 
+ - If it is not uploaded initially, you can just update the file and upload to cheshire using the methods explained above. 
+ - 
+**instructions on testing whether you have successfully uploaded StudentSurvey To Cheshire.** 
+
+ - Click on this link https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/backend/instructor/fake_shibboleth.php
+ - You will be prompted to enter a UBIT: Enter hartloff and press pretend login
+ - You should then see all of the courses associated with Jesse Hartloff in the database. 
+ - Currently as of 11.19.23 he has the following 
+	 - MTH 141:  Calc 1
+	 - CSE199:  UB Seminar
+	 - CSE 404:  Software Project Managment
+	 - CSE 305:  Programming Languages
+	 - CSE 116:  Computer Science 2
+	 - CSE 115:  Computer Science 1
+- If you see this, you have successfully uploaded the entirety of StudentSurvey to cheshire and it is functioning as expected.

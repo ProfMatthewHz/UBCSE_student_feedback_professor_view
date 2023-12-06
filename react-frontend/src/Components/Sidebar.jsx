@@ -4,24 +4,28 @@ import { Link } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import Modal from "./Modal";
 import AddCourse from "../pages/AddCourse";
+import AddRubric from "./AddRubric";
 
 function SideBar(props) {
   const [activeButton, setActiveButton] = useState(false);
   const [dropdown_value, setDropDownValue] = useState("");
-  const sidebar_items = props.content_dictionary["Courses"]
-    ? Object.values(props.content_dictionary["Courses"])
-    : [];
+  const sidebar_items = props.content_dictionary["Courses"] ? Object.values(props.content_dictionary["Courses"])
+    : (props.content_dictionary["Rubrics"]) ? Object.values(props.content_dictionary["Rubrics"])
+    : []
   const [termContents, setTermContents] = useState([]);
   // Add course stuff
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
 
   const handleAddCourseModal = () => {
-    if (showAddCourseModal === false) {
-      setShowAddCourseModal(true);
-    } else {
-      setShowAddCourseModal(false);
-    }
+    setShowAddCourseModal(prevState => !prevState);
   };
+
+  // + Add Rubric for Library Page
+  const [showAddRubricModal, setShowAddRubricModal] = useState(false);
+
+  const handleAddRubricModal = () => {
+    setShowAddRubricModal(prevState => !prevState);
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,10 +71,11 @@ function SideBar(props) {
 
   return (
     <>
+      {/* Add Course Modal Below */}
       <Modal
         open={showAddCourseModal}
         onRequestClose={handleAddCourseModal}
-        width = {'1000px'}
+        width={"1000px"}
         style={{
           content: {
             top: "50%",
@@ -87,9 +92,31 @@ function SideBar(props) {
           },
         }}
       >
+        <div className="CancelContainer">
+          <button className="CancelButton" onClick={handleAddCourseModal}>
+            ×
+          </button>
+        </div>
         <AddCourse
           handleAddCourseModal={handleAddCourseModal}
           getCourses={props.getCourses}
+        />
+      </Modal>
+
+      {/* Add Rubric Modal Below */}
+      <Modal
+        open={showAddRubricModal}
+        onRequestClose={handleAddRubricModal}
+        width={"auto"}
+        maxWidth={"90%"}
+      >
+        <div className="CancelContainer">
+          <button className="CancelButton" onClick={handleAddRubricModal}>
+            ×
+          </button>
+        </div>
+        <AddRubric
+          getRubrics={props.getRubrics}
         />
       </Modal>
       <div className="sidebar">
@@ -180,7 +207,15 @@ function SideBar(props) {
                 >
                   + Add Course
                 </button>
-              ) : null}
+              ) : props.route === "/library" ? (
+                <button 
+                  className="add_course-btn" 
+                  onClick={handleAddRubricModal}
+                >
+                  + Add Rubric
+                </button>
+              ) : 
+              null}
             </div>
           );
         })}

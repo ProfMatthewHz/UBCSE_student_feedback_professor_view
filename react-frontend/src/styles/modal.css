@@ -4,6 +4,33 @@
   margin: 1%;
   position: relative;
 }
+
+.pairingLabel:hover:before{
+  position: absolute;
+  content: 'Pairing Modes are utilized in determining BLANK. The following pairing modes are described below';
+  top: -.50rem;
+  height: 250px;
+  width: 400px;
+  transform: translateX(5%);
+  border-radius: .3rem;
+  text-align: center;
+  padding: .5rem;
+  z-index: 1000; /* make sure it appears above other elements */
+  background: #333;
+}
+.multiplierLabel:hover:before{
+  position: absolute;
+  content: 'A multiplier is a weighting for Manager Reviews. Only applicable with certain pairing modes';
+  top: -.50rem;
+  height: 150px;
+  width: 300px;
+  transform: translateX(5%);
+  border-radius: .3rem;
+  text-align: center;
+  padding: .5rem;
+  z-index: 1000; /* make sure it appears above other elements */
+  background: #333;
+}
 .input-wrapper1 {
   font-family: Arial, sans-serif;
   width: 48%;
@@ -89,6 +116,7 @@ label {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .flex-container-center {

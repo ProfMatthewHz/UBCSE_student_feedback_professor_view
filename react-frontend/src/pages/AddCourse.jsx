@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/addcourse.css";
+import "../styles/modal.css";
+import "../styles/course.css";
 import { Select } from "../Components/Select";
 
 const AddCourse = ({ handleAddCourseModal, getCourses }) => {
@@ -109,15 +111,12 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
     if (currSem === 4) setSemester("fall");
 
     // Fetch all instructors
-    fetch(
-      process.env.REACT_APP_API_URL + "getInstructors.php",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    )
+    fetch(process.env.REACT_APP_API_URL + "getInstructors.php", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    })
       .then((res) => res.json())
       .then((result) => {
         let fetchedInstructors = [];
@@ -169,7 +168,6 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
     })
       .then((res) => res.text())
       .then((result) => {
-        
         if (typeof result === "string" && result !== "") {
           try {
             const parsedResult = JSON.parse(result);
@@ -205,119 +203,128 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
 
   return (
     <>
-      <div className="formContainer">
-        <div className="formContent">
-          <div className="formHeader">
-            <h2 className="add-header">Add Course</h2>
-          </div>
-          <form
-            className="add__form"
-            onSubmit={handleSubmit}
-            encType="multipart/form-data"
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            borderBottom: "thin solid #225cb5",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              width: "1250px",
+              marginTop: "2px",
+              paddingBottom: "2px",
+              justifyContent: "center",
+              gap: "4px",
+              borderBottom: "thin solid #225cb5",
+            }}
           >
-            <div className="addcourse-form__item--container">
-              <div className="form__item">
-                <label className="form__item--label">Course Code</label>
-                <input
-                  type="text"
-                  id="course-code"
-                  value={courseCode}
-                  onChange={(e) => setCourseCode(e.target.value)}
-                  placeholder="CSE 115"
-                  required
-                />
-              </div>
+            <h2 style={{ color: "#225cb5" }}>Add Course</h2>
+          </div>
 
-              <div className="form__item">
-                <label className="form__item--label">Course Name</label>
-                <input
-                  type="text"
-                  id="course-name"
-                  value={courseName}
-                  onChange={(e) => setCourseName(e.target.value)}
-                  placeholder="Introduction to Computer Science"
-                  required
-                />
-              </div>
+          <div className="input-wrapper1">
+            <label style={{ color: "#225cb5" }}>Course Code</label>
+            <input
+              type="text"
+              id="course-code"
+              value={courseCode}
+              onChange={(e) => setCourseCode(e.target.value)}
+              placeholder="CSE 115"
+              className="styled-input"
+              required
+            />
+          </div>
 
-              <div className="form__item file-input-wrapper">
-                <label className="form__item--label form__item--file">
-                  Roster (CSV File) - Requires Emails in Columns 1, First Names
-                  in Columns 2 and Last Names in Columns 3
-                </label>
-                <div>
-                  <input
-                    type="file"
-                    id="file-input"
-                    className="file-input"
-                    onChange={(e) => setFile(e.target.files[0])}
-                    required
-                  />
-                  <label className="custom-file-label" htmlFor="file-input">
-                    Choose File
-                  </label>
-                  <span className="selected-filename">
-                    {file ? file.name : "No file chosen"}
-                  </span>
-                </div>
-              </div>
+          <div className="input-wrapper1">
+            <label style={{ color: "#225cb5" }}>Course Name</label>
+            <input
+              type="text"
+              id="course-name"
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
+              placeholder="Intro. to Computer Science I"
+              className="styled-input"
+              required
+            />
+          </div>
 
-              <div className="form__year-sem--container">
-                <div className="form__item form__item--select">
-                  <label className="form__item--label">
-                    Course Semester and Year
-                  </label>
-                  <select
-                    value={`${semester}_${year}`}
-                    className="add-course--select"
-                    onChange={handleSemesterChange}
-                    id="semester"
-                    name="semester"
-                    required
+          <div className="input-wrapper">
+            <label style={{ color: "#225cb5" }}>Course Semester and Year</label>
+            <select
+              value={`${semester}_${year}`}
+              className="styled-input"
+              onChange={handleSemesterChange}
+              name="semester"
+              id="semester"
+              style={{ color: "black" }}
+              required
+            >
+              {semesters.map((sem) => {
+                return (
+                  <option
+                    key={sem.value}
+                    value={sem.value}
+                    selected={sem.value === `${semester}_${year}`}
                   >
-                    {semesters.map((sem) => {
-                      return (
-                        <option
-                          key={sem.value}
-                          value={sem.value}
-                          selected={sem.value === `${semester}_${year}`}
-                        >
-                          {sem.text}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-              </div>
+                    {sem.text}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
 
-              <div className="form__item">
-                <label className="form__item--label">
-                  Additional Instructor(s)
-                </label>
-                <Select
-                  multiple
-                  options={allInstructors}
-                  value={instructors}
-                  onChange={(o) => setInstructors(o)}
-                />
-              </div>
-            </div>
+          <div className="input-wrapper">
+            <label style={{ color: "#225cb5" }}>Additional Instructor(s)</label>
+            <Select
+              multiple
+              options={allInstructors}
+              value={instructors}
+              onChange={(o) => setInstructors(o)}
+            />
+          </div>
 
-            <div className="add-form__submit--container">
-              <button
-                type="button"
-                onClick={handleAddCourseModal}
-                className="cancel-btn"
-              >
-                Cancel
-              </button>
-              <button type="submit" className="form__submit">
-                + Add Course
-              </button>
-            </div>
-          </form>
+          <div className="input-wrapper1">
+            <label style={{ color: "#225cb5 " }}>
+              Roster (CSV File) - Requires Emails in Columns 1, First Names in
+              Columns 2 and Last Names in Columns 3
+            </label>
+            <input
+              type="file"
+              id="file-input"
+              className="styled-input"
+              onChange={(e) => setFile(e.target.files[0])}
+              required
+            />
+          </div>
         </div>
-      </div>
+        {/* Buttons */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "20px",
+            gap: "50px",
+            marginBottom: "30px",
+          }}
+        >
+          <button
+            className="CompleteSurvey"
+            style={{
+              borderRadius: "5px",
+              fontSize: "18px",
+              fontWeight: "700",
+              padding: "5px 12px",
+            }}
+            type="submit"
+          >
+            + Add Course
+          </button>
+        </div>
+      </form>
       {/* Error Modal */}
       {showModal && (
         <div className="modal">
