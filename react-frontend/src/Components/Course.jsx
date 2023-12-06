@@ -4,6 +4,7 @@ import "../styles/modal.css";
 import "../styles/extendsurvey.css"
 import "../styles/deletesurvey.css"
 import "../styles/duplicatesurvey.css"
+import "../styles/addsurvey.css"
 import Modal from "./Modal";
 import Toast from "./Toast";
 import ViewResults from "./ViewResults";
@@ -1359,225 +1360,150 @@ const Course = ({ course, page }) => {
           Close
         </button>
       </Modal>
-      <Modal
-        open={modalIsOpen}
-        onRequestClose={closeModal}
-        width={'1300px'}
-        style={{
-          content: {
-            top: "50%",
-            left: "50%",
-            right: "auto",
-            bottom: "auto",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "white",
-            borderRadius: "10px",
-            padding: "20px",
-            width: "80%",
-            maxWidth: "600px",
-          },
-          overlay: {
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          },
-        }}
-      >
+      <Modal open={modalIsOpen} onRequestClose={closeModal} width={'700px'} maxWidth={"90%"}>
         <div className="CancelContainer">
           <button className="CancelButton" onClick={closeModal}>×</button>
         </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            borderBottom: "thin solid #225cb5",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              width: "1250px",
-              marginTop: "2px",
-              paddingBottom: "2px",
-              justifyContent: "center",
-              gap: "4px",
-              borderBottom: "thin solid #225cb5",
-            }}
-          >
-            <h2 style={{ color: "#225cb5" }}>
-              Add A New Survey To The Following Course: {course.code}
-            </h2>
-          </div>
+        <div className="add-survey--contents-container">
 
-          <div marginLeft="10px" class="input-wrapper">
-            {emptySurveyNameError ? <label style={{ color: 'red' }}>Survey Name cannot be empty</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              Survey Name
-            </label>
+          <h2 className="add-survey--main-title">
+            Add Survey for {course.code}
+          </h2>
+
+          <label className="add-survey--label" for="subject-line">
+            Survey Name
             <input
+              className={emptySurveyNameError && ("add-survey-input-error")}
               id="survey-name"
-              class="styled-input"
               type="text"
               placeholder="Survey Name"
-            ></input>
-          </div>
+            />
+            {emptySurveyNameError ? <label className="add-survey--error-label">Survey name cannot be empty</label> : null}
+          </label>
+          <div className="add-survey--date-times-errors-container">
 
-          <div class="input-wrapper">
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              Rubrics
-            </label>
+            <div className={StartDateGreaterError || StartAfterCurrentError || emptyStartDateError ||
+              startDateBoundError || startDateBound1Error || StartHourAfterEndHourError ||
+              StartHourSameDayError || StartTimeSameDayError || emptyStartTimeError ||
+              StartTimeHoursBeforeCurrent || StartTimeMinutesBeforeCurrent || emptyEndDateError ||
+              endDateBoundError || endDateBound1Error || emptyEndTimeError
+              ? "add-survey--all-dates-and-times-container-error" : "add-survey--all-dates-and-times-container"
+            }>
+              <div className="add-survey--date-and-times-container">
+                <label className="add-survey--label" for="subject-line">
+                  Start Date
+                  <input
+                    id="start-date"
+                    type="date"
+                    min="2023-08-31"
+                    max="2023-12-09"
+                    placeholder="Enter Start Date"
+                  />
+                </label>
+
+                <label className="add-survey--label" for="subject-line">
+                  Start Time
+                  <input
+                    id="start-time"
+                    type="time"
+                    placeholder="Enter Start Time"
+                  />
+                </label>
+              </div>
+
+              <div className="add-survey--date-and-times-container">
+                <label className="add-survey--label" for="subject-line">
+                  End Date
+                  <input
+                    id="end-date"
+                    type="date"
+                    min="2023-08-31"
+                    max="2023-12-09"
+                    placeholder="Enter End Date"
+                  />
+                </label>
+
+                <label className="add-survey--label" for="subject-line">
+                  End Time
+                  <input
+                    id="end-time"
+                    type="time"
+                    placeholder="Enter End Time"
+                  />
+                </label>
+              </div>
+            </div>
+            {StartDateGreaterError ? <label className="duplicate-survey--error-label">Start date cannot be before the end date</label> : null}
+            {StartAfterCurrentError ? <label className="duplicate-survey--error-label">Start date cannot be before the current date</label> : null}
+            {emptyStartDateError ? <label className="duplicate-survey--error-label">Start date cannot be empty</label> : null}
+            {startDateBoundError ? <label className="duplicate-survey--error-label">Start date must be at August 31st or later</label> : null}
+            {startDateBound1Error ? <label className="duplicate-survey--error-label">Start date must be at December 9th or earlier</label> : null}
+            {StartHourAfterEndHourError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start time cannot be after end time</label> : null}
+            {StartHourSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
+            {StartTimeSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
+            {emptyStartTimeError ? <label className="duplicate-survey--error-label">Start time cannot be empty</label> : null}
+            {StartTimeHoursBeforeCurrent ? <label className="duplicate-survey--error-label">Start time hour cannot be before the current hour</label> : null}
+            {StartTimeMinutesBeforeCurrent ? <label className="duplicate-survey--error-label">Start time minutes cannot be before current minutes</label> : null}
+            {emptyEndDateError ? <label className="duplicate-survey--error-label">End date cannot be empty</label> : null}
+            {endDateBoundError ? <label className="duplicate-survey--error-label">End date must be at August 31st or later</label> : null}
+            {endDateBound1Error ? <label className="duplicate-survey--error-label">End date must be at December 9th or earlier</label> : null}
+            {emptyEndTimeError ? <label className="duplicate-survey--error-label">End time cannot be empty</label> : null}
+          </div>
+          <label className="add-survey--label" for="subject-line">
+            Choose Rubric
             <select
-              style={{ color: "black" }}
               value={valueRubric}
               onChange={handleChangeRubric}
               id="rubric-type"
-              class="styled-input"
               placeholder="Select a rubric"
             >
               {rubricNames.map((rubric) => (
                 <option value={rubric}>{rubric}</option>
               ))}
             </select>
-          </div>
-          <div class="input-wrapper1">
-            {StartDateGreaterError ? <label style={{ color: 'red' }}>Start date cannot be greater than the end date</label> : null}
-            {StartAfterCurrentError ? <label style={{ color: 'red' }}>Survey start date cannot be before the current day</label> : null}
-            {emptyStartDateError ? <label style={{ color: 'red' }}>Start Date cannot be empty</label> : null}
-            {startDateBoundError ? <label style={{ color: 'red' }}>Start Date is too early. Must start atleast at August 31 </label> : null}
-            {startDateBound1Error ? <label style={{ color: 'red' }}>Start Date is too late. Must be at or before December 9</label> : null}
-            {StartHourAfterEndHourError ? <label style={{ color: 'red' }}>If start and end days are the same, Start time cannot be after End time</label> : null}
-            {StartHourSameDayError ? <label style={{ color: 'red' }}>If start and end days are the same, Start and End time hours must differ</label> : null}
-            {StartTimeSameDayError ? <label style={{ color: 'red' }}>If start and end days are the same, Start and End times must differ</label> : null}
-            {emptyStartTimeError ? <label style={{ color: 'red' }}>Start Time cannot be empty</label> : null}
-            {StartTimeHoursBeforeCurrent ? <label style={{ color: 'red' }}>Start time hour cannot be before the current hour</label> : null}
-            {StartTimeMinutesBeforeCurrent ? <label style={{ color: 'red' }}>Start time minutes cannot be before current minutes</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              Start Date & Time
-            </label>
-            <input
-              id="start-date"
-              class="styled-input1"
-              type="date"
-              min="2023-08-31"
-              max="2023-12-09"
-              placeholder="Enter Start Date"
-            ></input>
-            <input
-              id="start-time"
-              class="styled-input1"
-              type="time"
-              placeholder="Enter Start Time"
-            ></input>
-          </div>
-          <div class="input-wrapper1">
-            {emptyEndDateError ? <label style={{ color: 'red' }}>End Date cannot be empty</label> : null}
-            {endDateBoundError ? <label style={{ color: 'red' }}>End Date is too early. Must start atleast at August 31</label> : null}
-            {endDateBound1Error ? <label style={{ color: 'red' }}>End Date is too late. Must be at or before December 9</label> : null}
-            {StartHourSameDayError ? <label style={{ color: 'red' }}>If start and end days are the same, Start and End time hours must differ</label> : null}
-            {StartTimeSameDayError ? <label style={{ color: 'red' }}>If start and end days are the same, Start and End times must differ</label> : null}
-            {emptyEndTimeError ? <label style={{ color: 'red' }}>End Time cannot be empty</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              End Date & Time
-            </label>
-            <input
-              id="end-date"
-              class="styled-input1"
-              type="date"
-              min="2023-08-31"
-              max="2023-12-09"
-              placeholder="Enter End Date"
-            ></input>
-            <input
-              id="end-time"
-              class="styled-input1"
-              type="time"
-              placeholder="Enter End Time"
-            ></input>
-          </div>
-          <div class="input-wrapper">
-            <div style={{ display: "flex", flexDirection: "row" }}>
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                Pairing Modes
-              </label>
-              <div class="pairingLabel" style={{ color: "#225cb5", width: '25px', fontSize: '14px', marginLeft: '450px', fontWeight: 'bolder' }}>
-                (i)
-              </div>
-            </div>
+          </label>
+          <label className="add-survey--label" for="subject-line">
+            Pairing Modes
             <select
-              style={{ color: "black" }}
               value={valuePairing}
               onChange={handleChangePairing}
               id="pairing-mode"
-              class="styled-input"
             >
               {pairingModesNames.map((pairing) => (
                 <option value={pairing}>{pairing}</option>
               ))}
             </select>
-          </div>
-
-          <div class="input-wrapper">
-            {emptyCSVFileError ? <label style={{ color: 'red' }}>Select a file</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              CSV File Upload
-            </label>
-            <input
-              id="csv-file"
-              class="styled-input"
-              type="file"
-              placeholder="Upload The File"
-            ></input>
-          </div>
-
-          {validPairingModeForMultiplier ? (
-            <div class="input-wrapper">
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <label style={{ color: "#225cb5" }} for="subject-line">
-                  Multiplier
-                </label>
-                <div class="multiplierLabel" style={{ color: "#225cb5", width: '25px', fontSize: '14px', marginLeft: '485px', fontWeight: 'bolder' }}>
-                  (i)
-                </div>
-              </div>
-              <select
-                style={{ color: "black" }}
-                value={multiplierNumber}
-                onChange={handleChangeMultiplierNumber}
-                id="multiplier-type"
-                class="styled-input"
-              >
+          </label>
+          {validPairingModeForMultiplier && (
+            <label className="add-survey--label" for="subject-line">
+              Multiplier
+              <select>
                 <option value="one">1</option>
                 <option value="two">2</option>
                 <option value="three">3</option>
                 <option value="four">4</option>
               </select>
-            </div>
-          ) : (
-            ""
+            </label>
           )}
+          <label className="add-survey--label" for="subject-line">
+            CSV File Upload
+            <input
+              className={emptyCSVFileError && ("add-survey-input-error")}
+              id="csv-file"
+              type="file"
+              placeholder="Upload The File"
+            />
+            {emptyCSVFileError ? <label className="add-survey--error-label">Select a file</label> : null}
+          </label>
+          <div className="add-survey--confirm-btn-container">
+            <button
+              className="add-survey--confirm-btn"
+              onClick={verifySurvey}
+            >
+              Verify Survey
+            </button>
+          </div>
         </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "20px",
-            gap: "50px",
-            marginBottom: "30px",
-          }}
-        >
-          <button
-            className="CompleteSurvey"
-            style={{
-              borderRadius: "5px",
-              fontSize: "18px",
-              fontWeight: "700",
-              padding: "5px 12px",
-            }}
-            onClick={verifySurvey}
-          >
-            Verify Survey
-          </button>
-        </div>
-
       </Modal>
       <div className="courseContent">
         <div className="courseHeader">
