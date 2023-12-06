@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "../styles/course.css";
 import "../styles/modal.css";
+import "../styles/extendsurvey.css"
+import "../styles/deletesurvey.css"
+import "../styles/duplicatesurvey.css"
+import "../styles/addsurvey.css"
 import Modal from "./Modal";
 import Toast from "./Toast";
 import ViewResults from "./ViewResults";
@@ -25,10 +29,10 @@ const Course = ({ course, page }) => {
       .then((res) => res.json())
       .then((result) => {
         console.log(result);
-        const activeSurveys = result.active.map(survey_info => ({...survey_info, expired: false}));
+        const activeSurveys = result.active.map(survey_info => ({ ...survey_info, expired: false }));
         console.log(result);
-        const expiredSurveys = result.expired.map(survey_info => ({...survey_info, expired: true}));
-        const upcomingSurveys = result.upcoming.map(survey_info => ({...survey_info, expired: false}));
+        const expiredSurveys = result.expired.map(survey_info => ({ ...survey_info, expired: true }));
+        const upcomingSurveys = result.upcoming.map(survey_info => ({ ...survey_info, expired: false }));
         console.log(result);
 
         setSurveys([...activeSurveys, ...expiredSurveys, ...upcomingSurveys]);
@@ -39,14 +43,14 @@ const Course = ({ course, page }) => {
   };
 
   // MODAL CODE
-  
+
   const [actionsButtonValue, setActionsButtonValue] = useState("")
-  const[currentSurveyEndDate, setCurrentSurveyEndDate] = useState("")
+  const [currentSurveyEndDate, setCurrentSurveyEndDate] = useState("")
 
   const [extendModal, setExtendModal] = useState(false);
-  const [duplicateModal,setDuplicateModel] = useState(false);
-  const [emptyOrWrongDeleteNameError,setemptyOrWrongDeleteNameError]= useState(false);
-  const [deleteModal,setDeleteModal] = useState(false);
+  const [duplicateModal, setDuplicateModel] = useState(false);
+  const [emptyOrWrongDeleteNameError, setemptyOrWrongDeleteNameError] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalIsOpenError, setModalIsOpenError] = useState(false);
   const [errorsList, setErrorsList] = useState([]);
@@ -73,32 +77,32 @@ const Course = ({ course, page }) => {
 
   //START:Error codes for modal frontend
 
-  const [emptySurveyNameError,setEmptyNameError] = useState(false);
-  const [emptyStartTimeError,setEmptyStartTimeError] = useState(false);
-  const [emptyEndTimeError,setEmptyEndTimeError] = useState(false);
-  const [emptyStartDateError,setEmptyStartDateError] = useState(false);
-  const [emptyEndDateError,setEmptyEndDateError] = useState(false);
-  const [emptyCSVFileError,setEmptyCSVFileError] = useState(false);
-  const [startDateBoundError,setStartDateBoundError] = useState(false);
-  const [startDateBound1Error,setStartDateBound1Error] = useState(false);
-  const [endDateBoundError,setEndDateBoundError] = useState(false);
-  const [endDateBound1Error,setEndDateBound1Error] = useState(false);
-  const [StartAfterCurrentError,setStartAfterCurrentError] = useState(false);
-  const [StartDateGreaterError,setStartDateGreaterError] = useState(false);
-  const [StartTimeSameDayError,setStartTimeSameDayError] = useState(false);
-  const [StartHourSameDayError,setStartHourSameDayError] = useState(false);
-  const [StartHourAfterEndHourError,setStartHourAfterEndHourError] = useState(false);
-  const [StartTimeHoursBeforeCurrent,setStartTimeHoursBeforeCurrent] = useState(false);
-  const [StartTimeMinutesBeforeCurrent,setStartTimeMinutesBeforeCurrent] = useState(false);
+  const [emptySurveyNameError, setEmptyNameError] = useState(false);
+  const [emptyStartTimeError, setEmptyStartTimeError] = useState(false);
+  const [emptyEndTimeError, setEmptyEndTimeError] = useState(false);
+  const [emptyStartDateError, setEmptyStartDateError] = useState(false);
+  const [emptyEndDateError, setEmptyEndDateError] = useState(false);
+  const [emptyCSVFileError, setEmptyCSVFileError] = useState(false);
+  const [startDateBoundError, setStartDateBoundError] = useState(false);
+  const [startDateBound1Error, setStartDateBound1Error] = useState(false);
+  const [endDateBoundError, setEndDateBoundError] = useState(false);
+  const [endDateBound1Error, setEndDateBound1Error] = useState(false);
+  const [StartAfterCurrentError, setStartAfterCurrentError] = useState(false);
+  const [StartDateGreaterError, setStartDateGreaterError] = useState(false);
+  const [StartTimeSameDayError, setStartTimeSameDayError] = useState(false);
+  const [StartHourSameDayError, setStartHourSameDayError] = useState(false);
+  const [StartHourAfterEndHourError, setStartHourAfterEndHourError] = useState(false);
+  const [StartTimeHoursBeforeCurrent, setStartTimeHoursBeforeCurrent] = useState(false);
+  const [StartTimeMinutesBeforeCurrent, setStartTimeMinutesBeforeCurrent] = useState(false);
   //END:Error codes for modal frontend
-  const [surveyNameConfirm,setSurveyNameConfirm] = useState();
-  const [rubricNameConfirm,setRubricNameConfirm] = useState();
-  const [startDateConfirm,setStartDateConfirm] = useState();
-  const [endDateConfirm,setEndDateConfirm] = useState();
+  const [surveyNameConfirm, setSurveyNameConfirm] = useState();
+  const [rubricNameConfirm, setRubricNameConfirm] = useState();
+  const [startDateConfirm, setStartDateConfirm] = useState();
+  const [endDateConfirm, setEndDateConfirm] = useState();
 
   const updateRosterformData = new FormData();
 
-  
+
 
   const fetchRubrics = () => {
     fetch(process.env.REACT_APP_API_URL + "rubricsGet.php", {
@@ -156,14 +160,14 @@ const Course = ({ course, page }) => {
 
   const closeModal = () => {
     setModalIsOpen(false);
-    setEmptyNameError(false);    
-    setEmptyStartTimeError(false);   
+    setEmptyNameError(false);
+    setEmptyStartTimeError(false);
     setEmptyEndTimeError(false);
     setEmptyStartDateError(false);
     setEmptyEndDateError(false);
     setEmptyCSVFileError(false);
     setStartDateBoundError(false);
-    setStartDateBound1Error(false);   
+    setStartDateBound1Error(false);
     setEndDateBoundError(false);
     setEndDateBound1Error(false);
     setStartAfterCurrentError(false);
@@ -181,7 +185,7 @@ const Course = ({ course, page }) => {
   const closeModalSurveyConfirm = () => {
     setModalIsOpenSurveyConfirm(false);
   };
-  
+
 
   const handleErrorModalClose = () => {
     setRosterFile(null); // sets the file to null
@@ -232,7 +236,7 @@ const Course = ({ course, page }) => {
         method: "GET"
       });
       const result = await response.json();
-      
+
 
       return result; // Return the result directly
     } catch (err) {
@@ -240,27 +244,27 @@ const Course = ({ course, page }) => {
       console.error(err);
       throw err; // Re-throw to be handled by the caller
     }
-    
+
   };
 
-  
-  async function fetchAddSurveyToDatabaseComplete(data){
+
+  async function fetchAddSurveyToDatabaseComplete(data) {
     console.log(data);
     let fetchHTTP =
-    process.env.REACT_APP_API_URL + "confirmationForSurvey.php"
-  //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
-  try {
-    const response = await fetch(fetchHTTP, {
-      method: "POST",
-      body: data
-    });
-    const result = await response.json();
-    console.log(result);
-    return result; // Return the result directly
-  } catch (err) {
+      process.env.REACT_APP_API_URL + "confirmationForSurvey.php"
+    //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
+    try {
+      const response = await fetch(fetchHTTP, {
+        method: "POST",
+        body: data
+      });
+      const result = await response.json();
+      console.log(result);
+      return result; // Return the result directly
+    } catch (err) {
 
-    throw err; // Re-throw to be handled by the caller
-  }
+      throw err; // Re-throw to be handled by the caller
+    }
 
   }
 
@@ -293,7 +297,7 @@ const Course = ({ course, page }) => {
       throw err; // Re-throw to be handled by the caller
     }
   }
-  async function duplicateSurveyBackend(formdata){
+  async function duplicateSurveyBackend(formdata) {
     let fetchHTTP =
       process.env.REACT_APP_API_URL + "duplicateExistingSurvey.php?survey=" +
       currentSurvey.id;
@@ -314,15 +318,15 @@ const Course = ({ course, page }) => {
     }
   }
 
-  async function verifyDuplicateSurvey(){
-    setEmptyNameError(false);    
-    setEmptyStartTimeError(false);   
+  async function verifyDuplicateSurvey() {
+    setEmptyNameError(false);
+    setEmptyStartTimeError(false);
     setEmptyEndTimeError(false);
     setEmptyStartDateError(false);
     setEmptyEndDateError(false);
     setEmptyCSVFileError(false);
     setStartDateBoundError(false);
-    setStartDateBound1Error(false);   
+    setStartDateBound1Error(false);
     setEndDateBoundError(false);
     setEndDateBound1Error(false);
     setStartAfterCurrentError(false);
@@ -347,26 +351,26 @@ const Course = ({ course, page }) => {
       "Start date": startDate,
       "End date": endDate,
     };
-    
+
     for (let k in dictNameToInputValue) {
       if (dictNameToInputValue[k] === "") {
-        if(k === "Survey name"){
+        if (k === "Survey name") {
           setEmptyNameError(true);
           return;
         }
-        if(k === "Start time"){
+        if (k === "Start time") {
           setEmptyStartTimeError(true);
           return;
         }
-        if(k === "End time"){
+        if (k === "End time") {
           setEmptyEndTimeError(true);
           return;
         }
-        if(k === "Start date"){
+        if (k === "Start date") {
           setEmptyStartDateError(true);
           return;
         }
-        if(k === "End date"){
+        if (k === "End date") {
           setEmptyEndDateError(true);
           return;
         }
@@ -469,9 +473,9 @@ const Course = ({ course, page }) => {
       }
     }
 
-   
 
-    formData3.append("survey-id",currentSurvey.id);
+
+    formData3.append("survey-id", currentSurvey.id);
     formData3.append("survey-name", surveyName);
     formData3.append("rubric-id", rubricId);
     formData3.append("start-date", startDate);
@@ -487,14 +491,14 @@ const Course = ({ course, page }) => {
   }
 
   async function verifySurvey() {
-    setEmptyNameError(false);    
-    setEmptyStartTimeError(false);   
+    setEmptyNameError(false);
+    setEmptyStartTimeError(false);
     setEmptyEndTimeError(false);
     setEmptyStartDateError(false);
     setEmptyEndDateError(false);
     setEmptyCSVFileError(false);
     setStartDateBoundError(false);
-    setStartDateBound1Error(false);   
+    setStartDateBound1Error(false);
     setEndDateBoundError(false);
     setEndDateBound1Error(false);
     setStartAfterCurrentError(false);
@@ -521,30 +525,30 @@ const Course = ({ course, page }) => {
       "End date": endDate,
       "Csv file": csvFile,
     };
-    
+
     for (let k in dictNameToInputValue) {
       if (dictNameToInputValue[k] === "") {
-        if(k === "Survey name"){
+        if (k === "Survey name") {
           setEmptyNameError(true);
           return;
         }
-        if(k === "Start time"){
+        if (k === "Start time") {
           setEmptyStartTimeError(true);
           return;
         }
-        if(k === "End time"){
+        if (k === "End time") {
           setEmptyEndTimeError(true);
           return;
         }
-        if(k === "Start date"){
+        if (k === "Start date") {
           setEmptyStartDateError(true);
           return;
         }
-        if(k === "End date"){
+        if (k === "End date") {
           setEmptyEndDateError(true);
           return;
         }
-        if(k === "Csv file"){
+        if (k === "Csv file") {
           setEmptyCSVFileError(true);
           return;
         }
@@ -562,7 +566,7 @@ const Course = ({ course, page }) => {
       return;
     }
     if (startDateObject > maxDateObject) {
-      setStartDateBound1Error(true); 
+      setStartDateBound1Error(true);
       return;
     }
     if (endDateObject < minDateObject) {
@@ -687,13 +691,13 @@ const Course = ({ course, page }) => {
     //let errorsObject = errorOrSuccessResponse.errors;
     let errorsObject = awaitedResponse.errors;
     let dataObject = awaitedResponse.data;
-  
+
     if (errorsObject.length === 0) {
       //succesful survey. 
       let rosterDataAll = await fetchRosterNonRoster();
-      let rosterData= rosterDataAll.data;
-      if(rosterData){
-        let rostersArrayHere=rosterData['roster-students'];
+      let rosterData = rosterDataAll.data;
+      if (rosterData) {
+        let rostersArrayHere = rosterData['roster-students'];
         let nonRosterArrayHere = rosterData['non-roster-students'];
         setRosterArray(rostersArrayHere);
         setNonRosterArray(nonRosterArrayHere);
@@ -708,21 +712,21 @@ const Course = ({ course, page }) => {
       return;
     }
     if (dataObject.length === 0) {
-      let errorKeys =   Object.keys(errorsObject)
+      let errorKeys = Object.keys(errorsObject)
       let pairingFileStrings = [];
-      let anyOtherStrings =[];
+      let anyOtherStrings = [];
       let i = 0;
-      while(i<errorKeys.length){
-        if(errorKeys[i]==="pairing-file"){
+      while (i < errorKeys.length) {
+        if (errorKeys[i] === "pairing-file") {
           pairingFileStrings = errorsObject["pairing-file"].split("<br>");
         }
-        else{
+        else {
           let error = errorKeys[i];
           anyOtherStrings.push(errorsObject[error]);
         }
         i++;
       }
-      const allErrorStrings= pairingFileStrings.concat(anyOtherStrings);
+      const allErrorStrings = pairingFileStrings.concat(anyOtherStrings);
 
       setErrorsList(allErrorStrings);
       closeModal();
@@ -735,24 +739,24 @@ const Course = ({ course, page }) => {
   }
 
 
-  
-  const handleActionButtonChange = (e,survey) => {
+
+  const handleActionButtonChange = (e, survey) => {
     setActionsButtonValue(e.target.value)
 
-    if(e.target.value === 'Duplicate'){
+    if (e.target.value === 'Duplicate') {
       fetchRubrics();
       setCurrentSurvey(survey);
       setDuplicateModel(true);
     };
-    if(e.target.value === 'Delete'){
+    if (e.target.value === 'Delete') {
       setCurrentSurvey(survey);
       setDeleteModal(true);
     };
-    if(e.target.value === 'Extend'){
+    if (e.target.value === 'Extend') {
       setCurrentSurvey(survey);
       setExtendModal(true);
     }
-    if(e.target.value == 'View Results'){
+    if (e.target.value == 'View Results') {
       handleViewResultsModalChange(survey);
     }
     setActionsButtonValue("")
@@ -827,27 +831,28 @@ const Course = ({ course, page }) => {
     )
       .then((res) => res.json())
       .then((result) => {
-        const activeSurveys = result.active.map(survey_info => ({...survey_info, expired: false}));
-        const expiredSurveys = result.expired.map(survey_info => ({...survey_info, expired: true}));
-        const upcomingSurveys = result.upcoming.map(survey_info => ({...survey_info, expired: false}));
+        const activeSurveys = result.active.map(survey_info => ({ ...survey_info, expired: false }));
+        const expiredSurveys = result.expired.map(survey_info => ({ ...survey_info, expired: true }));
+        const upcomingSurveys = result.upcoming.map(survey_info => ({ ...survey_info, expired: false }));
 
         setSurveys([...activeSurveys, ...expiredSurveys, ...upcomingSurveys]);
       })
       .catch((err) => {
         console.log(err);
       });
+
   }, []);
 
-function closeModalDuplicate(){
+  function closeModalDuplicate() {
     setDuplicateModel(false);
-    setEmptyNameError(false);    
-    setEmptyStartTimeError(false);   
+    setEmptyNameError(false);
+    setEmptyStartTimeError(false);
     setEmptyEndTimeError(false);
     setEmptyStartDateError(false);
     setEmptyEndDateError(false);
     setEmptyCSVFileError(false);
     setStartDateBoundError(false);
-    setStartDateBound1Error(false);   
+    setStartDateBound1Error(false);
     setEndDateBoundError(false);
     setEndDateBound1Error(false);
     setStartAfterCurrentError(false);
@@ -857,150 +862,150 @@ function closeModalDuplicate(){
     setStartHourAfterEndHourError(false);
     setStartTimeHoursBeforeCurrent(false);
     setStartTimeMinutesBeforeCurrent(false);
-}
-
-async function verifyDeleteBackendGet(id){
-  let fetchHTTP =
-    process.env.REACT_APP_API_URL + "deleteSurvey.php?survey="+id
-  //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
-  try {
-    const response = await fetch(fetchHTTP, {
-      method: "GET",
-    });
-    const result = await response.json();
-    console.log(result);
-    return result; // Return the result directly
-  } catch (err) {
-
-    throw err; // Re-throw to be handled by the caller
   }
 
-}
+  async function verifyDeleteBackendGet(id) {
+    let fetchHTTP =
+      process.env.REACT_APP_API_URL + "deleteSurvey.php?survey=" + id
+    //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
+    try {
+      const response = await fetch(fetchHTTP, {
+        method: "GET",
+      });
+      const result = await response.json();
+      console.log(result);
+      return result; // Return the result directly
+    } catch (err) {
 
+      throw err; // Re-throw to be handled by the caller
+    }
 
-async function verifyDeleteBackend(formdata,id){
-  let fetchHTTP =
-    process.env.REACT_APP_API_URL + "deleteSurvey.php?survey="+id
-  //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
-  try {
-    const response = await fetch(fetchHTTP, {
-      method: "POST",
-      body: formdata
-    });
-    const result = await response.json();
-    console.log(result);
-    return result; // Return the result directly
-  } catch (err) {
-
-    throw err; // Re-throw to be handled by the caller
   }
 
-}
 
+  async function verifyDeleteBackend(formdata, id) {
+    let fetchHTTP =
+      process.env.REACT_APP_API_URL + "deleteSurvey.php?survey=" + id
+    //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
+    try {
+      const response = await fetch(fetchHTTP, {
+        method: "POST",
+        body: formdata
+      });
+      const result = await response.json();
+      console.log(result);
+      return result; // Return the result directly
+    } catch (err) {
 
-async function extendSurveyBackendGet(id){
-  let fetchHTTP =
-  process.env.REACT_APP_API_URL + "extendSurvey.php?survey="+id
-//let response = await fetch(fetchHTTP,{method: "POST", body: formData});
-try {
-  const response = await fetch(fetchHTTP, {
-    method: "GET",
-  });
-  const result = await response.text();
-  console.log(result);
-  return result; // Return the result directly
-} catch (err) {
-
-  throw err; // Re-throw to be handled by the caller
-}
-
-}
-async function extendSurveyBackendPost(id, formdata){
-  let fetchHTTP =
-  process.env.REACT_APP_API_URL + "extendSurvey.php?survey="+id
-//let response = await fetch(fetchHTTP,{method: "POST", body: formData});
-try {
-  const response = await fetch(fetchHTTP, {
-    method: "POST",
-    body: formdata
-  });
-  const result = await response.json();
-  console.log(result);
-  return result; // Return the result directly
-} catch (err) {
-
-  throw err; // Re-throw to be handled by the caller
-}
-
-}
-
-async function verifyExtendModal(){
-  let newEndDate = document.getElementById("new-endDate").value;
-  let newEndTime = document.getElementById("new-endTime").value;
-  let surveyId = currentSurvey.id;
-  let formData5 = new FormData();
-  formData5.append('survey-id',surveyId);
-  formData5.append('end-date',newEndDate);
-  formData5.append('end-time', newEndTime);
-  formData5.append('rubric-id', currentSurvey.rubric_id)
-  formData5.append('start-date', currentSurvey.sort_start_date.split(' ')[0]);
-  let currentTime = currentSurvey.sort_start_date.split(' ')[1]
-  console.log(currentSurvey);
-  currentTime = currentTime.split(':');
-  currentTime = currentTime[0] + ':' + currentTime[1];
-
-  formData5.append('start-time', currentTime)
-  let pre = await extendSurveyBackendGet(surveyId);
-  let post = await extendSurveyBackendPost(surveyId,formData5);
-  if(post.errors['end-date'] || post.errors['end-time'] || post.errors['start-date'] || post.errors['start-time']){
-    //there are errors 
-    let errorList = [];
-    if(post.errors['end-date']){
-      errorList.push(post.errors['end-date']);
+      throw err; // Re-throw to be handled by the caller
     }
-    if(post.errors['start-date']){
-      errorList.push(post.errors['start-date']);
-    }
-    if(post.errors['end-time']){
-      errorList.push(post.errors['end-time']);
-    }
-    if(post.errors['start-time']){
-      errorList.push(post.errors['start-time']);
-    }
-    extendModalClose();
-    setErrorsList(errorList)
-    setModalIsOpenError(true);
-    return;
+
   }
 
-  updateAllSurveys();
-  extendModalClose();
 
-}
+  async function extendSurveyBackendGet(id) {
+    let fetchHTTP =
+      process.env.REACT_APP_API_URL + "extendSurvey.php?survey=" + id
+    //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
+    try {
+      const response = await fetch(fetchHTTP, {
+        method: "GET",
+      });
+      const result = await response.text();
+      console.log(result);
+      return result; // Return the result directly
+    } catch (err) {
 
-async function verifyDelete(){
-  setemptyOrWrongDeleteNameError(false);
-  let inputtedText = document.getElementById('delete-name').value;
-  if(inputtedText!==currentSurvey.name){
-    setemptyOrWrongDeleteNameError(true);
+      throw err; // Re-throw to be handled by the caller
+    }
+
   }
-  else{
-    let form = new FormData();
-    form.append("agreement",1);
+  async function extendSurveyBackendPost(id, formdata) {
+    let fetchHTTP =
+      process.env.REACT_APP_API_URL + "extendSurvey.php?survey=" + id
+    //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
+    try {
+      const response = await fetch(fetchHTTP, {
+        method: "POST",
+        body: formdata
+      });
+      const result = await response.json();
+      console.log(result);
+      return result; // Return the result directly
+    } catch (err) {
+
+      throw err; // Re-throw to be handled by the caller
+    }
+
+  }
+
+  async function verifyExtendModal() {
+    let newEndDate = document.getElementById("new-endDate").value;
+    let newEndTime = document.getElementById("new-endTime").value;
     let surveyId = currentSurvey.id;
-    let pre = await verifyDeleteBackendGet(surveyId);
-    let final = await verifyDeleteBackend(form,surveyId);
+    let formData5 = new FormData();
+    formData5.append('survey-id', surveyId);
+    formData5.append('end-date', newEndDate);
+    formData5.append('end-time', newEndTime);
+    formData5.append('rubric-id', currentSurvey.rubric_id)
+    formData5.append('start-date', currentSurvey.sort_start_date.split(' ')[0]);
+    let currentTime = currentSurvey.sort_start_date.split(' ')[1]
+    console.log(currentSurvey);
+    currentTime = currentTime.split(':');
+    currentTime = currentTime[0] + ':' + currentTime[1];
+
+    formData5.append('start-time', currentTime)
+    let pre = await extendSurveyBackendGet(surveyId);
+    let post = await extendSurveyBackendPost(surveyId, formData5);
+    if (post.errors['end-date'] || post.errors['end-time'] || post.errors['start-date'] || post.errors['start-time']) {
+      //there are errors 
+      let errorList = [];
+      if (post.errors['end-date']) {
+        errorList.push(post.errors['end-date']);
+      }
+      if (post.errors['start-date']) {
+        errorList.push(post.errors['start-date']);
+      }
+      if (post.errors['end-time']) {
+        errorList.push(post.errors['end-time']);
+      }
+      if (post.errors['start-time']) {
+        errorList.push(post.errors['start-time']);
+      }
+      extendModalClose();
+      setErrorsList(errorList)
+      setModalIsOpenError(true);
+      return;
+    }
+
     updateAllSurveys();
-    deleteModalClose();
+    extendModalClose();
 
   }
-}
-function extendModalClose(){
-  setExtendModal(false);
-}
-function deleteModalClose() {
-  setDeleteModal(false);
-}
+
+  async function verifyDelete() {
+    setemptyOrWrongDeleteNameError(false);
+    let inputtedText = document.getElementById('delete-name').value;
+    if (inputtedText !== currentSurvey.name) {
+      setemptyOrWrongDeleteNameError(true);
+    }
+    else {
+      let form = new FormData();
+      form.append("agreement", 1);
+      let surveyId = currentSurvey.id;
+      let pre = await verifyDeleteBackendGet(surveyId);
+      let final = await verifyDeleteBackend(form, surveyId);
+      updateAllSurveys();
+      deleteModalClose();
+    }
+  }
+  function extendModalClose() {
+    setExtendModal(false);
+  }
+  function deleteModalClose() {
+    setemptyOrWrongDeleteNameError(false);
+    setDeleteModal(false);
+  }
   const handleUpdateModalChange = () => {
     setShowUpdateModal((prev) => !prev);
   };
@@ -1010,209 +1015,111 @@ function deleteModalClose() {
     setViewingCurrentSurvey(survey);
   };
 
-  
+
   return (
     <div id={course.code} className="courseContainer">
-      <Modal open={extendModal} onRequestClose={extendModalClose}
-      width = {'500px'}>
+      <Modal open={extendModal} onRequestClose={extendModalClose} width={'650px'} maxWidth={"90%"}>
         <div className="CancelContainer">
           <button className="CancelButton" onClick={extendModalClose}>×</button>
         </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            borderBottom: "thin solid #225cb5",
-          }}>
-         <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              width: "500px",
-              marginTop: "2px",
-              marginBottom: '12px',
-              paddingBottom: '2px',
-              justifyContent: "center",
-              gap: "12px",
-              borderBottom: "thin solid #225cb5",
-            }}
-          >
-            <h2 className="modal-title" style={{ color: "#225cb5" }}>
-              Extend Chosen Survey: {currentSurvey.name}
-            </h2>
-            <h2 className="modal-title" style={{ color: "#225cb5" }}>
-              From Old Date: {currentSurvey.end_date}
-            </h2>
+        <div className="extend-survey--contents-container">
+          <h2 className="extend-survey--main-title">
+            Extend Survey: {currentSurvey.name}
+          </h2>
+          <div className="extend-survey--boxes-container">
+            <div className="extend-survey--left-box-container">
+              <h2>Current Deadline</h2>
+              <h3>{currentSurvey.end_date}</h3>
             </div>
-            <div class="input-wrapper1" style = {{width: '100%', marginBottom:'0%', marginTop: '3px'}}>
-            <label style={{ color: "#225cb5"}} for="subject-line">
-              New End Date
-            </label>
-            <input
-              id="new-endDate"
-              class="styled-input2"
-              type="date"
-              min="2023-08-31"
-              max="2023-12-09"
-              width = '50px'
-              placeholder="New End Date"
-            ></input>
+            <div className="extend-survey--right-box-container">
+              <h2>New Deadline</h2>
+              <div className="extend-survey--inputs-container">
+                <label for="subject-line">
+                  New Date
+                  <input
+                    id="new-endDate"
+                    class="styled-input2"
+                    type="date"
+                    min="2023-08-31"
+                    max="2023-12-09"
+                    placeholder="New End Date"
+                  />
+                </label>
+                <label for="subject-line">
+                  New Time
+                  <input
+                    id="new-endTime"
+                    class="styled-input2"
+                    type="time"
+                    placeholder="New End Time"
+                  />
+                </label>
+              </div>
+            </div>
           </div>
-          <div class="input-wrapper1" style = {{width: '100%', marginBottom:'0%', marginTop: '3px'}}>
-            <label style={{ color: "#225cb5"}} for="subject-line">
-              New End Time
-            </label>
-            <input
-              id="new-endTime"
-              class="styled-input2"
-              type="time"
-              width = '50px'
-              placeholder="New End Time"
-            ></input>
-          </div>
-          
-          </div>
-          <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "20px",
-            gap: "50px",
-            marginBottom: "30px",
-          }}
-        >
-              <button
-                className="CompleteSurveyExtend"
-                style={{
-                  borderRadius: "5px",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  padding: "5px 12px",
-                }}
-                onClick={verifyExtendModal}
-              >
-                Extend Survey
-              </button>
+          <button
+            className="extend-survey--confirm-btn"
+            onClick={verifyExtendModal}
+          >
+            Extend Survey
+          </button>
         </div>
-
-
       </Modal>
-      <Modal open={deleteModal} onRequestClose={deleteModalClose}
-      width = {'750px'}>
+      <Modal open={deleteModal} onRequestClose={deleteModalClose} width={'600px'} maxWidth={"90%"}>
         <div className="CancelContainer">
           <button className="CancelButton" onClick={deleteModalClose}>×</button>
         </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            borderBottom: "thin solid #225cb5",
-          }}>
-         <div
-            style={{
-              display: "flex",
-              width: "750px",
-              marginTop: "2px",
-              marginBottom: '12px',
-              paddingBottom: '2px',
-              justifyContent: "center",
-              gap: "4px",
-              borderBottom: "thin solid #225cb5",
-            }}
-          >
-            <h2 className="modal-title" style={{ color: "#225cb5" }}>
-              Delete Chosen Survey: {currentSurvey.name}
-            </h2>
-            </div>
-            <div class="input-wrapper1" style = {{width: '100%', marginBottom:'0%', marginTop: '3px'}}>
-            {emptyOrWrongDeleteNameError? <label style= {{color:'red'}}>Must match the text</label> : null}
-            <label style={{ color: "#225cb5"}} for="subject-line">
-              Retype Survey Name Before Clicking Delete
+        <div className="delete-survey--contents-container">
+          <h2 className="delete-survey--main-title">
+            Delete Survey: {currentSurvey.name}
+          </h2>
+          <div className={emptyOrWrongDeleteNameError ? "delete-survey--inputs-container-error" : "delete-survey--inputs-container"}>
+            <label for="subject-line">
+              Enter Survey Name
             </label>
             <input
               id="delete-name"
-              class="styled-input1"
-              style = {{width: '100%'}}
               type="text"
-              placeholder="New Name"
-            ></input>
+            />
+            {emptyOrWrongDeleteNameError ? <label className="delete-survey--error-label">Must match survey name</label> : null}
           </div>
+          <div className="delete-survey-btn-container">
+            <button
+              className="delete-survey--confirm-btn"
+              onClick={verifyDelete}
+            >
+              Delete Survey
+            </button>
           </div>
-          <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "20px",
-            gap: "50px",
-            marginBottom: "30px",
-          }}
-        >
-              <button
-                className="CompleteSurveyDelete"
-                style={{
-                  borderRadius: "5px",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  padding: "5px 12px",
-                }}
-                onClick={verifyDelete}
-              >
-                Delete Survey
-              </button>
         </div>
-            </Modal>
-      <Modal open={duplicateModal} onRequestClose={closeModalDuplicate}
-      width = {'1250px'}>
+      </Modal>
+      <Modal open={duplicateModal} onRequestClose={closeModalDuplicate} width={'700px'} maxWidth={"90%"}>
         <div className="CancelContainer">
           <button className="CancelButton" onClick={closeModalDuplicate}>×</button>
         </div>
-         <div
-            style={{
-              display: "flex",
-              marginTop: "2px",
-              paddingBottom: "2px",
-              justifyContent: "center",
-              gap: "4px",
-              borderBottom: "thin solid #225cb5",
-
-              '@media (max-width: 550px)': {
-                maxWidth: "90%",
-              }
-            }}
-          >
-            <h2 className="modal-title" style={{ color: "#225cb5" }}>
-              Duplicate Chosen Survey: {currentSurvey.name}
-            </h2>
-            </div>
-          <div style={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            borderBottom: "thin solid #225cb5",
-          }}>
-
-          <div class="input-wrapper1">
-            {emptySurveyNameError? <label style= {{color:'red'}}>Survey Name cannot be empty</label> : null}
-              <label style={{ color: "#225cb5" }} for="subject-line">
-                New Survey Name
-              </label>
-              <input
-                id="survey-name"
-                class="styled-input1"
-                type="text"
-                placeholder="New Name"
-              ></input>
-          </div>  
-          <div class="input-wrapper">
-            <label style={{ color: "#225cb5" }} for="subject-line">
+        <div className="duplicate-survey--contents-container">
+          <h2 className="duplicate-survey--main-title">
+            Duplicate Survey: {currentSurvey.name}
+          </h2>
+          <div className={emptySurveyNameError ? "duplicate-survey--input-error" : "duplicate-survey--input"}>
+            <label for="subject-line">
+              New Survey Name
+            </label>
+            <input
+              id="survey-name"
+              placeholder="New Name"
+              type="text"
+            />
+            {emptySurveyNameError ? <label className="duplicate-survey--error-label">Survey name cannot be empty</label> : null}
+          </div>
+          <div className="duplicate-survey--input">
+            <label for="subject-line">
               Choose Rubric
             </label>
             <select
-              style={{ color: "black" }}
               value={valueRubric}
               onChange={handleChangeRubric}
               id="rubric-type"
-              class="styled-input"
               placeholder="Select a rubric"
             >
               {rubricNames.map((rubric) => (
@@ -1220,159 +1127,153 @@ function deleteModalClose() {
               ))}
             </select>
           </div>
-          <div class="input-wrapper1">
-          {StartDateGreaterError? <label style= {{color:'red'}}>Start date cannot be greater than the end date</label> : null}
-          {StartAfterCurrentError? <label style= {{color:'red'}}>Survey start date cannot be before the current day</label> : null}
-          {emptyStartDateError? <label style= {{color:'red'}}>Start Date cannot be empty</label> : null}
-          {startDateBoundError?  <label style= {{color:'red'}}>Start Date is too early. Must start atleast at August 31 </label> : null}
-          {startDateBound1Error? <label style= {{color:'red'}}>Start Date is too late. Must be at or before December 9</label> : null}
-          {StartHourAfterEndHourError? <label style= {{color:'red'}}>If start and end days are the same, Start time cannot be after End time</label> : null}
-          {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
-          {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
-          {emptyStartTimeError? <label style= {{color:'red'}}>Start Time cannot be empty</label> : null}
-          {StartTimeHoursBeforeCurrent? <label style= {{color:'red'}}>Start time hour cannot be before the current hour</label> : null}
-          {StartTimeMinutesBeforeCurrent? <label style= {{color:'red'}}>Start time minutes cannot be before current minutes</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              New Start Date & Time
-            </label>
-            <input
-              id="start-date"
-              class="styled-input1"
-              type="date"
-              min="2023-08-31"
-              max="2023-12-09"
-              placeholder="Enter New Start Date"
-            ></input>
-             <input
-              id="start-time"
-              class="styled-input1"
-              type="time"
-              placeholder="Enter New Start Time"
-            ></input>
+          <div className="duplicate-survey--timeline-data-error-container">
+            <div className={StartDateGreaterError || StartAfterCurrentError || emptyStartDateError ||
+              startDateBoundError || startDateBound1Error || StartHourAfterEndHourError ||
+              StartHourSameDayError || StartTimeSameDayError || emptyStartTimeError ||
+              StartTimeHoursBeforeCurrent || StartTimeMinutesBeforeCurrent || emptyEndDateError ||
+              endDateBoundError || endDateBound1Error || emptyEndTimeError
+              ? "duplicate-survey--timeline-data-container-error" : "duplicate-survey--timeline-data-container"
+            }
+            >
+              <div className="duplicate-survey--labels-dates-container">
+                <label for="subject-line">
+                  Start Date
+                  <input
+                    id="start-date"
+                    type="date"
+                    min="2023-08-31"
+                    max="2023-12-09"
+                    placeholder="Enter New Start Date"
+                  />
+                </label>
+                <label for="subject-line">
+                  Start Time
+                  <input
+                    id="start-time"
+                    type="time"
+                    placeholder="Enter New Start Time"
+                  />
+                </label>
+              </div>
+              <div className="duplicate-survey--labels-dates-container">
+                <label for="subject-line">
+                  End Date
+                  <input
+                    id="end-date"
+                    type="date"
+                    min="2023-08-31"
+                    max="2023-12-09"
+                    placeholder="Enter New End Date"
+                  />
+                </label>
+
+                <label for="subject-line">
+                  End Time
+                  <input
+                    id="end-time"
+                    type="time"
+                    placeholder="Enter New End Time"
+                  />
+                </label>
+              </div>
+            </div>
+            {StartDateGreaterError ? <label className="duplicate-survey--error-label">Start date cannot be before the end date</label> : null}
+            {StartAfterCurrentError ? <label className="duplicate-survey--error-label">Start date cannot be before the current date</label> : null}
+            {emptyStartDateError ? <label className="duplicate-survey--error-label">Start date cannot be empty</label> : null}
+            {startDateBoundError ? <label className="duplicate-survey--error-label">Start date must be at August 31st or later</label> : null}
+            {startDateBound1Error ? <label className="duplicate-survey--error-label">Start date must be at December 9th or earlier</label> : null}
+            {StartHourAfterEndHourError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start time cannot be after end time</label> : null}
+            {StartHourSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
+            {StartTimeSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
+            {emptyStartTimeError ? <label className="duplicate-survey--error-label">Start time cannot be empty</label> : null}
+            {StartTimeHoursBeforeCurrent ? <label className="duplicate-survey--error-label">Start time hour cannot be before the current hour</label> : null}
+            {StartTimeMinutesBeforeCurrent ? <label className="duplicate-survey--error-label">Start time minutes cannot be before current minutes</label> : null}
+            {emptyEndDateError ? <label className="duplicate-survey--error-label">End date cannot be empty</label> : null}
+            {endDateBoundError ? <label className="duplicate-survey--error-label">End date must be at August 31st or later</label> : null}
+            {endDateBound1Error ? <label className="duplicate-survey--error-label">End date must be at December 9th or earlier</label> : null}
+            {emptyEndTimeError ? <label className="duplicate-survey--error-label">End time cannot be empty</label> : null}
           </div>
-          <div class="input-wrapper1">
-          {emptyEndDateError? <label style= {{color:'red'}}>End Date cannot be empty</label> : null}
-          {endDateBoundError? <label style= {{color:'red'}}>End Date is too early. Must start atleast at August 31</label> : null}
-          {endDateBound1Error? <label style= {{color:'red'}}>End Date is too late. Must be at or before December 9</label> : null}
-          {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
-          {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
-          {emptyEndTimeError? <label style= {{color:'red'}}>End Time cannot be empty</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              New End Date & Time
-            </label>
-            <input
-              id="end-date"
-              class="styled-input1"
-              type="date"
-              min="2023-08-31"
-              max="2023-12-09"
-              placeholder="Enter New End Date"
-            ></input>
-            <input
-              id="end-time"
-              class="styled-input1"
-              type="time"
-              placeholder="Enter New End Time"
-            ></input>
+          <div className="duplicate-survey--confirm-btn-container">
+            <button
+              className="duplicate-survey--confirm-btn"
+              onClick={verifyDuplicateSurvey}
+            >
+              Duplicate Survey
+            </button>
           </div>
-          
-          
-         
-          </div>
-          <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "20px",
-            gap: "50px",
-            marginBottom: "30px",
-          }}
-        >
-              <button
-                className="CompleteSurveyDuplicate"
-                style={{
-                  borderRadius: "5px",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                  padding: "5px 12px",
-                }}
-                onClick={verifyDuplicateSurvey}
-              >
-                Duplicate Survey
-              </button>
         </div>
-        
       </Modal>
 
       <Modal open={modalIsOpenSurveyConfirm} onRequestClose={closeModalSurveyConfirm}
-      width = {'1200px'}>
-      <div style={{
-            display: "flex",
-            flexDirection: "column",
-            flexWrap: "wrap",
-            borderBottom: "thin solid #225cb5",
-          }}>
-      <div style= {{color: "#225cb5",fontSize:'36px', fontWeight:'bolder'}}>Confirmation</div>
-        <div style= {{color: "#225cb5", fontSize:'24px',fontWeight:'bolder', marginBottom: '5px',marginTop: '20px'}}>Survey Name: {surveyNameConfirm}</div>
-        <div style = {{color: "#225cb5", fontSize:'24px',fontWeight:'bolder'}}>Survey Active: {startDateConfirm} to {endDateConfirm}</div>
-        <div style= {{color: "#225cb5", fontSize:'24px',fontWeight:'bolder', marginBottom: '5px',marginTop: '20px'}}>Rubric Used: {rubricNameConfirm}</div>
-        <div style= {{color: "#225cb5", fontSize:'24px',fontWeight:'bolder'}}>For Course: {course.code}</div>
+        width={'1200px'}>
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          flexWrap: "wrap",
+          borderBottom: "thin solid #225cb5",
+        }}>
+          <div style={{ color: "#225cb5", fontSize: '36px', fontWeight: 'bolder' }}>Confirmation</div>
+          <div style={{ color: "#225cb5", fontSize: '24px', fontWeight: 'bolder', marginBottom: '5px', marginTop: '20px' }}>Survey Name: {surveyNameConfirm}</div>
+          <div style={{ color: "#225cb5", fontSize: '24px', fontWeight: 'bolder' }}>Survey Active: {startDateConfirm} to {endDateConfirm}</div>
+          <div style={{ color: "#225cb5", fontSize: '24px', fontWeight: 'bolder', marginBottom: '5px', marginTop: '20px' }}>Rubric Used: {rubricNameConfirm}</div>
+          <div style={{ color: "#225cb5", fontSize: '24px', fontWeight: 'bolder' }}>For Course: {course.code}</div>
         </div>
 
-      <div class="table-containerConfirm">
-      {RosterArray.length > 0 ? (
-        <table>
-          <caption>Course Roster</caption>
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Name</th>
-              <th>Reviewing Others</th>
-              <th>Being Reviewed</th>
-            </tr>
-          </thead>
-          <tbody>
-            {RosterArray.map((entry, index) => (
-              <tr key={index}>
-                <td>{entry.student_email}</td>
-                <td>{entry.student_name}</td>
-                {entry.reviewing? <td>Yes</td>: <td>No</td>}
-                {entry.reviewed? <td>Yes</td>: <td>No</td>}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <div className="empty-view">Course Roster has no Students</div>
-      )}
+        <div class="table-containerConfirm">
+          {RosterArray.length > 0 ? (
+            <table>
+              <caption>Course Roster</caption>
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Name</th>
+                  <th>Reviewing Others</th>
+                  <th>Being Reviewed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {RosterArray.map((entry, index) => (
+                  <tr key={index}>
+                    <td>{entry.student_email}</td>
+                    <td>{entry.student_name}</td>
+                    {entry.reviewing ? <td>Yes</td> : <td>No</td>}
+                    {entry.reviewed ? <td>Yes</td> : <td>No</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="empty-view">Course Roster has no Students</div>
+          )}
 
-      {NonRosterArray.length > 0 ? (
-        <table>
-          <caption>Non-Course Students</caption>
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Name</th>
-              <th>Reviewing Others</th>
-              <th>Being Reviewed</th>
-            </tr>
-          </thead>
-          <tbody>
-            {NonRosterArray.map((entry, index) => (
-              <tr key={index}>
-                <td>{entry.student_email}</td>
-                <td>{entry.student_name}</td>
-                {entry.reviewing? <td>Yes</td>: <td>No</td>}
-                {entry.reviewed? <td>Yes</td>: <td>No</td>}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <div className="empty-view">No data to show</div>
-      )}
-      </div>
-<div
+          {NonRosterArray.length > 0 ? (
+            <table>
+              <caption>Non-Course Students</caption>
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Name</th>
+                  <th>Reviewing Others</th>
+                  <th>Being Reviewed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {NonRosterArray.map((entry, index) => (
+                  <tr key={index}>
+                    <td>{entry.student_email}</td>
+                    <td>{entry.student_name}</td>
+                    {entry.reviewing ? <td>Yes</td> : <td>No</td>}
+                    {entry.reviewed ? <td>Yes</td> : <td>No</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="empty-view">No data to show</div>
+          )}
+        </div>
+        <div
           style={{
             display: "flex",
             justifyContent: "center",
@@ -1409,275 +1310,200 @@ function deleteModalClose() {
 
       </Modal>
       <Modal open={modalIsOpenError} onRequestClose={closeModalError}
-      width = {'800px'}>
-      <div
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    borderBottom: "thin solid #225cb5",
-  }}
->
-  <div
-    style={{
-      display: "flex",
-      width: "100%",
-      marginTop: "2px",
-      paddingBottom: "2px",
-      justifyContent: "center",
-      borderBottom: "thin solid #225cb5",
-    }}
-  >
-    <h2 style={{ color: "#225cb5" }}>Survey Errors</h2>
-  </div>
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      maxHeight: "400px", // Set a maximum height for the container
-      overflowY: "auto", // Enable vertical scrolling
-      overflowX: "hidden", // Disable horizontal scrolling
-    }}
-  >
-    {errorsList.map((string, index) => (
-      <div key={index} className="string-list-item">
-        {string}
-      </div>
-    ))}
-  </div>
-</div>
-
-<button
-  className="Cancel"
-  style={{
-    borderRadius: "5px",
-    fontSize: "18px",
-    fontWeight: "700",
-    padding: "5px 12px",
-  }}
-  onClick={closeModalError}
->
-  Close
-</button>
-      </Modal>
-      <Modal
-        open={modalIsOpen}
-        onRequestClose={closeModal}
-        width = {'1300px'}
-        style={{
-          content: {
-            top: "50%",
-            left: "50%",
-            right: "auto",
-            bottom: "auto",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "white",
-            borderRadius: "10px",
-            padding: "20px",
-            width: "80%",
-            maxWidth: "600px",
-          },
-          overlay: {
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          },
-        }}
-      >
-        <div className="CancelContainer">
-          <button className="CancelButton" onClick={closeModal}>×</button>
-        </div>
+        width={'800px'}>
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
+            flexDirection: "column",
             borderBottom: "thin solid #225cb5",
           }}
         >
           <div
             style={{
               display: "flex",
-              width: "1250px",
+              width: "100%",
               marginTop: "2px",
               paddingBottom: "2px",
               justifyContent: "center",
-              gap: "4px",
               borderBottom: "thin solid #225cb5",
             }}
           >
-            <h2 style={{ color: "#225cb5" }}>
-              Add A New Survey To The Following Course: {course.code}
-            </h2>
+            <h2 style={{ color: "#225cb5" }}>Survey Errors</h2>
           </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              maxHeight: "400px", // Set a maximum height for the container
+              overflowY: "auto", // Enable vertical scrolling
+              overflowX: "hidden", // Disable horizontal scrolling
+            }}
+          >
+            {errorsList.map((string, index) => (
+              <div key={index} className="string-list-item">
+                {string}
+              </div>
+            ))}
+          </div>
+        </div>
 
-          <div marginLeft="10px" class="input-wrapper">
-          {emptySurveyNameError? <label style= {{color:'red'}}>Survey Name cannot be empty</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              Survey Name
-            </label>
+        <button
+          className="Cancel"
+          style={{
+            borderRadius: "5px",
+            fontSize: "18px",
+            fontWeight: "700",
+            padding: "5px 12px",
+          }}
+          onClick={closeModalError}
+        >
+          Close
+        </button>
+      </Modal>
+      <Modal open={modalIsOpen} onRequestClose={closeModal} width={'700px'} maxWidth={"90%"}>
+        <div className="CancelContainer">
+          <button className="CancelButton" onClick={closeModal}>×</button>
+        </div>
+        <div className="add-survey--contents-container">
+
+          <h2 className="add-survey--main-title">
+            Add Survey for {course.code}
+          </h2>
+
+          <label className="add-survey--label" for="subject-line">
+            Survey Name
             <input
+              className={emptySurveyNameError && ("add-survey-input-error")}
               id="survey-name"
-              class="styled-input"
               type="text"
               placeholder="Survey Name"
-            ></input>
-          </div>
+            />
+            {emptySurveyNameError ? <label className="add-survey--error-label">Survey name cannot be empty</label> : null}
+          </label>
+          <div className="add-survey--date-times-errors-container">
 
-          <div class="input-wrapper">
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              Rubrics
-            </label>
+            <div className={StartDateGreaterError || StartAfterCurrentError || emptyStartDateError ||
+              startDateBoundError || startDateBound1Error || StartHourAfterEndHourError ||
+              StartHourSameDayError || StartTimeSameDayError || emptyStartTimeError ||
+              StartTimeHoursBeforeCurrent || StartTimeMinutesBeforeCurrent || emptyEndDateError ||
+              endDateBoundError || endDateBound1Error || emptyEndTimeError
+              ? "add-survey--all-dates-and-times-container-error" : "add-survey--all-dates-and-times-container"
+            }>
+              <div className="add-survey--date-and-times-container">
+                <label className="add-survey--label" for="subject-line">
+                  Start Date
+                  <input
+                    id="start-date"
+                    type="date"
+                    min="2023-08-31"
+                    max="2023-12-09"
+                    placeholder="Enter Start Date"
+                  />
+                </label>
+
+                <label className="add-survey--label" for="subject-line">
+                  Start Time
+                  <input
+                    id="start-time"
+                    type="time"
+                    placeholder="Enter Start Time"
+                  />
+                </label>
+              </div>
+
+              <div className="add-survey--date-and-times-container">
+                <label className="add-survey--label" for="subject-line">
+                  End Date
+                  <input
+                    id="end-date"
+                    type="date"
+                    min="2023-08-31"
+                    max="2023-12-09"
+                    placeholder="Enter End Date"
+                  />
+                </label>
+
+                <label className="add-survey--label" for="subject-line">
+                  End Time
+                  <input
+                    id="end-time"
+                    type="time"
+                    placeholder="Enter End Time"
+                  />
+                </label>
+              </div>
+            </div>
+            {StartDateGreaterError ? <label className="duplicate-survey--error-label">Start date cannot be before the end date</label> : null}
+            {StartAfterCurrentError ? <label className="duplicate-survey--error-label">Start date cannot be before the current date</label> : null}
+            {emptyStartDateError ? <label className="duplicate-survey--error-label">Start date cannot be empty</label> : null}
+            {startDateBoundError ? <label className="duplicate-survey--error-label">Start date must be at August 31st or later</label> : null}
+            {startDateBound1Error ? <label className="duplicate-survey--error-label">Start date must be at December 9th or earlier</label> : null}
+            {StartHourAfterEndHourError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start time cannot be after end time</label> : null}
+            {StartHourSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
+            {StartTimeSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
+            {emptyStartTimeError ? <label className="duplicate-survey--error-label">Start time cannot be empty</label> : null}
+            {StartTimeHoursBeforeCurrent ? <label className="duplicate-survey--error-label">Start time hour cannot be before the current hour</label> : null}
+            {StartTimeMinutesBeforeCurrent ? <label className="duplicate-survey--error-label">Start time minutes cannot be before current minutes</label> : null}
+            {emptyEndDateError ? <label className="duplicate-survey--error-label">End date cannot be empty</label> : null}
+            {endDateBoundError ? <label className="duplicate-survey--error-label">End date must be at August 31st or later</label> : null}
+            {endDateBound1Error ? <label className="duplicate-survey--error-label">End date must be at December 9th or earlier</label> : null}
+            {emptyEndTimeError ? <label className="duplicate-survey--error-label">End time cannot be empty</label> : null}
+          </div>
+          <label className="add-survey--label" for="subject-line">
+            Choose Rubric
             <select
-              style={{ color: "black" }}
               value={valueRubric}
               onChange={handleChangeRubric}
               id="rubric-type"
-              class="styled-input"
               placeholder="Select a rubric"
             >
               {rubricNames.map((rubric) => (
                 <option value={rubric}>{rubric}</option>
               ))}
             </select>
-          </div>
-          <div class="input-wrapper1">
-          {StartDateGreaterError? <label style= {{color:'red'}}>Start date cannot be greater than the end date</label> : null}
-          {StartAfterCurrentError? <label style= {{color:'red'}}>Survey start date cannot be before the current day</label> : null}
-          {emptyStartDateError? <label style= {{color:'red'}}>Start Date cannot be empty</label> : null}
-          {startDateBoundError?  <label style= {{color:'red'}}>Start Date is too early. Must start atleast at August 31 </label> : null}
-          {startDateBound1Error? <label style= {{color:'red'}}>Start Date is too late. Must be at or before December 9</label> : null} 
-          {StartHourAfterEndHourError? <label style= {{color:'red'}}>If start and end days are the same, Start time cannot be after End time</label> : null}
-          {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
-          {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
-          {emptyStartTimeError? <label style= {{color:'red'}}>Start Time cannot be empty</label> : null}
-          {StartTimeHoursBeforeCurrent? <label style= {{color:'red'}}>Start time hour cannot be before the current hour</label> : null}
-          {StartTimeMinutesBeforeCurrent? <label style= {{color:'red'}}>Start time minutes cannot be before current minutes</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              Start Date & Time
-            </label>
-            <input
-              id="start-date"
-              class="styled-input1"
-              type="date"
-              min="2023-08-31"
-              max="2023-12-09"
-              placeholder="Enter Start Date"
-            ></input>
-            <input
-              id="start-time"
-              class="styled-input1"
-              type="time"
-              placeholder="Enter Start Time"
-            ></input>
-          </div>
-          <div class="input-wrapper1">
-          {emptyEndDateError? <label style= {{color:'red'}}>End Date cannot be empty</label> : null}
-          {endDateBoundError? <label style= {{color:'red'}}>End Date is too early. Must start atleast at August 31</label> : null}
-          {endDateBound1Error? <label style= {{color:'red'}}>End Date is too late. Must be at or before December 9</label> : null}
-          {StartHourSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End time hours must differ</label> : null}
-          {StartTimeSameDayError? <label style= {{color:'red'}}>If start and end days are the same, Start and End times must differ</label> : null}
-          {emptyEndTimeError? <label style= {{color:'red'}}>End Time cannot be empty</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              End Date & Time
-            </label>
-            <input
-              id="end-date"
-              class="styled-input1"
-              type="date"
-              min="2023-08-31"
-              max="2023-12-09"
-              placeholder="Enter End Date"
-            ></input>
-            <input
-              id="end-time"
-              class="styled-input1"
-              type="time"
-              placeholder="Enter End Time"
-            ></input>
-          </div>    
-          <div class="input-wrapper">
-            <div style={{ display: "flex", flexDirection: "row"}}>
-            <label  style={{ color: "#225cb5"}}  for="subject-line">
-              Pairing Modes
-            </label>
-            <div class = "pairingLabel" style={{ color: "#225cb5", width:'25px', fontSize:'14px', marginLeft: '450px',fontWeight:'bolder'}}>
-              (i)
-            </div>
-            </div>
+          </label>
+          <label className="add-survey--label" for="subject-line">
+            Pairing Modes
             <select
-              style={{ color: "black" }}
               value={valuePairing}
               onChange={handleChangePairing}
               id="pairing-mode"
-              class="styled-input"
             >
               {pairingModesNames.map((pairing) => (
                 <option value={pairing}>{pairing}</option>
               ))}
             </select>
-          </div>
-
-          <div class="input-wrapper">
-          {emptyCSVFileError? <label style= {{color:'red'}}>Select a file</label> : null}
-            <label style={{ color: "#225cb5" }} for="subject-line">
-              CSV File Upload
-            </label>
-            <input
-              id="csv-file"
-              class="styled-input"
-              type="file"
-              placeholder="Upload The File"
-            ></input>
-          </div>
-
-          {validPairingModeForMultiplier ? (
-            <div class="input-wrapper">
-              <div style={{ display: "flex", flexDirection: "row"}}>
-            <label  style={{ color: "#225cb5"}}  for="subject-line">
+          </label>
+          {validPairingModeForMultiplier && (
+            <label className="add-survey--label" for="subject-line">
               Multiplier
-            </label>
-            <div class = "multiplierLabel" style={{ color: "#225cb5", width:'25px', fontSize:'14px', marginLeft: '485px',fontWeight:'bolder'}}>
-              (i)
-            </div>
-            </div>
-              <select
-                style={{ color: "black" }}
-                value={multiplierNumber}
-                onChange={handleChangeMultiplierNumber}
-                id="multiplier-type"
-                class="styled-input"
-              >
+              <select>
                 <option value="one">1</option>
                 <option value="two">2</option>
                 <option value="three">3</option>
                 <option value="four">4</option>
               </select>
-            </div>
-          ) : (
-            ""
+            </label>
           )}
+          <label className="add-survey--label" for="subject-line">
+            CSV File Upload
+            <input
+              className={emptyCSVFileError && ("add-survey-input-error")}
+              id="csv-file"
+              type="file"
+              placeholder="Upload The File"
+            />
+            {emptyCSVFileError ? <label className="add-survey--error-label">Select a file</label> : null}
+          </label>
+          <div className="add-survey--confirm-btn-container">
+            <button
+              className="add-survey--confirm-btn"
+              onClick={verifySurvey}
+            >
+              Verify Survey
+            </button>
+          </div>
         </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "20px",
-            gap: "50px",
-            marginBottom: "30px",
-          }}
-        >
-          <button
-            className="CompleteSurvey"
-            style={{
-              borderRadius: "5px",
-              fontSize: "18px",
-              fontWeight: "700",
-              padding: "5px 12px",
-            }}
-            onClick={verifySurvey}
-          >
-            Verify Survey
-          </button>
-        </div>
-
       </Modal>
       <div className="courseContent">
         <div className="courseHeader">
@@ -1721,20 +1547,20 @@ function deleteModalClose() {
                   </td>
                   <td>{survey.completion}</td>
                   <td>
-                  {page === "home" ? (
-                    <select className="surveyactions--select" style={{ backgroundColor: '#EF6C22', color: 'white',fontSize:'18px', fontWeight:'bold',textAlign:'center' }} onChange={(e) => handleActionButtonChange(e, survey)} value={actionsButtonValue} defaultValue="">
-                      <option className="surveyactions--option" value="" disabled>Actions</option>
-                      <option className="surveyactions--option" value="View Results">View Results</option>
-                      <option className="surveyactions--option" value="Duplicate">Duplicate</option>
-                      <option className="surveyactions--option" value="Extend">Extend</option>
-                      <option className="surveyactions--option" value="Delete">Delete</option>
-                    </select>
-                  ) : page === "history" ? (
-                    <button className="viewresult-button" onClick={() => handleViewResultsModalChange(survey)}>View Results</button>
-                  )
-                  : null}
-                  {/* Add more options as needed */}
-                </td>
+                    {page === "home" ? (
+                      <select className="surveyactions--select" style={{ backgroundColor: '#EF6C22', color: 'white', fontSize: '18px', fontWeight: 'bold', textAlign: 'center' }} onChange={(e) => handleActionButtonChange(e, survey)} value={actionsButtonValue} defaultValue="">
+                        <option className="surveyactions--option" value="" disabled>Actions</option>
+                        <option className="surveyactions--option" value="View Results">View Results</option>
+                        <option className="surveyactions--option" value="Duplicate">Duplicate</option>
+                        <option className="surveyactions--option" value="Extend">Extend</option>
+                        <option className="surveyactions--option" value="Delete">Delete</option>
+                      </select>
+                    ) : page === "history" ? (
+                      <button className="viewresult-button" onClick={() => handleViewResultsModalChange(survey)}>View Results</button>
+                    )
+                      : null}
+                    {/* Add more options as needed */}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -1747,7 +1573,7 @@ function deleteModalClose() {
       </div>
       {/* View Results Modal*/}
       {showViewResultsModal && (
-        <ViewResults 
+        <ViewResults
           handleViewResultsModalChange={handleViewResultsModalChange}
           viewingCurrentSurvey={viewingCurrentSurvey}
           course={course}
@@ -1755,11 +1581,11 @@ function deleteModalClose() {
       )}
       {/* Error Modal for updating roster */}
       {showUpdateModal && (
-        
+
         <div className="update-modal">
           <div className="update-modal-content">
             <div className="CancelContainer">
-              <button className="CancelButton" style={{top: "0px"}} onClick={handleUpdateModalChange}>×</button>
+              <button className="CancelButton" style={{ top: "0px" }} onClick={handleUpdateModalChange}>×</button>
             </div>
             <h2 className="update-modal--heading">
               Update Roster for {course.code} {course.name}
