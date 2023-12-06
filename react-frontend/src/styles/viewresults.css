@@ -65,6 +65,7 @@
     font-size: 20px;
     transition-duration: 0.4s;
     transition-property: background-color;
+    margin-bottom: 12px;
 }
 
 .viewresults-modal--other-button-container a.downloadbtn:hover {
@@ -116,84 +117,92 @@
     align-items: center;
 }
 
-table.rawresults--table {
-    width: 100%;
-    margin: 20px 0;
-    border-collapse: collapse;
-    align-self: center;
-}
-
-table.rawresults--table th {
-    background-color: #225cb5;
-    color: #fff;
-    padding: 10px 15px;
-    border-bottom: 1px solid #225cb5;
-}
-
-
-table.rawresults--table td {
-    padding: 10px 15px;
-    color: #0e3b80;
-    text-align: center;
-    background-color: #fff;
-}
-
-
-table.rawresults--table tr {
-    border-bottom: 1px solid #225cb5;
-}
-
-table.rawresults--table tr:nth-child(odd):not(:first-child) {
-    background-color: #F0F0F0;
-}
-
-/* Pagination */
-.rawresults--pagination-container {
-    margin-bottom: 20px;
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    list-style: none;
-    padding: 0;
-}
-
-.page-active .page-link {
-    background-color: #225cb5;
-    color: #fff;
-    border-color: #225cb5;
-}
-
-.page-link {
-    color: #225cb5;
-    text-decoration: none;
-    cursor: pointer;
-    padding: 8px 16px;
-    border: 1px solid #225cb5;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-}
-
-.page-link-prev {
-    border-bottom-left-radius: 4px;
-    border-top-left-radius: 4px;
-}
-
-.page-link-next {
-    border-bottom-right-radius: 4px;
-    border-top-right-radius: 4px;
-}
-
-.page-link:hover {
-    background-color: #225cb5;
-    color: #fff;
-    border-color: #225cb5;
-}
-
 .rawresults--table-container {
     overflow-x: auto;
     max-width: 100%;
+}
+
+.p-datatable .p-sortable-column.p-highlight .p-column-filter-menu-button,
+.p-datatable .p-sortable-column.p-highlight {
+    background-color: #fff;
+    color: #225cb5;
+}
+
+.p-datatable .p-sortable-column.p-highlight .p-column-filter-menu-button:hover,
+.p-datatable .p-sortable-column.p-highlight .p-column-filter-menu-button:active,
+.p-datatable .p-sortable-column.p-highlight .p-column-filter-menu-button:focus{
+    background-color: #225cb5;
+    color: #fff;
+}
+
+.p-datatable .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover .p-sortable-column-icon,
+.p-datatable .p-sortable-column.p-highlight:not(.p-sortable-disabled):hover {
+    opacity: 0.6;
+}
+
+.p-column-filter-menu-button,
+.p-datatable .p-sortable-column .p-sortable-column-icon {
+    color: #fff;
+    margin-left: 6px;
+}
+
+.p-column-filter-menu-button:focus,
+.p-column-filter-menu-button:active,
+.p-column-filter-menu-button:hover,
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon,
+.p-datatable .p-sortable-column.p-highlight:not(.p-sortable-disabled):hover .p-sortable-column-icon,
+.p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+    color: #225cb5;
+}
+
+.p-datatable .p-datatable-footer, .p-datatable .p-datatable-thead>tr>th {
+    color: #fff;
+    background-color: #225cb5;
+    border: 1px solid #225cb5;
+}
+
+.p-datatable .p-datatable-footer, .p-datatable .p-datatable-thead>tr>th,
+.p-datatable .p-datatable-tbody>tr>td {
+    padding: 10px;
+    border-bottom: 1px solid #225cb5;
+}
+
+.p-dropdown-label.p-inputtext{
+    margin: auto;
+    padding-left: 12px;
+}
+
+.p-datatable .p-datatable-tbody>tr:nth-child(even) {
+    background-color: rgb(240, 240, 240);
+}
+
+.p-column-filter-overlay.p-component.p-fluid.p-column-filter-overlay-menu.p-ripple-disabled.p-connected-overlay-enter-done{
+    /* height: 12rem; */
+    height: fit-content;
+    padding: 12px
+}
+
+.p-inputtext.p-component.p-column-filter.p-column-filter,
+.p-column-filter-matchmode-dropdown.p-dropdown.p-component.p-inputwrapper.p-inputwrapper-filled,
+.p-column-filter-operator-dropdown.p-dropdown.p-component.p-inputwrapper.p-inputwrapper-filled,
+.p-inputtext.p-component.p-column-filte.p-column-filter,
+.p-button.p-component.p-button-sm {
+    padding: 6px 12px;
+}
+
+.p-inputtext.p-component.p-column-filter.p-column-filter {
+    margin-bottom: 8px;
+}
+
+.p-column-filter-add-rule {
+    display: none;
+}
+
+.p-paginator-bottom.p-paginator.p-component {
+    margin: 12px;
+}
+.p-paginator-current {
+    margin-right: 12px;
 }
 
 /* PHONES AND SMALL DEVICES */

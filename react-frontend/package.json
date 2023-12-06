@@ -1,6 +1,6 @@
 {
   "name": "react-frontend",
-  "homepage": "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build/",
+  "homepage": "./",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -8,6 +8,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "chart.js": "^4.4.0",
+    "primereact": "^10.2.1",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-csv": "^2.2.2",
