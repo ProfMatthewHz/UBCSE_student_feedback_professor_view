@@ -1,0 +1,150 @@
+.duplicate-survey--contents-container {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  margin: 20px;
+}
+
+h2.duplicate-survey--main-title {
+  color: #225cb5;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.duplicate-survey--input select {
+  background-color: #225cb5;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px;
+}
+
+.duplicate-survey--timeline-data-error-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.duplicate-survey--timeline-data-container,
+.duplicate-survey--timeline-data-container-error {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.duplicate-survey--labels-dates-container {
+  display: flex;
+  gap: 10px;
+}
+
+.duplicate-survey--input,
+.duplicate-survey--input-error {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.duplicate-survey--input label,
+.duplicate-survey--input-error label,
+.duplicate-survey--timeline-data-container label,
+.duplicate-survey--timeline-data-container-error label {
+  color: #225cb5;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 5px 0px;
+}
+
+.duplicate-survey--timeline-data-container label,
+.duplicate-survey--timeline-data-container-error label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.duplicate-survey--input input,
+.duplicate-survey--input-error input,
+.duplicate-survey--timeline-data-container input,
+.duplicate-survey--timeline-data-container-error input {
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 10px;
+}
+
+.duplicate-survey--input input,
+.duplicate-survey--timeline-data-container input {
+  border: solid 1.5px #225cb5;
+}
+
+.duplicate-survey--timeline-data-container-error input,
+.duplicate-survey--input-error input {
+  background-color: #ffdddd;
+  border: 1.5px solid #af0e0e;
+}
+
+.duplicate-survey--input input {
+  width: 100%;
+}
+
+label.duplicate-survey--error-label {
+  color: #af0e0e;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 5px 0px 0px 0px;
+  text-align: left;
+}
+
+.duplicate-survey--confirm-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  width: 100%;
+}
+
+button.duplicate-survey--confirm-btn {
+  background-color: #6da04b;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  padding: 10px 20px;
+  transition: all .2s ease;
+}
+
+button.duplicate-survey--confirm-btn:hover {
+  background-color: #59863d;
+  color: #fff;
+}
+
+/* PHONES AND SMALL DEVICES */
+
+@media screen and (max-width: 800px) {
+
+  .duplicate-survey--labels-dates-container {
+    display: flex;
+    gap: 20px;
+  }
+
+  .duplicate-survey--timeline-data-container label, .duplicate-survey--timeline-data-container-error label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .duplicate-survey--timeline-data-container, 
+  .duplicate-survey--timeline-data-container-error {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+  }
+
+  .duplicate-survey--confirm-btn-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+}
