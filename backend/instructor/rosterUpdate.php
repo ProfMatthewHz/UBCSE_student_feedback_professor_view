@@ -111,11 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
          // echo "Students have been successfully added. \n" ;
         }
 
-
-
-
-
-
       //   foreach ($new_students as $email => $name) {
       //     var_dump($email); // This will output the email (key)
       //     var_dump($name);  // This will output the name (value)
