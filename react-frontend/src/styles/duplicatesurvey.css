@@ -18,6 +18,7 @@ h2.duplicate-survey--main-title {
   background-color: #225cb5;
   color: #fff;
   font-size: 16px;
+  font-weight: 600;
   padding: 10px;
 }
 
@@ -126,7 +127,8 @@ button.duplicate-survey--confirm-btn:hover {
     gap: 20px;
   }
 
-  .duplicate-survey--timeline-data-container label, .duplicate-survey--timeline-data-container-error label {
+  .duplicate-survey--timeline-data-container label, 
+  .duplicate-survey--timeline-data-container-error label {
     display: flex;
     flex-direction: column;
     gap: 5px;
