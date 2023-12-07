@@ -12,6 +12,7 @@
   margin: 20px;
 }
 
+h2.update-modal--heading,
 h2.add-header {
   color: #225cb5;
   font-size: 24px;
