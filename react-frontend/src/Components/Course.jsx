@@ -380,7 +380,7 @@ const Course = ({ course, page }) => {
     //date and time keyboard typing bound checks.
 
     let minDateObject = new Date("2023-08-31T00:00:00"); //first day of class
-    let maxDateObject = new Date("2023-12-09T00:00:00"); //last day of class
+    let maxDateObject = new Date("2023-12-31T00:00:00"); //last day of class
     let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
     let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
     if (startDateObject < minDateObject) {
@@ -437,9 +437,8 @@ const Course = ({ course, page }) => {
     }
     //Start time must be after current time if start date is the current day.
 
-    console.log("if conditional line 243");
     if (
-      startDateObject.getDay(startDateObject) === timestamp.getDay(timestamp)
+      startDateObject.getDate(startDateObject) === timestamp.getDate(timestamp)
     ) {
       let timestampWithHour = new Date(Date.now());
       let currentHour = timestampWithHour.getHours(timestampWithHour);
@@ -558,7 +557,7 @@ const Course = ({ course, page }) => {
     //date and time keyboard typing bound checks.
 
     let minDateObject = new Date("2023-08-31T00:00:00"); //first day of class
-    let maxDateObject = new Date("2023-12-09T00:00:00"); //last day of class
+    let maxDateObject = new Date("2023-12-31T00:00:00"); //last day of class
     let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
     let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
     if (startDateObject < minDateObject) {
@@ -615,15 +614,17 @@ const Course = ({ course, page }) => {
     }
     //Start time must be after current time if start date is the current day.
 
-    console.log("if conditional line 243");
+    
     if (
-      startDateObject.getDay(startDateObject) === timestamp.getDay(timestamp)
+      startDateObject.getDate(startDateObject) === timestamp.getDate(timestamp)
     ) {
       let timestampWithHour = new Date(Date.now());
       let currentHour = timestampWithHour.getHours(timestampWithHour);
       let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
       let startHourNew = parseInt(startTime.split(":")[0]);
       let startMinutes = parseInt(startTime.split(":")[1]);
+
+      
 
       if (startHourNew < currentHour) {
         setStartTimeHoursBeforeCurrent(true);
@@ -939,9 +940,113 @@ const Course = ({ course, page }) => {
 
   }
 
+  const [extendEmptyFieldsError, setExtendEmptyFieldsError] = useState(false);
+  const [extendStartDateGreater, setExtendStartDateGreater] = useState(false);
+  const [extendStartHourIsGreater, setExtendStartHourIsGreater] = useState(false);
+  const [extendMustBeAfterCurrentTime, setExtendMustBeAfterCurrentTime] = useState(false);
+  const [extendNewEndMustComeAfterOldEnd, setExtendNewEndMustComeAfterOldEnd] = useState(false);
+
+
   async function verifyExtendModal() {
+    setExtendEmptyFieldsError(false);
+    setExtendStartDateGreater(false);
+    setExtendStartHourIsGreater(false);
+    setExtendMustBeAfterCurrentTime(false);
+    setExtendNewEndMustComeAfterOldEnd(false);
     let newEndDate = document.getElementById("new-endDate").value;
     let newEndTime = document.getElementById("new-endTime").value;
+
+    //empty fields check
+    if(newEndDate === ""){
+      setExtendEmptyFieldsError(true);
+      return;
+    }
+    if(newEndTime === ""){
+      setExtendEmptyFieldsError(true);
+      return;
+    }
+    
+
+
+    let startDate = currentSurvey.sort_start_date.split(' ')[0]
+    let currentTime = currentSurvey.sort_start_date.split(' ')[1]
+    currentTime = currentTime.split(':');
+    currentTime = currentTime[0] + ':' + currentTime[1];
+
+    let startDateTimeObject = new Date(startDate + "T00:00:00"); //inputted start date.
+    let endDateTimeObject = new Date(newEndDate + "T00:00:00"); //inputted end date.
+
+    let timestamp = new Date(Date.now());
+    timestamp.setHours(0, 0, 0, 0); //set hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
+    //if the selected end date occurs in the past error
+    if (endDateTimeObject < timestamp) {
+      setExtendMustBeAfterCurrentTime(true);
+      return;
+    }
+
+
+    //new end date must come after old end date
+    let oldEndDate = currentSurvey.sort_expiration_date.split(' ')[0]
+    let oldEndTimeHours = currentSurvey.sort_expiration_date.split(' ')[1]
+    oldEndTimeHours = oldEndTimeHours.split(':');
+    oldEndTimeHours = oldEndTimeHours[0] + ':' + oldEndTimeHours[1];
+    let oldEndDateTimeObject = new Date(oldEndDate + "T00:00:00")
+    //conditional to check if old end calendar date isnt ahead of the new one
+    if(oldEndDateTimeObject > endDateTimeObject ){
+      setExtendNewEndMustComeAfterOldEnd(true);
+      return;
+    }
+    //conditional to check if new end time hours is greater than old
+    if(oldEndDateTimeObject.getDate(oldEndDateTimeObject) === endDateTimeObject.getDate(endDateTimeObject) ){ //same date new hours should be ahead of old
+      if(oldEndDateTimeObject.getMonth(oldEndDateTimeObject) === endDateTimeObject.getMonth(endDateTimeObject)){
+        
+        if(parseInt(oldEndTimeHours.split(':')[0]) >= parseInt(newEndTime.split(':')[0])){
+          console.log('goes through here')
+          setExtendNewEndMustComeAfterOldEnd(true);
+          return;
+        }
+      }
+  }
+    //selected end date is in the current day. Hours and minutes must be after current h/m
+    if(endDateTimeObject === timestamp){
+      let timestampWithHour = new Date(Date.now());
+      let currentHour = timestampWithHour.getHours(timestampWithHour);
+      let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
+      let endHours = parseInt(newEndTime.split(":")[0]);
+      let endMinutes = parseInt(newEndTime.split(":")[1]);
+
+      if (endHours < currentHour) {
+        setExtendMustBeAfterCurrentTime(true);
+        return;
+      }
+      if (endHours === currentHour) {
+        if (endMinutes < currentMinutes) {
+          setExtendMustBeAfterCurrentTime(true);
+          return;
+        }
+      }
+    }
+
+    //start date comes after end date error
+    if(startDateTimeObject > endDateTimeObject){
+        setExtendStartDateGreater(true);
+        return
+    }
+    // same date. End date hours must be ahead
+    if(startDateTimeObject === endDateTimeObject){
+      console.log('goes through hour check');
+      console.log(currentTime);
+      console.log(newEndTime);
+      //hour check. Start date hour must be less than end date hour
+      if(parseInt(currentTime.split(':')[0]) >= parseInt(newEndTime.split(':')[0]) ){
+        setExtendStartHourIsGreater(true);
+        return;
+
+      }
+      
+  }
+
+
     let surveyId = currentSurvey.id;
     let formData5 = new FormData();
     formData5.append('survey-id', surveyId);
@@ -949,10 +1054,6 @@ const Course = ({ course, page }) => {
     formData5.append('end-time', newEndTime);
     formData5.append('rubric-id', currentSurvey.rubric_id)
     formData5.append('start-date', currentSurvey.sort_start_date.split(' ')[0]);
-    let currentTime = currentSurvey.sort_start_date.split(' ')[1]
-    console.log(currentSurvey);
-    currentTime = currentTime.split(':');
-    currentTime = currentTime[0] + ':' + currentTime[1];
 
     formData5.append('start-time', currentTime)
     let pre = await extendSurveyBackendGet(surveyId);
@@ -1001,6 +1102,11 @@ const Course = ({ course, page }) => {
   }
   function extendModalClose() {
     setExtendModal(false);
+    setExtendEmptyFieldsError(false);
+    setExtendStartDateGreater(false);
+    setExtendStartHourIsGreater(false);
+    setExtendMustBeAfterCurrentTime(false);
+    setExtendNewEndMustComeAfterOldEnd(false);
   }
   function deleteModalClose() {
     setemptyOrWrongDeleteNameError(false);
@@ -1041,7 +1147,7 @@ const Course = ({ course, page }) => {
                     class="styled-input2"
                     type="date"
                     min="2023-08-31"
-                    max="2023-12-09"
+                    max="2023-12-31"
                     placeholder="New End Date"
                   />
                 </label>
@@ -1055,6 +1161,12 @@ const Course = ({ course, page }) => {
                   />
                 </label>
               </div>
+              {extendEmptyFieldsError ? <label className="delete-survey--error-label">All fields must be filled</label> : null}
+              {extendStartDateGreater ? <label className="delete-survey--error-label">Start date cannot be after End Date</label> : null}
+              {extendStartHourIsGreater ? <label className="delete-survey--error-label">If on the same day, End hour must be after Start</label> : null}
+              {extendMustBeAfterCurrentTime ? <label className="delete-survey--error-label">Chosen End Date can not be in the past</label> : null}
+              {extendNewEndMustComeAfterOldEnd ? <label className="delete-survey--error-label">Chosen End Date must be after Old End Date</label> : null}
+        
             </div>
           </div>
           <button
@@ -1143,7 +1255,7 @@ const Course = ({ course, page }) => {
                     id="start-date"
                     type="date"
                     min="2023-08-31"
-                    max="2023-12-09"
+                    max="2023-12-31"
                     placeholder="Enter New Start Date"
                   />
                 </label>
@@ -1163,7 +1275,7 @@ const Course = ({ course, page }) => {
                     id="end-date"
                     type="date"
                     min="2023-08-31"
-                    max="2023-12-09"
+                    max="2023-12-31"
                     placeholder="Enter New End Date"
                   />
                 </label>
@@ -1182,7 +1294,7 @@ const Course = ({ course, page }) => {
             {StartAfterCurrentError ? <label className="duplicate-survey--error-label">Start date cannot be before the current date</label> : null}
             {emptyStartDateError ? <label className="duplicate-survey--error-label">Start date cannot be empty</label> : null}
             {startDateBoundError ? <label className="duplicate-survey--error-label">Start date must be at August 31st or later</label> : null}
-            {startDateBound1Error ? <label className="duplicate-survey--error-label">Start date must be at December 9th or earlier</label> : null}
+            {startDateBound1Error ? <label className="duplicate-survey--error-label">Start date must be at December 31st or earlier</label> : null}
             {StartHourAfterEndHourError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start time cannot be after end time</label> : null}
             {StartHourSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
             {StartTimeSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
@@ -1191,7 +1303,7 @@ const Course = ({ course, page }) => {
             {StartTimeMinutesBeforeCurrent ? <label className="duplicate-survey--error-label">Start time minutes cannot be before current minutes</label> : null}
             {emptyEndDateError ? <label className="duplicate-survey--error-label">End date cannot be empty</label> : null}
             {endDateBoundError ? <label className="duplicate-survey--error-label">End date must be at August 31st or later</label> : null}
-            {endDateBound1Error ? <label className="duplicate-survey--error-label">End date must be at December 9th or earlier</label> : null}
+            {endDateBound1Error ? <label className="duplicate-survey--error-label">End date must be at December 31st or earlier</label> : null}
             {emptyEndTimeError ? <label className="duplicate-survey--error-label">End time cannot be empty</label> : null}
           </div>
           <div className="duplicate-survey--confirm-btn-container">
@@ -1396,7 +1508,7 @@ const Course = ({ course, page }) => {
                     id="start-date"
                     type="date"
                     min="2023-08-31"
-                    max="2023-12-09"
+                    max="2023-12-31"
                     placeholder="Enter Start Date"
                   />
                 </label>
@@ -1418,7 +1530,7 @@ const Course = ({ course, page }) => {
                     id="end-date"
                     type="date"
                     min="2023-08-31"
-                    max="2023-12-09"
+                    max="2023-12-31"
                     placeholder="Enter End Date"
                   />
                 </label>
@@ -1437,7 +1549,7 @@ const Course = ({ course, page }) => {
             {StartAfterCurrentError ? <label className="duplicate-survey--error-label">Start date cannot be before the current date</label> : null}
             {emptyStartDateError ? <label className="duplicate-survey--error-label">Start date cannot be empty</label> : null}
             {startDateBoundError ? <label className="duplicate-survey--error-label">Start date must be at August 31st or later</label> : null}
-            {startDateBound1Error ? <label className="duplicate-survey--error-label">Start date must be at December 9th or earlier</label> : null}
+            {startDateBound1Error ? <label className="duplicate-survey--error-label">Start date must be at December 31st or earlier</label> : null}
             {StartHourAfterEndHourError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start time cannot be after end time</label> : null}
             {StartHourSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
             {StartTimeSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
@@ -1446,7 +1558,7 @@ const Course = ({ course, page }) => {
             {StartTimeMinutesBeforeCurrent ? <label className="duplicate-survey--error-label">Start time minutes cannot be before current minutes</label> : null}
             {emptyEndDateError ? <label className="duplicate-survey--error-label">End date cannot be empty</label> : null}
             {endDateBoundError ? <label className="duplicate-survey--error-label">End date must be at August 31st or later</label> : null}
-            {endDateBound1Error ? <label className="duplicate-survey--error-label">End date must be at December 9th or earlier</label> : null}
+            {endDateBound1Error ? <label className="duplicate-survey--error-label">End date must be at December 31st or earlier</label> : null}
             {emptyEndTimeError ? <label className="duplicate-survey--error-label">End time cannot be empty</label> : null}
           </div>
           <label className="add-survey--label" for="subject-line">
