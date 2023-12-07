@@ -57,6 +57,26 @@ h2.add-header {
   color: #225cb5 !important;
 }
 
+.addcourse--namecode-error {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+p.add-course--error {
+  color: #af0e0e;
+  font-weight: 700;
+}
+
+.addcourse-duplicate-error {
+  border: 1.5px solid #af0e0e !important;
+  background: #fdd;
+}
+
+.name-code--item {
+  margin-bottom: 0 !important;
+}
+
 label.form__item--label {
   color: #225cb5;
   display: flex;
@@ -182,7 +202,7 @@ label.form__item--file input::file-selector-button {
 
 /* Modal content container */
 .modal-content {
-  width: 400px;
+  width: 500px;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
@@ -190,12 +210,16 @@ label.form__item--file input::file-selector-button {
 }
 
 /* Modal button */
-.modal-content button {
+.modal-content .roster-file--error-btn {
   margin-top: 10px;
   padding: 10px 20px;
   border: none;
-  background-color: #225cb5;
+  background-color: #6da04b;
   color: #fff;
   cursor: pointer;
   border-radius: 4px;
+}
+
+.modal-content .roster-file--error-btn:hover {
+  background-color: #59863d;
 }

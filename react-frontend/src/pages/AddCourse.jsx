@@ -10,7 +10,8 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
   const [file, setFile] = useState(null);
   const [semester, setSemester] = useState("");
   const [year, setYear] = useState(null);
-  const [formErrors, setFormErrors] = useState({});
+  const [rosterFileError, setRosterFileError] = useState([]);
+  const [duplicateError, setDuplicateError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [instructors, setInstructors] = useState([]); // array of instructor objects selected including their id and name
   const [allInstructors, setAllInstructors] = useState([]); // array of all instructors in the database
@@ -152,6 +153,19 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
     setYear(parseInt(newYear));
   };
 
+  function formatRosterError(input) {
+    // Split the string into an array on the "Line" pattern, then filter out empty strings
+    const lines = input
+      .split(/(Line \d+)/)
+      .filter((line) => line.trim() !== "");
+    // Combine adjacent elements so that each "Line #" and its message are in the same element
+    const combinedLines = [];
+    for (let i = 0; i < lines.length; i += 2) {
+      combinedLines.push(lines[i] + (lines[i + 1] || ""));
+    }
+    return combinedLines
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -171,18 +185,16 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
         if (typeof result === "string" && result !== "") {
           try {
             const parsedResult = JSON.parse(result);
-            if (parsedResult.hasOwnProperty("roster-file")) {
-              if (
-                parsedResult["roster-file"].includes(
-                  "does not contain an email, first name, and last name"
-                )
-              ) {
-                parsedResult["roster-file"] =
-                  "Make sure each row contains an email in the first column, first name in the second column, and last name in the third column";
-              }
+            console.log(parsedResult);
+            if (parsedResult["roster-file"]) {
+              setShowModal(true);
+              const updatedError = formatRosterError(
+                parsedResult["roster-file"]
+              );
+              setRosterFileError(updatedError);
+            } else if (parsedResult["duplicate"]) {
+              setDuplicateError(parsedResult["duplicate"]);
             }
-            setFormErrors(parsedResult);
-            setShowModal(true);
           } catch (e) {
             console.log("Failed to parse JSON: ", e);
           }
@@ -190,6 +202,8 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
           // Class is valid, so we can just navigate to the home page
           handleAddCourseModal();
           getCourses();
+          setRosterFileError([]);
+          setDuplicateError("");
         }
       })
       .catch((err) => {
@@ -212,34 +226,47 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
             encType="multipart/form-data"
           >
             <div className="addcourse-form__item--container">
-              <div className="addcourse--name-code">
-                <div className="name-code--item form__item">
-                  <label className="form__item--label">
-                    Course Code
-                    <input
-                      type="text"
-                      id="course-code"
-                      value={courseCode}
-                      onChange={(e) => setCourseCode(e.target.value)}
-                      placeholder="CSE 115"
-                      required
-                    />
-                  </label>
-                </div>
+              <div className="addcourse--namecode-error">
+                <div className="addcourse--name-code">
+                  <div className="name-code--item form__item">
+                    <label className="form__item--label">
+                      Course Code
+                      <input
+                        type="text"
+                        id="course-code"
+                        value={courseCode}
+                        onChange={(e) => setCourseCode(e.target.value)}
+                        placeholder="CSE 115"
+                        required
+                        className={
+                          duplicateError && "addcourse-duplicate-error"
+                        }
+                      />
+                    </label>
+                  </div>
 
-                <div className="name-code--item form__item">
-                  <label className=" form__item--label">
-                    Course Name
-                    <input
-                      type="text"
-                      id="course-name"
-                      value={courseName}
-                      onChange={(e) => setCourseName(e.target.value)}
-                      placeholder="Introduction to Computer Science"
-                      required
-                    />
-                  </label>
+                  <div className="name-code--item form__item">
+                    <label className=" form__item--label">
+                      Course Name
+                      <input
+                        type="text"
+                        id="course-name"
+                        value={courseName}
+                        onChange={(e) => setCourseName(e.target.value)}
+                        placeholder="Introduction to Computer Science"
+                        required
+                        className={
+                          duplicateError && "addcourse-duplicate-error"
+                        }
+                      />
+                    </label>
+                  </div>
                 </div>
+                {duplicateError && (
+                  <p className="add-course--error">
+                    This course already exists
+                  </p>
+                )}
               </div>
 
               <div className="form__item file-input-wrapper">
@@ -309,11 +336,13 @@ const AddCourse = ({ handleAddCourseModal, getCourses }) => {
       {showModal && (
         <div className="modal">
           <div className="modal-content">
-            <h2>Error(s)</h2>
-            {Object.keys(formErrors).map((key) => (
-              <p>{formErrors[key]}</p>
-            ))}
-            <button onClick={handleModalClose}>OK</button>
+            <h2>Roster File Error</h2>
+            {
+              rosterFileError.length > 0 && rosterFileError.map((err) => (
+                <p>{err}</p>
+              ))
+            }
+            <button className="roster-file--error-btn" onClick={handleModalClose}>OK</button>
           </div>
         </div>
       )}
