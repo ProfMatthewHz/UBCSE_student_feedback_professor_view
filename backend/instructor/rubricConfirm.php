@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     }
 
-    // unset($_SESSION['rubric-format'], $_SESSION['rubric-preview']);
+    unset($_SESSION['rubric-format'], $_SESSION['rubric-preview']);
 
 
   }
