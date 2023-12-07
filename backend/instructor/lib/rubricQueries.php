@@ -41,7 +41,7 @@ function insertRubricTopic($con, $rubric_id, $question, $question_type) {
   return $ret_val;    
 }
 
-function insertRubricReponse($con, $topic_id, $level_id, $response) {
+function insertRubricResponse($con, $topic_id, $level_id, $response) {
   $stmt = $con->prepare('INSERT INTO rubric_responses (topic_id, rubric_score_id, response) VALUES(?,?,?)');
   $stmt->bind_param('iis', $topic_id, $level_id, $response);
   $stmt->execute();
@@ -144,7 +144,8 @@ function getRubricData($con, $rubric_id) {
   $ret_val = array();
   $rubric_scores = getRubricScores($con, $rubric_id);
   $ret_val["scores"] = $rubric_scores;
-  $rubric_topics = getRubricTopics($con, $rubric_id, $rubric_scores);
+  // $rubric_topics = getRubricTopics($con, $rubric_id, $rubric_scores);
+  $rubric_topics = getRubricTopics($con, $rubric_id);
   $ret_val["topics"] = $rubric_topics;
   return $ret_val;
 }

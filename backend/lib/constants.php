@@ -1,6 +1,6 @@
 <?php
 define("SITE_HOME","http://localhost/StudentSurvey/backend/");
-define("INSTRUCTOR_HOME","http://localhost/StudentSurvey/backend/instructor/");
+define("INSTRUCTOR_HOME","http://localhost/StudentSurvey/backend/instructor/legacy/");
 define("SESSIONS_SALT", "session-salt");
 define("PBKDF2_ITERS", 50000);
 define("TOKEN_SIZE", 32);
@@ -14,4 +14,5 @@ define("MONTH_MAP_SEMESTER", array(1 => 1, 2 => 2, 3 => 2, 4 => 2, 5 => 2, 6 => 
 define("NO_SCORE_MARKER", "--");
 define("MC_QUESTION_TYPE", "multiple_choice");
 define("FREEFORM_QUESTION_TYPE", "text");
+define("JSON_ENCODE_OPTIONS", JSON_HEX_TAG|JSON_HEX_AMP|JSON_UNESCAPED_UNICODE);
 ?>

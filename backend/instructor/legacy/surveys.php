@@ -9,10 +9,10 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 // bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "lib/termPresentation.php";
-require_once "lib/courseQueries.php";
+require_once "../../lib/database.php";
+require_once "../../lib/constants.php";
+require_once "../lib/termPresentation.php";
+require_once "../lib/courseQueries.php";
 
 // set timezone
 date_default_timezone_set('America/New_York');
