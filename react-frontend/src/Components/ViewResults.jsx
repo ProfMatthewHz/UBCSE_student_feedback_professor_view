@@ -19,6 +19,8 @@ const ViewResults = ({
   const [rawResults, setRawResults] = useState([]);
   const [showNormalizedSurveyResults, setShowNormalizedSurveyResults] =
     useState(null);
+  const [normalizedTableHeaders, setNormalizedTableHeaders] = useState(null);
+  const [normalizedResults, setNormalizedResults] = useState([]);
   const [currentCSVData, setCurrentCSVData] = useState(null);
 
   const mapHeadersToValues = (headers, values) => {
@@ -103,8 +105,15 @@ const ViewResults = ({
             labels.unshift(["Normalized Averages", "Number of Students"]);
 
             console.log(labels);
+            console.log(result);
+            const mappedNormalizedResults = mapHeadersToValues(
+              result[0],
+              result.slice(1)
+            );
             setCurrentCSVData(result);
             setShowNormalizedSurveyResults(labels);
+            setNormalizedResults(mappedNormalizedResults);
+            setNormalizedTableHeaders(result[0]);
           } else {
             setCurrentCSVData(null);
             setShowNormalizedSurveyResults(true);
@@ -208,7 +217,8 @@ const ViewResults = ({
                 emptyMessage="No results found"
               >
                 {Object.keys(rawResults[0]).map((header) => {
-                  return header === "Reviewee name (email)" || header === "Reviewer name (email)" ? (
+                  return header === "Reviewee name (email)" ||
+                    header === "Reviewer name (email)" ? (
                     <Column
                       field={header}
                       header={header}
@@ -252,6 +262,37 @@ const ViewResults = ({
             </div>
             <div className="viewresults-modal--barchart-container">
               <BarChart survey_data={showNormalizedSurveyResults} />
+              {/* Table for normalized averages*/}
+              <DataTable
+                value={normalizedResults}
+                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                paginator
+                rows={5}
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                emptyMessage="No results found"
+              >
+                {Object.keys(normalizedResults[0]).map((header) => {
+                  return header === "Reviewee name (email)" ||
+                    header === "Reviewer name (email)" ? (
+                    <Column
+                      field={header}
+                      header={header}
+                      sortable
+                      style={{ width: `${100 / normalizedTableHeaders.length}%` }}
+                      filter
+                      filterPlaceholder="Search by email"
+                      filterMatchMode="contains"
+                    ></Column>
+                  ) : (
+                    <Column
+                      field={header}
+                      header={header}
+                      sortable
+                      style={{ width: `${100 / normalizedTableHeaders.length}%` }}
+                    ></Column>
+                  );
+                })}
+              </DataTable>
             </div>
           </div>
         ) : showNormalizedSurveyResults && !currentCSVData ? (
