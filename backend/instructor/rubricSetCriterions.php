@@ -158,6 +158,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 $csrf_token = createCSRFToken($con, $instructor_id);
-// $level_keys_for_js = json_encode(array_keys($_SESSION["rubric"]["levels"]["names"]));
-// $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["names"]));
 ?>
