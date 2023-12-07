@@ -168,8 +168,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $errorsJSON = json_encode($errors_response);
   echo $errorsJSON;
 
-  echo "\n";   
-  print_r($_SESSION['rubric-format']);
 
 }
 
