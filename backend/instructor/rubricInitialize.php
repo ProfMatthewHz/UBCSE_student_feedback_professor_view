@@ -123,10 +123,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "Bad Request: Number of Levels must be: 2 <= {Number of Levels} <= 5";
     exit();
   }
-
-  $levels_data = get_levels_data($rubric_levels, $errorMsg);
-
-  // Finally, verify that this is a unique rubric name
+  
+  // verify valid rubric name either 
   if (empty($rubric_name)) {
     $errorMsg['rubric-name'] = "Rubric MUST have a name";
   } else {
@@ -135,6 +133,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $errorMsg['rubric-name'] = "Rubric with that name already exists";
     }
   }
+
+  $levels_data = get_levels_data($rubric_levels, $errorMsg);
+
 
   // set response
   $errors_response = array('errors' => array());
