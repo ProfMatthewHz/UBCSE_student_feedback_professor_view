@@ -152,8 +152,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     unset($name, $score);
     
-    $_SESSION['rubric'] = array('name' => $rubric_name, 'levels' => array());
-    $_SESSION['rubric']['levels'] = $rubric_levels;
+    $_SESSION['rubric-format'] = array('name' => $rubric_name, 'levels' => array());
+    $_SESSION['rubric-format']['levels'] = $rubric_levels;
 
   } else {
     $errors_response['errors'] = $errorMsg;
@@ -168,6 +168,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $errorsJSON = json_encode($errors_response);
   echo $errorsJSON;
 
+  echo "\n";   
+  print_r($_SESSION['rubric-format']);
 
 }
 //   if (count($errorMsg) == 0) {

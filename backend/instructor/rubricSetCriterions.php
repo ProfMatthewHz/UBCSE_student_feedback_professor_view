@@ -27,16 +27,18 @@ if (!isset($_SESSION['id'])) {
 $instructor_id = $_SESSION['id'];
 
 // Verify we have already defined the rubric basics
-if (!isset($_SESSION["rubric"])) {
-  http_response_code(302);
-  header("Location: ".INSTRUCTOR_HOME."rubricInitialize.php");
+if (!isset($_SESSION['rubric-format'])) {
+  http_response_code(400);
+  echo "You must initialize the rubric's name and levels before setting the criteria";
+  // header("Location: ".INSTRUCTOR_HOME."rubricInitialize.php");
+  // exit();
   exit();
 }
 
-$defined_rubric_name = $_SESSION['rubric']['name'];
-$defined_rubric_levels = $_SESSION['rubric']['levels'];
+$defined_rubric_name = $_SESSION['rubric-format']['name'];
+$defined_rubric_levels = $_SESSION['rubric-format']['levels'];
 // unsure if we should unset or not
-// unset($_SESSION['rubric']); 
+// unset($_SESSION['rubric-format']); 
 
 $errorMsg = array();
 
@@ -151,6 +153,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   header("Content-Type: application/json; charset=UTF-8");
   $errorsJSON = json_encode($errors_response);
   echo $errorsJSON;
+
+  echo "\n";   
+  print_r($_SESSION['rubric-preview']);
+
 }
 
 
