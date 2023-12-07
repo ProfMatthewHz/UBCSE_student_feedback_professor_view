@@ -72,7 +72,7 @@ const Course = ({ course, page }) => {
   const [rosterFile, setRosterFile] = useState(null);
 
   const [updateRosterOption, setUpdateRosterOption] = useState("replace");
-  const [updateRosterError, setUpdateRosterError] = useState("");
+  const [updateRosterError, setUpdateRosterError] = useState([]);
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -757,6 +757,19 @@ const Course = ({ course, page }) => {
     setActionsButtonValue("");
   };
 
+  function formatRosterError(input) {
+    // Split the string into an array on the "Line" pattern, then filter out empty strings
+    const lines = input
+      .split(/(Line \d+)/)
+      .filter((line) => line.trim() !== "");
+    // Combine adjacent elements so that each "Line #" and its message are in the same element
+    const combinedLines = [];
+    for (let i = 0; i < lines.length; i += 2) {
+      combinedLines.push(lines[i] + (lines[i + 1] || ""));
+    }
+    return combinedLines
+  }
+
   const handleUpdateRosterSubmit = (e) => {
     e.preventDefault();
 
@@ -778,15 +791,10 @@ const Course = ({ course, page }) => {
               parsedResult.hasOwnProperty("error") &&
               parsedResult["error"] !== ""
             ) {
-              if (
-                parsedResult["error"].includes(
-                  "does not contain an email, first name, and last name"
-                )
-              ) {
-                parsedResult["error"] =
-                  "Make sure each row contains an email in the first column, first name in the second column, and last name in the third column";
-              }
-              setUpdateRosterError(parsedResult["error"]);
+              const updatedError = formatRosterError(
+                parsedResult["error"]
+              );
+              setUpdateRosterError(updatedError);
               setShowUpdateModal(false); // close the update modal
               setShowErrorModal(true); // show the error modal
             }
@@ -1913,8 +1921,12 @@ const Course = ({ course, page }) => {
         <div className="modal">
           <div className="modal-content">
             <h2>Error(s)</h2>
-            <p>{updateRosterError}</p>
-            <button onClick={handleErrorModalClose}>OK</button>
+            {
+              updateRosterError.length > 0 && updateRosterError.map((err) => (
+                <p>{err}</p>
+              ))
+            }
+            <button className="roster-file--error-btn" onClick={handleErrorModalClose}>OK</button>
           </div>
         </div>
       )}
