@@ -154,8 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     header("Content-Type: application/json; charset=UTF-8");
-	$escape_options = JSON_HEX_TAG|JSON_HEX_AMP|JSON_UNESCAPED_UNICODE;
-    $responseJSON = json_encode($response, $escape_options);
+    $responseJSON = json_encode($response, JSON_ENCODE_OPTIONS);
     echo $responseJSON;
 
 }
