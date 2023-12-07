@@ -1,9 +1,7 @@
 .container {
   position: relative;
-  /* width: 20em; */
   min-height: 1.5em;
-  /* border: 0.05em solid #225CB5; */
-  border-bottom: 2px solid #e0e0e0;
+  border: 1.5px solid #225CB5;
   display: flex;
   align-items: center;
   gap: 0.5em;

@@ -1,39 +1,24 @@
-.container {
-  width: 100%;
-  height: calc(100vh - 148px);
-  padding-left: 195px;
-  padding-top: 145px;
-  padding-bottom: 20px;
-}
-
 .formContainer {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
 }
 
 .formContent {
   width: 100%;
   overflow-y: auto;
   background-color: #fff;
+  gap: 20px;
+  margin: 20px;
 }
 
-.formHeader {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background-color: #fff;
-  border-bottom: 1px solid #225cb5;
-}
-
-.add__form {
-  padding: 20px;
-}
-
-.formHeader h2 {
+h2.update-modal--heading,
+h2.add-header {
+  color: #225cb5;
   font-size: 24px;
   font-weight: bold;
-  color: #225cb5;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 /* FORM */
@@ -41,20 +26,29 @@
   margin-bottom: 20px;
 }
 
-.addcourse-form__item--container {
-  border-bottom: 1px solid #225cb5;
+.sem-year--additional-instructor--container,
+.addcourse--name-code {
+  display: flex;
+  gap: 20px;
 }
+
+.name-code--item {
+  width: 50%;
+}
+
+.additional-instructors--item {
+  width: 65%;
+}
+
+
 
 .add-form__submit--container {
   display: flex;
-  align-items: center;
-  justify-content: center !important;
+  justify-content: end !important;
 }
 
 .form__submit:hover {
-  border-color: #6da04b !important;
-  color: #6da04b !important;
-  background-color: transparent !important;
+  background-color: #59863d !important;
   cursor: pointer !important;
 }
 
@@ -63,20 +57,43 @@
   color: #225cb5 !important;
 }
 
-.form__item--label {
+.addcourse--namecode-error {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+p.add-course--error {
+  color: #af0e0e;
+  font-weight: 700;
+}
+
+.addcourse-duplicate-error {
+  border: 1.5px solid #af0e0e !important;
+  background: #fdd;
+}
+
+.name-code--item {
+  margin-bottom: 0 !important;
+}
+
+label.form__item--label {
   color: #225cb5;
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  font-weight: bold;
+  gap: 5px;
   margin: 0 !important;
+  width: 100%;
 }
 
 .add__form .form__item input {
-  width: 100%;
-  background-color: #fff;
+  border: solid 1.5px #225cb5;
+  border-radius: 5px;
   color: #000;
-  outline: none;
-  border: none;
-  border-bottom: 2px solid #225cb5;
-  height: 40px;
-  transition: all 250ms ease;
+  font-size: 16px;
+  padding: 10px;
 }
 
 .add__form .form__item input::placeholder {
@@ -109,64 +126,31 @@ textarea {
   border-radius: 5px;
   color: #000;
   width: 100%;
-  max-width: 200px;
   outline: none;
+  font-size: 16px;
 }
 
 .form__item--select {
-  display: flex;
-  flex-direction: column;
-  margin-right: 8px;
-  width: 100%;
+  width: 35%;
 }
 
-.form__item--file {
-  margin-bottom: 4px;
+label.form__item--file {
+  margin-bottom: 4;
 }
 
-/* Style for the wrapper */
-.file-input-wrapper {
-  position: relative;
-  border-bottom: 2px solid #225cb5;
+label.form__item--file input::file-selector-button {
+  background-color: #225cb5;
+  border: solid 1.5px #225cb5;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  margin: -10px 10px -10px -10px;
+  padding: 14px;  
 }
 
 .file-input-wrapper div {
   margin-bottom: 8px;
   margin-top: 8px;
-}
-
-/* Hide the default input */
-.file-input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
-/* Custom styling for the button */
-.custom-file-label {
-  display: inline-block;
-  background-color: #225cb5; /* Blue background color */
-  color: white; /* Text color */
-  padding: 8px 16px; /* Adjust padding as needed */
-  border: none;
-  border-radius: 4px; /* Rounded corners */
-  cursor: pointer;
-}
-
-/* Style for the selected file name */
-.selected-filename {
-  margin-left: 20px;
-  color: #000;
-}
-
-.form__year-sem--container {
-  display: flex;
-  align-items: center;
-  width: 60%;
 }
 
 .add_course--error {
@@ -218,7 +202,7 @@ textarea {
 
 /* Modal content container */
 .modal-content {
-  width: 400px;
+  width: 500px;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
@@ -226,12 +210,16 @@ textarea {
 }
 
 /* Modal button */
-.modal-content button {
+.modal-content .roster-file--error-btn {
   margin-top: 10px;
   padding: 10px 20px;
   border: none;
-  background-color: #225cb5;
+  background-color: #6da04b;
   color: #fff;
   cursor: pointer;
   border-radius: 4px;
+}
+
+.modal-content .roster-file--error-btn:hover {
+  background-color: #59863d;
 }
