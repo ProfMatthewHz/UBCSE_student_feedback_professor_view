@@ -132,6 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $criterion_type = $info['type'];
 
         $criterion_data = array();
+        $criterion_data['name'] = $name;
+        $criterion_data['responses'] = $criterion_responses;
+        $criterion_data['type'] = $criterion_type;
 
         $defined_rubric['criteria'][$criterion_id] = $criterion_data;
 

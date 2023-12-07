@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $topic_id = insertRubricTopic($con, $rubric_id, $crit_data["question"], $crit_data["type"]);
       if ($crit_data["type"] == MC_QUESTION_TYPE) {
         foreach ($level_ids as $key => $level_id) {
-          insertRubricReponse($con, $topic_id, $level_id, $crit_data["responses"][$key]);
+          insertRubricResponse($con, $topic_id, $level_id, $crit_data["responses"][$key]);
         }
       }
     }
