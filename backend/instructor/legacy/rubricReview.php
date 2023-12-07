@@ -161,7 +161,7 @@ unset($_SESSION["rubric_reviewed"]);
 		}
 		function updateRubric() {
 			let rubric_id = document.getElementById("rubric-select").value;
-			ajaxPostRequest('lib/getRubricTable.php', "rubric="+rubric_id, showTable);
+			ajaxPostRequest('../lib/getRubricTable.php', "rubric="+rubric_id, showTable);
 		}
 	</script>
 </head>

@@ -144,7 +144,8 @@ function getRubricData($con, $rubric_id) {
   $ret_val = array();
   $rubric_scores = getRubricScores($con, $rubric_id);
   $ret_val["scores"] = $rubric_scores;
-  $rubric_topics = getRubricTopics($con, $rubric_id, $rubric_scores);
+  // $rubric_topics = getRubricTopics($con, $rubric_id, $rubric_scores);
+  $rubric_topics = getRubricTopics($con, $rubric_id);
   $ret_val["topics"] = $rubric_topics;
   return $ret_val;
 }
