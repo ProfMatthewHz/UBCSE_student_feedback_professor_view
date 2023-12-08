@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../styles/addrubric.css";
 import Rubric from "./Rubric";
 
-const AddRubric = ({ getRubrics }) => {
+const AddRubric = ({getRubrics, handleAddRubricModal}) => {
 
   // IMPORTANT: rubricData contains all the data collected from each modal
   const [rubricData, setRubricData] = useState({});
@@ -226,6 +226,8 @@ const AddRubric = ({ getRubrics }) => {
       }
     } else {
       let errors = await fetchSaveRubric();
+      handleAddRubricModal(false);
+      getRubrics();
     }
   };
 
@@ -259,8 +261,25 @@ const AddRubric = ({ getRubrics }) => {
   };
 
   const fetchSaveRubric = async () => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_API_URL + "rubricConfirm.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            "save-rubric": 1
+          }),
+        }
+      );
 
-  }
+      return
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
 
