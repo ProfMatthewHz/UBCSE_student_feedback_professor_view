@@ -1,15 +1,16 @@
 * {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 .addrubric--contents-container {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    margin: 0 20px
 }
 
 .addrubric--container h2 {
@@ -18,32 +19,113 @@
     text-align: center;
 }
 
-label.addrubric--rubric-name {
+label.addrubric--rubric-name,
+label.addrubric--rubric-name-error {
     color: #225cb5;
     display: flex;
     flex-direction: column;
     font-size: 16px;
     font-weight: bold;
     gap: 10px;
-    margin-bottom: 20px;
+    margin: 0 0 20px 0;
     width: 100%;
 }
 
-label.addrubric--rubric-name input {
+label.addrubric--rubric-name input,
+label.addrubric--rubric-name-error input {
+    border-radius: 5px;
     font-size: 16px;
     padding: 10px;
+}
+
+label.addrubric--rubric-name input {
+    background-color: #fff;
+    border: solid 1.5px #225cb5;
+}
+
+label.addrubric--rubric-name-error input,
+input.addrubric--level-name-error,
+input.addrubric--points-number-error,
+textarea.addrubric--criterion-description-error {
+    background-color: #ffdddd !important;
+    border: 1.5px solid #af0e0e !important;
+}
+
+.addrubric--red-error-notif {
+    display: flex;
+    font-size: 16px;
+    font-weight: bold;
+    gap: 5px;
+    margin: 0;
+}
+
+td .addrubric--red-error-notif {
+    background-color: white;
+    border: solid 1.5px #af0e0e;
+    border-radius: 5px;
+    justify-content: center;
+    margin-top: 5px;
+    padding: 10px;
+    position: absolute;
+    z-index: 998;
+}
+
+
+
+.addrubric--red-error-notif {
+    color: #af0e0e;
+}
+
+
+.addrubric--level-red-warning-sign,
+.addrubric--criterion-red-warning-sign,
+.whitewarningsign {
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 18px;
+}
+
+.addrubric--level-red-warning-message,
+.addrubric--criterion-red-warning-message {
+    color: #af0e0e;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    text-align: left;
+    width: 197px;
+    word-break: break-word;
+}
+
+.addrubric--criterion-red-warning-message {
+    width: 162px !important;
+}
+
+.addrubric--level-red-warning-sign,
+.addrubric--criterion-red-warning-sign {
+    background-image: url("../assets/redwarningsign.png");
+}
+
+.whitewarningsign {
+    background-image: url("../assets/whitewarningsign.png");
 }
 
 .addrubric--min-max-notification {
     background-color: #af0e0e;
     border-radius: 5px;
     color: #fff;
+    display: flex;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700;
+    gap: 7px;
+    justify-content: center;
     margin-bottom: 20px;
     padding: 10px 20px;
     text-align: center;
-    width: fit-content;
+    width: 100%;
+}
+
+.addrubric--min-max-notification label {
+    gap: 10px !important;
 }
 
 .addrubric-table-overflow-container {
@@ -84,8 +166,10 @@ table.addrubric--table tbody tr.addrubric--criterion-row {
 
 tr.addrubric--criterion-row td:not(.addrubric--add-criterion-btn-container) {
     border-bottom: solid 1.5px #0a336f;
+    height: fit-content;
     max-width: 250px;
     padding: 10px 20px !important;
+    text-align: center;
     word-wrap: break-word;
 }
 
@@ -102,7 +186,8 @@ td.addrubric--last-criterion-response-container {
     border-right: solid 1.5px #0a336f;
 }
 
-textarea.addrubric--criterion-description {
+textarea.addrubric--criterion-description,
+textarea.addrubric--criterion-description-error {
     font-size: 16px;
     height: 100%;
     min-height: 50px;
@@ -184,11 +269,26 @@ tr.addrubric--criterion-row-disabled {
 
 tbody td.addrubric--label,
 tbody td.addrubric--confirmed-label {
-    background-color: #225cb5;
     color: #fff;
     font-size: 16px;
     font-weight: bold;
     text-align: center;
+}
+
+tbody td.addrubric--label,
+tbody td.addrubric--confirmed-label {
+    background-color: #225cb5;
+}
+
+td.addrubric--label-criterion-error,
+td.addrubric--label-criterion-error {
+    background-color: #c31414 !important;
+    border-bottom: solid 1.5px #6f0000 !important;
+    border-top: solid 1.5px #6f0000;
+}
+
+td.addrubric--label-criterion-error {
+    border: solid 1.5px #6f0000;
 }
 
 td.addrubric--confirmed-label {
@@ -199,6 +299,7 @@ td.addrubric--confirmed-label {
     align-items: center;
     display: flex;
     gap: 5px;
+    justify-content: center;
 }
 
 .addrubric--add-level-btn-container {
@@ -270,7 +371,7 @@ button.addrubric--next-btn:hover {
 }
 
 table.addrubric--table tbody input {
-    border: solid 1.5px rgba(0,0,0, 0.2);
+    border: solid 1.5px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
     font-size: 16px;
     padding: 10px;
@@ -280,18 +381,14 @@ tr.addrubric--criterion-row-disabled input {
     cursor: not-allowed;
 }
 
-textarea.addrubric--criterion-description {
-    font-size: 16px;
-    height: 100%;
-    margin: 0;
-}
-
 input.addrubric--level-name,
+input.addrubric--level-name-error,
 input.addrubric--criterion-name {
     width: 130px;
 }
 
-input.addrubric--points-number {
+input.addrubric--points-number,
+input.addrubric--points-number-error {
     width: 62px;
 }
 
