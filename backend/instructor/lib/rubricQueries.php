@@ -41,7 +41,7 @@ function insertRubricTopic($con, $rubric_id, $question, $question_type) {
   return $ret_val;    
 }
 
-function insertRubricReponse($con, $topic_id, $level_id, $response) {
+function insertRubricResponse($con, $topic_id, $level_id, $response) {
   $stmt = $con->prepare('INSERT INTO rubric_responses (topic_id, rubric_score_id, response) VALUES(?,?,?)');
   $stmt->bind_param('iis', $topic_id, $level_id, $response);
   $stmt->execute();

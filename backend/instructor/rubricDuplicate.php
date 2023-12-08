@@ -13,6 +13,7 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "lib/instructorQueries.php";
 require_once "lib/rubricQueries.php";
+require_once "lib/rubricInitialize.php";
 
 //query information about the requester
 $con = connectToDatabase();
@@ -37,7 +38,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "Forbidden: Incorrect parameters.";
     exit();
   }
+
+
+
+
 }
+
+
 
 
 
