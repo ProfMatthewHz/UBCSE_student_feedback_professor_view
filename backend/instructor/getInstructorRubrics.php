@@ -1,39 +1,5 @@
 <?php
 
-function create_levels_array($rubric_scores) {
-	$levels = array();
-	// levels[i] = array("name" => [name], "score" => [score])
-
-	foreach ($rubric_scores as $score_id => $level_data){
-		// $level_data['level_id'] = $score_id;
-		$levels[] = $level_data;
-	}
-
-	return $levels;
-}
-
-function create_topics_array($rubric_topics) {
-	// akin to criterions
-
-	$topics = array();
-	foreach( $rubric_topics as $topic ){
-
-		$single_criterion = array();
-
-		$criterion_name = $topic['question'];
-		$criterion_responses = $topic['responses'];
-		$criterion_type = $topic['type'];
-
-		$single_criterion['question'] = $criterion_name;
-		$single_criterion['responses'] = array_values($criterion_responses);
-		$single_criterion['type'] = $criterion_type;
-
-		$topics[] = $single_criterion;
-	}
-
-	return $topics;
-}
-
 //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
@@ -48,6 +14,7 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "lib/instructorQueries.php";
 require_once "lib/rubricQueries.php";
+require_once "lib/rubricFormat.php";
 
 //query information about the requester
 $con = connectToDatabase();
@@ -105,20 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (empty($response['errors'])){
-
-		$rubric_data = array();
+		// no errors, grab data
 
         $rubric_name = getRubricName($con, $rubric_id);
         $rubric_scores = getRubricScores($con, $rubric_id);
         $rubric_topics = getRubricTopics($con, $rubric_id);
-		
-		$levels_data = create_levels_array($rubric_scores);
-        $topics_data = create_topics_array($rubric_topics);
-    
-        $rubric_data = array();
-        $rubric_data['name'] = $rubric_name;
-        $rubric_data['levels'] = $levels_data;
-        $rubric_data['topics'] = $topics_data;
+
+		$rubric_data = format_rubric_data($rubric_name, $rubric_scores, $rubric_topics);
 
         $response['data'] = $rubric_data;
     
@@ -130,8 +90,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	exit();
 
 }
-
-
-
 
 ?>

@@ -21,9 +21,8 @@ function check_level_score($level_score, $prev_score, &$level_errors){
 
 function get_levels_data($levels_data, &$errorMsg){
   $curr_level = 0;
-  $prev_score = PHP_INT_MIN;
+  $prev_score = -1;
   
-
   // names and scores will be in order from level 1-5
   $names_and_scores = array('level_names' => array(), 'level_scores' => array());  
   foreach ($levels_data as $level_data) {
@@ -73,6 +72,7 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "lib/instructorQueries.php";
 require_once "lib/rubricQueries.php";
+require_once "lib/rubricFormat.php";
 
 //query information about the requester
 $con = connectToDatabase();
@@ -167,8 +167,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   header("Content-Type: application/json; charset=UTF-8");
   $errorsJSON = json_encode($errors_response);
   echo $errorsJSON;
-
-
 }
 
 $csrf_token = createCSRFToken($con, $instructor_id);
