@@ -78,6 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $criterion_responses = $criterion['responses'];
     $criterion_type = $criterion['type'];
 
+    $valid_types = array(MC_QUESTION_TYPE, FREEFORM_QUESTION_TYPE);
+    if ( !in_array($criterion_type, $valid_types)) {
+      http_response_code(400);
+      echo "Bad Request: Number of responses for each criterion must match the number of levels for rubric.";
+      exit();
+    }
+
     $criterion_errors = array();
     // check name
     if (empty($criterion_name)) {
