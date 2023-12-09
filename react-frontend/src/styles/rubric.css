@@ -55,15 +55,13 @@
 .rubric--header .duplicate-btn {
   background-color: #6da04b;
   color: #fff;
-  transition-duration: 0.4s;
-  transition-property: background-color;
+  transition: all .2s ease;
 }
 
 .rubric--header .duplicate-btn:hover {
-  background-color: #ffffff;
-  color: #6da04b;
-  transition-duration: 0.4s;
-  transition-property: background-color;
+  color: #fff;
+  background-color: #659743;
+  transition: all .2s ease;
 }
 
 /* Table Styles */
