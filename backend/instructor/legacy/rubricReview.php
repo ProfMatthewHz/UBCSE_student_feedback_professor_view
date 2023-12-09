@@ -111,6 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "Bad Request: Missing parmeters.";
     exit();
 	}
+
 	$rubric_id = $_SESSION["rubric_reviewed"];
 	unset($_SESSION["rubric_reviewed"]);
 	$rubric_name = getRubricName($con, $rubric_id);
