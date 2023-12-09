@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../styles/addrubric.css";
-import Rubric from "./Rubric";
 
-const AddRubric = ({getRubrics, handleAddRubricModal}) => {
+const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) => {
 
-  
+
   // IMPORTANT: rubricData contains all the data collected from each modal
   const [rubricData, setRubricData] = useState({});
 
@@ -82,7 +81,6 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
   };
 
   const handleLevelNameChange = (index, value) => {
-    console.log()
     if (errorMessage["level-" + index.toString()] && errorMessage["level-" + index.toString()]["name"]) {
       setErrorMessage({});
     }
@@ -207,14 +205,8 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
 
   const handleNextButton = async () => {
 
-    console.log(rubricData)
-    console.log(handleAddRubricModal)
-    
     if (showCreateLevelsModal) {
-
       let errors = await fetchRubricErrors("rubricInitialize.php");
-  
-      
 
       if (errors.length === 0) {
         setShowCreateLevelsModal(false);
@@ -223,7 +215,6 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
       }
 
     } else if (showCreateCriteriaModal) {
-
       let errors = await fetchRubricErrors("rubricSetCriterions.php");
 
       if (errors.length === 0) {
@@ -236,7 +227,7 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
       setShowPreviewModal(false);
       getRubrics();
       handleAddRubricModal(false);
-      
+
     }
   };
 
@@ -244,7 +235,6 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
   // Fetches
 
   const fetchRubricErrors = async (filename) => {
-    console.log(rubricData);
     try {
       const response = await fetch(
         process.env.REACT_APP_API_URL + filename,
@@ -258,7 +248,6 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
       );
 
       const result = await response.json();
-      console.log(result)
 
       if (result["errors"] && Object.keys(result["errors"]).length > 0) {
         const [errorKey, errorValue] = Object.entries(result["errors"])[0];
@@ -294,37 +283,42 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
 
   useEffect(() => {
 
-    // Set Delete Button States for Columns and Rows
-    const defaultDeleteColumnsHovered = []
-    const defaultDeleteRowsHovered = []
+    if (duplicatedRubricData) { // + Duplicate Rubric
+      setRubricData(duplicatedRubricData)
+    } else { // + Add Rubric
+      
+      // Set Delete Button States for Columns and Rows
+      const defaultDeleteColumnsHovered = []
+      const defaultDeleteRowsHovered = []
 
-    // Set Levels
-    const defaultLevelAmount = 4;
-    const defaultLevels = [];
+      // Set Levels
+      const defaultLevelAmount = 4;
+      const defaultLevels = [];
 
-    for (let i = 0; i < defaultLevelAmount; i++) {
-      defaultLevels.push({ name: "", score: "" });
-      defaultDeleteColumnsHovered.push(false);
+      for (let i = 0; i < defaultLevelAmount; i++) {
+        defaultLevels.push({ name: "", score: "" });
+        defaultDeleteColumnsHovered.push(false);
+      }
+      setDeleteColumnsHovered(defaultDeleteColumnsHovered);
+
+      // Set Criterions
+      const defaultCriterionAmount = 4;
+      const defaultCriterions = [];
+
+      for (let i = 0; i < defaultCriterionAmount; i++) {
+        const emptyResponses = Array.from({ length: defaultLevelAmount }, () => "");
+        defaultCriterions.push({
+          question: "",
+          responses: emptyResponses,
+          type: "multiple_choice"
+        });
+        defaultDeleteRowsHovered.push(false);
+      }
+      setDeleteRowsHovered(defaultDeleteRowsHovered)
+
+      // Set Rubric Data
+      setRubricData({ name: "", levels: defaultLevels, topics: defaultCriterions })
     }
-    setDeleteColumnsHovered(defaultDeleteColumnsHovered);
-
-    // Set Criterions
-    const defaultCriterionAmount = 4;
-    const defaultCriterions = [];
-
-    for (let i = 0; i < defaultCriterionAmount; i++) {
-      const emptyResponses = Array.from({ length: defaultLevelAmount }, () => "");
-      defaultCriterions.push({
-        question: "",
-        responses: emptyResponses,
-        type: "multiple_choice"
-      });
-      defaultDeleteRowsHovered.push(false);
-    }
-    setDeleteRowsHovered(defaultDeleteRowsHovered)
-
-    // Set Rubric Data
-    setRubricData({ name: "", levels: defaultLevels, topics: defaultCriterions })
 
   }, [])
 
