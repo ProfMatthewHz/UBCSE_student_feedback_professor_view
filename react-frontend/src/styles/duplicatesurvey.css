@@ -17,6 +17,7 @@ h2.duplicate-survey--main-title {
 .duplicate-survey--input select {
   background-color: #225cb5;
   color: #fff;
+  cursor: pointer;
   font-size: 16px;
   font-weight: 600;
   padding: 10px;
@@ -28,15 +29,15 @@ h2.duplicate-survey--main-title {
   width: 100%;
 }
 
-.duplicate-survey--timeline-data-container,
-.duplicate-survey--timeline-data-container-error {
+.duplicate-survey--timeline-data-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
-.duplicate-survey--labels-dates-container {
+.duplicate-survey--dates-times-error-container {
   display: flex;
+  flex-direction: row;
   gap: 10px;
 }
 
@@ -49,16 +50,14 @@ h2.duplicate-survey--main-title {
 
 .duplicate-survey--input label,
 .duplicate-survey--input-error label,
-.duplicate-survey--timeline-data-container label,
-.duplicate-survey--timeline-data-container-error label {
+.duplicate-survey--timeline-data-container label {
   color: #225cb5;
   font-size: 16px;
   font-weight: bold;
   margin: 5px 0px;
 }
 
-.duplicate-survey--timeline-data-container label,
-.duplicate-survey--timeline-data-container-error label {
+.duplicate-survey--timeline-data-container label {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -66,8 +65,7 @@ h2.duplicate-survey--main-title {
 
 .duplicate-survey--input input,
 .duplicate-survey--input-error input,
-.duplicate-survey--timeline-data-container input,
-.duplicate-survey--timeline-data-container-error input {
+.duplicate-survey--timeline-data-container input {
   border-radius: 5px;
   font-size: 16px;
   padding: 10px;
@@ -78,10 +76,15 @@ h2.duplicate-survey--main-title {
   border: solid 1.5px #225cb5;
 }
 
-.duplicate-survey--timeline-data-container-error input,
-.duplicate-survey--input-error input {
-  background-color: #ffdddd;
-  border: 1.5px solid #af0e0e;
+.duplicate-survey--input-error input,
+input.duplicate-survey--error-input {
+  background-color: #ffdddd !important;
+  border: 1.5px solid #af0e0e !important;
+}
+
+.duplicate-survey--labels-dates-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .duplicate-survey--input input {
@@ -90,10 +93,26 @@ h2.duplicate-survey--main-title {
 
 label.duplicate-survey--error-label {
   color: #af0e0e;
+  display: flex;
+  flex-direction: row;
   font-size: 16px;
   font-weight: bold;
+  gap: 5px;
   margin: 5px 0px 0px 0px;
   text-align: left;
+}
+
+.duplicate-survey--labels-dates-container label.duplicate-survey--error-label {
+  display: flex;
+  flex-direction: row;
+  margin: 0!important;
+}
+
+.duplicate-survey--red-warning-sign {
+  background-image: url("../assets/redwarningsign.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 18px;
 }
 
 .duplicate-survey--confirm-btn-container {
@@ -105,7 +124,10 @@ label.duplicate-survey--error-label {
 
 button.duplicate-survey--confirm-btn {
   background-color: #6da04b;
+  border: hidden;
+  border-radius: 5px;
   color: #fff;
+  cursor: pointer;
   font-size: 18px;
   font-weight: bold;
   margin: 0;
@@ -124,19 +146,16 @@ button.duplicate-survey--confirm-btn:hover {
 
   .duplicate-survey--labels-dates-container {
     display: flex;
-    gap: 20px;
   }
 
-  .duplicate-survey--timeline-data-container label, 
-  .duplicate-survey--timeline-data-container-error label {
+  .duplicate-survey--timeline-data-container label {
     display: flex;
     flex-direction: column;
     gap: 5px;
     width: 100%;
   }
 
-  .duplicate-survey--timeline-data-container, 
-  .duplicate-survey--timeline-data-container-error {
+  .duplicate-survey--timeline-data-container {
     display: flex;
     flex-direction: column;
     gap: 20px;
