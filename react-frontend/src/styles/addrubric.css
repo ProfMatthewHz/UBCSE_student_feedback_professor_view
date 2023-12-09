@@ -309,6 +309,7 @@ td.addrubric--confirmed-label {
     background-color: #6da04b;
     border: solid 1.5px #3b6b1b;
     border-left: none;
+    cursor: pointer;
     padding: 0px !important;
 }
 
@@ -316,6 +317,7 @@ td.addrubric--confirmed-label {
     background-color: #6da04b;
     border: hidden;
     color: #fff;
+    cursor: pointer;
     font-size: 16px;
     font-weight: bold;
     margin: 0px;
@@ -326,6 +328,7 @@ td.addrubric--confirmed-label {
 
 button.addrubric--next-btn,
 button.addrubric--back-btn {
+    cursor: pointer;
     font-size: 16px;
     font-weight: bold;
     border-radius: 5px;
@@ -361,6 +364,7 @@ td.addrubric--add-criterion-btn-container button {
     background-color: #6da04b;
     border: hidden;
     color: #fff;
+    cursor: pointer;
     font-size: 16px;
     font-weight: bold;
     margin: 0;
