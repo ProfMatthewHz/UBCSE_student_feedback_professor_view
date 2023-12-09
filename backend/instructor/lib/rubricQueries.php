@@ -151,7 +151,9 @@ function getRubricData($con, $rubric_id) {
 }
 
 function countRubricNames($con, $rubric_name){
-  $stmt = $con->prepare('SELECT id FROM rubrics WHERE description=?');
+  // find starts with
+  $rubric_name = $rubric_name.'%';
+  $stmt = $con->prepare('SELECT id FROM rubrics WHERE description LIKE ?');
   $stmt->bind_param('s', $rubric_name);
   $stmt->execute();
   $result = $stmt->get_result();
