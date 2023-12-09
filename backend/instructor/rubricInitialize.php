@@ -12,10 +12,10 @@ function check_level_name($level_name, $names_seen, &$level_errors){
 function check_level_score($level_score, $prev_score, &$level_errors){
   // check for errors in level
   
-  if (!ctype_digit($level_score)){
-    $level_errors['level'] = "Value MUST be a whole number";
-  } elseif ( $level_score < $prev_score ) {
-    $level_errors['level'] = "Lower Level CANNOT have higher value";
+  if (!ctype_digit($level_score) || intval($level_score) < 0){
+    $level_errors['level'] = "Value MUST be a positive whole number!";
+  } elseif ( $level_score <= $prev_score ) {
+    $level_errors['level'] = "Level scores MUST be increasing!";
   }
 }
 
