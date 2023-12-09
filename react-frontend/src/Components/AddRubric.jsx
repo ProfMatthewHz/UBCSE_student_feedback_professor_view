@@ -4,6 +4,7 @@ import Rubric from "./Rubric";
 
 const AddRubric = ({getRubrics, handleAddRubricModal}) => {
 
+  
   // IMPORTANT: rubricData contains all the data collected from each modal
   const [rubricData, setRubricData] = useState({});
 
@@ -205,9 +206,15 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
   }
 
   const handleNextButton = async () => {
+
+    console.log(rubricData)
+    console.log(handleAddRubricModal)
+    
     if (showCreateLevelsModal) {
 
       let errors = await fetchRubricErrors("rubricInitialize.php");
+  
+      
 
       if (errors.length === 0) {
         setShowCreateLevelsModal(false);
@@ -226,8 +233,10 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
       }
     } else {
       let errors = await fetchSaveRubric();
-      handleAddRubricModal(false);
+      setShowPreviewModal(false);
       getRubrics();
+      handleAddRubricModal(false);
+      
     }
   };
 
@@ -235,6 +244,7 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
   // Fetches
 
   const fetchRubricErrors = async (filename) => {
+    console.log(rubricData);
     try {
       const response = await fetch(
         process.env.REACT_APP_API_URL + filename,
@@ -248,6 +258,7 @@ const AddRubric = ({getRubrics, handleAddRubricModal}) => {
       );
 
       const result = await response.json();
+      console.log(result)
 
       if (result["errors"] && Object.keys(result["errors"]).length > 0) {
         const [errorKey, errorValue] = Object.entries(result["errors"])[0];
