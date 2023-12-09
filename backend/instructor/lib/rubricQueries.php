@@ -149,4 +149,15 @@ function getRubricData($con, $rubric_id) {
   $ret_val["topics"] = $rubric_topics;
   return $ret_val;
 }
+
+function countRubricNames($con, $rubric_name){
+  $stmt = $con->prepare('SELECT id FROM rubrics WHERE description=?');
+  $stmt->bind_param('s', $rubric_name);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $retVal = $result->num_rows;
+  $stmt->close();
+  return $retVal;
+}
+
 ?>
