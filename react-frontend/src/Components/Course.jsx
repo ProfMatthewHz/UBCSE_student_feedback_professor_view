@@ -1209,6 +1209,7 @@ const Course = ({ course, page }) => {
             <input id="delete-name" type="text" />
             {emptyOrWrongDeleteNameError ? (
               <label className="delete-survey--error-label">
+                <div className="delete-survey--red-warning-sign"/>
                 Must match survey name
               </label>
             ) : null}
