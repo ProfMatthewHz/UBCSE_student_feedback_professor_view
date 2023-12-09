@@ -55,7 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $rubric_scores = getRubricScores($con, $rubric_id);
     $rubric_topics = getRubricTopics($con, $rubric_id);
 
-    $rubric_name = "Duplicate of ".$rubric_name;
+    $rubric_name = $rubric_name." copy";
+
+    $num_existing = intval(countRubricNames($con, $rubric_name));
+    
+    if ( $num_existing ){
+      $duplicate_num = "(".$num_existing.")";
+      $rubric_name = $rubric_name." ".$duplicate_num;
+    }
 
     $rubric_data = format_rubric_data($rubric_name, $rubric_scores, $rubric_topics);
 
