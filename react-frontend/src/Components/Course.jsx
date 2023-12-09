@@ -1249,6 +1249,7 @@ const Course = ({ course, page }) => {
             <input id="survey-name" placeholder="New Name" type="text" />
             {emptySurveyNameError ? (
               <label className="duplicate-survey--error-label">
+                <div className="duplicate-survey--red-warning-sign" />
                 Survey name cannot be empty
               </label>
             ) : null}
@@ -1267,84 +1268,72 @@ const Course = ({ course, page }) => {
             </select>
           </div>
           <div className="duplicate-survey--timeline-data-error-container">
-            <div
-              className={
-                StartDateGreaterError ||
-                  StartAfterCurrentError ||
-                  emptyStartDateError ||
-                  startDateBoundError ||
-                  startDateBound1Error ||
-                  StartHourAfterEndHourError ||
-                  StartHourSameDayError ||
-                  StartTimeSameDayError ||
-                  emptyStartTimeError ||
-                  StartTimeHoursBeforeCurrent ||
-                  StartTimeMinutesBeforeCurrent ||
-                  emptyEndDateError ||
-                  endDateBoundError ||
-                  endDateBound1Error ||
-                  emptyEndTimeError
-                  ? "duplicate-survey--timeline-data-container-error"
-                  : "duplicate-survey--timeline-data-container"
-              }
-            >
+            <div className="duplicate-survey--timeline-data-container">
               <div className="duplicate-survey--labels-dates-container">
-                <label for="subject-line">
-                  Start Date
-                  <input
-                    id="start-date"
-                    type="date"
-                    min="2023-08-31"
-                    max="2023-12-31"
-                    placeholder="Enter New Start Date"
-                  />
-                </label>
-                <label for="subject-line">
-                  Start Time
-                  <input
-                    id="start-time"
-                    type="time"
-                    placeholder="Enter New Start Time"
-                  />
-                </label>
+                <div className="duplicate-survey--dates-times-error-container">
+                  <label for="subject-line">
+                    Start Date
+                    <input
+                      className={(StartDateGreaterError || StartAfterCurrentError || emptyStartDateError || startDateBoundError || startDateBound1Error) ? "duplicate-survey--error-input" : null}
+                      id="start-date"
+                      type="date"
+                      min="2023-08-31"
+                      max="2023-12-31"
+                      placeholder="Enter New Start Date"
+                    />
+                  </label>
+                  <label for="subject-line">
+                    Start Time
+                    <input
+                      className={(StartHourAfterEndHourError || StartHourSameDayError || StartTimeSameDayError || emptyStartTimeError || StartTimeHoursBeforeCurrent || StartTimeMinutesBeforeCurrent ? "duplicate-survey--error-input" : null)}
+                      id="start-time"
+                      type="time"
+                      placeholder="Enter New Start Time"
+                    />
+                  </label>
+                </div>
+                {StartDateGreaterError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start date cannot be before the end date</label> : null}
+                {StartAfterCurrentError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start date cannot be before the current date</label> : null}
+                {emptyStartDateError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start date cannot be empty</label> : null}
+                {startDateBoundError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start date must be at August 31st or later</label> : null}
+                {startDateBound1Error ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start date must be at December 31st or earlier</label> : null}
+                {StartHourAfterEndHourError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />If start and end dates are the same, start time cannot be after end time</label> : null}
+                {StartHourSameDayError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />If start and end dates are the same, start and end times must differ</label> : null}
+                {StartTimeSameDayError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />If start and end dates are the same, start and end times must differ</label> : null}
+                {emptyStartTimeError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start time cannot be empty</label> : null}
+                {StartTimeHoursBeforeCurrent ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start time hour cannot be before the current hour</label> : null}
+                {StartTimeMinutesBeforeCurrent ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start time minutes cannot be before current minutes</label> : null}
               </div>
               <div className="duplicate-survey--labels-dates-container">
-                <label for="subject-line">
-                  End Date
-                  <input
-                    id="end-date"
-                    type="date"
-                    min="2023-08-31"
-                    max="2023-12-31"
-                    placeholder="Enter New End Date"
-                  />
-                </label>
+                <div className="duplicate-survey--dates-times-error-container">
+                  <label for="subject-line">
+                    End Date
+                    <input
+                      className={(emptyEndDateError || endDateBoundError || endDateBound1Error) ? "duplicate-survey--error-input" : null}
+                      id="end-date"
+                      type="date"
+                      min="2023-08-31"
+                      max="2023-12-31"
+                      placeholder="Enter New End Date"
+                    />
+                  </label>
 
-                <label for="subject-line">
-                  End Time
-                  <input
-                    id="end-time"
-                    type="time"
-                    placeholder="Enter New End Time"
-                  />
-                </label>
+                  <label for="subject-line">
+                    End Time
+                    <input
+                      className={emptyEndTimeError ? "duplicate-survey--error-input" : null}
+                      id="end-time"
+                      type="time"
+                      placeholder="Enter New End Time"
+                    />
+                  </label>
+                </div>
+                {emptyEndDateError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />End date cannot be empty</label> : null}
+                {endDateBoundError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />End date must be at August 31st or later</label> : null}
+                {endDateBound1Error ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />End date must be at December 31st or earlier</label> : null}
+                {emptyEndTimeError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />End time cannot be empty</label> : null}
               </div>
             </div>
-            {StartDateGreaterError ? <label className="duplicate-survey--error-label">Start date cannot be before the end date</label> : null}
-            {StartAfterCurrentError ? <label className="duplicate-survey--error-label">Start date cannot be before the current date</label> : null}
-            {emptyStartDateError ? <label className="duplicate-survey--error-label">Start date cannot be empty</label> : null}
-            {startDateBoundError ? <label className="duplicate-survey--error-label">Start date must be at August 31st or later</label> : null}
-            {startDateBound1Error ? <label className="duplicate-survey--error-label">Start date must be at December 31st or earlier</label> : null}
-            {StartHourAfterEndHourError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start time cannot be after end time</label> : null}
-            {StartHourSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
-            {StartTimeSameDayError ? <label className="duplicate-survey--error-label">If start and end dates are the same, start and end times must differ</label> : null}
-            {emptyStartTimeError ? <label className="duplicate-survey--error-label">Start time cannot be empty</label> : null}
-            {StartTimeHoursBeforeCurrent ? <label className="duplicate-survey--error-label">Start time hour cannot be before the current hour</label> : null}
-            {StartTimeMinutesBeforeCurrent ? <label className="duplicate-survey--error-label">Start time minutes cannot be before current minutes</label> : null}
-            {emptyEndDateError ? <label className="duplicate-survey--error-label">End date cannot be empty</label> : null}
-            {endDateBoundError ? <label className="duplicate-survey--error-label">End date must be at August 31st or later</label> : null}
-            {endDateBound1Error ? <label className="duplicate-survey--error-label">End date must be at December 31st or earlier</label> : null}
-            {emptyEndTimeError ? <label className="duplicate-survey--error-label">End time cannot be empty</label> : null}
           </div>
           <div className="duplicate-survey--confirm-btn-container">
             <button
