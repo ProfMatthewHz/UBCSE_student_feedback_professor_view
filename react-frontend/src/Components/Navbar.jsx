@@ -36,13 +36,16 @@ const Navbar = () => {
           </li>
         </ul>
 
-        {/* Hamburger menu for phone */}
-        <div id="nav-mobile" onClick={handleClick}>
+        {/* Hamburger menu for phone, commented out bc of hertz request with only having Home
+            May be changed in the future so just uncomment the code below and a hamburger menu will
+            show on mobile
+        */}
+        {/* <div id="nav-mobile" onClick={handleClick}>
           <i
             id="nav-bar"
             className={`fas ${clicked ? "fa-times" : "fa-bars"}`}
           ></i>
-        </div>
+        </div> */}
       </nav>
     </>
   );

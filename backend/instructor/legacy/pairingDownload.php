@@ -10,10 +10,10 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 // bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "lib/courseQueries.php";
-require_once "lib/reviewQueries.php";
+require_once "../../lib/database.php";
+require_once "../../lib/constants.php";
+require_once "../lib/courseQueries.php";
+require_once "../lib/reviewQueries.php";
 
 
 // query information about the requester

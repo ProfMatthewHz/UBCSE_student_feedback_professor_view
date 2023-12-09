@@ -149,13 +149,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $rubric_data['levels'] = $rubric_scores;
         $rubric_data['topics'] = $topics_data;
 
-
         $response['data'] = $rubric_data;
     
     }
 
     header("Content-Type: application/json; charset=UTF-8");
-    $responseJSON = json_encode($response);
+    $responseJSON = json_encode($response, JSON_ENCODE_OPTIONS);
     echo $responseJSON;
 
 }

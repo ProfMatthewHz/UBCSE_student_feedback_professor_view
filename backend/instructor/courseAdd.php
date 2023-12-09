@@ -38,10 +38,6 @@ while ($row = mysqli_fetch_assoc($result)) {
   $instructor_ids[] = $row['id'];
 }
 
-
-
-
-
 $instructor_id = $_SESSION['id'];
 //stores error messages corresponding to form fields
 $errorMsg = array();
@@ -67,8 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "Bad Request: Missing parmeters.";
     exit();
   }
-
-
 
   // check CSRF token
   // $csrf_token = getCSRFToken($con, $instructor_id);
@@ -134,10 +128,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    // have to take a comma seperated string and split them. 
 
 
-
-
- 
-
   $currentYear = date('Y');
   //$currentMonthA = date('n');
   //$currentMonth = MONTH_MAP_SEMESTER[$currentMonth];
@@ -186,11 +176,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       // Clean up our file handling
       fclose($file_handle);
 
-      
-     
-      
-
-     
       if (!empty(($names_emails['error'])) || !(empty($differences))) {
         //$errorMsg['additional-instructors'] = "unkown intstructors found";
        $errorMsg['roster-file'] = $names_emails['error'];
