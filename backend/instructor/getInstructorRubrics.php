@@ -1,75 +1,37 @@
 <?php
 
-function create_levels_array($scores) {
-	$ret_val = array("names" => array(), "values" => array());
-	$max_level = count($scores) - 1;
-	$cur_level = 0;
-	foreach (array_values($scores) as $score) {
-		if ($cur_level == 0) {
-			$ret_val["names"]["level5"] = $score["name"];
-			$ret_val["values"]["level5"] = $score["score"];
-		} else if ($cur_level == $max_level) {
-			$ret_val["names"]["level1"] = $score["name"];
-			$ret_val["values"]["level1"] = $score["score"];
-		} else if ($cur_level == 1) {
-			if (($max_level == 3) || ($max_level == 4)) {
-				$ret_val["names"]["level4"] = $score["name"];
-				$ret_val["values"]["level4"] = $score["score"];
-			} else {
-				$ret_val["names"]["level3"] = $score["name"];
-				$ret_val["values"]["level3"] = $score["score"];
-			}
-		} else if ($cur_level == 2) {
-			if ($max_level == 3) {
-				$ret_val["names"]["level2"] = $score["name"];
-				$ret_val["values"]["level2"] = $score["score"];
-			} else {
-				$ret_val["names"]["level3"] = $score["name"];
-				$ret_val["values"]["level3"] = $score["score"];
-			}
-		} else if ($cur_level == 3) {
-			$ret_val["names"]["level2"] = $score["name"];
-			$ret_val["values"]["level2"] = $score["score"];
-		}
-		$cur_level = $cur_level + 1;
+function create_levels_array($rubric_scores) {
+	$levels = array();
+	// levels[i] = array("name" => [name], "score" => [score])
+
+	foreach ($rubric_scores as $score_id => $level_data){
+		// $level_data['level_id'] = $score_id;
+		$levels[] = $level_data;
 	}
-	return $ret_val;
+
+	return $levels;
 }
 
-function create_topics_array($topics) {
-	$ret_val = array();
-	foreach ($topics as $topic) {
-		$topic_data = array();
-		$topic_data["question"] = $topic["question"];
-		$topic_data["type"] = $topic["type"];
-		$topic_data["responses"] = array();
-		$max_level = count($topic["responses"]) - 1;
-		$cur_level = 0;
-		foreach (array_values($topic["responses"]) as $response) {
-			if ($cur_level == 0) {
-				$topic_data["responses"]["level5"] = $response;
-			} else if ($cur_level == $max_level) {
-				$topic_data["responses"]["level1"] = $response;
-			} else if ($cur_level == 1) {
-				if (($max_level == 3) || ($max_level == 4)) {
-					$topic_data["responses"]["level4"] = $response;
-				} else {
-					$topic_data["responses"]["level3"] = $response;
-				}
-			} else if ($cur_level == 2) {
-				if ($max_level == 3) {
-					$topic_data["responses"]["level2"] = $response;
-				} else {
-					$topic_data["responses"]["level3"] = $response;
-				}
-			} else if ($cur_level == 3) {
-				$topic_data["responses"]["level2"] = $response;
-			}
-			$cur_level = $cur_level + 1;
-		}
-		$ret_val[] = $topic_data;
+function create_topics_array($rubric_topics) {
+	// akin to criterions
+
+	$topics = array();
+	foreach( $rubric_topics as $topic ){
+
+		$single_criterion = array();
+
+		$criterion_name = $topic['question'];
+		$criterion_responses = $topic['responses'];
+		$criterion_type = $topic['type'];
+
+		$single_criterion['question'] = $criterion_name;
+		$single_criterion['responses'] = array_values($criterion_responses);
+		$single_criterion['type'] = $criterion_type;
+
+		$topics[] = $single_criterion;
 	}
-	return $ret_val;
+
+	return $topics;
 }
 
 //error logging
@@ -98,6 +60,8 @@ if (!isset($_SESSION['id'])) {
 }
 $instructor_id = $_SESSION['id'];
 
+$response = array();
+// will be the response to return, depending on HTTP request
 
 # get all rubrics and return json
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -115,6 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $responseJSON = json_encode($response);
     echo $responseJSON;
 
+	exit();
+
     
 }
 
@@ -125,38 +91,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     if (!isset($_POST['rubric-id'])) {
-
-        $response['errors']['rubric'] = "Please choose a valid rubric.";
-
-    }
+		http_response_code(400);
+		echo "Bad Request: Missing parameters to select rubric";
+		exit();
+	}
 
     $rubric_id = $_POST['rubric-id'];
     $rubrics = getRubrics($con);
     if (!array_key_exists($rubric_id, $rubrics)) {
 
         $response['errors']['rubric'] = "Please choose a valid rubric.";
+
     }
 
     if (empty($response['errors'])){
 
+		$rubric_data = array();
+
         $rubric_name = getRubricName($con, $rubric_id);
         $rubric_scores = getRubricScores($con, $rubric_id);
         $rubric_topics = getRubricTopics($con, $rubric_id);
+		
+		$levels_data = create_levels_array($rubric_scores);
         $topics_data = create_topics_array($rubric_topics);
     
         $rubric_data = array();
         $rubric_data['name'] = $rubric_name;
-        $rubric_data['levels'] = $rubric_scores;
+        $rubric_data['levels'] = $levels_data;
         $rubric_data['topics'] = $topics_data;
-
 
         $response['data'] = $rubric_data;
     
     }
 
     header("Content-Type: application/json; charset=UTF-8");
-    $responseJSON = json_encode($response);
+    $responseJSON = json_encode($response, JSON_ENCODE_OPTIONS);
     echo $responseJSON;
+	exit();
 
 }
 

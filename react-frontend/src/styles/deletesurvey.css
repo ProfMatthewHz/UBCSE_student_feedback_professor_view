@@ -54,7 +54,10 @@ h2.delete-survey--main-title {
 
 button.delete-survey--confirm-btn {
   background-color: #6da04b;
+  border: hidden;
+  border-radius: 5px;
   color: #fff;
+  cursor: pointer;
   font-size: 18px;
   font-weight: bold;
   margin: 0;
@@ -69,10 +72,19 @@ button.delete-survey--confirm-btn:hover {
 
 label.delete-survey--error-label {
   color: #af0e0e;
+  display: flex;
   font-size: 16px;
   font-weight: bold;
+  gap: 5px;
   margin: 10px 0px 0px 0px;
   text-align: left;
+}
+
+.delete-survey--red-warning-sign {
+    background-image: url("../assets/redwarningsign.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 18px;
 }
 
 /* PHONES AND SMALL DEVICES */

@@ -114,7 +114,16 @@
     margin: 20px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    gap: 40px;
+}
+
+.viewresults-modal--barchart-container .p-datatable.p-component.p-datatable-responsive-scroll .p-datatable-wrapper .p-datatable-table {
+    border: 1px solid #225cb5;
+}
+
+.normalized-barchart {
+    height: 400px;
+    width: 500px;
 }
 
 .rawresults--table-container {
@@ -226,6 +235,10 @@
 
     .mobile-disable {
         display: none;
+    }
+
+    .viewresults-modal--barchart-container {
+        flex-direction: column;
     }
 }
 

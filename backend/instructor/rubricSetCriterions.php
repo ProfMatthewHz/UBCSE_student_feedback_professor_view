@@ -78,6 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $criterion_responses = $criterion['responses'];
     $criterion_type = $criterion['type'];
 
+    $valid_types = array(MC_QUESTION_TYPE, FREEFORM_QUESTION_TYPE);
+    if ( !in_array($criterion_type, $valid_types)) {
+      http_response_code(400);
+      echo "Bad Request: Invalid response type";
+      exit();
+    }
+
     $criterion_errors = array();
     // check name
     if (empty($criterion_name)) {
@@ -154,13 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $errorsJSON = json_encode($errors_response);
   echo $errorsJSON;
 
-  echo "\n";   
-  print_r($_SESSION['rubric-preview']);
-
 }
 
 
 $csrf_token = createCSRFToken($con, $instructor_id);
-// $level_keys_for_js = json_encode(array_keys($_SESSION["rubric"]["levels"]["names"]));
-// $level_names_for_js =  json_encode(array_values($_SESSION["rubric"]["levels"]["names"]));
 ?>

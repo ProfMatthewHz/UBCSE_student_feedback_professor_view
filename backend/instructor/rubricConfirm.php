@@ -86,7 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
           $curr_level = "level-".$response_id;
           $level_id = $levels_id[$curr_level];
-        
 
           insertRubricResponse($con, $topic_id, $level_id, $response_description);
 
@@ -97,11 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     unset($_SESSION['rubric-format'], $_SESSION['rubric-preview']);
 
-
   }
 
-
-// And go back to the main page.
 
   }
 ?>
