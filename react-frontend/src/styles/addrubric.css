@@ -118,7 +118,7 @@ td .addrubric--red-error-notif {
     font-weight: 700;
     gap: 7px;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     padding: 10px 20px;
     text-align: center;
     width: 100%;
@@ -247,7 +247,10 @@ tr.addrubric--criterion-row-disabled {
     background-size: 23px 30px;
     background-repeat: no-repeat;
     border: 1.5px solid #af0e0e;
+    border-radius: 5px;
     color: #af0e0e;
+    cursor: pointer;
+    margin-top: 10px;
     padding: 20px;
     transition: all .2s ease;
 }
@@ -311,7 +314,8 @@ td.addrubric--confirmed-label {
 
 .addrubric--add-level-btn-container button {
     background-color: #6da04b;
-    border-radius: 0px;
+    border: hidden;
+    color: #fff;
     font-size: 16px;
     font-weight: bold;
     margin: 0px;
@@ -324,6 +328,7 @@ button.addrubric--next-btn,
 button.addrubric--back-btn {
     font-size: 16px;
     font-weight: bold;
+    border-radius: 5px;
     padding: 10px 30px;
 }
 
@@ -354,10 +359,12 @@ td.addrubric--add-criterion-btn-container {
 
 td.addrubric--add-criterion-btn-container button {
     background-color: #6da04b;
-    border-radius: 0;
+    border: hidden;
+    color: #fff;
     font-size: 16px;
     font-weight: bold;
     margin: 0;
+    padding: 16px 20px;
     transition: all .2s ease;
     width: 100%;
 }
