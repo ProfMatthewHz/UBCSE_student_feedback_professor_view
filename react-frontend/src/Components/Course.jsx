@@ -1677,7 +1677,7 @@ const Course = ({ course, page }) => {
               </select>
             </label>
           )}
-          <label className="add-survey--label" for="subject-line">
+          <label className="add-survey--file-label" for="subject-line">
             CSV File Upload
             <input
               className={emptyCSVFileError && "add-survey-input-error"}
