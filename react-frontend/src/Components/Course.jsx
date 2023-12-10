@@ -1670,7 +1670,7 @@ const Course = ({ course, page }) => {
           {validPairingModeForMultiplier && (
             <label className="add-survey--label" for="subject-line">
               Multiplier
-              <select id ="multiplier-type">
+              <select id="multiplier-type">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
