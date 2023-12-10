@@ -82,10 +82,10 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 //bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "lib/instructorQueries.php";
-require_once "lib/rubricQueries.php";
+require_once "../../lib/database.php";
+require_once "../../lib/constants.php";
+require_once "../lib/instructorQueries.php";
+require_once "../lib/rubricQueries.php";
 
 //query information about the requester
 $con = connectToDatabase();
@@ -111,6 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "Bad Request: Missing parmeters.";
     exit();
 	}
+
 	$rubric_id = $_SESSION["rubric_reviewed"];
 	unset($_SESSION["rubric_reviewed"]);
 	$rubric_name = getRubricName($con, $rubric_id);
@@ -161,7 +162,7 @@ unset($_SESSION["rubric_reviewed"]);
 		}
 		function updateRubric() {
 			let rubric_id = document.getElementById("rubric-select").value;
-			ajaxPostRequest('lib/getRubricTable.php', "rubric="+rubric_id, showTable);
+			ajaxPostRequest('../lib/getRubricTable.php', "rubric="+rubric_id, showTable);
 		}
 	</script>
 </head>

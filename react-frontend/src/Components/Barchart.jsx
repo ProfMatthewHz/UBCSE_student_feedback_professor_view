@@ -48,7 +48,7 @@ const BarChart = (results) => {
   return (
     <div>
      {/* <h2>Number of Students Per Normalized Averages</h2>*/}
-      <Bar data={data} options={options} />
+      <Bar data={data} options={options} className='normalized-barchart' />
     </div>
   );
 };

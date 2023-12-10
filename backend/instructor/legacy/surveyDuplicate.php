@@ -10,14 +10,14 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 // //bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once '../lib/studentQueries.php';
-require_once "lib/instructorQueries.php";
-require_once "lib/fileParse.php";
-require_once 'lib/rubricQueries.php';
-require_once 'lib/courseQueries.php';
-require_once 'lib/surveyQueries.php';
+require_once "../../lib/database.php";
+require_once "../../lib/constants.php";
+require_once '../../lib/studentQueries.php';
+require_once "../lib/instructorQueries.php";
+require_once '../lib/rubricQueries.php';
+require_once '../lib/courseQueries.php';
+require_once '../lib/reviewQueries.php';
+require_once '../lib/surveyQueries.php';
 
 // set timezone
 date_default_timezone_set('America/New_York');
@@ -78,23 +78,31 @@ if (empty($course_info)) {
   echo "403: Forbidden.";
   exit();
 }
-$survey_name = $survey_info['name'];
+$survey_name = $survey_info['name'] . ' copy';
 $start_date = $survey_info['start_date'];
 $end_date = $survey_info['end_date'];
 $rubric_id = $survey_info['rubric_id'];
+$survey_type = $survey_info['survey_type_id'];
 $course_name = $course_info['name'];
 $course_code = $course_info['code'];
 $course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
 $course_year = $course_info['year'];
 
-$s = new DateTime($start_date);
-$e = new DateTime($end_date);
-$now = new DateTime();
-$start_date = $s->format('Y-m-d');
-$start_time = $s->format('H:i');
-$end_date = $e->format('Y-m-d');
-$end_time = $e->format('H:i');
-$full_perms = $now < $s;
+$s = new DateTimeImmutable($start_date);
+$e = new DateTimeImmutable($end_date);
+$length = $s->diff($e);
+$now = new DateTimeImmutable($end_date);
+$new_start = null;
+if ($e > $now) {
+  $new_start = $e;
+} else {
+  $new_start = $now;
+}
+$new_end = $new_start->add($length);
+$start_date = $new_start->format('Y-m-d');
+$start_time = $new_start->format('H:i');
+$end_date = $new_end->format('Y-m-d');
+$end_time = $new_end->format('H:i');
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -143,81 +151,60 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
     }
   }
-  if (!$full_perms) {
-    // This will be used when we are updating a survey that has already started
-    if (!isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
-      $orig_end = $e;
-      $e = new DateTime($end_date . ' ' . $end_time);
-      $today = new DateTime();
-      if ($orig_end > $e) {
-        $errorMsg['end-date'] = "Survey end date and time cannot be moved earlier.";
-        $errorMsg['end-time'] = "Survey end date and time cannot be moved earlier.";
-        $end_date = $orig_end->format('Y-m-d');
-        $end_time = $orig_end->format('H:i');
-      } else if (($e > $orig_end) && ($e < $today)) {
-        $errorMsg['end-date'] = "End date and time must occur in the future.";
-        $errorMsg['end-time'] = "End date and time must occur in the future.";
-      }
-    }
+
+  $rubric_id = $_POST['rubric-id'];
+  $rubric_id = intval($rubric_id);
+  if (!array_key_exists($rubric_id, $rubrics)) {
+    $errorMsg['rubric-id'] = "Please choose a valid rubric.";
+  }
+
+  $start_date = trim($_POST['start-date']);
+  if (empty($start_date)) {
+    $errorMsg['start-date'] = "Please choose a start date.";
   } else {
-    // Now check for the data that can only be updated when the survey has not started
-    // check rubric is not empty
-    $rubric_id = $_POST['rubric-id'];
-    $rubric_id = intval($rubric_id);
-    if (!array_key_exists($rubric_id, $rubrics)) {
-      $errorMsg['rubric-id'] = "Please choose a valid rubric.";
-    }
-
-    $start_date = trim($_POST['start-date']);
-    if (empty($start_date)) {
-      $errorMsg['start-date'] = "Please choose a start date.";
-    } else {
-      $start = DateTime::createFromFormat('Y-m-d', $start_date);
-      if (!$start) {
-        $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
-      } else if ($start->format('Y-m-d') != $start_date) {
-        $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
-      }
-    }
-    $start_time = trim($_POST['start-time']);
-    if (empty($start_time)) {
-      $errorMsg['start-time'] = "Please choose a start time.";
-    } else {
-      $start = DateTime::createFromFormat('H:i', $start_time);
-      if (!$start) {
-        $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
-      } else if ($start->format('H:i') != $start_time) {
-        $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
-      }
-    }
-
-    // check dates and times
-    if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
-      $s = new DateTime($start_date . ' ' . $start_time);
-      $e = new DateTime($end_date . ' ' . $end_time);
-      $today = new DateTime();
-
-      if ($e < $s) {
-        $errorMsg['end-date'] = "End date and time cannot be before start date and time.";
-        $errorMsg['end-time'] = "End date and time cannot be before start date and time.";
-        $errorMsg['start-date'] = "End date and time cannot be before start date and time.";
-        $errorMsg['start-time'] = "End date and time cannot be before start date and time.";
-      } else if ($e < $today) {
-        $errorMsg['end-date'] = "End date and time must occur in the future.";
-        $errorMsg['end-time'] = "End date and time must occur in the future.";
-      }
+    $start = DateTime::createFromFormat('Y-m-d', $start_date);
+    if (!$start) {
+      $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
+    } else if ($start->format('Y-m-d') != $start_date) {
+      $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
     }
   }
+  $start_time = trim($_POST['start-time']);
+  if (empty($start_time)) {
+    $errorMsg['start-time'] = "Please choose a start time.";
+  } else {
+    $start = DateTime::createFromFormat('H:i', $start_time);
+    if (!$start) {
+      $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
+    } else if ($start->format('H:i') != $start_time) {
+      $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
+    }
+  }
+  $s = null;
+  $e = null;
+
+  // check dates and times
+  if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
+    $s = new DateTime($start_date . ' ' . $start_time);
+    $e = new DateTime($end_date . ' ' . $end_time);
+    $today = new DateTime();
+
+    if ($e < $s) {
+      $errorMsg['end-date'] = "End date and time cannot be before start date and time.";
+      $errorMsg['end-time'] = "End date and time cannot be before start date and time.";
+      $errorMsg['start-date'] = "End date and time cannot be before start date and time.";
+      $errorMsg['start-time'] = "End date and time cannot be before start date and time.";
+    } else if ($e < $today) {
+      $errorMsg['end-date'] = "End date and time must occur in the future.";
+      $errorMsg['end-time'] = "End date and time must occur in the future.";
+    }
+  }
+
   // Update the survey details in the database
   if (empty($errorMsg)) {
-    $sdate = $start_date . ' ' . $start_time;
-    $edate = $end_date . ' ' . $end_time;
-    if (updateSurvey($con, $survey_id, $survey_name, $sdate, $edate, $rubric_id)) {
-      $_SESSION['survey-update'] = "Successfully added updated";
-    } else {
-      $_SESSION['survey-update'] = "Database error. Could not update survey.";
-    }
-    // redirect to survey page with sucess message
+    $pairings = getReviewsForSurvey($con, $survey_id);
+    $survey_id = insertSurvey($con, $course_id, $survey_name, $s, $e, $rubric_id, $survey_type);
+    addReviewsToSurvey($con, $survey_id, $pairings);
     http_response_code(302);
     header("Location: ".INSTRUCTOR_HOME."surveys.php");
     exit();
@@ -233,7 +220,7 @@ $csrf_token = createCSRFToken($con, $instructor_id);
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-  <title>CSE Evaluation Survey System - Update Survey</title>
+  <title>CSE Evaluation Survey System - Duplicate Survey</title>
 </head>
 <body class="text-center">
 <!-- Header -->
@@ -241,7 +228,7 @@ $csrf_token = createCSRFToken($con, $instructor_id);
   <div class="container-fluid">
     <div class="row justify-content-md-center bg-primary mt-1 mx-1 rounded-pill">
       <div class="col-sm-auto text-center">
-        <h4 class="text-white display-1">UB CSE Evalution System<br>Update Existing Survey</h4>
+        <h4 class="text-white display-1">UB CSE Evalution System<br>Duplicate Existing Survey</h4>
       </div>
     </div>
     <form class="mt-5 mx-4" id="add-survey" method="post" enctype="multipart/form-data">
@@ -259,11 +246,11 @@ $csrf_token = createCSRFToken($con, $instructor_id);
           <label for="survey-name">Survey Name:</label>
       </div>
       <div class="form-floating mb-3">
-          <input type="date" id="start-date" name="start-date" class="form-control <?php if(isset($errorMsg["start-date"])) {echo "is-invalid ";} ?>" required value="<?php echo htmlspecialchars($start_date); ?>" <?php if (!$full_perms) { echo "readonly"; }?>></input>
+          <input type="date" id="start-date" name="start-date" class="form-control <?php if(isset($errorMsg["start-date"])) {echo "is-invalid ";} ?>" required value="<?php echo htmlspecialchars($start_date); ?>"></input>
           <label for="start-date"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"]; } else { echo "Start Date:";} ?></label>
       </div>
       <div class="form-floating mb-3">
-          <input type="time" id="start-time" name="start-time" class="form-control <?php if(isset($errorMsg["start-time"])) {echo "is-invalid ";} ?>" required value="<?php echo htmlspecialchars($start_time); ?>" <?php if (!$full_perms) { echo "readonly"; }?>></input>
+          <input type="time" id="start-time" name="start-time" class="form-control <?php if(isset($errorMsg["start-time"])) {echo "is-invalid ";} ?>" required value="<?php echo htmlspecialchars($start_time); ?>"></input>
           <label for="start-time"><?php if(isset($errorMsg["start-time"])) {echo $errorMsg["start-time"]; } else { echo "Start Time:";} ?></label>
       </div>
       <div class="form-floating mb-3">
@@ -275,11 +262,8 @@ $csrf_token = createCSRFToken($con, $instructor_id);
           <label for="end-time"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"]; } else { echo "End Time:";} ?></label>
       </div>
       <div class="form-floating mb-3">
-          <select class="form-select <?php if(isset($errorMsg["rubric-id"])) {echo "is-invalid ";} ?>" id="rubric-id" name="rubric-id" <?php if (!$full_perms) { echo "disabled"; }?>>
+          <select class="form-select <?php if(isset($errorMsg["rubric-id"])) {echo "is-invalid ";} ?>" id="rubric-id" name="rubric-id">
             <?php
-            if (!$full_perms) {
-              echo '<option value="' . $rubric_id . '" selected>' . htmlspecialchars($rubrics[$rubric_id]) . '</option>';
-            } else {
               foreach ($rubrics as $r_id => $r_desc) {
                 if ($rubric_id == $r_id) {
                   echo '<option value="' . $rubric_id . '" selected>' . htmlspecialchars($r_desc) . '</option>';
@@ -287,7 +271,6 @@ $csrf_token = createCSRFToken($con, $instructor_id);
                   echo '<option value="' . $r_id . '" >' . htmlspecialchars($r_desc) . '</option>';
                 }
               }
-            }
             ?>
           </select>
           <label for="rubric-id">Rubric:</label>
@@ -297,7 +280,7 @@ $csrf_token = createCSRFToken($con, $instructor_id);
 
       <input type="hidden" name="csrf-token" value="<?php echo $csrf_token; ?>" />
 
-      <input type="submit" class="btn btn-success" value="Update Survey">
+      <input type="submit" class="btn btn-success" value="Duplicate Survey">
     </div>
 </form>
 <hr>

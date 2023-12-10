@@ -1,0 +1,147 @@
+.add-survey--contents-container {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  margin: 20px;
+}
+
+h2.add-survey--main-title {
+  color: #225cb5;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.add-survey--date-times-errors-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.add-survey--all-dates-and-times-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.add-survey--date-and-times-container {
+  display: flex;
+  gap: 10px;
+}
+
+label.add-survey--label {
+  color: #225cb5;
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  font-weight: bold;
+  gap: 5px;
+  margin: 0;
+  width: 100%;
+}
+
+label.add-survey--label input {
+  border: solid 1.5px #225cb5;
+  border-radius: 5px;
+  color: #000;
+  font-size: 16px;
+  padding: 10px;
+}
+
+input.add-survey-input-error {
+  background-color: #ffdddd !important;
+  border: 1.5px solid #af0e0e !important;
+}
+
+label.add-survey--label input::file-selector-button {
+  background-color: #225cb5;
+  border: solid 1.5px #225cb5;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  margin: -10px 10px -10px -10px;
+  padding: 10px;
+}
+
+label.add-survey--label input.add-survey-input-error::file-selector-button {
+  background-color: #af0e0e !important;
+  border: solid 1.5px #af0e0e !important;
+}
+
+
+label.add-survey--label select {
+  background-color: #225cb5;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px;
+}
+
+label.add-survey--error-label {
+  color: #af0e0e;
+  display: flex;
+  flex-direction: row;
+  font-size: 16px;
+  font-weight: bold;
+  gap: 5px;
+  margin: 5px 0px 0px 0px;
+  text-align: left;
+}
+
+.add-survey--red-warning-sign {
+  background-image: url("../assets/redwarningsign.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 18px;
+}
+
+.add-survey--confirm-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  width: 100%;
+}
+
+button.add-survey--confirm-btn {
+  background-color: #6da04b;
+  border: hidden;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  padding: 10px 20px;
+  transition: all .2s ease;
+}
+
+button.add-survey--confirm-btn:hover {
+  background-color: #59863d;
+  color: #fff;
+}
+
+@media screen and (max-width: 800px) {
+
+  .add-survey--all-dates-and-times-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+  }
+
+  .add-survey--date-and-times-container {
+    display: flex;
+    gap: 20px;
+  }
+
+  .add-survey--confirm-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+  }
+
+}
