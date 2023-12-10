@@ -123,7 +123,7 @@
                 foreach ($upcoming_surveys as $key => $value) {
                   $s = $value[2];
                   $display_name = '('.$value[0].') '.$value[1].' will open '.$s->format('M d').' at '.$s->format('g:i a');
-                  echo('<p>'.$diplay_name.'</p>');
+                  echo('<p>'.$display_name.'</p>');
                 }
               } else {
                 echo('<p><i>Nothing planned yet. Check back later!</i></p>');
