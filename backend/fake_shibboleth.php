@@ -26,14 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
   $email = $_POST['UBIT']."@buffalo.edu";
   $id_and_name = getStudentInfoFromEmail($con, $email);
-  if (empty($id)) {
+  if (empty($id_and_name)) {
      http_response_code(400);
      echo 'Double-check UBIT: ' . $email . ' is not in the system.';
      exit();
   }
   session_regenerate_id();
   $_SESSION['student_id'] = $id_and_name[0];
-  header("Location: ".SITE_HOME."/courseSelect.php");
+  header("Location: ".SITE_HOME."courseSelect.php");
   exit();
 }
 ?>

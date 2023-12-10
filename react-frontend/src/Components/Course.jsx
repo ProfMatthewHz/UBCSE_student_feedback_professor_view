@@ -666,8 +666,9 @@ const Course = ({ course, page }) => {
         document.getElementById("pairing-mode").value
       ) {
         pairingId = pairingModesFull.mult[element].id;
-        console.log(pairingId);
         multiplier = document.getElementById("multiplier-type").value;
+        console.log("This is the multipler underneath");
+        console.log(multiplier);
       }
     }
 
@@ -1669,11 +1670,11 @@ const Course = ({ course, page }) => {
           {validPairingModeForMultiplier && (
             <label className="add-survey--label" for="subject-line">
               Multiplier
-              <select>
-                <option value="one">1</option>
-                <option value="two">2</option>
-                <option value="three">3</option>
-                <option value="four">4</option>
+              <select id ="multiplier-type">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
               </select>
             </label>
           )}
