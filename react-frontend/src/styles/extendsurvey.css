@@ -68,6 +68,10 @@ label.extend-survey--error-label {
   font-size: 20px;
 }
 
+.extend-survey--boxes-container h2 {
+  margin-bottom: 20px;
+}
+
 .extend-survey--left-box-container h3 {
   font-weight: normal;
 }
