@@ -227,7 +227,7 @@ INSERT INTO `rubric_topics` (`id`, `rubric_id`, `question`, `question_response`)
 (6, 2, 'My Project Manager set clear expectation for what they expect each of us to accomplish each week', 'multiple_choice'),
 (7, 2, 'My Project Manager practiced open communication with the group', 'multiple_choice'),
 (8, 2, 'My Project Manager gave constructive feedback', 'multiple_choice'),
-(9, 2, 'My Project Manager demanded and maintained accountability from everyone, including themselves', 'multiple_choice');
+(9, 2, 'My Project Manager demanded and maintained accountability from everyone, including themselves', 'multiple_choice'),
 (10, 2, 'I felt that I could trust my Project Manager', 'multiple_choice');
 
 INSERT INTO `scores` (`eval_id`, `topic_id`, `rubric_score_id`) VALUES
@@ -537,7 +537,7 @@ INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rub
 (36, 10128, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 1', 1, 1),
 (37, 10128, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 2', 1, 1),
 (38, 10128, '2023-10-27 04:38:21', '2023-10-28 04:38:21', 'Dummy Name 3', 1, 1),
-(39, 10122, '2023-10-27 04:46:05', '2023-10-28 04:46:05', 'Dummy Name 2', 1, 1);
+(39, 10122, '2023-10-27 04:46:05', '2023-10-28 04:46:05', 'Dummy Name 2', 1, 1),
 (40, 10118, '2023-11-08 04:38:21', '2023-12-01 04:38:21', 'Active Survey 1', 1, 1),
 (41, 10118, '2023-11-10 04:46:05', '2023-11-28 04:46:05', 'Active Survey 2', 1, 1);
 
