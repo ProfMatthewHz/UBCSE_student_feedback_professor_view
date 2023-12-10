@@ -26,6 +26,10 @@
   scroll-margin-top: 148px;
 }
 
+select.surveyactions--select {
+  width: 140px;
+}
+
 .courseContent {
   max-width: 100vw;
   width: 80%;
@@ -34,6 +38,7 @@
   border: 1px solid #225cb5;
   border-radius: 6px;
   background-color: #FFFFFF;
+  overflow: hidden;
 }
 
 
@@ -46,10 +51,18 @@
   background-color: #225cb5;
 }
 
+.courseHeader-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: end;
+}
+
 .courseHeader h2 {
   font-size: 20px;
   font-weight: bold;
   color: #fff;
+  margin-right: 20px;
 }
 
 .courseHeader .btn {
@@ -59,35 +72,31 @@
   cursor: pointer;
   font-size: 18px;
   font-weight: bold;
+  width: 148px;
 }
 
 .courseHeader .add-btn {
   background-color: #6da04b;
   color: #fff;
-  margin-right: 24px;
-  transition-duration: 0.4s;
-  transition-property: background-color;
+  transition: all .2s ease;
 }
 
 .courseHeader .add-btn:hover {
-  background-color: #ffffff;
-  color: #6da04b;
-  transition-duration: 0.4s;
-  transition-property: background-color;
+  background-color: #659743;
+  color: #fff;
+  transition: all .2s ease;
 }
 
 .courseHeader .update-btn {
   background-color: #fff;
   color: #225cb5;
-  transition-duration: 0.4s;
-  transition-property: background-color;
+  transition: all .2s ease;
 }
 
 .courseHeader .update-btn:hover {
   background-color: #01245a;
   color: #FFFFFF;
-  transition-duration: 0.4s;
-  transition-property: background-color;
+  transition: all .2s ease;
 }
 
 /* Table Styles */
@@ -165,7 +174,7 @@
     position: absolute;
     padding: 6px 16px;
     right: 0;
-    top: -10px;
+    top: 0;
     border-radius: 0px 5px 0px 0px;
     border-style: none;
 }
@@ -194,15 +203,10 @@
   position: relative;
   max-width: 70%;
   width: 600px;
-  padding: 20px;
+  padding: 20px 40px 20px 40px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.update-modal--heading {
-  border-bottom: 1px solid gray;
-  color: #000;
 }
 
 /* FORM */
@@ -221,8 +225,8 @@
 }
 
 .update-form__submit {
-  background-color: #225cb5 !important;
-  border: 1px solid #225cb5 !important;
+  background-color: #6da04b !important;
+  border: 1px solid #6da04b !important;
   color: #fff !important;
 }
 
@@ -233,9 +237,7 @@
 }
 
 .update-form__submit:hover {
-  border-color: #225cb5 !important;
-  color: #225cb5 !important;
-  background-color: transparent !important;
+  background-color: #59863d !important;
   cursor: pointer;
 }
 
@@ -275,14 +277,12 @@
 }
 
 /* Hide the default input */
-.file-input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
+.updateroster-file-input {
+  border: 1.5px solid #225cb5;
+  border-radius: 5px;
+  color: #000;
+  font-size: 16px;
+  padding: 10px;
 }
 
 /* Custom styling for the button */
@@ -306,58 +306,26 @@
 .update-radio-options {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 25px;
 }
 
 .update-radio--label {
-  font-size: 18px;
-  font-weight: 500;
-  text-transform: capitalize;
-  vertical-align: middle;
-  display: inline-block;
-  color: #000;
-  position: relative;
-  padding-left: 30px;
+  margin-bottom: 0 !important;
+  font-size: 18px !important;
 }
 
 .update-radio--label:hover {
   cursor: pointer;
 }
 
-.update-radio--label + .update-radio--label{
-  margin-left: 20px;
+.update-radio-button--item {
+  display: flex;
+  align-items: center;
 }
-
-.update-radio--label input[type="radio"]{
-  display: none;
-}
-
-.update-radio--label span {
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  border: 3px solid #225cb5;
-  position: absolute;
-  left: 0;
-  top: 3px;
-}
-
-.update-radio--label span::after{
-  content: "";
-  height: 8px;
-  width: 8px;
+.p-radiobutton .p-radiobutton-box.p-highlight {
   background: #225cb5;
-  display: block;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  border-radius: 50%;
-  transition: 300ms ease-in-out 0s;
-}
-
-.update-radio--label input[type="radio"]:checked ~ span::after{
-  transform: translate(-50%, -50%) scale(1);
+  border-color: #225cb5;
 }
 
 /* PHONES AND SMALL DEVICES */
@@ -409,6 +377,7 @@
   .surveyactions--select,
   .surveyactions--option {
     font-size: 10px !important;
+    width: 80px !important;
   }
 
   .surveyTable th,
