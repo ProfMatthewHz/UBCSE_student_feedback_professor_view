@@ -826,7 +826,10 @@ INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rub
 (40, 10118, '2023-11-08 04:38:21', '2023-12-01 04:38:21', 'Active Survey 1', 1, 1),
 (41, 10118, '2023-11-10 04:46:05', '2023-11-28 04:46:05', 'Active Survey 2', 1, 1),
 (42, 42358, '2023-12-10 13:08:00', '2023-12-31 23:00:00', 'Miss Claus TA Grading', 1, 1),
-(43, 42358, '2023-12-10 15:00:00', '2023-12-20 16:00:00', 's1', 1, 3);
+(43, 42358, '2023-12-10 15:00:00', '2023-12-20 16:00:00', 's1', 1, 3),
+(44, 42358, '2023-12-15 20:00:00', '2023-12-20 20:00:00', '86 - Duplicate this survey', 1, 2),
+(45, 42358, '2023-12-15 22:00:00', '2023-12-20 23:00:00', '71 - Survey', 1, 2),
+(46, 42358, '2023-12-15 23:00:00', '2023-12-20 23:00:00', 'Delete this survey 1', 1, 2);
 
 INSERT INTO `survey_types` (`id`, `description`, `file_organization`, `display_multiplier`) VALUES
 (1, 'Individual Reviewed by Individual', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0),
