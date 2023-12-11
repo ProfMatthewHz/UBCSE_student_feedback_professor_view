@@ -1,6 +1,6 @@
 {
   "name": "react-frontend",
-  "homepage": "http://localhost/StudentSurvey/react-frontend/build/",
+  "homepage": "http://localhost/StudentSurvey/react-frontend/build",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

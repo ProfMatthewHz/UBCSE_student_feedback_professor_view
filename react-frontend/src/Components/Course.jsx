@@ -1004,21 +1004,30 @@ const Course = ({ course, page }) => {
       }
     }
     //selected end date is in the current day. Hours and minutes must be after current h/m
-    if (endDateTimeObject === timestamp) {
-      let timestampWithHour = new Date(Date.now());
-      let currentHour = timestampWithHour.getHours(timestampWithHour);
-      let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
-      let endHours = parseInt(newEndTime.split(":")[0]);
-      let endMinutes = parseInt(newEndTime.split(":")[1]);
+    
+    if (endDateTimeObject.getDate(endDateTimeObject) === timestamp.getDate(timestamp)) {
+      if(endDateTimeObject.getMonth(endDateTimeObject) === timestamp.getMonth(timestamp)){
+        console.log('goes through here')
+        let timestampWithHour = new Date(Date.now());
+        console.log(timestampWithHour)
+        let currentHour = timestampWithHour.getHours(timestampWithHour);
+        console.log(currentHour)
+        let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
+        console.log(currentMinutes)
+        let endHours = parseInt(newEndTime.split(":")[0]);
+        console.log(endHours)
+        let endMinutes = parseInt(newEndTime.split(":")[1]);
+        console.log(endMinutes)
 
-      if (endHours < currentHour) {
-        setExtendMustBeAfterCurrentTime(true);
-        return;
-      }
-      if (endHours === currentHour) {
-        if (endMinutes < currentMinutes) {
+        if (endHours < currentHour) {
           setExtendMustBeAfterCurrentTime(true);
           return;
+        }
+        if (endHours === currentHour) {
+          if (endMinutes <= currentMinutes) {
+            setExtendMustBeAfterCurrentTime(true);
+            return;
+          }
         }
       }
     }
@@ -1299,7 +1308,7 @@ const Course = ({ course, page }) => {
                 {startDateBoundError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start date must be at August 31st or later</label> : null}
                 {startDateBound1Error ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start date must be at December 31st or earlier</label> : null}
                 {StartHourAfterEndHourError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />If start and end dates are the same, start time cannot be after end time</label> : null}
-                {StartHourSameDayError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />If start and end dates are the same, start and end times must differ</label> : null}
+                {StartHourSameDayError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />If start and end dates are the same, end hour can not be in the same hour as start</label> : null}
                 {StartTimeSameDayError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />If start and end dates are the same, start and end times must differ</label> : null}
                 {emptyStartTimeError ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start time cannot be empty</label> : null}
                 {StartTimeHoursBeforeCurrent ? <label className="duplicate-survey--error-label"><div className="duplicate-survey--red-warning-sign" />Start time hour cannot be before the current hour</label> : null}
@@ -1604,12 +1613,13 @@ const Course = ({ course, page }) => {
                 {startDateBoundError ? <label className="add-survey--error-label"><div className="add-survey--red-warning-sign" />Start date must be at August 31st or later</label> : null}
                 {startDateBound1Error ? <label className="add-survey--error-label"><div className="add-survey--red-warning-sign" />Start date must be at December 31st or earlier</label> : null}
                 {StartHourAfterEndHourError ? <label className="add-survey--error-label"><div className="add-survey--red-warning-sign" />If start and end dates are the same, start time cannot be after end time</label> : null}
-                {StartHourSameDayError ? <label className="add-survey--error-label"><div className="add-survey--red-warning-sign" />If start and end dates are the same, start and end times must differ</label> : null}
+                {StartHourSameDayError ? <label className="add-survey--error-label"><div className="add-survey--red-warning-sign" />If start and end dates are the same, end hour cannot be in the same hour as the start</label> : null}
                 {StartTimeSameDayError ? <label className="add-survey--error-label"><div className="add-survey--red-warning-sign" />If start and end dates are the same, start and end times must differ</label> : null}
                 {emptyStartTimeError ? <label className="add-survey--error-label"><div className="add-survey--red-warning-sign" />Start time cannot be empty</label> : null}
                 {StartTimeHoursBeforeCurrent ? <label className="add-survey--error-label"><div className="add-survey--red-warning-sign" />Start time hour cannot be before the current hour</label> : null}
                 {StartTimeMinutesBeforeCurrent ? <label className="add-survey--error-label"><div className="add-survey--red-warning-sign" />Start time minutes cannot be before current minutes</label> : null}
               </div>
+              
 
               <div className="add-survey--date-times-error-container">
                 <div className="add-survey--date-and-times-container">
