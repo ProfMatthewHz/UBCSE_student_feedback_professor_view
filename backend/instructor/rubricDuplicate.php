@@ -29,7 +29,6 @@ $instructor_id = $_SESSION['id'];
 //stores error messages corresponding to form field
 $errorMsg = array();
 
-
 # post the rubric-id
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $response['data'] = array();
@@ -58,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $rubric_name = $rubric_name." copy";
 
     $num_existing = intval(countRubricNames($con, $rubric_name));
-    
     if ( $num_existing ){
       $duplicate_num = "(".$num_existing.")";
       $rubric_name = $rubric_name." ".$duplicate_num;

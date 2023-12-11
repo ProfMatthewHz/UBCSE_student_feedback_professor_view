@@ -158,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   header("Content-Type: application/json; charset=UTF-8");
-  $errorsJSON = json_encode($errors_response);
+  $errorsJSON = json_encode($errors_response, JSON_ENCODE_OPTIONS);
   echo $errorsJSON;
 
 }
