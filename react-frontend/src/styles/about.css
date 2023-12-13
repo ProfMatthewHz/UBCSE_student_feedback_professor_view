@@ -78,11 +78,12 @@
 }
 
 .about-page--profile a {
-  background-color: #225cb5;
+  background-color: transparent;
   border-radius: 5px;
-  color: #fff;
-  font-weight: bold;
-  padding: 10px 20px;
+  color: #225cb5;
+  font-size: 35px;
+  margin: 0 !important;
+  padding: 0 !important;
   text-decoration: none;
 }
 
