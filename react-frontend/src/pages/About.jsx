@@ -2,6 +2,8 @@ import React from "react";
 import "../styles/about.css";
 import AriannaPFP from "../assets/fall2023team/ariannaescobarreyes.jpg";
 import JustinPFP from "../assets/fall2023team/justinvariara.png";
+import KoreyPFP from "../assets/fall2023team/koreyliu.jpg"
+import ArdianPFP from "../assets/fall2023team/ardianmuriqi.jpg"
 import { FaLinkedin } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { FaLink } from "react-icons/fa";
@@ -35,7 +37,7 @@ const About = () => {
             <div className="about-page--profile">
               <img src={JustinPFP} alt="Picture of Justin" />
               <h1>Justin Variara</h1>
-              <h2>Frontend Lead</h2>
+              <h2>Front-End Lead</h2>
               <h2>Full Stack Developer</h2>
               <div className="about-page--contacts">
                 <a
@@ -54,15 +56,27 @@ const About = () => {
             </div>
 
             <div className="about-page--profile">
-              <img src="https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png" />
+              <img src={KoreyPFP} alt="Picture of Korey" />
               <h1>Korey Liu</h1>
               <h2>Back-End Developer</h2>
+              <a
+                href="https://www.linkedin.com/in/koreyliu/"
+                target="_blank"
+              >
+                <FaLinkedin />
+              </a>
             </div>
 
             <div className="about-page--profile">
-              <img src="https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png" />
+              <img src={ArdianPFP} alt="Picture of Ardian" />
               <h1>Ardian Muriqi</h1>
               <h2>Back-End Developer</h2>
+              <a
+                href="https://www.linkedin.com/in/ardian-muriqi-00am995777/"
+                target="_blank"
+              >
+                <FaLinkedin />
+              </a>
             </div>
 
             <div className="about-page--profile">
