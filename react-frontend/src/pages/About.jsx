@@ -59,15 +59,17 @@ const About = () => {
               <img src={KoreyPFP} alt="Picture of Korey" />
               <h1>Korey Liu</h1>
               <h2>Back-End Developer</h2>
-              <a
-                href="https://www.linkedin.com/in/koreyliu/"
-                target="_blank"
-              >
-                <FaLinkedin />
-              </a>
-              <a href="mailto:koreyliu1221@gmail.com" target="_blank">
-                  <MdEmail />
-              </a>
+              <div className="about-page--contacts">
+                <a
+                  href="https://www.linkedin.com/in/koreyliu/"
+                  target="_blank"
+                >
+                  <FaLinkedin />
+                </a>
+                <a href="mailto:koreyliu1221@gmail.com" target="_blank">
+                    <MdEmail />
+                </a>
+              </div>
             </div>
 
             <div className="about-page--profile">
