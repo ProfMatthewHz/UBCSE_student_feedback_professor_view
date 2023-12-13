@@ -68,7 +68,7 @@ const About = () => {
                   <FaLinkedin />
                 </a>
                 <a href="mailto:koreyliu1221@gmail.com" target="_blank">
-                    <MdEmail />
+                  <MdEmail />
                 </a>
               </div>
             </div>
@@ -77,15 +77,17 @@ const About = () => {
               <img src={ArdianPFP} alt="Picture of Ardian" />
               <h1>Ardian Muriqi</h1>
               <h2>Back-End Developer</h2>
-              <a
-                href="https://www.linkedin.com/in/ardian-muriqi-00am995777/"
-                target="_blank"
-              >
-                <FaLinkedin />
-              </a>
-              <a href="mailto:muriqiardian@gmail.com" target="_blank">
-                <MdEmail />
-              </a>
+              <div className="about-page--contacts">
+                <a
+                  href="https://www.linkedin.com/in/ardian-muriqi-00am995777/"
+                  target="_blank"
+                >
+                  <FaLinkedin />
+                </a>
+                <a href="mailto:muriqiardian@gmail.com" target="_blank">
+                  <MdEmail />
+                </a>
+              </div>
             </div>
 
             <div className="about-page--profile">
