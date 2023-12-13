@@ -1,6 +1,10 @@
 import React from "react";
 import "../styles/about.css";
 import AriannaPFP from "../assets/fall2023team/ariannaescobarreyes.jpg"
+import JustinPFP from "../assets/fall2023team/justinvariara.png"
+import { FaLinkedin } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
+import { FaLink } from "react-icons/fa";
 
 const About = () => {
 
@@ -13,20 +17,36 @@ const About = () => {
           <div className="about-page--team-members">
 
             <div className="about-page--profile">
-              <img src={AriannaPFP}/>
+              <img src={AriannaPFP} alt="Picture of Arianna"/>
               <h1>Arianna Escobar-Reyes</h1>
               <h2>Design Lead</h2>
               <h2>Full Stack Developer</h2>
               <div className="about-page--contacts">
-                <a href="https://www.linkedin.com/in/arianna-escobar-reyes/" />
-                <a href="mailto:escobarreyesarianna@gmail.com" />
+                <a href="https://www.linkedin.com/in/arianna-escobar-reyes/" target="_blank">
+                  <FaLinkedin />
+                </a>
+                <a href="mailto:escobarreyesarianna@gmail.com" target="_blank">
+                  <MdEmail />
+                </a>
               </div>
             </div>
 
             <div className="about-page--profile">
-              <img src="https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png" />
+              <img src={JustinPFP} alt="Picture of Justin" />
               <h1>Justin Variara</h1>
+              <h2>Frontend Lead</h2>
               <h2>Full Stack Developer</h2>
+              <div className="about-page--contacts">
+                <a href="https://www.linkedin.com/in/justinvariara/" target="_blank">
+                  <FaLinkedin />
+                </a>
+                <a href="mailto:jvariara@gmail.com" target="_blank">
+                  <MdEmail />
+                </a>
+                <a href="https://www.justinvariara.com/" target="_blank">
+                  <FaLink />
+                </a>
+              </div>
             </div>
 
             <div className="about-page--profile">

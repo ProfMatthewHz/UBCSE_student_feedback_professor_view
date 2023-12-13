@@ -58,6 +58,8 @@
   border-radius: 100%;
   margin-bottom: 10px;
   width: 220px;
+  height: 220px;
+  object-fit: cover;
 }
 
 .about-page--profile h1 {
