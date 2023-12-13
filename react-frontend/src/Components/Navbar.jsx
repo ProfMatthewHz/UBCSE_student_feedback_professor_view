@@ -32,6 +32,9 @@ const Navbar = () => {
             <NavLink to="/history" className="mobile-disable">History</NavLink>
           </li>
           <li>
+            <NavLink to="/about">About</NavLink>
+          </li>
+          <li>
             <NavLink to="/library">Library</NavLink>
           </li>
         </ul>
