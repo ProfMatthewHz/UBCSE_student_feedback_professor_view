@@ -4,6 +4,7 @@ import AriannaPFP from "../assets/fall2023team/ariannaescobarreyes.jpg";
 import JustinPFP from "../assets/fall2023team/justinvariara.png";
 import KoreyPFP from "../assets/fall2023team/koreyliu.jpg"
 import ArdianPFP from "../assets/fall2023team/ardianmuriqi.jpg"
+import AhmedPFP from "../assets/fall2023team/ahmed_alabadi.jpg"
 import { FaLinkedin } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { FaLink } from "react-icons/fa";
@@ -88,7 +89,7 @@ const About = () => {
             </div>
 
             <div className="about-page--profile">
-              <img src="https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png" />
+              <img src={AhmedPFP} alt="Picture of Ahmed" />
               <h1>Ahmed Alabadi</h1>
               <h2>Full Stack Developer</h2>
               <div className="about-page--contacts">
