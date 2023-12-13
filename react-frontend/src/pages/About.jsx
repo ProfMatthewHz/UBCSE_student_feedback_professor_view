@@ -19,7 +19,7 @@ const About = () => {
             <div className="about-page--profile">
               <img src={AriannaPFP} alt="Picture of Arianna" />
               <h1>Arianna Escobar-Reyes</h1>
-              <h2>Design Lead</h2>
+              <h2>Design Founder & Lead</h2>
               <h2>Full Stack Developer</h2>
               <div className="about-page--contacts">
                 <a
