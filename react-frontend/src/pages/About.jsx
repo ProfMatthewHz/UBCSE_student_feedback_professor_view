@@ -65,6 +65,9 @@ const About = () => {
               >
                 <FaLinkedin />
               </a>
+              <a href="mailto:koreyliu1221@gmail.com" target="_blank">
+                  <MdEmail />
+              </a>
             </div>
 
             <div className="about-page--profile">
