@@ -1,0 +1,422 @@
+* {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.addrubric--contents-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: 0 20px
+}
+
+.addrubric--container h2 {
+    color: #225cb5;
+    margin: 20px;
+    text-align: center;
+}
+
+label.addrubric--rubric-name,
+label.addrubric--rubric-name-error {
+    color: #225cb5;
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    font-weight: bold;
+    gap: 10px;
+    margin: 0 0 20px 0;
+    width: 100%;
+}
+
+label.addrubric--rubric-name input,
+label.addrubric--rubric-name-error input {
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 10px;
+}
+
+label.addrubric--rubric-name input {
+    background-color: #fff;
+    border: solid 1.5px #225cb5;
+}
+
+label.addrubric--rubric-name-error input,
+input.addrubric--level-name-error,
+input.addrubric--points-number-error,
+textarea.addrubric--criterion-description-error {
+    background-color: #ffdddd !important;
+    border: 1.5px solid #af0e0e !important;
+}
+
+.addrubric--red-error-notif {
+    display: flex;
+    font-size: 16px;
+    font-weight: bold;
+    gap: 5px;
+    margin: 0;
+}
+
+td .addrubric--red-error-notif {
+    background-color: white;
+    border: solid 1.5px #af0e0e;
+    border-radius: 5px;
+    justify-content: center;
+    margin-top: 5px;
+    padding: 10px;
+    position: absolute;
+    z-index: 998;
+}
+
+
+
+.addrubric--red-error-notif {
+    color: #af0e0e;
+}
+
+
+.addrubric--level-red-warning-sign,
+.addrubric--criterion-red-warning-sign,
+.whitewarningsign {
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 18px;
+}
+
+.addrubric--level-red-warning-message,
+.addrubric--criterion-red-warning-message {
+    color: #af0e0e;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    text-align: left;
+    width: 197px;
+    word-break: break-word;
+}
+
+.addrubric--criterion-red-warning-message {
+    width: 162px !important;
+}
+
+.addrubric--level-red-warning-sign,
+.addrubric--criterion-red-warning-sign {
+    background-image: url("../assets/redwarningsign.png");
+}
+
+.whitewarningsign {
+    background-image: url("../assets/whitewarningsign.png");
+}
+
+.addrubric--min-max-notification {
+    background-color: #af0e0e;
+    border-radius: 5px;
+    color: #fff;
+    display: flex;
+    font-size: 16px;
+    font-weight: 700;
+    gap: 7px;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 10px 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.addrubric--min-max-notification label {
+    gap: 10px !important;
+}
+
+.addrubric-table-overflow-container {
+    max-height: 500px;
+    overflow: auto;
+    position: relative;
+    width: 100%;
+}
+
+table.addrubric--table {
+    border-collapse: collapse;
+    padding-top: 65px;
+    width: 100%;
+}
+
+table.addrubric--table thead tr {
+    height: 70px;
+}
+
+table.addrubric--table tbody {
+    position: relative;
+    /* z-index: 1; */
+}
+
+table.addrubric--table tbody td {
+    height: 0;
+    padding: 5px 20px;
+}
+
+table.addrubric--table tbody tr.addrubric--level-row {
+    border: solid 1.5px #0a336f;
+}
+
+table.addrubric--table tbody tr.addrubric--level-row,
+table.addrubric--table tbody tr.addrubric--criterion-row {
+    position: relative;
+}
+
+tr.addrubric--criterion-row td:not(.addrubric--add-criterion-btn-container) {
+    border-bottom: solid 1.5px #0a336f;
+    height: fit-content;
+    max-width: 250px;
+    padding: 10px 20px !important;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+tr.addrubric--criterion-row:nth-child(odd) td:not(:first-child) {
+    background-color: #F0F0F0;
+}
+
+tr.addrubric--criterion-row td.addrubric--label,
+tr.addrubric--criterion-row td.addrubric--confirmed-label {
+    border: solid 1.5px #0a336f;
+}
+
+td.addrubric--last-criterion-response-container {
+    border-right: solid 1.5px #0a336f;
+}
+
+textarea.addrubric--criterion-description,
+textarea.addrubric--criterion-description-error {
+    font-size: 16px;
+    height: 100%;
+    min-height: 50px;
+    margin: 0;
+    padding: 10px;
+}
+
+tr.addrubric--criterion-row-disabled {
+    background-color: #e2e2e2;
+    border: solid 1.5px #afafaf;
+    height: 60px;
+}
+
+.addrubric--delete-column-btn-container,
+.addrubric--delete-column-btn-container-hovered,
+.addrubric--delete-row-btn-container,
+.addrubric--delete-row-btn-container-hovered {
+    align-items: flex-start;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    padding: 0px 10px;
+    position: absolute;
+    top: 0px;
+    width: 267px;
+}
+
+.addrubric--delete-row-btn-container,
+.addrubric--delete-row-btn-container-hovered {
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0;
+    width: 0;
+    /* width: 100%; */
+}
+
+.addrubric--delete-column-btn-container-hovered,
+.addrubric--delete-row-btn-container-hovered {
+    background-color: rgb(241 0 0 / 40%);
+    border: solid 1.5px #cc5959;
+    z-index: 999;
+}
+
+.addrubric--delete-row-btn-container-hovered {
+    width: 100%;
+}
+
+.addrubric--delete-column-btn-container button,
+.addrubric--delete-column-btn-container-hovered button,
+.addrubric--delete-row-btn-container button,
+.addrubric--delete-row-btn-container-hovered button {
+    background-color: #fff;
+    background-image: url('../assets/redtrashcan.png');
+    background-position: center center;
+    background-size: 23px 30px;
+    background-repeat: no-repeat;
+    border: 1.5px solid #af0e0e;
+    border-radius: 5px;
+    color: #af0e0e;
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 20px;
+    transition: all .2s ease;
+}
+
+.addrubric--delete-row-btn-container button,
+.addrubric--delete-row-btn-container-hovered button {
+    margin-top: 0 !important;
+    margin-right: 10px !important;
+}
+
+.addrubric--delete-column-btn-container button:hover,
+.addrubric--delete-column-btn-container-hovered button:hover,
+.addrubric--delete-row-btn-container button:hover,
+.addrubric--delete-row-btn-container-hovered button:hover {
+    background-color: #af0e0e;
+    background-image: url('../assets/whitetrashcan.png');
+    color: #fff;
+}
+
+tbody td.addrubric--label,
+tbody td.addrubric--confirmed-label {
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+tbody td.addrubric--label,
+tbody td.addrubric--confirmed-label {
+    background-color: #225cb5;
+}
+
+td.addrubric--label-criterion-error,
+td.addrubric--label-criterion-error {
+    background-color: #c31414 !important;
+    border-bottom: solid 1.5px #6f0000 !important;
+    border-top: solid 1.5px #6f0000;
+}
+
+td.addrubric--label-criterion-error {
+    border: solid 1.5px #6f0000;
+}
+
+td.addrubric--confirmed-label {
+    padding: 15px 20px !important;
+}
+
+.addrubric--level-inputs {
+    align-items: center;
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.addrubric--add-level-btn-container {
+    background-color: #6da04b;
+    border: solid 1.5px #3b6b1b;
+    border-left: none;
+    cursor: pointer;
+    padding: 0px !important;
+}
+
+.addrubric--add-level-btn-container button {
+    background-color: #6da04b;
+    border: hidden;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0px;
+    padding: 16px 20px;
+    transition: all .2s ease;
+}
+
+
+button.addrubric--next-btn,
+button.addrubric--back-btn {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 10px 30px;
+}
+
+button.addrubric--next-btn {
+    background-color: #6da04b;
+    border: 1.5px solid #6da04b;
+    color: #fff;
+    transition: all .2s ease;
+}
+
+button.addrubric--back-btn {
+    background-color: #fff;
+    border: 1.5px solid #6da04b;
+    color: #6da04b;
+}
+
+button.addrubric--back-btn:hover {
+    background-color: #6da04b;
+    border: 1.5px solid #6da04b;
+    color: #fff;
+    transition: all .2s ease;
+}
+
+td.addrubric--add-criterion-btn-container {
+    border: 1.5px solid #3b6b1b;
+    padding: 0px !important;
+}
+
+td.addrubric--add-criterion-btn-container button {
+    background-color: #6da04b;
+    border: hidden;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    padding: 16px 20px;
+    transition: all .2s ease;
+    width: 100%;
+}
+
+.addrubric--add-level-btn-container button:hover,
+td.addrubric--add-criterion-btn-container button:hover,
+button.addrubric--next-btn:hover {
+    background-color: #59863d;
+    border-color: #59863d;
+    color: #fff;
+}
+
+table.addrubric--table tbody input {
+    border: solid 1.5px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 10px;
+}
+
+tr.addrubric--criterion-row-disabled input {
+    cursor: not-allowed;
+}
+
+input.addrubric--level-name,
+input.addrubric--level-name-error,
+input.addrubric--criterion-name {
+    width: 130px;
+}
+
+input.addrubric--points-number,
+input.addrubric--points-number-error {
+    width: 62px;
+}
+
+.addrubric--only-next-btn-container,
+.addrubric--back-next-btns-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.addrubric--back-next-btns-container {
+    justify-content: space-between;
+}
+
+td.addrubric--delete-row-btns-section {
+    border: hidden;
+    border-left: solid 1.5px #0a336f;
+    padding: 0px 40px !important;
+}

@@ -1,0 +1,235 @@
+.input-wrapper {
+  font-family: Arial, sans-serif;
+  width: 48%;
+  margin: 1%;
+  position: relative;
+}
+
+.pairingLabel:hover:before{
+  position: absolute;
+  content: 'Pairing Modes are utilized in determining BLANK. The following pairing modes are described below';
+  top: -.50rem;
+  height: 250px;
+  width: 400px;
+  transform: translateX(5%);
+  border-radius: .3rem;
+  text-align: center;
+  padding: .5rem;
+  z-index: 1000; /* make sure it appears above other elements */
+  background: #333;
+}
+.multiplierLabel:hover:before{
+  position: absolute;
+  content: 'A multiplier is a weighting for Manager Reviews. Only applicable with certain pairing modes';
+  top: -.50rem;
+  height: 150px;
+  width: 300px;
+  transform: translateX(5%);
+  border-radius: .3rem;
+  text-align: center;
+  padding: .5rem;
+  z-index: 1000; /* make sure it appears above other elements */
+  background: #333;
+}
+.input-wrapper1 {
+  font-family: Arial, sans-serif;
+  width: 48%;
+  margin: 1%;
+  position: relative;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.styled-input {
+  width: 100%;
+  padding: 8px 15px;
+  border: none;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 16px;
+  background-color: transparent;
+  outline: none;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+.styled-input1 {
+  width: 25%;
+  padding: 8px 15px;
+  border: none;
+  font-size: 16px;
+  background-color: transparent;
+  outline: none;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+.styled-input2 {
+  width: 35%;
+  padding: 8px 15px;
+  border: none;
+  font-size: 16px;
+  background-color: transparent;
+  outline: none;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+.styled-input:focus {
+  border-bottom-color: #a0a0a0;
+}
+
+.styled-input::placeholder {
+  color: #a0a0a0;
+  opacity: 1;
+}
+
+.Cancel:hover {
+  background-color: red; /* Green */
+  color: white;
+}
+.CompleteSurvey:hover {
+  background-color: Green; /* Green */
+  color: white;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+  z-index: 1000; /* make sure it appears above other elements */
+}
+
+/* Modal content container */
+.modal-content {
+  width: 1300px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.flex-container-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.string-list-item {
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  background-color: white;
+  border: 1px solid #ddd; /* Light grey border */
+  border-radius: 4px; /* Rounded corners */
+  list-style-type: none; /* Remove default list styling */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* A subtle shadow for depth */
+}
+
+.table-containerConfirm {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: thin solid #225cb5;
+  overflow-x: auto; /* Enables horizontal scrolling */
+  max-height: 410px; /* Set a maximum height */
+  overflow-y: auto; /* Enables vertical scrolling */
+}
+
+.table-containerConfirm table {
+  border-collapse: collapse;
+  width: 50%;
+  margin: 10px;
+}
+
+.table-containerConfirm th, .table-containerConfirm td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: left;
+}
+
+.table-containerConfirm th {
+  background-color: #f2f2f2;
+}
+
+.empty-view {
+  text-align: center;
+  font-size: 20px;
+  color: grey;
+  margin: 10px;
+  padding: 20px;
+}
+caption {
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: larger;
+}
+.title-barConfirm {
+  display: flex;
+  justify-content: center; /* Center the items horizontally */
+  align-items: flex-start; /* Align items to the start vertically */
+  padding: 10px;
+  background-color: #ffffff;
+  border-bottom: thin solid #225cb5 ;
+}
+
+.title-groupConfirm {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  margin-left: 35px; /* Spacing between the groups */
+  margin-right: 35px;
+}
+
+.title-centerConfirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the middle content */
+}
+
+
+.title-centerConfirm span{
+  margin-bottom: 25px; /* Spacing between entries */
+}
+.CancelDuplicate:hover {
+  background-color: red; 
+  color: white;
+}
+.CompleteSurveyDuplicate:hover {
+  background-color: Green; 
+  color: white;
+}
+.CancelDelete:hover {
+  background-color: green; 
+  color: white;
+}
+.CompleteSurveyDelete:hover {
+  background-color: red;
+  color: white;
+}
+.CancelExtend:hover {
+  background-color: red; 
+  color: white;
+}
+.CompleteSurveyExtend:hover {
+  background-color: green; 
+  color: white;
+}
+
+@media screen and (max-width: 550px){
+  .modal-phone {
+    max-width: 90%;
+  }
+
+  .styled-input1 {
+    width: 100%;
+  }
+}

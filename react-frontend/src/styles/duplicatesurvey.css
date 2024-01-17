@@ -1,0 +1,171 @@
+.duplicate-survey--contents-container {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  margin: 20px;
+}
+
+h2.duplicate-survey--main-title {
+  color: #225cb5;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.duplicate-survey--input select {
+  background-color: #225cb5;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.duplicate-survey--timeline-data-error-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.duplicate-survey--timeline-data-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.duplicate-survey--dates-times-error-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.duplicate-survey--input,
+.duplicate-survey--input-error {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.duplicate-survey--input label,
+.duplicate-survey--input-error label,
+.duplicate-survey--timeline-data-container label {
+  color: #225cb5;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 5px 0px;
+}
+
+.duplicate-survey--timeline-data-container label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.duplicate-survey--input input,
+.duplicate-survey--input-error input,
+.duplicate-survey--timeline-data-container input {
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 10px;
+}
+
+.duplicate-survey--input input,
+.duplicate-survey--timeline-data-container input {
+  border: solid 1.5px #225cb5;
+}
+
+.duplicate-survey--input-error input,
+input.duplicate-survey--error-input {
+  background-color: #ffdddd !important;
+  border: 1.5px solid #af0e0e !important;
+}
+
+.duplicate-survey--labels-dates-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.duplicate-survey--input input {
+  width: 100%;
+}
+
+label.duplicate-survey--error-label {
+  color: #af0e0e;
+  display: flex;
+  flex-direction: row;
+  font-size: 16px;
+  font-weight: bold;
+  gap: 5px;
+  margin: 5px 0px 0px 0px;
+  text-align: left;
+}
+
+.duplicate-survey--labels-dates-container label.duplicate-survey--error-label {
+  display: flex;
+  flex-direction: row;
+  margin: 0!important;
+}
+
+.duplicate-survey--red-warning-sign {
+  background-image: url("../assets/redwarningsign.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 18px;
+}
+
+.duplicate-survey--confirm-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  width: 100%;
+}
+
+button.duplicate-survey--confirm-btn {
+  background-color: #6da04b;
+  border: hidden;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  padding: 10px 20px;
+  transition: all .2s ease;
+}
+
+button.duplicate-survey--confirm-btn:hover {
+  background-color: #59863d;
+  color: #fff;
+}
+
+/* PHONES AND SMALL DEVICES */
+
+@media screen and (max-width: 800px) {
+
+  .duplicate-survey--labels-dates-container {
+    display: flex;
+  }
+
+  .duplicate-survey--timeline-data-container label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .duplicate-survey--timeline-data-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+  }
+
+  .duplicate-survey--confirm-btn-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+}

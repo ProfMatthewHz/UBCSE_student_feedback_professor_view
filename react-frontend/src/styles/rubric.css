@@ -1,0 +1,163 @@
+.rubric--container {
+  display: flex;
+  justify-content: center;
+  scroll-margin-top: 148px;
+}
+
+.verifyrubric--container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rubric--content,
+.verifyrubric--content {
+  max-width: 100vw;
+  padding-bottom: 16px;
+  border: 1px solid #225cb5;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+}
+
+.rubric--content {
+  width: 80%;
+  margin-top: 50px;
+}
+
+.verifyrubric--content {
+  width: 100%;
+}
+
+/* Course Header Styles */
+.rubric--header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #225cb5;
+}
+
+.rubric--header h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.rubric--header .btn {
+  border: none;
+  border-radius: 5px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.rubric--header .duplicate-btn {
+  background-color: #6da04b;
+  color: #fff;
+  transition: all .2s ease;
+}
+
+.rubric--header .duplicate-btn:hover {
+  color: #fff;
+  background-color: #659743;
+  transition: all .2s ease;
+}
+
+/* Table Styles */
+.table-overflow--div {
+  overflow-x: auto;
+}
+
+.rubric--table {
+  width: 100%;
+  padding: 0 20px;
+  border-collapse: collapse;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+}
+
+.rubric--table th,
+.rubric--table td {
+  /*border-bottom: 1px solid #225cb5;*/
+  padding: 15px 15px;
+  color: #225cb5;
+  text-align: center;
+}
+
+.criterion--heading {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.rubric--table td button {
+  border: none;
+  border-radius: 5px;
+  padding: 5px 15px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #EF6C22;
+  color: #FFFFFF;
+  border: solid 1px #EF6C22;
+  transition-duration: 0.4s;
+  transition-property: background-color;
+}
+
+.rubric--table td button:hover {
+  background-color: #FFFFFF;
+  color: #EF6C22;
+  transition-duration: 0.4s;
+  transition-property: background-color;
+}
+
+.rubric--table th {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.rubric--table tr {
+  border-bottom: 1px solid #225cb5;
+}
+
+.rubric--table tbody tr:nth-child(even) {
+  background-color: #F0F0F0;
+}
+
+.no-rubric-content {
+  text-align: center;
+  font-style: italic;
+  font-weight: normal;
+  padding: 15px;
+  margin-bottom: -16px;
+  font-size: 20px;
+  color: #123e81;
+}
+
+
+/* PHONES AND SMALL DEVICES */
+@media screen and (max-width: 800px) {
+  .rubric--header h2 {
+    font-size: 16px;
+  }
+
+  .rubric--header .duplicate-btn {
+    display: none;
+  }
+
+  .rubric--content {
+    width: 90%;
+  }
+
+  .no-rubric-content,
+  .criterion--heading,
+  .rubric--table th {
+    font-size: 14px;
+  }
+
+  .rubric--table th,
+  .rubric--table td {
+    padding: 10px;
+  }
+
+}

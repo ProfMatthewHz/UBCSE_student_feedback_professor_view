@@ -1,0 +1,270 @@
+/* For View Results Button */
+.viewresults-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+    z-index: 1000; /* make sure it appears above other elements */
+}
+
+.viewresults-modal-content {
+    max-width: 1200px;
+    width: 100%;
+    padding-bottom: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.viewresults-modal--heading {
+    color: #225cb5;
+    background-color: rgba(0,0,0,0);
+    padding: 25px 10px;
+    border-radius: 3px 3px 0px 0px;
+    text-align: center;
+    font-size: 22px;
+}
+
+.viewresults-modal--main-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.viewresults-modal--other-button-container,
+.viewresults-modal--cancel-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.viewresults-modal--cancel-button-container .cancel-btn {
+    border-radius: 5px;
+    font-weight: 500;
+    padding: 8px 16px!important;
+    transition: all .2s ease;
+    font-size: 20px;
+}
+
+.viewresults-modal--other-button-container a.downloadbtn {
+    background-color: #6da04b;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 2px;
+    text-decoration: none;
+    font-size: 20px;
+    transition-duration: 0.4s;
+    transition-property: background-color;
+    margin-bottom: 12px;
+}
+
+.viewresults-modal--other-button-container a.downloadbtn:hover {
+    background-color: #59863d;
+    color: #fff;
+}
+
+.viewresults-modal--main-button-container .survey-result--option {
+    background-color: #fff;
+    color: #225cb5;
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: solid 1.5px #225cb5;
+    font-size: 20px;
+    transition-duration: 0.4s;
+    transition-property: background-color;
+}
+
+.viewresults-modal--main-button-container .survey-result--option:hover {
+    background-color: #225cb5;
+    color: #fff;
+}
+
+.viewresults-modal--main-button-container .survey-result--option-active {
+    background-color: #225cb5;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: solid 1.5px #225cb5;
+    font-size: 20px;
+    transition-duration: 0.4s;
+    transition-property: background-color;
+}
+
+.viewresults-modal--no-options-selected-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 20px 30px 20px;
+    font-size: 20px;
+    font-style: italic;
+    color: #225cb5;
+}
+
+.viewresults-modal--barchart-container {
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.viewresults-modal--barchart-container .p-datatable.p-component.p-datatable-responsive-scroll .p-datatable-wrapper .p-datatable-table {
+    border: 1px solid #225cb5;
+}
+
+.normalized-barchart {
+    height: 400px;
+    width: 500px;
+}
+
+.rawresults--table-container {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.p-datatable .p-sortable-column.p-highlight .p-column-filter-menu-button,
+.p-datatable .p-sortable-column.p-highlight {
+    background-color: #fff;
+    color: #225cb5;
+}
+
+.p-datatable .p-sortable-column.p-highlight .p-column-filter-menu-button:hover,
+.p-datatable .p-sortable-column.p-highlight .p-column-filter-menu-button:active,
+.p-datatable .p-sortable-column.p-highlight .p-column-filter-menu-button:focus{
+    background-color: #225cb5;
+    color: #fff;
+}
+
+.p-datatable .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover .p-sortable-column-icon,
+.p-datatable .p-sortable-column.p-highlight:not(.p-sortable-disabled):hover {
+    opacity: 0.6;
+}
+
+.p-column-filter-menu-button,
+.p-datatable .p-sortable-column .p-sortable-column-icon {
+    color: #fff;
+    margin-left: 6px;
+}
+
+.p-column-filter-menu-button:focus,
+.p-column-filter-menu-button:active,
+.p-column-filter-menu-button:hover,
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon,
+.p-datatable .p-sortable-column.p-highlight:not(.p-sortable-disabled):hover .p-sortable-column-icon,
+.p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+    color: #225cb5;
+}
+
+.p-datatable .p-datatable-footer, .p-datatable .p-datatable-thead>tr>th {
+    color: #fff;
+    background-color: #225cb5;
+    border: 1px solid #225cb5;
+}
+
+.p-datatable .p-datatable-footer, .p-datatable .p-datatable-thead>tr>th,
+.p-datatable .p-datatable-tbody>tr>td {
+    padding: 10px;
+    border-bottom: 1px solid #225cb5;
+}
+
+.p-dropdown-label.p-inputtext{
+    margin: auto;
+    padding-left: 12px;
+}
+
+.p-datatable .p-datatable-tbody>tr:nth-child(even) {
+    background-color: rgb(240, 240, 240);
+}
+
+.p-column-filter-overlay.p-component.p-fluid.p-column-filter-overlay-menu.p-ripple-disabled.p-connected-overlay-enter-done{
+    /* height: 12rem; */
+    height: fit-content;
+    padding: 12px
+}
+
+.p-inputtext.p-component.p-column-filter.p-column-filter,
+.p-column-filter-matchmode-dropdown.p-dropdown.p-component.p-inputwrapper.p-inputwrapper-filled,
+.p-column-filter-operator-dropdown.p-dropdown.p-component.p-inputwrapper.p-inputwrapper-filled,
+.p-inputtext.p-component.p-column-filte.p-column-filter,
+.p-button.p-component.p-button-sm {
+    padding: 6px 12px;
+}
+
+.p-inputtext.p-component.p-column-filter.p-column-filter {
+    margin-bottom: 8px;
+}
+
+.p-column-filter-add-rule {
+    display: none;
+}
+
+.p-paginator-bottom.p-paginator.p-component {
+    margin: 12px;
+}
+.p-paginator-current {
+    margin-right: 12px;
+}
+
+/* PHONES AND SMALL DEVICES */
+@media screen and (max-width: 800px) {
+    .viewresults-modal-content {
+        max-width: 90%;
+    }
+
+    .viewresults-modal--other-button-container {
+        display: none;
+    }
+
+    .survey-row {
+        width: calc(100% / 4);
+    }
+
+    .surveyactions--select,
+    .surveyactions--option {
+        font-size: 12px !important;
+    }
+
+    .mobile-disable {
+        display: none;
+    }
+
+    .viewresults-modal--barchart-container {
+        flex-direction: column;
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .viewresults-modal--heading {
+        font-size: 16px;
+    }
+
+    .survey-result--option {
+        font-size: 13px;
+        padding: 4px 8px;
+    }
+
+    table.rawresults--table td,
+    table.rawresults--table th {
+        padding: 2px;
+        font-size: 11px;
+        width: calc(100% / 4);
+    }
+
+    .page-link {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    .modal-title {
+        font-size: 16px
+    }
+}

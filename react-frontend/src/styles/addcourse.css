@@ -1,0 +1,225 @@
+.formContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.formContent {
+  width: 100%;
+  overflow-y: auto;
+  background-color: #fff;
+  gap: 20px;
+  margin: 20px;
+}
+
+h2.update-modal--heading,
+h2.add-header {
+  color: #225cb5;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* FORM */
+.form__item {
+  margin-bottom: 20px;
+}
+
+.sem-year--additional-instructor--container,
+.addcourse--name-code {
+  display: flex;
+  gap: 20px;
+}
+
+.name-code--item {
+  width: 50%;
+}
+
+.additional-instructors--item {
+  width: 65%;
+}
+
+
+
+.add-form__submit--container {
+  display: flex;
+  justify-content: end !important;
+}
+
+.form__submit:hover {
+  background-color: #59863d !important;
+  cursor: pointer !important;
+}
+
+.form__submit:active {
+  border-color: #225cb5 !important;
+  color: #225cb5 !important;
+}
+
+.addcourse--namecode-error {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+p.add-course--error {
+  color: #af0e0e;
+  font-weight: 700;
+}
+
+.addcourse-duplicate-error {
+  border: 1.5px solid #af0e0e !important;
+  background: #fdd;
+}
+
+.name-code--item {
+  margin-bottom: 0 !important;
+}
+
+label.form__item--label {
+  color: #225cb5;
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  font-weight: bold;
+  gap: 5px;
+  margin: 0 !important;
+  width: 100%;
+}
+
+.add__form .form__item input {
+  border: solid 1.5px #225cb5;
+  border-radius: 5px;
+  color: #000;
+  font-size: 16px;
+  padding: 10px;
+}
+
+.add__form .form__item input::placeholder {
+  color: #666666;
+}
+
+.add__form .form__item input:hover {
+  border-color: #225cb5;
+}
+
+.add__form .form__item input:focus {
+  border-color: #225cb5;
+}
+
+textarea {
+  resize: vertical;
+  height: 100px;
+  margin-top: 8px;
+}
+
+.form__item--label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.add-course--select {
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #225cb5;
+  border-radius: 5px;
+  color: #000;
+  width: 100%;
+  outline: none;
+  font-size: 16px;
+}
+
+.form__item--select {
+  width: 35%;
+}
+
+label.form__item--file {
+  margin-bottom: 4;
+}
+
+label.form__item--file input::file-selector-button {
+  background-color: #225cb5;
+  border: solid 1.5px #225cb5;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  margin: -10px 10px -10px -10px;
+  padding: 14px;  
+}
+
+.file-input-wrapper div {
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+
+.add_course--error {
+  color: #990000;
+}
+
+.cancel-btn {
+  background-color: rgba(0,0,0,0) !important;
+  color: #225cb5 !important;
+  text-decoration: none !important;
+  /*border-radius: 0px 5px 0px 0px !important;*/
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold !important;
+  position: absolute;
+  padding: 6px 16px !important;
+  top: -10px;
+  right: 0;
+}
+
+.form__submit {
+  background-color: #6da04b !important;
+  border: 1px solid #6da04b !important;
+  padding: 9px 18px !important;
+  color: #fff !important;
+  font-size: 16px;
+}
+
+.cancel-btn,
+.form__submit {
+  border-radius: 5px;
+  font-weight: 500;
+  transition: all 200ms ease;
+}
+
+/* Modal overall container */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+  z-index: 1000; /* make sure it appears above other elements */
+}
+
+/* Modal content container */
+.modal-content {
+  width: 500px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal button */
+.modal-content .roster-file--error-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #6da04b;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.modal-content .roster-file--error-btn:hover {
+  background-color: #59863d;
+}

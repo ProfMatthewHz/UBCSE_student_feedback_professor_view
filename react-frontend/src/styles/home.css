@@ -1,0 +1,28 @@
+.container {
+    width: 100%;
+    padding-left: 195px;
+    padding-top: 145px;
+    padding-bottom: 20px;
+}
+
+.home--container {
+    height: calc(100vh - 148px);
+}
+
+.container .no-course {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container .no-course h1 {
+    color: #225CB5;
+}
+
+/* PHONES AND SMALL DEVICES */
+@media screen and (max-width: 800px) {
+    .container {
+        padding-left: 0px;
+    }
+}
