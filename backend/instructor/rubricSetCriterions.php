@@ -30,8 +30,6 @@ $instructor_id = $_SESSION['id'];
 if (!isset($_SESSION['rubric-format'])) {
   http_response_code(400);
   echo "You must initialize the rubric's name and levels before setting the criteria";
-  // header("Location: ".INSTRUCTOR_HOME."rubricInitialize.php");
-  // exit();
   exit();
 }
 

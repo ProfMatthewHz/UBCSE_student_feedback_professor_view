@@ -245,17 +245,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         http_response_code(302);
         header("Location: ".INSTRUCTOR_HOME."surveyConfirm.php");
         exit();
-        // finally add the pairings to the database if no other error message were set so far
-        // first add the survey details to the database
-        // if (empty($errorMsg)) {
-        //   $sdate = $start_date . ' ' . $start_time;
-        //   $edate = $end_date . ' ' . $end_time;
-        //   $survey_id = insertSurvey($con, $course_id, $survey_name, $sdate, $edate, $rubric_id, $pairing_mode);
-        //   addReviewsToSurvey($con, $survey_id, $pairings['ids']);
-        //   http_response_code(302);
-        //   header("Location: ".INSTRUCTOR_HOME."surveys.php");
-        //   exit();
-        // }
       }
     }
   }
