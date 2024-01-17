@@ -64,14 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  // check CSRF token
-  // $csrf_token = getCSRFToken($con, $instructor_id);
-  // if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
-  //   http_response_code(403);
-  //   echo "Forbidden: Incorrect parameters.";
-  //   exit();
-  // }
-
   //check valid formatting
   $course_code = trim($_POST['course-code']);
   if (empty($course_code)) {

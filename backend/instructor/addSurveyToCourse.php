@@ -102,15 +102,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  // check CSRF token
-  // $csrf_token = getCSRFToken($con, $instructor_id);
-  // if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['pairing-file']['tmp_name']))
-  // {
-  //   http_response_code(403);
-  //   echo "Forbidden: Incorrect parameters.";
-  //   exit();
-  // }
-
   // get the name of this survey
   $survey_name = trim($_POST['survey-name']);
 
@@ -303,5 +294,4 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
   $rubric_id = array_key_first($rubrics);
 }
-$csrf_token = createCSRFToken($con, $instructor_id);
 ?>

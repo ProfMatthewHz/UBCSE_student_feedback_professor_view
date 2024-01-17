@@ -102,14 +102,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  // check CSRF token
-  // $csrf_token = getCSRFToken($con, $instructor_id);
-  // if (!hash_equals($csrf_token, $_POST['csrf-token'])) {
-  //   http_response_code(403);
-  //   echo "Forbidden: Incorrect parameters.";
-  //   exit();
-  // }
-
   // Get all the data that was posted
   $rubric_name = trim($_POST['name']);
   $rubric_levels = $_POST['levels'];
@@ -159,17 +151,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errors_response['errors'] = $errorMsg;
   } 
 
-  // in case we need to change it to send back data, 
-  // set 'data' to be $rubric_data if there are no errors
-
-  // $response = array('data' => array(), 'errors' => array());
-
   header("Content-Type: application/json; charset=UTF-8");
   $errorsJSON = json_encode($errors_response, JSON_ENCODE_OPTIONS);
   echo $errorsJSON;
 }
-
-$csrf_token = createCSRFToken($con, $instructor_id);
-
-
 ?>

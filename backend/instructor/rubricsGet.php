@@ -50,7 +50,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
         }
         unset($rubric_id,$rubric_desc);
 
-        }
+    }
     
   header("Content-Type: application/json; charset=UTF-8");
 
@@ -59,5 +59,4 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 
   echo $myJSON;
 }
-    
 ?>

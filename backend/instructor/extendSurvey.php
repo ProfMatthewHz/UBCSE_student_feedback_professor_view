@@ -102,16 +102,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  // check CSRF token
-  // $csrf_token = getCSRFToken($con, $instructor_id);
-  // if ((!hash_equals($csrf_token, $_POST['csrf-token'])))
-  // {
-  //   http_response_code(403);
-  //   echo "Forbidden: Incorrect parameters.";
-  //   exit();
-  // }
-
-
   $survey_id = $_POST['survey-id'];
   $survey_info = getSurveyData($con, $survey_id);
   if (empty($survey_info)) {
@@ -154,9 +144,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // check survey
   if ((!isSurveyInstructor($con, $survey_id, $instructor_id)) ||
-      (intval(getSurveyCourse($con,$survey_id) !== $course_id))
-      )
-  {
+      (getSurveyCourse($con,$survey_id) !== $course_id)) {
     $errorMsg["survey-id"] = "Please choose a valid survey";
   }
 
@@ -299,5 +287,4 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
   $rubric_id = array_key_first($rubrics);
 }
-$csrf_token = createCSRFToken($con, $instructor_id);
 ?>

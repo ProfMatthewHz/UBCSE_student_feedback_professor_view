@@ -57,14 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  // check CSRF token
-//   $csrf_token = getCSRFToken($con, $instructor_id);
-//   if (!hash_equals($csrf_token, $_POST['csrf-token'])) {
-//     http_response_code(403);
-//     echo "Forbidden: Incorrect parameters.";
-//     exit();
-//   }
-
   // Process criterion data post 
   $topics = $_POST['topics'];
 
@@ -162,7 +154,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   echo $errorsJSON;
 
 }
-
-
-$csrf_token = createCSRFToken($con, $instructor_id);
 ?>

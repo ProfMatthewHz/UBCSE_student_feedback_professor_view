@@ -14,10 +14,6 @@ require_once "lib/instructorQueries.php";
 
 $con = connectToDatabase();
 
-//echo "Before require";
-//require_once "instructor/lib/courseQueries.php";
-//echo "After require";
-// issues here with the require 
 
 if (!isset($_SESSION['id'])) {
     http_response_code(403);

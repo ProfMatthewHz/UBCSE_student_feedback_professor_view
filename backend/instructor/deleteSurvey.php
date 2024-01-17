@@ -113,6 +113,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
+  // This session variable could only be set in our coe, so we can trust it
   $survey_id = $_SESSION['survey-id'];
 
   $response = array('data' => array(), 'errors' => array());
@@ -145,5 +146,4 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   echo $responseJSON;
   
 }
-// $csrf_token = createCSRFToken($con, $instructor_id);
 ?>
