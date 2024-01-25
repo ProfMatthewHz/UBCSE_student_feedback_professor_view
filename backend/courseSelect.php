@@ -19,8 +19,8 @@
   $year = idate('Y');
 
   $past_surveys = getClosedSurveysForTerm($con, $term, $year, $_SESSION['student_id']);
-  $current_surveys = getCurrentSurveysForTerm($con, $term, $year, $_SESSION['student_id']);
-  $upcoming_surveys = getUpcomingSurveysForTerm($con, $term, $year, $_SESSION['student_id']);
+  $current_surveys = getCurrentSurveys($con, $_SESSION['student_id']);
+  $upcoming_surveys = getUpcomingSurveys($con, $_SESSION['student_id']);
  ?>
 <!doctype html>
 <html lang="en">

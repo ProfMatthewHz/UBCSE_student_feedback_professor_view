@@ -95,7 +95,22 @@
     return $ret_val;
   }
 
-  function createQueryReviewer($con, $date_clause) {
+  function createActiveQueryReviewer($con, $date_clause) {
+    $sql = 'SELECT courses.name, surveys.name, surveys.id, surveys.start_date, surveys.end_date, COUNT(reviews.id), COUNT(evals.id)
+            FROM surveys
+            INNER JOIN courses on courses.id = surveys.course_id 
+            INNER JOIN reviews on reviews.survey_id=surveys.id
+            LEFT JOIN evals on evals.review_id=reviews.id
+            WHERE reviews.reviewer_id=?';
+    if (!empty($date_clause)) {
+      $sql = $sql . ' AND ' . $date_clause;
+    }
+    $sql = $sql.' GROUP BY surveys.id';
+    $retVal = $con->prepare($sql);
+    return $retVal;
+  }
+
+  function createClosedQueryReviewer($con, $date_clause) {
     $sql = 'SELECT courses.name, surveys.name, surveys.id, surveys.start_date, surveys.end_date, COUNT(reviews.id), COUNT(evals.id)
             FROM surveys
             INNER JOIN courses on courses.id = surveys.course_id 
@@ -139,7 +154,7 @@
 
   function getClosedSurveysForTerm($con, $term, $year, $id) {
     $retVal = array();
-    $stmt = createQueryReviewer($con, 'surveys.end_date < NOW()');
+    $stmt = createClosedQueryReviewer($con, 'surveys.end_date < NOW()');
     $stmt->bind_param('iii', $id, $term, $year);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -174,10 +189,10 @@
     return $retVal;
   }
 
-  function getCurrentSurveysForTerm($con, $term, $year, $id) {
+  function getCurrentSurveys($con, $id) {
     $retVal = array();
-    $stmt = createQueryReviewer($con, 'surveys.start_date <= NOW() AND surveys.end_date > NOW()');
-    $stmt->bind_param('iii', $id, $term, $year);
+    $stmt = createActiveQueryReviewer($con, 'surveys.start_date <= NOW() AND surveys.end_date > NOW()');
+    $stmt->bind_param('i', $id);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
@@ -191,10 +206,10 @@
     return $retVal;
   }
 
-  function getUpcomingSurveysForTerm($con, $term, $year, $id) {
+  function getUpcomingSurveys($con, $id) {
     $retVal = array();
-    $stmt = createQueryReviewer($con, 'surveys.start_date > NOW()');
-    $stmt->bind_param('iii', $id, $term, $year);
+    $stmt = createActiveQueryReviewer($con, 'surveys.start_date > NOW()');
+    $stmt->bind_param('i', $id);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
