@@ -1,4 +1,5 @@
-﻿**Welcome to StudentSurvey!**
+﻿
+**Welcome to StudentSurvey!**
 
 **Verify you have the following! ** 
 
@@ -54,9 +55,11 @@
 20. Open terminal and move to StudentSurvey/react-frontend directory 
 21. Install the node dependencies by running npm install
 22. In the terminal while in the react-frontend directory, run npm run build to build to project
-23. Navigate to the website: [http://localhost/StudentSurvey/backend/instructor/fake_shibboleth.php]
-24. Enter in hartloff in the input field and click Pretend Login
-25. Then navigate to this website: [http://localhost/StudentSurvey/react-frontend/build/]
-26. Click on **history** in the nav bar 
-27. Click on **fall 2023** under terms to the left of the page 
-28. Verify that you see **CSE 199,404,305,116,115** and surveys under each course
+23. If npm run build does not work do npm start
+24. Navigate to the website: [http://localhost/StudentSurvey/backend/instructor/fake_shibboleth.php]
+25. Enter in hartloff in the input field and click Pretend Login
+26. Then navigate to this website: [http://localhost/StudentSurvey/react-frontend/build/]
+27. Make sure in your specific url that you are not on a specific port. For example make sure url is exactly http://localhost/StudentSurvey/react-frontend/build/ and not [http://localhost:3000/StudentSurvey/react-frontend/build]
+28. Click on **history** in the nav bar 
+29. Click on **fall 2023** under terms to the left of the page 
+30. Verify that you see **CSE 199,404,305,116,115** and surveys under each course

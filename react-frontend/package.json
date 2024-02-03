@@ -1,6 +1,6 @@
 {
   "name": "react-frontend",
-  "homepage": "https://cse.buffalo.edu/teamwork/instructor",
+  "homepage": "http://localhost/StudentSurvey/react-frontend/build",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
