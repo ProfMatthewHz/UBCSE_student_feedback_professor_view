@@ -2,8 +2,8 @@
 
 **Instructions to upload StudentSurvey to cheshire**
 
- - Verify that you are currently within Dev in local repo in IDE
- - Verify you have most up to date version of Dev: Pull from dev in IDE 
+ - Verify that you are currently within your local repo in IDE
+ - Verify you have most up to date version of your repo: Make sure to pull the most recent version of the repo 
  - Locate StudentSurvey/react-frontend directory file location in local repo. 
  - Open a terminal session. 
  - Copy the location of StudentSurvey/react-frontend directory
