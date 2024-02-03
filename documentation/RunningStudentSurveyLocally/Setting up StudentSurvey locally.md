@@ -46,17 +46,17 @@
 	 - students
 	 - surveys
 	 - survey_types
-30. Within StudentSurvey within your ide and go to path StudentSurvey/db_creation_files/PHPDummyDataFinal.sql
-31. Copy the contents of PHPDummyDataFinal.sql
-32. Repeat Steps 11 through 12
-33. Repeat step 13 with the exception of uncliking **Enable foreign key checks** and then click **go**
-34. Verify that fields 15-29 are now populated with data
-35. Open terminal and move to StudentSurvey/react-frontend directory 
-36. Install the node dependencies by running npm install
-37. In the terminal while in the react-frontend directory, run npm run build to build to project
-38. Navigate to the website: [http://localhost/StudentSurvey/backend/instructor/fake_shibboleth.php]
-39. Enter in hartloff in the input field and click Pretend Login
-40. Then navigate to this website: [http://localhost/StudentSurvey/react-frontend/build/]
-41. Click on **history** in the nav bar 
-42. Click on **fall 2023** under terms to the left of the page 
-43. Verify that you see **CSE 199,404,305,116,115** and surveys under each course
+15. Within StudentSurvey within your ide and go to path StudentSurvey/db_creation_files/PHPDummyDataFinal.sql
+16. Copy the contents of PHPDummyDataFinal.sql
+17. Repeat Steps 11 through 12
+18. Repeat step 13 with the exception of uncliking **Enable foreign key checks** and then click **go**
+19. Verify that fields 15-29 are now populated with data
+20. Open terminal and move to StudentSurvey/react-frontend directory 
+21. Install the node dependencies by running npm install
+22. In the terminal while in the react-frontend directory, run npm run build to build to project
+23. Navigate to the website: [http://localhost/StudentSurvey/backend/instructor/fake_shibboleth.php]
+24. Enter in hartloff in the input field and click Pretend Login
+25. Then navigate to this website: [http://localhost/StudentSurvey/react-frontend/build/]
+26. Click on **history** in the nav bar 
+27. Click on **fall 2023** under terms to the left of the page 
+28. Verify that you see **CSE 199,404,305,116,115** and surveys under each course
