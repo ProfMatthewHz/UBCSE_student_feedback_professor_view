@@ -31,21 +31,21 @@
  12. Verify and click on SQL on the top most navbar 
  13. Paste code from onboarding_script.sql into the field and click **go** on middle right of the page 
  14. Verify that **test** is now populated with the following fields within 
-	 15. courses
-	 16. course_instructors
-	 17. enrollments
-	 18. evals
-	 19. freeforms
-	 20. instructors
-	 21. reviews
-	 22. rubrics
-	 23. rubric_responses
-	 24. rubric_scores
-	 25. rubric_topics
-	 26. scores
-	 27.  students
-	 28. surveys
-	 29. survey_types
+	 - courses
+	 - course_instructors
+	 - enrollments
+	 - evals
+	 - freeforms
+	 - instructors
+	 - reviews
+	 - rubrics
+	 - rubric_responses
+	 - rubric_scores
+	 - rubric_topics
+	 - scores
+	 - students
+	 - surveys
+	 - survey_types
 30. Within StudentSurvey within your ide and go to path StudentSurvey/db_creation_files/PHPDummyDataFinal.sql
 31. Copy the contents of PHPDummyDataFinal.sql
 32. Repeat Steps 11 through 12
