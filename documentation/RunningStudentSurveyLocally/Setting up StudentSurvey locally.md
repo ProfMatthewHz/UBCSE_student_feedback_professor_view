@@ -3,6 +3,8 @@
 
 **Verify you have the following! ** 
 
+**Since we are working in master branch to start I advise you navigate to https://github.com/ProfMatthewHz/UBCSE_student_feedback_professor_view/tree/2024Sprint1-addDocumentationStudentSurveyRunningLocally and use the Setting Up StudentSurvey Locally.md on a seperate page to follow along while you change things inside of your ide**
+ 
  1. Verify that you have XAMPP 
  2. Verify that you have Node.js
  3. Verify that you have cloned Repo in htdocs within XAMPP
