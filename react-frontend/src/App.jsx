@@ -17,9 +17,9 @@ function App() {
         <Routes>
           {/* Add Routes here with a component to render at that Route */}
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
           <Route path="/history" element={<History />} />
           <Route path="/library" element={<Library />} />
+          <Route path="/about" element={<About />} />
         </Routes>
       </div>
     </HashRouter>
