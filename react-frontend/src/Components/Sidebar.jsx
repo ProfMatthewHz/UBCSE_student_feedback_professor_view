@@ -138,7 +138,7 @@ function SideBar(props) {
                   termContents.length > 0 ? (
                     termContents.map((item) => {
                       return (
-                        <a href={"#" + item.code}>
+                        <Link to={"#" + item.code}>
                           <div
                             onClick={() =>
                               setActiveButton(item.code + "-Option")
@@ -152,7 +152,7 @@ function SideBar(props) {
                           >
                             {item.code}
                           </div>
-                        </a>
+                        </Link>
                       );
                     })
                   ) : (
@@ -168,7 +168,7 @@ function SideBar(props) {
                 {contents.length > 0 ? (
                   contents.map((item) => {
                     return (
-                      <a href={"#" + item}>
+                      <Link to={"#" + item}>
                         <div
                           onClick={() => setActiveButton(item + "-Option")}
                           id={item + "-Option"}
@@ -180,7 +180,7 @@ function SideBar(props) {
                         >
                           {item}
                         </div>
-                      </a>
+                      </Link>
                     );
                   })
                 ) : (

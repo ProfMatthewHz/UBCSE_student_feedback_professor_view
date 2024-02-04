@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Routes, Route } from "react-router";
+import { HashRouter } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -8,7 +9,7 @@ import Library from "./pages/Library";
 function App() {
 
   return (
-    <Router basename={process.env.REACT_APP_BASE_URL}>
+    <HashRouter>
       {/* <Router > */}
       <div className="app">
         <div className="background-design"></div>
@@ -21,7 +22,7 @@ function App() {
           <Route path="/library" element={<Library />} />
         </Routes>
       </div>
-    </Router>
+    </HashRouter>
   );
 }
 

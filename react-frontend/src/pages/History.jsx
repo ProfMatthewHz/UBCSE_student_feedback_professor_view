@@ -51,11 +51,11 @@ const History = () => {
   };
 
   const getSemestermAsInt = (semester) => {
-    if (semester == 'fall') {
+    if (semester === 'fall') {
       return 4;
-    } else if (semester == 'summer') {
+    } else if (semester === 'summer') {
       return 3;
-    } else if (semester == 'spring') {
+    } else if (semester === 'spring') {
       return 2;
     } else {
       return 1; // winter

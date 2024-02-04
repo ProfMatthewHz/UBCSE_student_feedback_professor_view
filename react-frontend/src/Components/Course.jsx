@@ -464,8 +464,6 @@ const Course = ({ course, page }) => {
 
     let formData3 = new FormData();
     let rubricId;
-    let pairingId;
-    let multiplier;
 
     for (const element of rubricIDandDescriptions) {
       if (element.rubricDesc === rubric) {
