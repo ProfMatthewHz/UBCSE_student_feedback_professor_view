@@ -14,7 +14,7 @@
  7. Verify that database.php file field within is as follows $DATABASE_NAME = 'test'
  8. Verify that within StudentSurvey/react-frontend/package.json "homepage": "https://cse.buffalo.edu/teamwork/instructor" is converted to http://localhost/StudentSurvey/react-frontend/build 
  9. Place database.php file within the following path within StudentSurvey : StudentSurvey/backend/lib
- 10. In package.json within path StudentSurvey/react-frontend/ change "homepage" field to [http://localhost/StudentSurvey/react-frontend/build]
+ 10. In package.json within path StudentSurvey/react-frontend/ change "homepage" field to http://localhost/StudentSurvey/react-frontend/build
  11. **PLEASE REMEMBER DO NOT COMMIT TO MASTER, STASH CHANGES AFTER THEY ARE MADE. NEVER DIRECTLY COMMIT TO MASTER BRANCH**
  12. **INTIAL SETUP WILL HAPPEN IN MASTER BUT NEVER DIRECT COMMITS**
 
