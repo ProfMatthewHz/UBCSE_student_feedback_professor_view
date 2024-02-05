@@ -58,10 +58,10 @@
 21. Install the node dependencies by running npm install
 22. In the terminal while in the react-frontend directory, run npm run build to build to project
 23. If npm run build does not work do npm start
-24. Navigate to the website: [http://localhost/StudentSurvey/backend/instructor/fake_shibboleth.php]
+24. Navigate to the website: http://localhost/StudentSurvey/backend/instructor/fake_shibboleth.php
 25. Enter in hartloff in the input field and click Pretend Login
-26. Then navigate to this website: [http://localhost/StudentSurvey/react-frontend/build/]
-27. Make sure in your specific url that you are not on a specific port. For example make sure url is exactly http://localhost/StudentSurvey/react-frontend/build/ and not [http://localhost:3000/StudentSurvey/react-frontend/build]
+26. Then navigate to this website: http://localhost/StudentSurvey/react-frontend/build/
+27. Make sure in your specific url that you are not on a specific port. For example make sure url is exactly http://localhost/StudentSurvey/react-frontend/build/ and not http://localhost:3000/StudentSurvey/react-frontend/build
 28. Click on **history** in the nav bar 
 29. Click on **fall 2023** under terms to the left of the page 
 30. Verify that you see **CSE 199,404,305,116,115** and surveys under each course
