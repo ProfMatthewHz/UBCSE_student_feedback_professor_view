@@ -2,6 +2,7 @@
 
 **Instructions to upload StudentSurvey to cheshire**
 
+ - verify that you are currently on school netowrk or connected to UB VPN
  - Verify that you are currently within your local repo in IDE
  - Verify you have most up to date version of your repo: Make sure to pull the most recent version of the repo 
  - Within your repo, verify that in path StudentSurvey/react-frontend/package.json you have the following "homepage": "https://cse.buffalo.edu/teamwork/instructor"
@@ -25,6 +26,7 @@
 
 **Instructions on uploading individual files to StudentSurvey on cheshire - do this** 
 
+ - verify that you are currently on school netowrk or connected to UB VPN
  - Open a terminal session. 
  - Copy the location of whatever you plan to upload to StudentSurvey on cheshire 
  - In your terminal type cd and paste the location 
@@ -38,6 +40,7 @@
 
 **Instructions remove individual files/folders within folders - do this** 
 
+ - verify that you are currently on school netowrk or connected to UB VPN
  - Open a new terminal session 
  - Enter ssh UBIT@cheshire.cse.buffalo.edu
  - Enter your UBIT password (password to get into UB hub)
@@ -51,6 +54,7 @@
  - Removing folder: run rm Folder -r
 
 **instructions on what database file is needed.** 
+
 
  - Within the StudentSurvey repo, in the location StudentSurvey/backend/lib/ you will find a database.php file 
  - Open the file and you will see following function connectToDatabase()
