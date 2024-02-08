@@ -69,7 +69,7 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
 
   const handleDeleteColumnsHovered = (action, index) => {
 
-    if (action == "hovered") {
+    if (action === "hovered") {
       const updatedData = [...deleteColumnHovered];
       updatedData[index] = true;
       setDeleteColumnsHovered(updatedData);
@@ -180,7 +180,7 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
 
   const handleDeleteRowsHovered = (action, index) => {
 
-    if (action == "hovered") {
+    if (action === "hovered") {
       const updatedData = [...deleteRowHovered];
       updatedData[index] = true;
       setDeleteRowsHovered(updatedData);

@@ -47,15 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   $save_rubric = $_POST['save-rubric'];
 
-  // do not save for some reason
-  if (!$save_rubric){
-
-    // http_response_code(400);
-    // header("Location: ".INSTRUCTOR_HOME."rubricSetCriterions.php");
-    exit();
-    
-  } else {
-
+  // for some reason, we should check that this was intended to be saved
+  if ($save_rubric) {
     // Add the rubric to the database and keep track of the id it was assigned. 
     $rubric_id = insertRubric($con, $rubric_name);
 
@@ -91,13 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         }
       }
-
     }
-
     unset($_SESSION['rubric-format'], $_SESSION['rubric-preview']);
-
   }
-
-
-  }
+}
 ?>

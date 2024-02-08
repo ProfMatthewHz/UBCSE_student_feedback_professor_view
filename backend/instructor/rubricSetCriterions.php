@@ -30,8 +30,6 @@ $instructor_id = $_SESSION['id'];
 if (!isset($_SESSION['rubric-format'])) {
   http_response_code(400);
   echo "You must initialize the rubric's name and levels before setting the criteria";
-  // header("Location: ".INSTRUCTOR_HOME."rubricInitialize.php");
-  // exit();
   exit();
 }
 
@@ -56,14 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "Bad Request: Missing parameters to define criteria";
     exit();
   }
-
-  // check CSRF token
-//   $csrf_token = getCSRFToken($con, $instructor_id);
-//   if (!hash_equals($csrf_token, $_POST['csrf-token'])) {
-//     http_response_code(403);
-//     echo "Forbidden: Incorrect parameters.";
-//     exit();
-//   }
 
   // Process criterion data post 
   $topics = $_POST['topics'];
@@ -162,7 +152,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   echo $errorsJSON;
 
 }
-
-
-$csrf_token = createCSRFToken($con, $instructor_id);
 ?>

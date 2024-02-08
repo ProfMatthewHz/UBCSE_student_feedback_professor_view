@@ -18,14 +18,14 @@ $con = connectToDatabase();
 
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 if (!isset($_SESSION['id'])) {
-  http_response_code(403);
-  echo "Forbidden: You must be logged in to access this page.";
-  exit();
+    http_response_code(403);
+    echo "Forbidden: You must be logged in to access this page.";
+    exit();
 }
 
 $instructor_id = $_SESSION['id'];
 
-if($_SERVER['REQUEST_METHOD'] == 'GET') {
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     // Get the course id of the course that is being queried for surveys
 
@@ -34,15 +34,15 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     $retVal["survey_types"]["mult"] = array();
     $retVal["survey_types"]["no_mult"] = array();
 
-    
+
     $allSurveyTypes = getSurveyTypes($con);
 
     if (count($allSurveyTypes) == 0) {
         $retVal["error"] = "There are no survey types available! :(";
     } else {
- 
 
-        foreach ($allSurveyTypes as $surveyTypeId => $surveyTypeInfo){
+
+        foreach ($allSurveyTypes as $surveyTypeId => $surveyTypeInfo) {
 
             $desc = $surveyTypeInfo[0];
             $file_org = $surveyTypeInfo[1];
@@ -56,22 +56,18 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 
             if (intval($display_mult) == 1) {
                 $retVal["survey_types"]["mult"][] = $survey_type;
-            } else{
+            } else {
                 $retVal["survey_types"]["no_mult"][] = $survey_type;
             }
-
         }
 
         unset($surveyTypeId, $surveyTypeInfo);
-
     }
-    
-  header("Content-Type: application/json; charset=UTF-8");
 
-  // Now lets dump the data we found
-  $myJSON = json_encode($retVal);
+    header("Content-Type: application/json; charset=UTF-8");
 
-  echo $myJSON;
+    // Now lets dump the data we found
+    $myJSON = json_encode($retVal);
+
+    echo $myJSON;
 }
-    
-?>

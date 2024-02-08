@@ -15,8 +15,13 @@ ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 $con = connectToDatabase();
 
-//$instructor_id = $_SESSION['id'];
-
+//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+if (!isset($_SESSION['id'])) {
+    http_response_code(403);
+    echo "Forbidden: You must be logged in to access this page.";
+    exit();
+  }
+$instructor_id = $_SESSION['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $instructors = array();
@@ -27,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     if ($result) {
         while ($row = mysqli_fetch_assoc($result)) {
-            if($row['id'] == $_SESSION['id']){
+            if($row['id'] == $instructor_id){
                 continue;
             }else {
                 $instructor = array(

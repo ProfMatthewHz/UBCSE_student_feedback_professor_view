@@ -22,17 +22,9 @@ if (!isset($_SESSION['id'])) {
   $instructor_id = $_SESSION['id'];
 
 
-//echo "Before require";
-//require_once "instructor/lib/courseQueries.php";
-//echo "After require";
-// issues here with the require 
-
-
-
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-//$update_type = $_POST['update-type'];
 // Check if the request method is POST
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Assuming you are sending parameters in the POST request
@@ -41,17 +33,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $currentYear = $_POST['currentYear'];
     
    
-    //print_r("HELLO 2"); 
     // Call the function and get the results
     $result = getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear);
     
-    //print_r("HELLO 3"); 
     // Return the results as JSON
     header('Content-Type: application/json');
     echo json_encode($result);
-   // print_r("HELLO 5"); 
 } else {
-    //print_r("HELLO 6"); 
     // Return an error message for unsupported request methods
     http_response_code(405); // Method Not Allowed
     echo "Only POST requests are allowed.";

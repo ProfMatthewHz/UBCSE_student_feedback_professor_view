@@ -64,14 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  // check CSRF token
-  // $csrf_token = getCSRFToken($con, $instructor_id);
-  // if ((!hash_equals($csrf_token, $_POST['csrf-token'])) || !is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
-  //   http_response_code(403);
-  //   echo "Forbidden: Incorrect parameters.";
-  //   exit();
-  // }
-
   //check valid formatting
   $course_code = trim($_POST['course-code']);
   if (empty($course_code)) {
@@ -104,20 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errorMsg["course-year"] = "Please enter a valid 4-digit year.";
   }
 
-  // if($additional_instructors == NULL){
-  //   $additional_instructors = array();
-  // }else{
-  //   $additional_instructors = $_POST['additional-instructors'];
-
-  //   $instructorSplitString = explode(',', $additional_instructors);
-
-  //   $additional_instructors = $instructorSplitString;
-  // }
-
-  $additional_instructors = $_POST['additional-instructors'];
-
-  if(!empty($additional_instructors)) {
-    $instructorSplit = explode(',', $additional_instructors);
+  if(!empty($_POST['additional-instructors'])) {
+    $additional_instructors = explode(',', $_POST['additional-instructors']);
     $additional_instructors = $instructorSplit;
   }else {
     $additional_instructors = [];
@@ -205,14 +185,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Upload the course roster for later use
             addStudents($con, $course_id, $names_emails['ids']);
 
-            // redirect to course page with message
-            //$_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);
-            //echo "Course added successfully";
-
-            
-
-            //http_response_code(302);
-            //header("Location: ".INSTRUCTOR_HOME."surveys.php");
             exit();
 
           } else {
