@@ -29,7 +29,7 @@
   top: 160px; /*increased heigh 148px*/
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   padding-top: 2%;
 }
 
@@ -113,12 +113,30 @@
   /* margin-top: 172px; add space between top of page and beginning header */
 }
 
+/* .sidebar ul {
+  display: flex;
+} */
+
+.sidebar ul li {
+  list-style: none;
+  margin-bottom: 10%;
+}
+
+.sidebar ul li a {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  padding-left: 15%;
+  margin-bottom: 15%;
+  text-decoration: none; 
+  /* margin-top: 172px; add space between top of page and beginning header */
+}
+
 .sidebar-content a {
   color: #ffffff;
   font-size: 20px;
   font-weight: 400;
   text-decoration: none;
-
 }
 
 .sidebar-content a > div {
