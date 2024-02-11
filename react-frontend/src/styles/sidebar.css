@@ -1,9 +1,32 @@
-.sidebar {
+/*Teamwork Evaluation Title*/
+.title{
   width: 195px;
-  height: calc(100% - 148px);
+  height: 160px; 
   background: #225CB5;
   position: fixed;
-  top: 148px;
+  top: 0px; 
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  padding-left: 6px;
+}
+.title h1{
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1;
+  text-decoration: none;
+  margin-bottom: 10px; 
+  position: relative;
+}
+
+
+.sidebar {
+  width: 195px;
+  height: calc(100% - 160px); /*increased height calc(100% - 148px)*/
+  background: #225CB5;
+  position: fixed;
+  top: 160px; /*increased heigh 148px*/
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,6 +37,23 @@
   margin: 5%;
 }
 
+/*Nav Bar*/
+
+
+.sidebar .title{
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: bold;
+  line-height: 1;
+  text-decoration: none;
+  text-align: left;
+  margin-bottom: 5px; 
+}
+
+
+
+
+/*Nav Bar*/
 .sidebar .add_course-btn {
   color: #ffffff;
   font-size: 18px;
@@ -70,6 +110,7 @@
   font-weight: 700;
   padding-left: 15%;
   margin-bottom: 15%;
+  /* margin-top: 172px; add space between top of page and beginning header */
 }
 
 .sidebar-content a {

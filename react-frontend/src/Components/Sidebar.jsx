@@ -1,12 +1,21 @@
 import "../styles/sidebar.css";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
+import UBLogo from "../assets/UBLogo.png";
 import Dropdown from "./Dropdown";
 import Modal from "./Modal";
 import AddCourse from "../pages/AddCourse";
 import AddRubric from "./AddRubric";
 
+
+/** Combining NavBar into Side Bar*/
+
+
+
+
 function SideBar(props) {
+
+
   const [activeButton, setActiveButton] = useState(false);
   const [dropdown_value, setDropDownValue] = useState("");
   const sidebar_items = props.content_dictionary["Courses"] ? Object.values(props.content_dictionary["Courses"])
@@ -71,6 +80,8 @@ function SideBar(props) {
 
   return (
     <>
+      
+
       {/* Add Course Modal Below */}
       <Modal
         open={showAddCourseModal}
@@ -78,6 +89,7 @@ function SideBar(props) {
         width={"750px"}
         maxWidth={"90%"}
       >
+       
         <div className="CancelContainer">
           <button className="CancelButton" onClick={handleAddCourseModal}>
             ×
@@ -106,9 +118,19 @@ function SideBar(props) {
         getRubrics={props.getRubrics}
         />
       </Modal>
+     
+
+      <div className="title">
+      <h1>TEAMWORK</h1>
+      <h1>EVALUATION</h1>
+      </div>
+
       <div className="sidebar">
+  
         {Object.entries(props.content_dictionary).map(([title, contents]) => {
           return props.route === "/history" ? (
+
+
             <div
               className="sidebar-content"
               style={title === "Courses" ? { maxHeight: "75%" } : null}
