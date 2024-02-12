@@ -3,11 +3,12 @@
   width: 195px;
   height: 160px; 
   background: #225CB5;
+  top: 0;
+  left: 0;
   position: fixed;
-  top: 0px; 
   display: flex;
   flex-direction: column;
-  padding-top: 20px;
+  
   /* padding-left: 6px; */
 }
 .title h1{
@@ -17,6 +18,8 @@
   line-height: 1;
   text-decoration: none;
   margin-bottom: 10px; 
+  top: 2%;
+  left: 1%;
   position: relative;
   padding-left: 6px;
 }
@@ -46,8 +49,8 @@
   height: 50px;
   width: 180px;
   position: fixed;
-  bottom: 40px;
-  left: 5px;
+  bottom: 10%;
+  left: .7%;
   position: fixed;
  
 }
@@ -83,6 +86,7 @@
 
 .sidebar-list {
   /* height: 100%; */
+   
   max-height: 300px;
   width: 166px;
   margin-bottom: 15%;

@@ -14,30 +14,40 @@
 }
 
 .container .yes-course {
-  height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-  color: #225CB5;
+  scroll-margin-top: 148px;
 }
 
 .container .yes-course h1 {
-  color: #225CB5;
+  color: #225cb5;
+  max-width: 100vw;
+  width: 100%;
+  padding-left: 50px;
+  margin-top: 40px;
+  margin-bottom: -20px;
+  overflow-y: auto;
+  border-radius: 6px;
+
 }
-
-
-
 
 
 .container .no-course {
-  height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  scroll-margin-top: 148px;
 }
 
 .container .no-course h1 {
-  color: #225CB5;
+  color: #225cb5;
+  max-width: 100vw;
+  width: 100%;
+  padding-left: 50px;
+  margin-top: 40px;
+  margin-bottom: -20px;
+  overflow-y: auto;
+  border-radius: 6px;
+
 }
 
 @media screen and (max-width: 800px) {

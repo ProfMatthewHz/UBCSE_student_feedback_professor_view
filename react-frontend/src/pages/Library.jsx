@@ -43,7 +43,7 @@ const Library = () => {
         <div className="container-of-rubrics">
           {rubrics.length > 0 ? (
             <div>
-               <h1 className="yes-course">Rubrics</h1>
+               <div className="yes-course"><h1>Rubrics</h1></div>
             {rubrics.map((rubric) => (
               <Rubric rubric_id={rubric.id} getRubrics={fetchRubrics}/>
             ))}
