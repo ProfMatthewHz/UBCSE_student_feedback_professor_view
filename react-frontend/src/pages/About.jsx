@@ -5,6 +5,7 @@ import JustinPFP from "../assets/fall2023team/justinvariara.png";
 import KoreyPFP from "../assets/fall2023team/koreyliu.jpg"
 import ArdianPFP from "../assets/fall2023team/ardianmuriqi.jpg"
 import AhmedPFP from "../assets/fall2023team/ahmed_alabadi.jpg"
+import MarianPFP from "../assets/fall2023team/marianhuynh.png";
 import { FaLinkedin } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { FaLink } from "react-icons/fa";
@@ -100,6 +101,28 @@ const About = () => {
                 </a>
               </div>
             </div>
+
+            <div className="about-page--profile">
+              <img src={MarianPFP} alt="Picture of Marian" />
+              <h1>Marian Huynh</h1>
+              <h2>Front-End Developer</h2>
+              <div className="about-page--contacts">
+                <a
+                  href="https://www.linkedin.com/in/marian-huynh-b7a068211/"
+                  target="_blank"
+                >
+                  <FaLinkedin />
+                </a>
+                <a href="mailto:marianvhuy@gmail.com" target="_blank">
+                  <MdEmail />
+                </a>
+              </div>
+            </div>
+
+            
+
+
+
           </div>
         </div>
       </div>
