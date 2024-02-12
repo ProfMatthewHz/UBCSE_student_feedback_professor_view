@@ -245,35 +245,41 @@ function SideBar(props) {
             <li>
               <NavLink to="/">Home</NavLink>
                   {/* -------------------------additional stuff--------------------------- */}
-                  {Object.entries(props.content_dictionary).map(([title, contents]) => {
+                  {props.route==="/" && Object.entries(props.content_dictionary).map(([title, contents]) => {
                         return props.route === "/history" ? (
-
+                        
                       <div
                         className="sidebar-content"
                         style={title === "Courses" ? { maxHeight: "75%" } : null}
                       >
-                        {(title === "Courses" && dropdown_value !== "") ||
-                        title === "Terms" ? (
+                        
+                        {(title === "Courses" && dropdown_value !== "") 
+                        // ||title === "Terms" 
+                        ? (
                           <h1>{title}</h1>
                         ) : null}
+
+                        
                         <div className="sidebar-list">
-                          {title === "Terms" ? (
-                            Object.keys(contents).length > 0 ? (
-                              <Dropdown
-                                value={dropdown_value}
-                                onChange={setDropDownValue}
-                                options={[
-                                  { value: "", label: "Select Term" },
-                                  ...Object.keys(contents).map((term) => ({
-                                    value: term,
-                                    label: term,
-                                  })),
-                                ]}
-                              />
-                            ) : (
-                              <div className="no-content">No {title}</div>
-                            )
-                          ) : title === "Courses" && dropdown_value !== "" ? (
+                          {
+                          // title === "Terms" ? (
+                          //   Object.keys(contents).length > 0 ? (
+                          //     <Dropdown
+                          //       value={dropdown_value}
+                          //       onChange={setDropDownValue}
+                          //       options={[
+                          //         { value: "", label: "Select Term" },
+                          //         ...Object.keys(contents).map((term) => ({
+                          //           value: term,
+                          //           label: term,
+                          //         })),
+                          //       ]}
+                          //     />
+                          //   ) : (
+                          //     <div className="no-content">No {title}</div>
+                          //   )
+                          // ) : 
+                          title === "Courses" && dropdown_value !== "" && props.route ==="/" ? (
                             termContents.length > 0 ? (
                               termContents.map((item) => {
                                 return (
@@ -300,6 +306,7 @@ function SideBar(props) {
                           ) : null}
                         </div>
                       </div>
+
                     ) : (
                       <div className="sidebar-content" style={{ minHeight: "90%" }}>
                         {/* <h1>{title}</h1> */}
@@ -323,9 +330,12 @@ function SideBar(props) {
                               );
                             })
                           ) : (
-                            <div className="no-content">No {title}</div>
+                            <div className="no-content">No Courses</div>
                           )}
                         </div>
+
+
+
                         {props.route === "/" ? (
                           <div class="button-container">
                           <button
@@ -337,20 +347,25 @@ function SideBar(props) {
                          </div>
 
 
-                        ) : props.route === "/library" ? (
-                          <div class="button-container">
-                          <button 
-                            className="add_course-btn" 
-                            onClick={handleAddRubricModal}
-                          >
-                            + Add Rubric
-                          </button>
-                          </div>
-                        ) : 
-                        null}
+                        ) 
+                        // : props.route === "/library" ? (
+                        //   <div class="button-container">
+                        //   <button 
+                        //     className="add_course-btn" 
+                        //     onClick={handleAddRubricModal}
+                        //   >
+                        //     + Add Rubric
+                        //   </button>
+                        //   </div>
+                        // ) 
+                        : null}  {/* button */}
+                       
+                        
+
+
                       </div>
                     );
-                  })}
+                  })} {/*end of object*/}
                   {/* ----------------------------additional stuff----------------------------------- */}
             </li>
             <li>
