@@ -13,6 +13,22 @@
   padding-bottom: 50px;
 }
 
+.container .yes-course {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #225CB5;
+}
+
+.container .yes-course h1 {
+  color: #225CB5;
+}
+
+
+
+
+
 .container .no-course {
   height: 100%;
   display: flex;

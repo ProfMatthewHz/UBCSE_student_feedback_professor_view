@@ -42,9 +42,12 @@ const Library = () => {
       <div className="container library--container">
         <div className="container-of-rubrics">
           {rubrics.length > 0 ? (
-            rubrics.map((rubric) => (
+            <div>
+               <h1 className="yes-course">Rubrics</h1>
+            {rubrics.map((rubric) => (
               <Rubric rubric_id={rubric.id} getRubrics={fetchRubrics}/>
-            ))
+            ))}
+            </div>
           ) : (
             <div className="no-course">
               <h1>No Rubrics Found</h1>
