@@ -244,7 +244,7 @@ function SideBar(props) {
           <ul className={`${clicked ? "open" : ""}`}>
             <li>
               <NavLink to="/">Home</NavLink>
-                  {/* -------------------------additional stuff--------------------------- */}
+              
                   {props.route==="/" && Object.entries(props.content_dictionary).map(([title, contents]) => {
                         return props.route === "/history" ? (
                         
@@ -262,23 +262,7 @@ function SideBar(props) {
                         
                         <div className="sidebar-list">
                           {
-                          // title === "Terms" ? (
-                          //   Object.keys(contents).length > 0 ? (
-                          //     <Dropdown
-                          //       value={dropdown_value}
-                          //       onChange={setDropDownValue}
-                          //       options={[
-                          //         { value: "", label: "Select Term" },
-                          //         ...Object.keys(contents).map((term) => ({
-                          //           value: term,
-                          //           label: term,
-                          //         })),
-                          //       ]}
-                          //     />
-                          //   ) : (
-                          //     <div className="no-content">No {title}</div>
-                          //   )
-                          // ) : 
+                         
                           title === "Courses" && dropdown_value !== "" && props.route ==="/" ? (
                             termContents.length > 0 ? (
                               termContents.map((item) => {
@@ -348,29 +332,18 @@ function SideBar(props) {
 
 
                         ) 
-                        // : props.route === "/library" ? (
-                        //   <div class="button-container">
-                        //   <button 
-                        //     className="add_course-btn" 
-                        //     onClick={handleAddRubricModal}
-                        //   >
-                        //     + Add Rubric
-                        //   </button>
-                        //   </div>
-                        // ) 
-                        : null}  {/* button */}
+                      
+                        : null}  
                        
-                        
-
+                    
 
                       </div>
                     );
-                  })} {/*end of object*/}
-                  {/* ----------------------------additional stuff----------------------------------- */}
+                  })} 
             </li>
             <li>
               <NavLink to="/history" className="mobile-disable">History</NavLink>
-                  {/* // --------original sidebar------------------ */}
+               
                 
                     
                   {props.route==="/history" && Object.entries(props.content_dictionary).map(([title, contents]) => {
@@ -381,10 +354,7 @@ function SideBar(props) {
                         className="sidebar-content"
                         style={title === "Courses" ? { maxHeight: "75%" } : null}
                       >
-                        {/* {(title === "Courses" && dropdown_value !== "") ||
-                        title === "Terms" ? (
-                          <h1>{title}</h1>
-                        ) : null} */} 
+                      
                         <div className="sidebar-list">
                           {title === "Terms" ? (
                             Object.keys(contents).length > 0 ? (
@@ -460,11 +430,11 @@ function SideBar(props) {
                     );
                   })}
                  
-                  {/* //-----------original sidebar---------------- */}
+                
             </li>
             <li>
               <NavLink to="/library">Library</NavLink>
-               {/* -------------------------additional stuff--------------------------- */}
+        
                {props.route==="/library" && Object.entries(props.content_dictionary).map(([title, contents]) => {
                         return props.route === "/history" ? (
                         
@@ -482,23 +452,8 @@ function SideBar(props) {
                         
                         <div className="sidebar-list">
                           {
-                          // title === "Terms" ? (
-                          //   Object.keys(contents).length > 0 ? (
-                          //     <Dropdown
-                          //       value={dropdown_value}
-                          //       onChange={setDropDownValue}
-                          //       options={[
-                          //         { value: "", label: "Select Term" },
-                          //         ...Object.keys(contents).map((term) => ({
-                          //           value: term,
-                          //           label: term,
-                          //         })),
-                          //       ]}
-                          //     />
-                          //   ) : (
-                          //     <div className="no-content">No {title}</div>
-                          //   )
-                          // ) : 
+                        
+                          
                           title === "Courses" && dropdown_value !== "" && props.route ==="/" ? (
                             termContents.length > 0 ? (
                               termContents.map((item) => {
@@ -566,15 +521,12 @@ function SideBar(props) {
                           </button>
                           </div>
                         ) 
-                        : null}  {/* button */}
-                       
-                        
-
-
+                        : null}  
+   
                       </div>
                     );
-                  })} {/*end of object*/}
-                  {/* ----------------------------additional stuff----------------------------------- */}
+                  })} 
+                  
             </li>
             <li>
               <NavLink to="/about">About</NavLink>
