@@ -1,4 +1,32 @@
-import React, {useState, useEffect} from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/AddCourse.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/AddCourse.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, {useState, useEffect} from "react";
 import "../styles/addcourse.css";
 import "../styles/modal.css";
 import "../styles/course.css";
@@ -47,24 +75,24 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
 
         // Summer Sessions (May 30 to Aug 18)
         if (
-            (month === 4 && day >= 30) ||
-            (month > 4 && month < 7) ||
-            (month === 7 && day <= 18)
+            (month === 4 &amp;&amp; day >= 30) ||
+            (month > 4 &amp;&amp; month &lt; 7) ||
+            (month === 7 &amp;&amp; day &lt;= 18)
         ) {
             return 3; // Summer
         }
 
         // Fall Semester (Aug 28 to Dec 20)
         if (
-            (month === 7 && day >= 28) ||
-            (month > 7 && month < 11) ||
-            (month === 11 && day <= 20)
+            (month === 7 &amp;&amp; day >= 28) ||
+            (month > 7 &amp;&amp; month &lt; 11) ||
+            (month === 11 &amp;&amp; day &lt;= 20)
         ) {
             return 4; // Fall
         }
 
         // Winter Session (Dec 28 to Jan 19)
-        if ((month === 11 && day >= 28) || (month === 0 && day <= 19)) {
+        if ((month === 11 &amp;&amp; day >= 28) || (month === 0 &amp;&amp; day &lt;= 19)) {
             return 1; // Winter
         }
 
@@ -89,7 +117,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
         let year = currentYear;
 
         // Include 4 semesters from the current one
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i &lt; 4; i++) {
             futureSemesters.push({
                 value: `${startSem}_${year}`,
                 text: `${startSem.charAt(0).toUpperCase() + startSem.slice(1)} ${year}`,
@@ -191,7 +219,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
             .filter((line) => line.trim() !== "");
         // Combine adjacent elements so that each "Line #" and its message are in the same element
         const combinedLines = [];
-        for (let i = 0; i < lines.length; i += 2) {
+        for (let i = 0; i &lt; lines.length; i += 2) {
             combinedLines.push(lines[i] + (lines[i + 1] || ""));
         }
         return combinedLines
@@ -220,7 +248,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
             .then((res) => res.text())
             .then((result) => {
               // If the result is a string and not empty, it means there is an error
-                if (typeof result === "string" && result !== "") {
+                if (typeof result === "string" &amp;&amp; result !== "") {
                     try {
                         const parsedResult = JSON.parse(result);
                         console.log(parsedResult);
@@ -255,25 +283,25 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
 
     // The AddCourse component renders a form to add a new course.
     return (
-        <>
-            <div className="formContainer">
-                <div className="formContent">
-                    <h2 className="add-header">Add Course</h2>
+        &lt;>
+            &lt;div className="formContainer">
+                &lt;div className="formContent">
+                    &lt;h2 className="add-header">Add Course&lt;/h2>
                     {/*The form element where the onSubmit event is handled by the handleSubmit function.*/}
-                    <form
+                    &lt;form
                         className="add__form"
                         onSubmit={handleSubmit}
                         encType="multipart/form-data"
                     >
-                        <div className="addcourse-form__item--container">
+                        &lt;div className="addcourse-form__item--container">
                             {/* Section for course code and name with potential duplicate error messages. */}
-                            <div className="addcourse--namecode-error">
+                            &lt;div className="addcourse--namecode-error">
                                 {/* Input fields for course code and name. */}
-                                <div className="addcourse--name-code">
-                                    <div className="name-code--item form__item">
-                                        <label className="form__item--label">
+                                &lt;div className="addcourse--name-code">
+                                    &lt;div className="name-code--item form__item">
+                                        &lt;label className="form__item--label">
                                             Course Code
-                                            <input
+                                            &lt;input
                                                 type="text"
                                                 id="course-code"
                                                 value={courseCode}
@@ -281,16 +309,16 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
                                                 placeholder="CSE 115"
                                                 required
                                                 className={
-                                                    duplicateError && "addcourse-duplicate-error"
+                                                    duplicateError &amp;&amp; "addcourse-duplicate-error"
                                                 }
                                             />
-                                        </label>
-                                    </div>
+                                        &lt;/label>
+                                    &lt;/div>
 
-                                    <div className="name-code--item form__item">
-                                        <label className=" form__item--label">
+                                    &lt;div className="name-code--item form__item">
+                                        &lt;label className=" form__item--label">
                                             Course Name
-                                            <input
+                                            &lt;input
                                                 type="text"
                                                 id="course-name"
                                                 value={courseName}
@@ -298,42 +326,42 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
                                                 placeholder="Introduction to Computer Science"
                                                 required
                                                 className={
-                                                    duplicateError && "addcourse-duplicate-error"
+                                                    duplicateError &amp;&amp; "addcourse-duplicate-error"
                                                 }
                                             />
-                                        </label>
-                                    </div>
-                                </div>
+                                        &lt;/label>
+                                    &lt;/div>
+                                &lt;/div>
                                 {/* Displays error message if the course being added is a duplicate. */}
-                                {duplicateError && (
-                                    <p className="add-course--error">
+                                {duplicateError &amp;&amp; (
+                                    &lt;p className="add-course--error">
                                         This course already exists
-                                    </p>
+                                    &lt;/p>
                                 )}
-                            </div>
+                            &lt;/div>
 
                             {/* File input for course roster CSV file with specific requirements. */}
-                            <div className="form__item file-input-wrapper">
-                                <label className="form__item--label form__item--file">
+                            &lt;div className="form__item file-input-wrapper">
+                                &lt;label className="form__item--label form__item--file">
                                     Roster (CSV File) - Requires Emails in Columns 1, First Names
                                     in Columns 2 and Last Names in Columns 3
-                                    <input
+                                    &lt;input
                                         type="file"
                                         id="addcourse-file-input"
                                         className={`addcourse-file-input`}
                                         onChange={(e) => setFile(e.target.files[0])}
                                         required
                                     />
-                                </label>
-                            </div>
+                                &lt;/label>
+                            &lt;/div>
 
-                            <div className="sem-year--additional-instructor--container">
+                            &lt;div className="sem-year--additional-instructor--container">
                                 {/* Dropdown for selecting the course's semester and year. */}
-                                <div className="form__item form__item--select">
-                                    <label className="form__item--label">
+                                &lt;div className="form__item form__item--select">
+                                    &lt;label className="form__item--label">
                                         Course Semester and Year
-                                    </label>
-                                    <select
+                                    &lt;/label>
+                                    &lt;select
                                         value={`${semester}_${year}`}
                                         className="add-course--select"
                                         onChange={handleSemesterChange}
@@ -343,59 +371,82 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
                                     >
                                         {semesters.map((sem) => {
                                             return (
-                                                <option
+                                                &lt;option
                                                     key={sem.value}
                                                     value={sem.value}
                                                     selected={sem.value === `${semester}_${year}`}
                                                 >
                                                     {sem.text}
-                                                </option>
+                                                &lt;/option>
                                             );
                                         })}
-                                    </select>
-                                </div>
+                                    &lt;/select>
+                                &lt;/div>
 
                                 {/* Select component for choosing additional instructors. */}
-                                <div className="form__item additional-instructors--item">
-                                    <label className="form__item--label">
+                                &lt;div className="form__item additional-instructors--item">
+                                    &lt;label className="form__item--label">
                                         Additional Instructor(s)
-                                    </label>
-                                    <Select
+                                    &lt;/label>
+                                    &lt;Select
                                         multiple
                                         options={allInstructors}
                                         value={instructors}
                                         onChange={(o) => setInstructors(o)}
                                     />
-                                </div>
-                            </div>
-                        </div>
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
 
                         {/* Submission button for the form. */}
-                        <div className="add-form__submit--container">
-                            <button type="submit" className="form__submit">
+                        &lt;div className="add-form__submit--container">
+                            &lt;button type="submit" className="form__submit">
                                 + Add Course
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                            &lt;/button>
+                        &lt;/div>
+                    &lt;/form>
+                &lt;/div>
+            &lt;/div>
 
             {/* Conditional rendering of a modal dialog for roster file errors. */}
-            {showModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h2>Roster File Error</h2>
+            {showModal &amp;&amp; (
+                &lt;div className="modal">
+                    &lt;div className="modal-content">
+                        &lt;h2>Roster File Error&lt;/h2>
                         {
-                            rosterFileError.length > 0 && rosterFileError.map((err) => (
-                                <p>{err}</p>
+                            rosterFileError.length > 0 &amp;&amp; rosterFileError.map((err) => (
+                                &lt;p>{err}&lt;/p>
                             ))
                         }
-                        <button className="roster-file--error-btn" onClick={handleModalClose}>OK</button>
-                    </div>
-                </div>
+                        &lt;button className="roster-file--error-btn" onClick={handleModalClose}>OK&lt;/button>
+                    &lt;/div>
+                &lt;/div>
             )}
-        </>
+        &lt;/>
     );
 };
 
 export default AddCourse;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="About.html">About</a></li><li><a href="AddCourse.html">AddCourse</a></li></ul><h3>Global</h3><ul><li><a href="global.html#History">History</a></li><li><a href="global.html#Home">Home</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Feb 12 2024 10:43:08 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

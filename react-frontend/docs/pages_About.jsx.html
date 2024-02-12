@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/About.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/About.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from "react";
+import "../styles/about.css";
+import AriannaPFP from "../assets/fall2023team/ariannaescobarreyes.jpg";
+import JustinPFP from "../assets/fall2023team/justinvariara.png";
+import KoreyPFP from "../assets/fall2023team/koreyliu.jpg"
+import ArdianPFP from "../assets/fall2023team/ardianmuriqi.jpg"
+import AhmedPFP from "../assets/fall2023team/ahmed_alabadi.jpg"
+import {FaLinkedin} from "react-icons/fa";
+import {MdEmail} from "react-icons/md";
+import {FaLink} from "react-icons/fa";
+
+/**
+ * The About component displays information about the development team.
+ * @returns {Element}
+ * @constructor
+ */
+
+const About = () => {
+    return (
+        &lt;div className="about-page--container">
+            &lt;div className="about-page--individual-team-container">
+                &lt;h1>Development Team&lt;/h1>
+                &lt;div className="about-page--team-info">
+                    &lt;h1>Fall 2023&lt;/h1>
+                    &lt;div className="about-page--team-members">
+                        &lt;div className="about-page--profile">
+                          {/* The following code is repeated for each team member */}
+                            &lt;img src={AriannaPFP} alt="Picture of Arianna"/>
+                            &lt;h1>Arianna Escobar-Reyes&lt;/h1>
+                            &lt;h2>Design Founder &amp; Lead&lt;/h2>
+                            &lt;h2>Full Stack Developer&lt;/h2>
+                            &lt;div className="about-page--contacts">
+                                &lt;a
+                                    href="https://www.linkedin.com/in/arianna-escobar-reyes/"
+                                    target="_blank"
+                                >
+                                    &lt;FaLinkedin/>
+                                &lt;/a>
+                                &lt;a href="mailto:escobarreyesarianna@gmail.com" target="_blank">
+                                    &lt;MdEmail/>
+                                &lt;/a>
+                            &lt;/div>
+                        &lt;/div>
+
+                        &lt;div className="about-page--profile">
+                            &lt;img src={JustinPFP} alt="Picture of Justin"/>
+                            &lt;h1>Justin Variara&lt;/h1>
+                            &lt;h2>Front-End Lead&lt;/h2>
+                            &lt;h2>Full Stack Developer&lt;/h2>
+                            &lt;div className="about-page--contacts">
+                                &lt;a
+                                    href="https://www.linkedin.com/in/justinvariara/"
+                                    target="_blank"
+                                >
+                                    &lt;FaLinkedin/>
+                                &lt;/a>
+                                &lt;a href="mailto:jvariara@gmail.com" target="_blank">
+                                    &lt;MdEmail/>
+                                &lt;/a>
+                                &lt;a href="https://www.justinvariara.com/" target="_blank">
+                                    &lt;FaLink/>
+                                &lt;/a>
+                            &lt;/div>
+                        &lt;/div>
+
+                        &lt;div className="about-page--profile">
+                            &lt;img src={KoreyPFP} alt="Picture of Korey"/>
+                            &lt;h1>Korey Liu&lt;/h1>
+                            &lt;h2>Back-End Developer&lt;/h2>
+                            &lt;div className="about-page--contacts">
+                                &lt;a
+                                    href="https://www.linkedin.com/in/koreyliu/"
+                                    target="_blank"
+                                >
+                                    &lt;FaLinkedin/>
+                                &lt;/a>
+                                &lt;a href="mailto:koreyliu1221@gmail.com" target="_blank">
+                                    &lt;MdEmail/>
+                                &lt;/a>
+                            &lt;/div>
+                        &lt;/div>
+
+                        &lt;div className="about-page--profile">
+                            &lt;img src={ArdianPFP} alt="Picture of Ardian"/>
+                            &lt;h1>Ardian Muriqi&lt;/h1>
+                            &lt;h2>Back-End Developer&lt;/h2>
+                            &lt;div className="about-page--contacts">
+                                &lt;a
+                                    href="https://www.linkedin.com/in/ardian-muriqi-00am995777/"
+                                    target="_blank"
+                                >
+                                    &lt;FaLinkedin/>
+                                &lt;/a>
+                                &lt;a href="mailto:muriqiardian@gmail.com" target="_blank">
+                                    &lt;MdEmail/>
+                                &lt;/a>
+                            &lt;/div>
+                        &lt;/div>
+
+                        &lt;div className="about-page--profile">
+                            &lt;img src={AhmedPFP} alt="Picture of Ahmed"/>
+                            &lt;h1>Ahmed Alabadi&lt;/h1>
+                            &lt;h2>Full Stack Developer&lt;/h2>
+                            &lt;div className="about-page--contacts">
+                                &lt;a href="mailto:alabadiahmed1129@gmail.com" target="_blank">
+                                    &lt;MdEmail/>
+                                &lt;/a>
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+                &lt;/div>
+            &lt;/div>
+        &lt;/div>
+    );
+};
+
+export default About;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="About.html">About</a></li><li><a href="AddCourse.html">AddCourse</a></li></ul><h3>Global</h3><ul><li><a href="global.html#History">History</a></li><li><a href="global.html#Home">Home</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Feb 12 2024 10:43:08 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
