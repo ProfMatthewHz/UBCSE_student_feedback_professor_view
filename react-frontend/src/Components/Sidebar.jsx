@@ -111,7 +111,7 @@ import AddRubric from "./AddRubric";
     </div>
   );
 })}
-</div> */}
+</div>  */}
 //-----------original sidebar----------------
 
 
@@ -370,6 +370,97 @@ function SideBar(props) {
             </li>
             <li>
               <NavLink to="/history" className="mobile-disable">History</NavLink>
+                  {/* // --------original sidebar------------------ */}
+                
+                    
+                  {props.route==="/history" && Object.entries(props.content_dictionary).map(([title, contents]) => {
+                    return props.route === "/history" ? (
+
+
+                      <div
+                        className="sidebar-content"
+                        style={title === "Courses" ? { maxHeight: "75%" } : null}
+                      >
+                        {/* {(title === "Courses" && dropdown_value !== "") ||
+                        title === "Terms" ? (
+                          <h1>{title}</h1>
+                        ) : null} */} 
+                        <div className="sidebar-list">
+                          {title === "Terms" ? (
+                            Object.keys(contents).length > 0 ? (
+                              <Dropdown
+                                value={dropdown_value}
+                                onChange={setDropDownValue}
+                                options={[
+                                  { value: "", label: "Select Term" },
+                                  ...Object.keys(contents).map((term) => ({
+                                    value: term,
+                                    label: term,
+                                  })),
+                                ]}
+                              />
+                            ) : (
+                              <div className="no-content">No {title}</div>
+                            )
+                          ) : title === "Courses" && dropdown_value !== "" ? (
+                            termContents.length > 0 ? (
+                              termContents.map((item) => {
+                                return (
+                                  <a href={"#" + item.code}>
+                                    <div
+                                      onClick={() =>
+                                        setActiveButton(item.code + "-Option")
+                                      }
+                                      id={item.code + "-Option"}
+                                      className={
+                                        activeButton === item.code + "-Option"
+                                          ? "active"
+                                          : item.code + "-Option"
+                                      }
+                                    >
+                                      {item.code}
+                                    </div>
+                                  </a>
+                                );
+                              })
+                            ) : (
+                              <div className="no-content">No {title}</div>
+                            )
+                          ) : null}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="sidebar-content" style={{ minHeight: "90%" }}>
+                        {/* <h1>{title}</h1> */}
+                        <div className="sidebar-list">
+                          {contents.length > 0 ? (
+                            contents.map((item) => {
+                              return (
+                                <a href={"#" + item}>
+                                  <div
+                                    onClick={() => setActiveButton(item + "-Option")}
+                                    id={item + "-Option"}
+                                    className={
+                                      activeButton === item + "-Option"
+                                        ? "active"
+                                        : item + "-Option"
+                                    }
+                                  >
+                                    {item}
+                                  </div>
+                                </a>
+                              );
+                            })
+                          ) : (
+                            <div className="no-content">No {title}</div>
+                          )}
+                        </div>
+                       
+                      </div>
+                    );
+                  })}
+                 
+                  {/* //-----------original sidebar---------------- */}
             </li>
             <li>
               <NavLink to="/library">Library</NavLink>
