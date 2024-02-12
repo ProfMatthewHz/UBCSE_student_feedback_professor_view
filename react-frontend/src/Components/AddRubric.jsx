@@ -22,6 +22,8 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
 
   // (Modal 1) Rubric Levels
 
+
+  // Add a new column to the rubric
   const handleAddColumn = () => {
     const updatedData = {
       ...rubricData,
@@ -31,6 +33,7 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
     setDeleteColumnsHovered([...deleteColumnHovered, false]);
   }
 
+  // Delete a column from the rubric
   const handleDeleteColumn = (indexToRemove) => {
     const newErrorMessage = { ...errorMessage };
 
@@ -49,11 +52,13 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
       }
     }
 
+    // Remove the column from the rubric
     const updatedData = {
       ...rubricData,
       levels: rubricData.levels.filter((_, index) => index !== indexToRemove)
     };
 
+    // Remove the column from the error message
     const updatedTopics = rubricData.topics.map((topic) => ({
       ...topic,
       responses: topic.responses.filter((_, index) => index !== indexToRemove)
@@ -62,13 +67,14 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
 
     setRubricData(updatedData);
 
+    // Remove the column from the delete button states
     const updatedColumnDisplay = deleteColumnHovered.filter((_, index) => index !== indexToRemove);
     setDeleteColumnsHovered(updatedColumnDisplay);
 
   };
 
+  // Set the delete button states for columns
   const handleDeleteColumnsHovered = (action, index) => {
-
     if (action === "hovered") {
       const updatedData = [...deleteColumnHovered];
       updatedData[index] = true;
@@ -78,8 +84,13 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
       updatedData[index] = false;
       setDeleteColumnsHovered(updatedData);
     }
-  };
-
+  }
+  /**
+   * Handles the change of the name of a level in the rubric.
+   * @param index
+   * @param value
+   * @returns {void}
+   */
   const handleLevelNameChange = (index, value) => {
     if (errorMessage["level-" + index.toString()] && errorMessage["level-" + index.toString()]["name"]) {
       setErrorMessage({});
@@ -90,18 +101,28 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
     setRubricData(updatedData);
   };
 
+  /**
+   * Handles the change of the score of a level in the rubric.
+   * @param {number} index The index of the level in the rubric.
+   * @param {number} value The new score of the level.
+   * @returns {void}
+   */
   const handleLevelPointsChange = (index, value) => {
     if (errorMessage["level-" + index.toString()]
       && !errorMessage["level-" + index.toString()]["name"]
       && errorMessage["level-" + index.toString()]["level"]) {
       setErrorMessage({});
     }
-
     const updatedData = { ...rubricData };
     updatedData["levels"][index]["score"] = parseInt(value);
     setRubricData(updatedData);
   };
 
+  /**
+   * Handles the change of the name of the rubric.
+   * @param value
+   * @returns {void}
+   */
   const handleRubricNameChange = (value) => {
     if (errorMessage["rubric-name"]) {
       setErrorMessage({});
@@ -113,7 +134,10 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
   };
 
   // (Modal 2) Rubric Criteria
-
+  /**
+   * Adds a new row to the rubric.
+   * @returns {void}
+   */
   const handleAddRow = () => {
 
     const emptyResponses = Array.from({ length: rubricData.levels.length }, () => "");
