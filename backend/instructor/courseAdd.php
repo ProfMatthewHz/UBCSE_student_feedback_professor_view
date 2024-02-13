@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   //$currentSemesterMonth = SEMESTER_MAP[$currentMonth];
 
   //print_r($currentYear . " = Current Year.        ");
-  $month = date('m');
+  $month = idate('m');
   $ActualMonth = MONTH_MAP_SEMESTER[$month];
   $currentActualMonth = SEMESTER_MAP_REVERSE[$ActualMonth];
   
