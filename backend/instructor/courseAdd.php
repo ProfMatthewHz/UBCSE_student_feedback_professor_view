@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   if(!empty($_POST['additional-instructors'])) {
     $additional_instructors = explode(',', $_POST['additional-instructors']);
-    $additional_instructors = $instructorSplit;
+    // $additional_instructors = $instructorSplit;
   }else {
     $additional_instructors = [];
   }
