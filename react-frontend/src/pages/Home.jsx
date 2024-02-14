@@ -78,7 +78,7 @@ const Home = () => {
   return (
     <>
       <SideBar route="/" content_dictionary={sidebar_content} getCourses={fetchCourses} />
-      <div className="container home--container">
+      <div className="home--container">
         <div className="containerOfCourses">
           {courses.length > 0 ? (
             courses.map((course) => (

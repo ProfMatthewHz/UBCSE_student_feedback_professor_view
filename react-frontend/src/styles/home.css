@@ -1,23 +1,26 @@
 .container {
     width: 100%;
-    left: 195px;
-    padding-top: 145px;
+    /* left: 195px; */
+    padding-left: 220px;
+    padding-top: 15px;
     padding-bottom: 20px;
   
 }
 
-.container .home--container {
+.home--container {
+    position: fixed;
     height: calc(100vh - 148px);
-    padding-left: 195px;
+    width: calc(100% - 195px);
+    left: 195px;
 }
 
-.container .yes-course {
+.home--container .yes-course {
     display: flex;
     justify-content: center;
     scroll-margin-top: 148px;
 }
 
-.container .yes-course h1 {
+.home--container .yes-course h1 {
     color: #225cb5;
     max-width: 100vw;
     width: 100%;
@@ -29,13 +32,14 @@
   
 }
 
-.container .no-course {
+.home--container .no-course {
     display: flex;
-    justify-content: center;
     scroll-margin-top: 148px;
+    padding-left: 20px;
 }
 
-.container .no-course h1 {
+.home--container .no-course h1 {
+
     color: #225cb5;
     max-width: 100vw;
     margin-top: 40px;

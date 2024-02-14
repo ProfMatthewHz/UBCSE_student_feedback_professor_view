@@ -90,7 +90,7 @@
 .sidebar-list {
   /* height: 100%; */
    
-  /* max-height: 300px; */
+  max-height: 300px; 
   width: 166px;
   margin-bottom: 15%;
   overflow-y: auto;
