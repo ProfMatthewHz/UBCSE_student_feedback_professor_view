@@ -9,7 +9,7 @@
     height: calc(100vh - 148px);
     padding-left: 195px;
 }
-.home--containe .yes-course {
+.home--container .yes-course {
     display: flex;
     justify-content: center;
     scroll-margin-top: 148px;

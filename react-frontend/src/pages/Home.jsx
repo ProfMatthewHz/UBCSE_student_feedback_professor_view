@@ -86,7 +86,7 @@ const Home = () => {
             ))
           ) : (
             <div className="no-course">
-              <h1>No Courses Yet!</h1>
+              <h1>No Courses Yet</h1>
             </div>
           )}
         </div>
