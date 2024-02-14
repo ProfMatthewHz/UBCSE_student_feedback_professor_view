@@ -1,4 +1,3 @@
-/*Teamwork Evaluation Title*/
 .title{
   width: 195px;
   height: 100%; 
@@ -23,8 +22,6 @@
   position: relative;
   padding-left: 6px;
 }
-
-
 .title .sidebar {
   width: 195px;
   /* height: calc(100% - 160px); increased height calc(100% - 148px) */
@@ -37,11 +34,9 @@
   /* align-items: center; */
   padding-top: 2%;
 }
-
 .title .sidebar > div {
   margin: 5%;
 }
-
 .title .sidebar .button-container {
   display: flex;
   justify-content: center;  /* Center items horizontally */
@@ -53,11 +48,9 @@
   bottom: 0;  
   left: 0;    
   margin-bottom: 20px; 
-
   
  
 }
-
 .title .sidebar .add_course-btn {
   color: #ffffff;
   font-size: 18px;
@@ -73,7 +66,6 @@
   /* top: 375px;    */
   
 }
-
 .title .sidebar .add_course-btn:hover {
   color: #fff;
   background-color: #659743;
@@ -82,32 +74,29 @@
 
 .sidebar-content {
   width: 85%;
-  /* max-height: 300px; */
+  max-height: 300px;
   display: flex;
   flex-direction: column;
 }
 
 .sidebar-list {
   /* height: 100%; */
-   
-  max-height: 300px; 
+
+  max-height: 300px;
   width: 166px;
   margin-bottom: 15%;
   overflow-y: auto;
   padding-left: 15%;
   overflow-x: scroll;
 }
-
 .sidebar-list::-webkit-scrollbar {
   opacity: 100%;
   width: 5px;
 }
-
 .sidebar-list::-webkit-scrollbar-thumb {
   background-color: #ffffff;
   border-radius: 15px;
 }
-
 /*
 ::-webkit-scrollbar-thumb:hover {
   background-color: #ff0000;
@@ -115,7 +104,6 @@
   border-style: dotted;
 }
 */
-
 .sidebar h1 {
   color: #ffffff;
   font-size: 24px;
@@ -124,16 +112,13 @@
   margin-bottom: 15%;
   /* margin-top: 172px; add space between top of page and beginning header */
 }
-
 /* .sidebar ul {
   display: flex;
 } */
-
 .sidebar ul li {
   list-style: none;
   margin-bottom: 10%;
 }
-
 .sidebar ul li a {
   color: #ffffff;
   font-size: 20px;
@@ -143,7 +128,6 @@
   text-decoration: none; 
   /* margin-top: 172px; add space between top of page and beginning header */
 }
-
 .sidebar-content a {
   color: #ffffff;
   font-size: 20px;
@@ -152,14 +136,12 @@
   
   
 }
-
 .sidebar-content a > div {
   padding: 10% 0% 10% 15%;
   font-size: 20px;
   font-weight: 400;
   margin-bottom: 10px;
 }
-
 .sidebar-content a > div:hover {
   color: #ffffff;
   background-color: #103876;
@@ -170,7 +152,6 @@
   transition-duration: 0.4s;
   transition-property: background-color;
 }
-
 .sidebar-content a .active {
   color: #154185;
   background-color: #ffffff;
@@ -182,10 +163,7 @@
   transition-property: background-color;
   pointer-events: none;
   
-
-
 }
-
 .sidebar-list .no-content {
   padding: 10% 0% 10% 15%;
   color: #ffffff;
@@ -194,7 +172,6 @@
   font-style: italic;
   text-decoration: none;
 }
-
 /* PHONES AND SMALL DEVICES */
 @media screen and (max-width: 800px) {
   .sidebar {

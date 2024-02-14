@@ -23,8 +23,7 @@ const AboutSidebar = () => {
             <NavLink to="/">Home</NavLink>
           </li>
           <li>
-            <NavLink to="/history">
-              History
+            <NavLink to="/history">History
             </NavLink>
           </li>
           <li>

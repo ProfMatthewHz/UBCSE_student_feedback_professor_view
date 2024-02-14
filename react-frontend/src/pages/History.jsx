@@ -134,7 +134,7 @@ const History = () => {
   return (
     <>
       <SideBar route="/history" content_dictionary={sidebar_content} currentTerm={currentTerm} updateCurrentTerm={updateCurrentTerm}/>
-      <div className="container home--container">
+      <div className="home--container">
         {currentTerm !== "" && Object.entries(terms).length > 0 ? (
           Object.entries(terms).map(([term, courses]) => (
             term === currentTerm ? (
