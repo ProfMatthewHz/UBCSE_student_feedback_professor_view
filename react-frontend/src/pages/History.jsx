@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SideBar from "../Components/Sidebar";
 import Course from "../Components/Course";
-import "../styles/home.css";
+import "../styles/history.css";
 
 const History = () => {
   const [courses, setCourses] = useState([]);
@@ -134,7 +134,7 @@ const History = () => {
   return (
     <>
       <SideBar route="/history" content_dictionary={sidebar_content} currentTerm={currentTerm} updateCurrentTerm={updateCurrentTerm}/>
-      <div className="container home--container">
+      <div className="container history--container">
         {currentTerm !== "" && Object.entries(terms).length > 0 ? (
           Object.entries(terms).map(([term, courses]) => (
             term === currentTerm ? (

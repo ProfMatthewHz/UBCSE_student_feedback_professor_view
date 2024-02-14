@@ -1,9 +1,16 @@
+.container {
+  width: 100%;
+  padding-left: 195px;
+  padding-top: 145px;
+  padding-bottom: 20px;
+}
+
 .about-page--container {
   height: 100%;
   padding: 50px;
   /* position: absolute; */
   top: 148px;
-  width: calc(100%-220px);
+  /* width: calc(100%-220px); */
   padding-left: 220px;
 }
 

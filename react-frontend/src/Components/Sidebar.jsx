@@ -230,7 +230,7 @@ function SideBar(props) {
                   })} 
             </li>
             <li>
-              <NavLink to="/history" className="mobile-disable">History</NavLink>
+              <NavLink to="/history">History</NavLink>
                     
                   {props.route==="/history" && Object.entries(props.content_dictionary).map(([title, contents]) => {
                     return props.route === "/history" ? (
@@ -315,11 +315,10 @@ function SideBar(props) {
                       </div>
                     );
                   })}
-                 
-                
+                        
             </li>
             <li>
-              <NavLink to="/library">Library</NavLink>
+              <NavLink to="/library">Library </NavLink>
         
                {props.route==="/library" && Object.entries(props.content_dictionary).map(([title, contents]) => {
                         return props.route === "/history" ? (

@@ -14,7 +14,7 @@ const AboutSidebar = () => {
     <div className="title">
     <h1>TEAMWORK</h1>
     <h1>EVALUATION</h1>
-    </div>
+    
 
     <div className="sidebar">
       <nav>
@@ -23,7 +23,7 @@ const AboutSidebar = () => {
             <NavLink to="/">Home</NavLink>
           </li>
           <li>
-            <NavLink to="/history" className="mobile-disable">
+            <NavLink to="/history">
               History
             </NavLink>
           </li>
@@ -43,6 +43,7 @@ const AboutSidebar = () => {
           ></i>
         </div> */}
       </nav>
+    </div>
     </div>
     </>
   );
