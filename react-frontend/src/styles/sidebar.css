@@ -1,7 +1,7 @@
 /*Teamwork Evaluation Title*/
 .title{
   width: 195px;
-  height: 160px; 
+  height: 100%; 
   background: #225CB5;
   top: 0;
   left: 0;
@@ -25,9 +25,10 @@
 }
 
 
-.sidebar {
+.title .sidebar {
   width: 195px;
-  height: calc(100% - 160px); /*increased height calc(100% - 148px)*/
+  /* height: calc(100% - 160px); increased height calc(100% - 148px) */
+  height: calc(100vh - 160px);
   background: #225CB5;
   position: fixed;
   top: 160px; /*increased heigh 148px*/
@@ -37,11 +38,11 @@
   padding-top: 2%;
 }
 
-.sidebar > div {
+.title .sidebar > div {
   margin: 5%;
 }
 
-.sidebar .button-container {
+.title .sidebar .button-container {
   display: flex;
   justify-content: center;  /* Center items horizontally */
   align-items: center;      /* Center items vertically */
@@ -49,13 +50,15 @@
   height: 50px;
   width: 180px;
   position: fixed;
-  bottom: 10px;
-  left: 10px;
+  bottom: 0;  
+  left: 0;    
+  margin-bottom: 20px; 
+
   
  
 }
 
-.sidebar .add_course-btn {
+.title .sidebar .add_course-btn {
   color: #ffffff;
   font-size: 18px;
   font-weight: bold;
@@ -71,7 +74,7 @@
   
 }
 
-.sidebar .add_course-btn:hover {
+.title .sidebar .add_course-btn:hover {
   color: #fff;
   background-color: #659743;
   transition: all .2s ease;

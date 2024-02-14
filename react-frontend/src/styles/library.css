@@ -7,6 +7,7 @@
 
 .library--container {
   height: calc(100vh - 148px);
+  padding-left: 195px;
 }
 
 .container-of-rubrics {
@@ -41,8 +42,8 @@
 .container .no-course h1 {
   color: #225cb5;
   max-width: 100vw;
-  width: 100%;
-  padding-left: 50px;
+  /* width: 100%;
+  padding-left: 50px; */
   margin-top: 40px;
   margin-bottom: -20px;
   overflow-y: auto;
