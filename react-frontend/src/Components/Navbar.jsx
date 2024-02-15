@@ -5,11 +5,13 @@ import "../styles/navbar.css";
 
 const Navbar = () => {
   const [clicked, setClicked] = useState(false)
-
+  /**
+   * The Navbar component is a reusable component that displays a navigation bar.
+   */
   const handleClick = () => {
     setClicked((prev) => !prev)
   }
-
+  // The Navbar component renders a navigation bar with links to different pages.
   return (
     <>
       <div className="topbar" />

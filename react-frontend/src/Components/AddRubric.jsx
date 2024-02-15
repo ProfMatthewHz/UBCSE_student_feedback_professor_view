@@ -136,7 +136,6 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
   // (Modal 2) Rubric Criteria
   /**
    * Adds a new row to the rubric.
-   * @returns {void}
    */
   const handleAddRow = () => {
 
@@ -150,6 +149,11 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
     setDeleteRowsHovered([...deleteRowHovered, false]);
   };
 
+  /**
+   * Handles the change of the name of a criterion in the rubric.
+   * @param index
+   * @param value
+   */
   const handleCriterionNameChange = (index, value) => {
 
     if (errorMessage["criterion-" + index.toString()]
@@ -162,6 +166,12 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
     setRubricData(updatedData);
   };
 
+  /**
+   * Handles the change of the response of a criterion in the rubric.
+   * @param criterionIndex
+   * @param levelIndex
+   * @param value
+   */
   const handleCriterionResponseChange = (criterionIndex, levelIndex, value) => {
 
     if (errorMessage["criterion-" + criterionIndex.toString()]
@@ -175,6 +185,10 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
     setRubricData(updatedData);
   };
 
+  /**
+   * Deletes a row from the rubric.
+   * @param indexToRemove
+   */
   const handleDeleteRow = (indexToRemove) => {
 
     const currentErrorMessage = Object.entries(errorMessage)
@@ -202,6 +216,11 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
     setDeleteRowsHovered(updatedRowDisplay);
   };
 
+  /**
+   * Sets the delete button states for rows.
+   * @param action
+   * @param index
+   */
   const handleDeleteRowsHovered = (action, index) => {
 
     if (action === "hovered") {
@@ -215,6 +234,9 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
     }
   };
 
+  /**
+   * Handles the click of the back button.
+   */
   const handleBackButton = () => {
     if (showCreateCriteriaModal) {
       setShowCreateLevelsModal(true);
@@ -227,6 +249,9 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
     }
   }
 
+  /**
+   * Handles the click of the next button.
+   */
   const handleNextButton = async () => {
 
     if (showCreateLevelsModal) {
@@ -257,7 +282,10 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
 
 
   // Fetches
-
+  /**
+   * Fetches the errors from the API.
+   * @param filename
+   */
   const fetchRubricErrors = async (filename) => {
     try {
       const response = await fetch(
@@ -284,6 +312,9 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
     }
   };
 
+  /**
+   * Fetches the save rubric from the API.
+   */
   const fetchSaveRubric = async () => {
     try {
       const response = await fetch(
@@ -346,7 +377,9 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
 
   }, [])
 
-
+  /**
+   * Handles the click of the close button.
+   */
   return (
     <div className="addrubric--container">
       {showCreateLevelsModal ? (

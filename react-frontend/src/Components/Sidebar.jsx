@@ -1,214 +1,221 @@
 import "../styles/sidebar.css";
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
 import Dropdown from "./Dropdown";
 import Modal from "./Modal";
 import AddCourse from "../pages/AddCourse";
 import AddRubric from "./AddRubric";
 
+/**
+ * The Sidebar component is a reusable component that displays a sidebar.
+ * @param props
+ * @returns {Element}
+ * @constructor
+ */
 function SideBar(props) {
-  const [activeButton, setActiveButton] = useState(false);
-  const [dropdown_value, setDropDownValue] = useState("");
-  const sidebar_items = props.content_dictionary["Courses"] ? Object.values(props.content_dictionary["Courses"])
-    : (props.content_dictionary["Rubrics"]) ? Object.values(props.content_dictionary["Rubrics"])
-    : []
-  const [termContents, setTermContents] = useState([]);
-  // Add course stuff
-  const [showAddCourseModal, setShowAddCourseModal] = useState(false);
+    const [activeButton, setActiveButton] = useState(false);
+    const [dropdown_value, setDropDownValue] = useState("");
+    const sidebar_items = props.content_dictionary["Courses"] ? Object.values(props.content_dictionary["Courses"])
+        : (props.content_dictionary["Rubrics"]) ? Object.values(props.content_dictionary["Rubrics"])
+            : []
+    const [termContents, setTermContents] = useState([]);
+    // Add course stuff
+    const [showAddCourseModal, setShowAddCourseModal] = useState(false);
 
-  const handleAddCourseModal = () => {
-    setShowAddCourseModal(prevState => !prevState);
-  };
-
-  // + Add Rubric for Library Page
-  const [showAddRubricModal, setShowAddRubricModal] = useState(false);
-
-  const handleAddRubricModal = () => {
-    setShowAddRubricModal(prevState => !prevState);
-  }
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const sidebar_items_positions = sidebar_items.map((item) => {
-        const connected_course = document.getElementById(item);
-        if (connected_course) {
-          return document.getElementById(item).offsetTop - 366;
-        }
-      });
-
-      for (let i = sidebar_items.length - 1; i >= 0; i--) {
-        if (scrollPosition >= sidebar_items_positions[i]) {
-          setActiveButton(sidebar_items[i] + "-Option");
-          break;
-        }
-      }
+    const handleAddCourseModal = () => {
+        setShowAddCourseModal(prevState => !prevState);
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [sidebar_items]);
+    // + Add Rubric for Library Page
+    const [showAddRubricModal, setShowAddRubricModal] = useState(false);
 
-  useEffect(() => {
-    if (props.route === "/history") {
-      if (!dropdown_value) {
-        props.updateCurrentTerm("");
-      } else if (
-        dropdown_value &&
-        props.content_dictionary["Terms"][dropdown_value]
-      ) {
-        setTermContents(
-          Object.values(props.content_dictionary["Terms"][dropdown_value])
-        );
-        props.updateCurrentTerm(dropdown_value);
-      } else {
-        setTermContents([]);
-      }
+    const handleAddRubricModal = () => {
+        setShowAddRubricModal(prevState => !prevState);
     }
-  }, [dropdown_value, props.content_dictionary]);
 
-  return (
-    <>
-      {/* Add Course Modal Below */}
-      <Modal
-        open={showAddCourseModal}
-        onRequestClose={handleAddCourseModal}
-        width={"750px"}
-        maxWidth={"90%"}
-      >
-        <div className="CancelContainer">
-          <button className="CancelButton" onClick={handleAddCourseModal}>
-            ×
-          </button>
-        </div>
-        <AddCourse
-          handleAddCourseModal={handleAddCourseModal}
-          getCourses={props.getCourses}
-        />
-      </Modal>
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollPosition = window.scrollY;
+            const sidebar_items_positions = sidebar_items.map((item) => {
+                const connected_course = document.getElementById(item);
+                if (connected_course) {
+                    return document.getElementById(item).offsetTop - 366;
+                }
+            });
 
-      {/* Add Rubric Modal Below */}
-      <Modal
-        open={showAddRubricModal}
-        onRequestClose={handleAddRubricModal}
-        width={"auto"}
-        maxWidth={"90%"}
-      >
-        <div className="CancelContainer">
-          <button className="CancelButton" onClick={handleAddRubricModal}>
-            ×
-          </button>
-        </div>
-        <AddRubric
-        handleAddRubricModal ={handleAddRubricModal}
-        getRubrics={props.getRubrics}
-        />
-      </Modal>
-      <div className="sidebar">
-        {Object.entries(props.content_dictionary).map(([title, contents]) => {
-          return props.route === "/history" ? (
-            <div
-              className="sidebar-content"
-              style={title === "Courses" ? { maxHeight: "75%" } : null}
+            for (let i = sidebar_items.length - 1; i >= 0; i--) {
+                if (scrollPosition >= sidebar_items_positions[i]) {
+                    setActiveButton(sidebar_items[i] + "-Option");
+                    break;
+                }
+            }
+        };
+        // Add event listener to the window
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [sidebar_items]);
+
+    useEffect(() => {
+        if (props.route === "/history") {
+            if (!dropdown_value) {
+                props.updateCurrentTerm("");
+            } else if (
+                dropdown_value &&
+                props.content_dictionary["Terms"][dropdown_value]
+            ) {
+                setTermContents(
+                    Object.values(props.content_dictionary["Terms"][dropdown_value])
+                );
+                props.updateCurrentTerm(dropdown_value);
+            } else {
+                setTermContents([]);
+            }
+        }
+    }, [dropdown_value, props.content_dictionary]);
+
+    // Add course stuff
+    return (
+        <>
+            {/* Add Course Modal Below */}
+            <Modal
+                open={showAddCourseModal}
+                onRequestClose={handleAddCourseModal}
+                width={"750px"}
+                maxWidth={"90%"}
             >
-              {(title === "Courses" && dropdown_value !== "") ||
-              title === "Terms" ? (
-                <h1>{title}</h1>
-              ) : null}
-              <div className="sidebar-list">
-                {title === "Terms" ? (
-                  Object.keys(contents).length > 0 ? (
-                    <Dropdown
-                      value={dropdown_value}
-                      onChange={setDropDownValue}
-                      options={[
-                        { value: "", label: "Select Term" },
-                        ...Object.keys(contents).map((term) => ({
-                          value: term,
-                          label: term,
-                        })),
-                      ]}
-                    />
-                  ) : (
-                    <div className="no-content">No {title}</div>
-                  )
-                ) : title === "Courses" && dropdown_value !== "" ? (
-                  termContents.length > 0 ? (
-                    termContents.map((item) => {
-                      return (
-                        <a href={"#" + item.code}>
-                          <div
-                            onClick={() =>
-                              setActiveButton(item.code + "-Option")
-                            }
-                            id={item.code + "-Option"}
-                            className={
-                              activeButton === item.code + "-Option"
-                                ? "active"
-                                : item.code + "-Option"
-                            }
-                          >
-                            {item.code}
-                          </div>
-                        </a>
-                      );
-                    })
-                  ) : (
-                    <div className="no-content">No {title}</div>
-                  )
-                ) : null}
-              </div>
-            </div>
-          ) : (
-            <div className="sidebar-content" style={{ minHeight: "90%" }}>
-              <h1>{title}</h1>
-              <div className="sidebar-list">
-                {contents.length > 0 ? (
-                  contents.map((item) => {
-                    return (
-                      <a href={"#" + item}>
+                <div className="CancelContainer">
+                    <button className="CancelButton" onClick={handleAddCourseModal}>
+                        ×
+                    </button>
+                </div>
+                <AddCourse
+                    handleAddCourseModal={handleAddCourseModal}
+                    getCourses={props.getCourses}
+                />
+            </Modal>
+
+            {/* Add Rubric Modal Below */}
+            <Modal
+                open={showAddRubricModal}
+                onRequestClose={handleAddRubricModal}
+                width={"auto"}
+                maxWidth={"90%"}
+            >
+                <div className="CancelContainer">
+                    <button className="CancelButton" onClick={handleAddRubricModal}>
+                        ×
+                    </button>
+                </div>
+                <AddRubric
+                    handleAddRubricModal={handleAddRubricModal}
+                    getRubrics={props.getRubrics}
+                />
+            </Modal>
+            <div className="sidebar">
+                {Object.entries(props.content_dictionary).map(([title, contents]) => {
+                    return props.route === "/history" ? (
                         <div
-                          onClick={() => setActiveButton(item + "-Option")}
-                          id={item + "-Option"}
-                          className={
-                            activeButton === item + "-Option"
-                              ? "active"
-                              : item + "-Option"
-                          }
+                            className="sidebar-content"
+                            style={title === "Courses" ? {maxHeight: "75%"} : null}
                         >
-                          {item}
+                            {(title === "Courses" && dropdown_value !== "") ||
+                            title === "Terms" ? (
+                                <h1>{title}</h1>
+                            ) : null}
+                            <div className="sidebar-list">
+                                {title === "Terms" ? (
+                                    Object.keys(contents).length > 0 ? (
+                                        <Dropdown
+                                            value={dropdown_value}
+                                            onChange={setDropDownValue}
+                                            options={[
+                                                {value: "", label: "Select Term"},
+                                                ...Object.keys(contents).map((term) => ({
+                                                    value: term,
+                                                    label: term,
+                                                })),
+                                            ]}
+                                        />
+                                    ) : (
+                                        <div className="no-content">No {title}</div>
+                                    )
+                                ) : title === "Courses" && dropdown_value !== "" ? (
+                                    termContents.length > 0 ? (
+                                        termContents.map((item) => {
+                                            return (
+                                                <a href={"#" + item.code}>
+                                                    <div
+                                                        onClick={() =>
+                                                            setActiveButton(item.code + "-Option")
+                                                        }
+                                                        id={item.code + "-Option"}
+                                                        className={
+                                                            activeButton === item.code + "-Option"
+                                                                ? "active"
+                                                                : item.code + "-Option"
+                                                        }
+                                                    >
+                                                        {item.code}
+                                                    </div>
+                                                </a>
+                                            );
+                                        })
+                                    ) : (
+                                        <div className="no-content">No {title}</div>
+                                    )
+                                ) : null}
+                            </div>
                         </div>
-                      </a>
+                    ) : (
+                        <div className="sidebar-content" style={{minHeight: "90%"}}>
+                            <h1>{title}</h1>
+                            <div className="sidebar-list">
+                                {contents.length > 0 ? (
+                                    contents.map((item) => {
+                                        return (
+                                            <a href={"#" + item}>
+                                                <div
+                                                    onClick={() => setActiveButton(item + "-Option")}
+                                                    id={item + "-Option"}
+                                                    className={
+                                                        activeButton === item + "-Option"
+                                                            ? "active"
+                                                            : item + "-Option"
+                                                    }
+                                                >
+                                                    {item}
+                                                </div>
+                                            </a>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="no-content">No {title}</div>
+                                )}
+                            </div>
+                            {props.route === "/" ? (
+                                <button
+                                    className="add_course-btn"
+                                    onClick={handleAddCourseModal}
+                                >
+                                    + Add Course
+                                </button>
+                            ) : props.route === "/library" ? (
+                                    <button
+                                        className="add_course-btn"
+                                        onClick={handleAddRubricModal}
+                                    >
+                                        + Add Rubric
+                                    </button>
+                                ) :
+                                null}
+                        </div>
                     );
-                  })
-                ) : (
-                  <div className="no-content">No {title}</div>
-                )}
-              </div>
-              {props.route === "/" ? (
-                <button
-                  className="add_course-btn"
-                  onClick={handleAddCourseModal}
-                >
-                  + Add Course
-                </button>
-              ) : props.route === "/library" ? (
-                <button 
-                  className="add_course-btn" 
-                  onClick={handleAddRubricModal}
-                >
-                  + Add Rubric
-                </button>
-              ) : 
-              null}
+                })}
             </div>
-          );
-        })}
-      </div>
-    </>
-  );
+        </>
+    );
 }
 
 export default SideBar;

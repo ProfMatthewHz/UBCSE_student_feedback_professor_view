@@ -40,7 +40,7 @@ const Library = () => {
     };
     console.log("Sidebar content", sidebar_content)
 
-    // The Library component renders a SideBar component and a list of Rubric components.
+    // The Library component renders a SideBar component and a list of Rubric components.c
     return (
         <>
             <SideBar route="/library" content_dictionary={sidebar_content} getRubrics={fetchRubrics}/>
