@@ -72,16 +72,16 @@ nav ul li a {
 }
 
 /* Hamburger menu for phone */
-#nav-mobile{
+/* #nav-mobile{
     display: none;
-}
+} */
 
-#nav-mobile i{
+/* #nav-mobile i{
     color: #225CB5;
-}
+} */
 
 /* PHONES AND SMALL DEVICES */
-@media screen and (max-width: 800px){
+/* @media screen and (max-width: 800px){
     nav ul {
         flex-direction: column;
         align-items: flex-start;
@@ -126,10 +126,10 @@ nav ul li a {
     .mobile-disable {
         display: none;
     }
-}
+} */
 
 /* small devices */
-@media screen and (max-width: 550px) {
+/* @media screen and (max-width: 550px) {
     .logo {
         width: 100px;
     }
@@ -145,4 +145,4 @@ nav ul li a {
     nav {
         padding: 1.25rem;
     }
-}
+} */
