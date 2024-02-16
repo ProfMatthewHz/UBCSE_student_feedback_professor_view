@@ -5,7 +5,7 @@ import JustinPFP from "../assets/fall2023team/justinvariara.png";
 import KoreyPFP from "../assets/fall2023team/koreyliu.jpg"
 import ArdianPFP from "../assets/fall2023team/ardianmuriqi.jpg"
 import AhmedPFP from "../assets/fall2023team/ahmed_alabadi.jpg"
-import MarianPFP from "../assets/fall2023team/marianhuynh.png";
+import MarianPFP from "../assets/spring2024team/marianhuynh.png";
 import { FaLinkedin } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { FaLink } from "react-icons/fa";
