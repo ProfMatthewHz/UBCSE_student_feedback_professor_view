@@ -93,7 +93,7 @@
   margin-bottom: 20px; 
 }
 
-.sidebar ul li {
+.sidebar ul li { /*menu options*/
   list-style: none;
   margin-bottom: 10%;
 }
@@ -107,16 +107,19 @@
   text-decoration: none;
 }
 
-.sidebar-content a {
+.sidebar-content a {  /*courses and rubric options*/
   color: #ffffff;
   font-size: 20px;
   font-weight: 400;
+  padding-left: 4px;
   text-decoration: none;
 }
 
 .sidebar-content a > div {
-  padding: 10px 0; 
-  margin-bottom: 0; 
+  padding: 10% 0% 10% 15%;
+  margin-bottom: 10px;
+  /* padding: 10px 0; 
+  margin-bottom: 0;  */
   font-size: 20px;
   font-weight: 400;
 }
