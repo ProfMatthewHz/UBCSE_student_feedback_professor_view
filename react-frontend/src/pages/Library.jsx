@@ -3,6 +3,7 @@ import SideBar from "../Components/Sidebar";
 import Rubric from "../Components/Rubric";
 import "../styles/library.css";
 
+
 const Library = () => {
 
   const [rubrics, setRubrics] = useState([])
@@ -39,12 +40,15 @@ const Library = () => {
     <>
       <SideBar route="/library" content_dictionary={sidebar_content} getRubrics={fetchRubrics} />
       <div>Library</div>
-      <div className="container library--container">
+      <div className="library--container">
         <div className="container-of-rubrics">
           {rubrics.length > 0 ? (
-            rubrics.map((rubric) => (
+            <div>
+               <div className="yes-course"><h1>Rubrics</h1></div>
+            {rubrics.map((rubric) => (
               <Rubric rubric_id={rubric.id} getRubrics={fetchRubrics}/>
-            ))
+            ))}
+            </div>
           ) : (
             <div className="no-course">
               <h1>No Rubrics Found</h1>

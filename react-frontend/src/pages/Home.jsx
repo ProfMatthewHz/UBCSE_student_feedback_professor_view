@@ -78,7 +78,7 @@ const Home = () => {
   return (
     <>
       <SideBar route="/" content_dictionary={sidebar_content} getCourses={fetchCourses} />
-      <div className="container home--container">
+      <div className="home--container">
         <div className="containerOfCourses">
           {courses.length > 0 ? (
             courses.map((course) => (
@@ -86,7 +86,7 @@ const Home = () => {
             ))
           ) : (
             <div className="no-course">
-              <h1>No Courses Yet!</h1>
+              <h1>No Courses Yet</h1>
             </div>
           )}
         </div>

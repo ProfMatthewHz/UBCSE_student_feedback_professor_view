@@ -134,16 +134,23 @@ const History = () => {
   return (
     <>
       <SideBar route="/history" content_dictionary={sidebar_content} currentTerm={currentTerm} updateCurrentTerm={updateCurrentTerm}/>
-      <div className="container home--container">
+      <div className="home--container">
         {currentTerm !== "" && Object.entries(terms).length > 0 ? (
           Object.entries(terms).map(([term, courses]) => (
             term === currentTerm ? (
               <div key={term} className="containerOfCourses">
+
+                <div className="yes-course">
+                      <h1>{currentTerm}</h1>
+                    </div>
+
+
                 {courses.length > 0 ? (
                   courses.map((course) => (
                     <Course key={course.id} course={course} page="history" />
                   ))
-                ) : (
+                )
+                 : (
                   <div className="no-course">
                     <h1>No Courses Found</h1>
                   </div>
