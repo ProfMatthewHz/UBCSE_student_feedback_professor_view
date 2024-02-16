@@ -239,7 +239,7 @@ function SideBar(props) {
                       return props.route === "/history" ? (
                       
 
-
+                        
                         <div
                           className="sidebar-content"
                           style={title === "Courses" ? { maxHeight: "75%" } : null}
@@ -334,7 +334,7 @@ function SideBar(props) {
                         >
                           
                           {(title === "Courses" && dropdown_value !== "") 
-                          // ||title === "Terms" 
+                         
                           ? (
                             <h1>{title}</h1>
                           ) : null}
