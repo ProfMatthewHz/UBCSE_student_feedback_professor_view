@@ -232,16 +232,19 @@ function SideBar(props) {
               </li>
               <li>
                 <NavLink to="/history">History</NavLink>
+                    <br></br>
+                    <br></br>
                       
                     {props.route==="/history" && Object.entries(props.content_dictionary).map(([title, contents]) => {
                       return props.route === "/history" ? (
+                      
 
 
                         <div
                           className="sidebar-content"
                           style={title === "Courses" ? { maxHeight: "75%" } : null}
                         >
-                        <br></br>
+                        
                           <div className="sidebar-list">
                             {/* dropdown button only exists for history when there are term options */}
                             {title === "Terms" ? (
