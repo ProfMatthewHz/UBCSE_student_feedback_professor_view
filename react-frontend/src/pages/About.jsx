@@ -124,11 +124,6 @@ const About = () => {
               </div>
             </div>
 
-            
-
-
-
-
             <div className="about-page--profile">
               <img src={MattPFP} alt="Picture of Matt" />
               <h1>Matthew Prier</h1>
