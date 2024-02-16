@@ -1,4 +1,32 @@
-import React, {useEffect, useState} from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Components/Course.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Components/Course.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, {useEffect, useState} from "react";
 import "../styles/course.css";
 import "../styles/modal.css";
 import "../styles/extendsurvey.css";
@@ -400,7 +428,7 @@ const Course = ({course, page}) => {
         let maxDateObject = new Date("2023-12-31T00:00:00"); //last day of class
         let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
         let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
-        if (startDateObject < minDateObject) {
+        if (startDateObject &lt; minDateObject) {
             setStartDateBoundError(true);
             return;
         }
@@ -408,7 +436,7 @@ const Course = ({course, page}) => {
             setStartDateBound1Error(true);
             return;
         }
-        if (endDateObject < minDateObject) {
+        if (endDateObject &lt; minDateObject) {
             setEndDateBoundError(true);
             return;
         }
@@ -422,7 +450,7 @@ const Course = ({course, page}) => {
         let timestamp = new Date(Date.now());
 
         timestamp.setHours(0, 0, 0, 0); //set hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
-        if (startDateObject < timestamp) {
+        if (startDateObject &lt; timestamp) {
             setStartAfterCurrentError(true);
             return;
         }
@@ -463,12 +491,12 @@ const Course = ({course, page}) => {
             let startHourNew = parseInt(startTime.split(":")[0]);
             let startMinutes = parseInt(startTime.split(":")[1]);
 
-            if (startHourNew < currentHour) {
+            if (startHourNew &lt; currentHour) {
                 setStartTimeHoursBeforeCurrent(true);
                 return;
             }
             if (startHourNew === currentHour) {
-                if (startMinutes < currentMinutes) {
+                if (startMinutes &lt; currentMinutes) {
                     setStartTimeMinutesBeforeCurrent(true);
                     return;
                 }
@@ -574,7 +602,7 @@ const Course = ({course, page}) => {
         let maxDateObject = new Date("2023-12-31T00:00:00"); //last day of class
         let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
         let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
-        if (startDateObject < minDateObject) {
+        if (startDateObject &lt; minDateObject) {
             setStartDateBoundError(true);
             return;
         }
@@ -582,7 +610,7 @@ const Course = ({course, page}) => {
             setStartDateBound1Error(true);
             return;
         }
-        if (endDateObject < minDateObject) {
+        if (endDateObject &lt; minDateObject) {
             setEndDateBoundError(true);
             return;
         }
@@ -596,7 +624,7 @@ const Course = ({course, page}) => {
         let timestamp = new Date(Date.now());
 
         timestamp.setHours(0, 0, 0, 0); //set hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
-        if (startDateObject < timestamp) {
+        if (startDateObject &lt; timestamp) {
             setStartAfterCurrentError(true);
             return;
         }
@@ -639,12 +667,12 @@ const Course = ({course, page}) => {
             let startMinutes = parseInt(startTime.split(":")[1]);
 
 
-            if (startHourNew < currentHour) {
+            if (startHourNew &lt; currentHour) {
                 setStartTimeHoursBeforeCurrent(true);
                 return;
             }
             if (startHourNew === currentHour) {
-                if (startMinutes < currentMinutes) {
+                if (startMinutes &lt; currentMinutes) {
                     setStartTimeMinutesBeforeCurrent(true);
                     return;
                 }
@@ -731,9 +759,9 @@ const Course = ({course, page}) => {
             let pairingFileStrings = [];
             let anyOtherStrings = [];
             let i = 0;
-            while (i < errorKeys.length) {
+            while (i &lt; errorKeys.length) {
                 if (errorKeys[i] === "pairing-file") {
-                    pairingFileStrings = errorsObject["pairing-file"].split("<br>");
+                    pairingFileStrings = errorsObject["pairing-file"].split("&lt;br>");
                 } else {
                     let error = errorKeys[i];
                     anyOtherStrings.push(errorsObject[error]);
@@ -781,7 +809,7 @@ const Course = ({course, page}) => {
             .filter((line) => line.trim() !== "");
         // Combine adjacent elements so that each "Line #" and its message are in the same element
         const combinedLines = [];
-        for (let i = 0; i < lines.length; i += 2) {
+        for (let i = 0; i &lt; lines.length; i += 2) {
             combinedLines.push(lines[i] + (lines[i + 1] || ""));
         }
         return combinedLines
@@ -800,12 +828,12 @@ const Course = ({course, page}) => {
         })
             .then((res) => res.text())
             .then((result) => {
-                if (typeof result === "string" && result !== "") {
+                if (typeof result === "string" &amp;&amp; result !== "") {
                     try {
                         const parsedResult = JSON.parse(result);
                         console.log("Parsed as JSON object: ", parsedResult);
                         if (
-                            parsedResult.hasOwnProperty("error") &&
+                            parsedResult.hasOwnProperty("error") &amp;&amp;
                             parsedResult["error"] !== ""
                         ) {
                             const updatedError = formatRosterError(
@@ -990,7 +1018,7 @@ const Course = ({course, page}) => {
         let timestamp = new Date(Date.now());
         timestamp.setHours(0, 0, 0, 0); //set hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
         //if the selected end date occurs in the past error
-        if (endDateTimeObject < timestamp) {
+        if (endDateTimeObject &lt; timestamp) {
             setExtendMustBeAfterCurrentTime(true);
             return;
         }
@@ -1034,12 +1062,12 @@ const Course = ({course, page}) => {
                 let endMinutes = parseInt(newEndTime.split(":")[1]);
                 console.log(endMinutes)
 
-                if (endHours < currentHour) {
+                if (endHours &lt; currentHour) {
                     setExtendMustBeAfterCurrentTime(true);
                     return;
                 }
                 if (endHours === currentHour) {
-                    if (endMinutes <= currentMinutes) {
+                    if (endMinutes &lt;= currentMinutes) {
                         setExtendMustBeAfterCurrentTime(true);
                         return;
                     }
@@ -1150,33 +1178,33 @@ const Course = ({course, page}) => {
     };
 
     return (
-        <div id={course.code} className="courseContainer">
-            <Modal
+        &lt;div id={course.code} className="courseContainer">
+            &lt;Modal
                 open={extendModal}
                 onRequestClose={extendModalClose}
                 width={"650px"}
                 maxWidth={"90%"}
             >
-                <div className="CancelContainer">
-                    <button className="CancelButton" onClick={extendModalClose}>
+                &lt;div className="CancelContainer">
+                    &lt;button className="CancelButton" onClick={extendModalClose}>
                         ×
-                    </button>
-                </div>
-                <div className="extend-survey--contents-container">
-                    <h2 className="extend-survey--main-title">
+                    &lt;/button>
+                &lt;/div>
+                &lt;div className="extend-survey--contents-container">
+                    &lt;h2 className="extend-survey--main-title">
                         Extend Survey: {currentSurvey.name}
-                    </h2>
-                    <div className="extend-survey--boxes-container">
-                        <div className="extend-survey--left-box-container">
-                            <h2>Current Deadline</h2>
-                            <h3>{currentSurvey.end_date}</h3>
-                        </div>
-                        <div className="extend-survey--right-box-container">
-                            <h2>New Deadline</h2>
-                            <div className="extend-survey--inputs-container">
-                                <label for="subject-line">
+                    &lt;/h2>
+                    &lt;div className="extend-survey--boxes-container">
+                        &lt;div className="extend-survey--left-box-container">
+                            &lt;h2>Current Deadline&lt;/h2>
+                            &lt;h3>{currentSurvey.end_date}&lt;/h3>
+                        &lt;/div>
+                        &lt;div className="extend-survey--right-box-container">
+                            &lt;h2>New Deadline&lt;/h2>
+                            &lt;div className="extend-survey--inputs-container">
+                                &lt;label for="subject-line">
                                     New Date
-                                    <input
+                                    &lt;input
                                         id="new-endDate"
                                         className={(extendEmptyFieldsError || extendStartDateGreater || extendMustBeAfterCurrentTime || extendNewEndMustComeAfterOldEnd) ? "extend-survey--error-input" : null}
                                         type="date"
@@ -1184,134 +1212,134 @@ const Course = ({course, page}) => {
                                         max="2023-12-31"
                                         placeholder="New End Date"
                                     />
-                                </label>
-                                <label for="subject-line">
+                                &lt;/label>
+                                &lt;label for="subject-line">
                                     New Time
-                                    <input
+                                    &lt;input
                                         id="new-endTime"
                                         className={(extendEmptyFieldsError || extendStartHourIsGreater) ? "extend-survey--error-input" : null}
                                         type="time"
                                         placeholder="New End Time"
                                     />
-                                </label>
-                            </div>
-                            {extendEmptyFieldsError ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                Date and time cannot be empty</label> : null}
-                            {extendStartDateGreater ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                Start date cannot be after end date</label> : null}
-                            {extendStartHourIsGreater ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                If on the same date, end time must be after start time</label> : null}
-                            {extendMustBeAfterCurrentTime ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                End date cannot be in the past</label> : null}
-                            {extendNewEndMustComeAfterOldEnd ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                End date must be after old end date</label> : null}
-                        </div>
-                    </div>
-                    <button
+                                &lt;/label>
+                            &lt;/div>
+                            {extendEmptyFieldsError ? &lt;label className="extend-survey--error-label">
+                                &lt;div className="extend-survey--red-warning-sign"/>
+                                Date and time cannot be empty&lt;/label> : null}
+                            {extendStartDateGreater ? &lt;label className="extend-survey--error-label">
+                                &lt;div className="extend-survey--red-warning-sign"/>
+                                Start date cannot be after end date&lt;/label> : null}
+                            {extendStartHourIsGreater ? &lt;label className="extend-survey--error-label">
+                                &lt;div className="extend-survey--red-warning-sign"/>
+                                If on the same date, end time must be after start time&lt;/label> : null}
+                            {extendMustBeAfterCurrentTime ? &lt;label className="extend-survey--error-label">
+                                &lt;div className="extend-survey--red-warning-sign"/>
+                                End date cannot be in the past&lt;/label> : null}
+                            {extendNewEndMustComeAfterOldEnd ? &lt;label className="extend-survey--error-label">
+                                &lt;div className="extend-survey--red-warning-sign"/>
+                                End date must be after old end date&lt;/label> : null}
+                        &lt;/div>
+                    &lt;/div>
+                    &lt;button
                         className="extend-survey--confirm-btn"
                         onClick={verifyExtendModal}
                     >
                         Extend Survey
-                    </button>
-                </div>
-            </Modal>
-            <Modal
+                    &lt;/button>
+                &lt;/div>
+            &lt;/Modal>
+            &lt;Modal
                 open={deleteModal}
                 onRequestClose={deleteModalClose}
                 width={"600px"}
                 maxWidth={"90%"}
             >
-                <div className="CancelContainer">
-                    <button className="CancelButton" onClick={deleteModalClose}>
+                &lt;div className="CancelContainer">
+                    &lt;button className="CancelButton" onClick={deleteModalClose}>
                         ×
-                    </button>
-                </div>
-                <div className="delete-survey--contents-container">
-                    <h2 className="delete-survey--main-title">
+                    &lt;/button>
+                &lt;/div>
+                &lt;div className="delete-survey--contents-container">
+                    &lt;h2 className="delete-survey--main-title">
                         Delete Survey: {currentSurvey.name}
-                    </h2>
-                    <div
+                    &lt;/h2>
+                    &lt;div
                         className={
                             emptyOrWrongDeleteNameError
                                 ? "delete-survey--inputs-container-error"
                                 : "delete-survey--inputs-container"
                         }
                     >
-                        <label for="subject-line">Enter Survey Name</label>
-                        <input id="delete-name" type="text"/>
+                        &lt;label for="subject-line">Enter Survey Name&lt;/label>
+                        &lt;input id="delete-name" type="text"/>
                         {emptyOrWrongDeleteNameError ? (
-                            <label className="delete-survey--error-label">
-                                <div className="delete-survey--red-warning-sign"/>
+                            &lt;label className="delete-survey--error-label">
+                                &lt;div className="delete-survey--red-warning-sign"/>
                                 Must match survey name
-                            </label>
+                            &lt;/label>
                         ) : null}
-                    </div>
-                    <div className="delete-survey-btn-container">
-                        <button
+                    &lt;/div>
+                    &lt;div className="delete-survey-btn-container">
+                        &lt;button
                             className="delete-survey--confirm-btn"
                             onClick={verifyDelete}
                         >
                             Delete Survey
-                        </button>
-                    </div>
-                </div>
-            </Modal>
-            <Modal
+                        &lt;/button>
+                    &lt;/div>
+                &lt;/div>
+            &lt;/Modal>
+            &lt;Modal
                 open={duplicateModal}
                 onRequestClose={closeModalDuplicate}
                 width={"700px"}
                 maxWidth={"90%"}
             >
-                <div className="CancelContainer">
-                    <button className="CancelButton" onClick={closeModalDuplicate}>
+                &lt;div className="CancelContainer">
+                    &lt;button className="CancelButton" onClick={closeModalDuplicate}>
                         ×
-                    </button>
-                </div>
-                <div className="duplicate-survey--contents-container">
-                    <h2 className="duplicate-survey--main-title">
+                    &lt;/button>
+                &lt;/div>
+                &lt;div className="duplicate-survey--contents-container">
+                    &lt;h2 className="duplicate-survey--main-title">
                         Duplicate Survey: {currentSurvey.name}
-                    </h2>
-                    <div
+                    &lt;/h2>
+                    &lt;div
                         className={
                             emptySurveyNameError
                                 ? "duplicate-survey--input-error"
                                 : "duplicate-survey--input"
                         }
                     >
-                        <label for="subject-line">New Survey Name</label>
-                        <input id="survey-name" placeholder="New Name" type="text"/>
+                        &lt;label for="subject-line">New Survey Name&lt;/label>
+                        &lt;input id="survey-name" placeholder="New Name" type="text"/>
                         {emptySurveyNameError ? (
-                            <label className="duplicate-survey--error-label">
-                                <div className="duplicate-survey--red-warning-sign"/>
+                            &lt;label className="duplicate-survey--error-label">
+                                &lt;div className="duplicate-survey--red-warning-sign"/>
                                 Survey name cannot be empty
-                            </label>
+                            &lt;/label>
                         ) : null}
-                    </div>
-                    <div className="duplicate-survey--input">
-                        <label for="subject-line">Choose Rubric</label>
-                        <select
+                    &lt;/div>
+                    &lt;div className="duplicate-survey--input">
+                        &lt;label for="subject-line">Choose Rubric&lt;/label>
+                        &lt;select
                             value={valueRubric}
                             onChange={handleChangeRubric}
                             id="rubric-type"
                             placeholder="Select a rubric"
                         >
                             {rubricNames.map((rubric) => (
-                                <option value={rubric}>{rubric}</option>
+                                &lt;option value={rubric}>{rubric}&lt;/option>
                             ))}
-                        </select>
-                    </div>
-                    <div className="duplicate-survey--timeline-data-error-container">
-                        <div className="duplicate-survey--timeline-data-container">
-                            <div className="duplicate-survey--labels-dates-container">
-                                <div className="duplicate-survey--dates-times-error-container">
-                                    <label for="subject-line">
+                        &lt;/select>
+                    &lt;/div>
+                    &lt;div className="duplicate-survey--timeline-data-error-container">
+                        &lt;div className="duplicate-survey--timeline-data-container">
+                            &lt;div className="duplicate-survey--labels-dates-container">
+                                &lt;div className="duplicate-survey--dates-times-error-container">
+                                    &lt;label for="subject-line">
                                         Start Date
-                                        <input
+                                        &lt;input
                                             className={(StartDateGreaterError || StartAfterCurrentError || emptyStartDateError || startDateBoundError || startDateBound1Error) ? "duplicate-survey--error-input" : null}
                                             id="start-date"
                                             type="date"
@@ -1319,58 +1347,58 @@ const Course = ({course, page}) => {
                                             max="2023-12-31"
                                             placeholder="Enter New Start Date"
                                         />
-                                    </label>
-                                    <label for="subject-line">
+                                    &lt;/label>
+                                    &lt;label for="subject-line">
                                         Start Time
-                                        <input
+                                        &lt;input
                                             className={(StartHourAfterEndHourError || StartHourSameDayError || StartTimeSameDayError || emptyStartTimeError || StartTimeHoursBeforeCurrent || StartTimeMinutesBeforeCurrent ? "duplicate-survey--error-input" : null)}
                                             id="start-time"
                                             type="time"
                                             placeholder="Enter New Start Time"
                                         />
-                                    </label>
-                                </div>
-                                {StartDateGreaterError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start date cannot be before the end date</label> : null}
-                                {StartAfterCurrentError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start date cannot be before the current date</label> : null}
-                                {emptyStartDateError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start date cannot be empty</label> : null}
-                                {startDateBoundError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start date must be at August 31st or later</label> : null}
-                                {startDateBound1Error ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start date must be at December 31st or earlier</label> : null}
-                                {StartHourAfterEndHourError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
+                                    &lt;/label>
+                                &lt;/div>
+                                {StartDateGreaterError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    Start date cannot be before the end date&lt;/label> : null}
+                                {StartAfterCurrentError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    Start date cannot be before the current date&lt;/label> : null}
+                                {emptyStartDateError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    Start date cannot be empty&lt;/label> : null}
+                                {startDateBoundError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    Start date must be at August 31st or later&lt;/label> : null}
+                                {startDateBound1Error ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    Start date must be at December 31st or earlier&lt;/label> : null}
+                                {StartHourAfterEndHourError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
                                     If start and end dates are the same, start time cannot be after end
-                                    time</label> : null}
-                                {StartHourSameDayError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
+                                    time&lt;/label> : null}
+                                {StartHourSameDayError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
                                     If start and end dates are the same, end hour can not be in the same hour as
-                                    start</label> : null}
-                                {StartTimeSameDayError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    If start and end dates are the same, start and end times must differ</label> : null}
-                                {emptyStartTimeError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start time cannot be empty</label> : null}
-                                {StartTimeHoursBeforeCurrent ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start time hour cannot be before the current hour</label> : null}
-                                {StartTimeMinutesBeforeCurrent ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start time minutes cannot be before current minutes</label> : null}
-                            </div>
-                            <div className="duplicate-survey--labels-dates-container">
-                                <div className="duplicate-survey--dates-times-error-container">
-                                    <label for="subject-line">
+                                    start&lt;/label> : null}
+                                {StartTimeSameDayError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    If start and end dates are the same, start and end times must differ&lt;/label> : null}
+                                {emptyStartTimeError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    Start time cannot be empty&lt;/label> : null}
+                                {StartTimeHoursBeforeCurrent ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    Start time hour cannot be before the current hour&lt;/label> : null}
+                                {StartTimeMinutesBeforeCurrent ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    Start time minutes cannot be before current minutes&lt;/label> : null}
+                            &lt;/div>
+                            &lt;div className="duplicate-survey--labels-dates-container">
+                                &lt;div className="duplicate-survey--dates-times-error-container">
+                                    &lt;label for="subject-line">
                                         End Date
-                                        <input
+                                        &lt;input
                                             className={(emptyEndDateError || endDateBoundError || endDateBound1Error) ? "duplicate-survey--error-input" : null}
                                             id="end-date"
                                             type="date"
@@ -1378,50 +1406,50 @@ const Course = ({course, page}) => {
                                             max="2023-12-31"
                                             placeholder="Enter New End Date"
                                         />
-                                    </label>
+                                    &lt;/label>
 
-                                    <label for="subject-line">
+                                    &lt;label for="subject-line">
                                         End Time
-                                        <input
+                                        &lt;input
                                             className={emptyEndTimeError ? "duplicate-survey--error-input" : null}
                                             id="end-time"
                                             type="time"
                                             placeholder="Enter New End Time"
                                         />
-                                    </label>
-                                </div>
-                                {emptyEndDateError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    End date cannot be empty</label> : null}
-                                {endDateBoundError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    End date must be at August 31st or later</label> : null}
-                                {endDateBound1Error ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    End date must be at December 31st or earlier</label> : null}
-                                {emptyEndTimeError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    End time cannot be empty</label> : null}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="duplicate-survey--confirm-btn-container">
-                        <button
+                                    &lt;/label>
+                                &lt;/div>
+                                {emptyEndDateError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    End date cannot be empty&lt;/label> : null}
+                                {endDateBoundError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    End date must be at August 31st or later&lt;/label> : null}
+                                {endDateBound1Error ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    End date must be at December 31st or earlier&lt;/label> : null}
+                                {emptyEndTimeError ? &lt;label className="duplicate-survey--error-label">
+                                    &lt;div className="duplicate-survey--red-warning-sign"/>
+                                    End time cannot be empty&lt;/label> : null}
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+                    &lt;div className="duplicate-survey--confirm-btn-container">
+                        &lt;button
                             className="duplicate-survey--confirm-btn"
                             onClick={verifyDuplicateSurvey}
                         >
                             Duplicate Survey
-                        </button>
-                    </div>
-                </div>
-            </Modal>
+                        &lt;/button>
+                    &lt;/div>
+                &lt;/div>
+            &lt;/Modal>
 
-            <Modal
+            &lt;Modal
                 open={modalIsOpenSurveyConfirm}
                 onRequestClose={closeModalSurveyConfirm}
                 width={"1200px"}
             >
-                <div
+                &lt;div
                     style={{
                         display: "flex",
                         flexDirection: "column",
@@ -1429,12 +1457,12 @@ const Course = ({course, page}) => {
                         borderBottom: "thin solid #225cb5",
                     }}
                 >
-                    <div
+                    &lt;div
                         style={{color: "#225cb5", fontSize: "36px", fontWeight: "bolder"}}
                     >
                         Confirmation
-                    </div>
-                    <div
+                    &lt;/div>
+                    &lt;div
                         style={{
                             color: "#225cb5",
                             fontSize: "24px",
@@ -1444,13 +1472,13 @@ const Course = ({course, page}) => {
                         }}
                     >
                         Survey Name: {surveyNameConfirm}
-                    </div>
-                    <div
+                    &lt;/div>
+                    &lt;div
                         style={{color: "#225cb5", fontSize: "24px", fontWeight: "bolder"}}
                     >
                         Survey Active: {startDateConfirm} to {endDateConfirm}
-                    </div>
-                    <div
+                    &lt;/div>
+                    &lt;div
                         style={{
                             color: "#225cb5",
                             fontSize: "24px",
@@ -1460,68 +1488,68 @@ const Course = ({course, page}) => {
                         }}
                     >
                         Rubric Used: {rubricNameConfirm}
-                    </div>
-                    <div
+                    &lt;/div>
+                    &lt;div
                         style={{color: "#225cb5", fontSize: "24px", fontWeight: "bolder"}}
                     >
                         For Course: {course.code}
-                    </div>
-                </div>
+                    &lt;/div>
+                &lt;/div>
 
-                <div class="table-containerConfirm">
+                &lt;div class="table-containerConfirm">
                     {RosterArray.length > 0 ? (
-                        <table>
-                            <caption>Course Roster</caption>
-                            <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Name</th>
-                                <th>Reviewing Others</th>
-                                <th>Being Reviewed</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                        &lt;table>
+                            &lt;caption>Course Roster&lt;/caption>
+                            &lt;thead>
+                            &lt;tr>
+                                &lt;th>Email&lt;/th>
+                                &lt;th>Name&lt;/th>
+                                &lt;th>Reviewing Others&lt;/th>
+                                &lt;th>Being Reviewed&lt;/th>
+                            &lt;/tr>
+                            &lt;/thead>
+                            &lt;tbody>
                             {RosterArray.map((entry, index) => (
-                                <tr key={index}>
-                                    <td>{entry.student_email}</td>
-                                    <td>{entry.student_name}</td>
-                                    {entry.reviewing ? <td>Yes</td> : <td>No</td>}
-                                    {entry.reviewed ? <td>Yes</td> : <td>No</td>}
-                                </tr>
+                                &lt;tr key={index}>
+                                    &lt;td>{entry.student_email}&lt;/td>
+                                    &lt;td>{entry.student_name}&lt;/td>
+                                    {entry.reviewing ? &lt;td>Yes&lt;/td> : &lt;td>No&lt;/td>}
+                                    {entry.reviewed ? &lt;td>Yes&lt;/td> : &lt;td>No&lt;/td>}
+                                &lt;/tr>
                             ))}
-                            </tbody>
-                        </table>
+                            &lt;/tbody>
+                        &lt;/table>
                     ) : (
-                        <div className="empty-view">Course Roster has no Students</div>
+                        &lt;div className="empty-view">Course Roster has no Students&lt;/div>
                     )}
 
                     {NonRosterArray.length > 0 ? (
-                        <table>
-                            <caption>Non-Course Students</caption>
-                            <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Name</th>
-                                <th>Reviewing Others</th>
-                                <th>Being Reviewed</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                        &lt;table>
+                            &lt;caption>Non-Course Students&lt;/caption>
+                            &lt;thead>
+                            &lt;tr>
+                                &lt;th>Email&lt;/th>
+                                &lt;th>Name&lt;/th>
+                                &lt;th>Reviewing Others&lt;/th>
+                                &lt;th>Being Reviewed&lt;/th>
+                            &lt;/tr>
+                            &lt;/thead>
+                            &lt;tbody>
                             {NonRosterArray.map((entry, index) => (
-                                <tr key={index}>
-                                    <td>{entry.student_email}</td>
-                                    <td>{entry.student_name}</td>
-                                    {entry.reviewing ? <td>Yes</td> : <td>No</td>}
-                                    {entry.reviewed ? <td>Yes</td> : <td>No</td>}
-                                </tr>
+                                &lt;tr key={index}>
+                                    &lt;td>{entry.student_email}&lt;/td>
+                                    &lt;td>{entry.student_name}&lt;/td>
+                                    {entry.reviewing ? &lt;td>Yes&lt;/td> : &lt;td>No&lt;/td>}
+                                    {entry.reviewed ? &lt;td>Yes&lt;/td> : &lt;td>No&lt;/td>}
+                                &lt;/tr>
                             ))}
-                            </tbody>
-                        </table>
+                            &lt;/tbody>
+                        &lt;/table>
                     ) : (
-                        <div className="empty-view">No data to show</div>
+                        &lt;div className="empty-view">No data to show&lt;/div>
                     )}
-                </div>
-                <div
+                &lt;/div>
+                &lt;div
                     style={{
                         display: "flex",
                         justifyContent: "center",
@@ -1530,7 +1558,7 @@ const Course = ({course, page}) => {
                         marginBottom: "30px",
                     }}
                 >
-                    <button
+                    &lt;button
                         className="Cancel"
                         style={{
                             borderRadius: "5px",
@@ -1541,8 +1569,8 @@ const Course = ({course, page}) => {
                         onClick={closeModalSurveyConfirm}
                     >
                         Cancel
-                    </button>
-                    <button
+                    &lt;/button>
+                    &lt;button
                         className="CompleteSurvey1"
                         style={{
                             borderRadius: "5px",
@@ -1553,22 +1581,22 @@ const Course = ({course, page}) => {
                         onClick={confirmSurveyComplete}
                     >
                         Confirm Survey
-                    </button>
-                </div>
-            </Modal>
-            <Modal
+                    &lt;/button>
+                &lt;/div>
+            &lt;/Modal>
+            &lt;Modal
                 open={modalIsOpenError}
                 onRequestClose={closeModalError}
                 width={"800px"}
             >
-                <div
+                &lt;div
                     style={{
                         display: "flex",
                         flexDirection: "column",
                         borderBottom: "thin solid #225cb5",
                     }}
                 >
-                    <div
+                    &lt;div
                         style={{
                             display: "flex",
                             width: "100%",
@@ -1578,9 +1606,9 @@ const Course = ({course, page}) => {
                             borderBottom: "thin solid #225cb5",
                         }}
                     >
-                        <h2 style={{color: "#225cb5"}}>Survey Errors</h2>
-                    </div>
-                    <div
+                        &lt;h2 style={{color: "#225cb5"}}>Survey Errors&lt;/h2>
+                    &lt;/div>
+                    &lt;div
                         style={{
                             display: "flex",
                             flexDirection: "column",
@@ -1590,14 +1618,14 @@ const Course = ({course, page}) => {
                         }}
                     >
                         {errorsList.map((string, index) => (
-                            <div key={index} className="string-list-item">
+                            &lt;div key={index} className="string-list-item">
                                 {string}
-                            </div>
+                            &lt;/div>
                         ))}
-                    </div>
-                </div>
+                    &lt;/div>
+                &lt;/div>
 
-                <button
+                &lt;button
                     className="Cancel"
                     style={{
                         borderRadius: "5px",
@@ -1608,46 +1636,46 @@ const Course = ({course, page}) => {
                     onClick={closeModalError}
                 >
                     Close
-                </button>
-            </Modal>
-            <Modal
+                &lt;/button>
+            &lt;/Modal>
+            &lt;Modal
                 open={modalIsOpen}
                 onRequestClose={closeModal}
                 width={"700px"}
                 maxWidth={"90%"}
             >
-                <div className="CancelContainer">
-                    <button className="CancelButton" onClick={closeModal}>
+                &lt;div className="CancelContainer">
+                    &lt;button className="CancelButton" onClick={closeModal}>
                         ×
-                    </button>
-                </div>
-                <div className="add-survey--contents-container">
-                    <h2 className="add-survey--main-title">
+                    &lt;/button>
+                &lt;/div>
+                &lt;div className="add-survey--contents-container">
+                    &lt;h2 className="add-survey--main-title">
                         Add Survey for {course.code}
-                    </h2>
+                    &lt;/h2>
 
-                    <label className="add-survey--label" for="subject-line">
+                    &lt;label className="add-survey--label" for="subject-line">
                         Survey Name
-                        <input
-                            className={emptySurveyNameError && "add-survey-input-error"}
+                        &lt;input
+                            className={emptySurveyNameError &amp;&amp; "add-survey-input-error"}
                             id="survey-name"
                             type="text"
                             placeholder="Survey Name"
                         />
                         {emptySurveyNameError ? (
-                            <label className="add-survey--error-label">
-                                <div className="add-survey--red-warning-sign"/>
+                            &lt;label className="add-survey--error-label">
+                                &lt;div className="add-survey--red-warning-sign"/>
                                 Survey name cannot be empty
-                            </label>
+                            &lt;/label>
                         ) : null}
-                    </label>
-                    <div className="add-survey--date-times-errors-container">
-                        <div className="add-survey--all-dates-and-times-container">
-                            <div className="add-survey--date-times-error-container">
-                                <div className="add-survey--date-and-times-container">
-                                    <label className="add-survey--label" for="subject-line">
+                    &lt;/label>
+                    &lt;div className="add-survey--date-times-errors-container">
+                        &lt;div className="add-survey--all-dates-and-times-container">
+                            &lt;div className="add-survey--date-times-error-container">
+                                &lt;div className="add-survey--date-and-times-container">
+                                    &lt;label className="add-survey--label" for="subject-line">
                                         Start Date
-                                        <input
+                                        &lt;input
                                             className={(StartDateGreaterError || StartAfterCurrentError || emptyStartDateError || startDateBoundError || startDateBound1Error) ? "add-survey-input-error" : null}
                                             id="start-date"
                                             type="date"
@@ -1655,61 +1683,61 @@ const Course = ({course, page}) => {
                                             max="2023-12-31"
                                             placeholder="Enter Start Date"
                                         />
-                                    </label>
+                                    &lt;/label>
 
-                                    <label className="add-survey--label" for="subject-line">
+                                    &lt;label className="add-survey--label" for="subject-line">
                                         Start Time
-                                        <input
+                                        &lt;input
                                             className={(StartHourAfterEndHourError || StartHourSameDayError || StartTimeSameDayError || emptyStartTimeError || StartTimeHoursBeforeCurrent || StartTimeMinutesBeforeCurrent) ? "add-survey-input-error" : null}
                                             id="start-time"
                                             type="time"
                                             placeholder="Enter Start Time"
                                         />
-                                    </label>
-                                </div>
-                                {StartDateGreaterError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date cannot be before the end date</label> : null}
-                                {StartAfterCurrentError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date cannot be before the current date</label> : null}
-                                {emptyStartDateError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date cannot be empty</label> : null}
-                                {startDateBoundError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date must be at August 31st or later</label> : null}
-                                {startDateBound1Error ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date must be at December 31st or earlier</label> : null}
-                                {StartHourAfterEndHourError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
+                                    &lt;/label>
+                                &lt;/div>
+                                {StartDateGreaterError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    Start date cannot be before the end date&lt;/label> : null}
+                                {StartAfterCurrentError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    Start date cannot be before the current date&lt;/label> : null}
+                                {emptyStartDateError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    Start date cannot be empty&lt;/label> : null}
+                                {startDateBoundError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    Start date must be at August 31st or later&lt;/label> : null}
+                                {startDateBound1Error ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    Start date must be at December 31st or earlier&lt;/label> : null}
+                                {StartHourAfterEndHourError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
                                     If start and end dates are the same, start time cannot be after end
-                                    time</label> : null}
-                                {StartHourSameDayError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
+                                    time&lt;/label> : null}
+                                {StartHourSameDayError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
                                     If start and end dates are the same, end hour cannot be in the same hour as the
-                                    start</label> : null}
-                                {StartTimeSameDayError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    If start and end dates are the same, start and end times must differ</label> : null}
-                                {emptyStartTimeError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start time cannot be empty</label> : null}
-                                {StartTimeHoursBeforeCurrent ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start time hour cannot be before the current hour</label> : null}
-                                {StartTimeMinutesBeforeCurrent ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start time minutes cannot be before current minutes</label> : null}
-                            </div>
+                                    start&lt;/label> : null}
+                                {StartTimeSameDayError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    If start and end dates are the same, start and end times must differ&lt;/label> : null}
+                                {emptyStartTimeError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    Start time cannot be empty&lt;/label> : null}
+                                {StartTimeHoursBeforeCurrent ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    Start time hour cannot be before the current hour&lt;/label> : null}
+                                {StartTimeMinutesBeforeCurrent ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    Start time minutes cannot be before current minutes&lt;/label> : null}
+                            &lt;/div>
 
 
-                            <div className="add-survey--date-times-error-container">
-                                <div className="add-survey--date-and-times-container">
-                                    <label className="add-survey--label" for="subject-line">
+                            &lt;div className="add-survey--date-times-error-container">
+                                &lt;div className="add-survey--date-and-times-container">
+                                    &lt;label className="add-survey--label" for="subject-line">
                                         End Date
-                                        <input
+                                        &lt;input
                                             className={(emptyEndDateError || endDateBoundError || endDateBound1Error) ? "add-survey-input-error" : null}
                                             id="end-date"
                                             type="date"
@@ -1717,134 +1745,134 @@ const Course = ({course, page}) => {
                                             max="2023-12-31"
                                             placeholder="Enter End Date"
                                         />
-                                    </label>
+                                    &lt;/label>
 
-                                    <label className="add-survey--label" for="subject-line">
+                                    &lt;label className="add-survey--label" for="subject-line">
                                         End Time
-                                        <input
+                                        &lt;input
                                             className={(emptyEndTimeError) ? "add-survey-input-error" : null}
                                             id="end-time"
                                             type="time"
                                             placeholder="Enter End Time"
                                         />
-                                    </label>
-                                </div>
-                                {emptyEndDateError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    End date cannot be empty</label> : null}
-                                {endDateBoundError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    End date must be at August 31st or later</label> : null}
-                                {endDateBound1Error ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    End date must be at December 31st or earlier</label> : null}
-                                {emptyEndTimeError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    End time cannot be empty</label> : null}
-                            </div>
-                        </div>
-                    </div>
-                    <label className="add-survey--label" for="subject-line">
+                                    &lt;/label>
+                                &lt;/div>
+                                {emptyEndDateError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    End date cannot be empty&lt;/label> : null}
+                                {endDateBoundError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    End date must be at August 31st or later&lt;/label> : null}
+                                {endDateBound1Error ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    End date must be at December 31st or earlier&lt;/label> : null}
+                                {emptyEndTimeError ? &lt;label className="add-survey--error-label">
+                                    &lt;div className="add-survey--red-warning-sign"/>
+                                    End time cannot be empty&lt;/label> : null}
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+                    &lt;label className="add-survey--label" for="subject-line">
                         Choose Rubric
-                        <select
+                        &lt;select
                             value={valueRubric}
                             onChange={handleChangeRubric}
                             id="rubric-type"
                             placeholder="Select a rubric"
                         >
                             {rubricNames.map((rubric) => (
-                                <option value={rubric}>{rubric}</option>
+                                &lt;option value={rubric}>{rubric}&lt;/option>
                             ))}
-                        </select>
-                    </label>
-                    <label className="add-survey--label" for="subject-line">
+                        &lt;/select>
+                    &lt;/label>
+                    &lt;label className="add-survey--label" for="subject-line">
                         Pairing Modes
-                        <select
+                        &lt;select
                             value={valuePairing}
                             onChange={handleChangePairing}
                             id="pairing-mode"
                         >
                             {pairingModesNames.map((pairing) => (
-                                <option value={pairing}>{pairing}</option>
+                                &lt;option value={pairing}>{pairing}&lt;/option>
                             ))}
-                        </select>
-                    </label>
-                    {validPairingModeForMultiplier && (
-                        <label className="add-survey--label" for="subject-line">
+                        &lt;/select>
+                    &lt;/label>
+                    {validPairingModeForMultiplier &amp;&amp; (
+                        &lt;label className="add-survey--label" for="subject-line">
                             Multiplier
-                            <select id="multiplier-type">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                            </select>
-                        </label>
+                            &lt;select id="multiplier-type">
+                                &lt;option value="1">1&lt;/option>
+                                &lt;option value="2">2&lt;/option>
+                                &lt;option value="3">3&lt;/option>
+                                &lt;option value="4">4&lt;/option>
+                            &lt;/select>
+                        &lt;/label>
                     )}
-                    <label className="add-survey--file-label" for="subject-line">
+                    &lt;label className="add-survey--file-label" for="subject-line">
                         CSV File Upload
-                        <input
-                            className={emptyCSVFileError && "add-survey-input-error"}
+                        &lt;input
+                            className={emptyCSVFileError &amp;&amp; "add-survey-input-error"}
                             id="csv-file"
                             type="file"
                             placeholder="Upload The File"
                         />
                         {emptyCSVFileError ? (
-                            <label className="add-survey--error-label">
-                                <div className="add-survey--red-warning-sign"/>
-                                Select a file</label>
+                            &lt;label className="add-survey--error-label">
+                                &lt;div className="add-survey--red-warning-sign"/>
+                                Select a file&lt;/label>
                         ) : null}
-                    </label>
-                    <div className="add-survey--confirm-btn-container">
-                        <button className="add-survey--confirm-btn" onClick={verifySurvey}>
+                    &lt;/label>
+                    &lt;div className="add-survey--confirm-btn-container">
+                        &lt;button className="add-survey--confirm-btn" onClick={verifySurvey}>
                             Verify Survey
-                        </button>
-                    </div>
-                </div>
-            </Modal>
-            <div className="courseContent">
-                <div className="courseHeader">
-                    <h2>
+                        &lt;/button>
+                    &lt;/div>
+                &lt;/div>
+            &lt;/Modal>
+            &lt;div className="courseContent">
+                &lt;div className="courseHeader">
+                    &lt;h2>
                         {course.code}: {course.name}
-                    </h2>
+                    &lt;/h2>
                     {page === "home" ? (
-                        <div className="courseHeader-btns">
-                            <button className="btn add-btn" onClick={openModal}>
+                        &lt;div className="courseHeader-btns">
+                            &lt;button className="btn add-btn" onClick={openModal}>
                                 + Add Survey
-                            </button>
-                            <button
+                            &lt;/button>
+                            &lt;button
                                 className="btn update-btn"
                                 type="button"
                                 onClick={handleUpdateModalChange}
                             >
                                 Update Roster
-                            </button>
-                        </div>
+                            &lt;/button>
+                        &lt;/div>
                     ) : null}
-                </div>
+                &lt;/div>
 
                 {surveys.length > 0 ? (
-                    <table className="surveyTable">
-                        <thead>
-                        <tr>
-                            <th>Survey Name</th>
-                            <th>Dates Available</th>
-                            <th>Completion Rate</th>
-                            <th>Survey Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                    &lt;table className="surveyTable">
+                        &lt;thead>
+                        &lt;tr>
+                            &lt;th>Survey Name&lt;/th>
+                            &lt;th>Dates Available&lt;/th>
+                            &lt;th>Completion Rate&lt;/th>
+                            &lt;th>Survey Actions&lt;/th>
+                        &lt;/tr>
+                        &lt;/thead>
+                        &lt;tbody>
                         {surveys.map((survey) => (
-                            <tr className="survey-row" key={survey.id}>
-                                <td>{survey.name}</td>
-                                <td>
+                            &lt;tr className="survey-row" key={survey.id}>
+                                &lt;td>{survey.name}&lt;/td>
+                                &lt;td>
                                     Begins: {survey.start_date}
-                                    <br/>
+                                    &lt;br/>
                                     Ends: {survey.end_date}
-                                </td>
-                                <td>{survey.completion}</td>
-                                <td>
+                                &lt;/td>
+                                &lt;td>{survey.completion}&lt;/td>
+                                &lt;td>
                                     {page === "home" ? (
-                                        <select
+                                        &lt;select
                                             className="surveyactions--select"
                                             style={{
                                                 backgroundColor: "#EF6C22",
@@ -1857,158 +1885,181 @@ const Course = ({course, page}) => {
                                             value={actionsButtonValue}
                                             defaultValue=""
                                         >
-                                            <option
+                                            &lt;option
                                                 className="surveyactions--option"
                                                 value=""
                                                 disabled
                                             >
                                                 Actions
-                                            </option>
-                                            <option
+                                            &lt;/option>
+                                            &lt;option
                                                 className="surveyactions--option"
                                                 value="View Results"
                                             >
                                                 View Results
-                                            </option>
-                                            <option
+                                            &lt;/option>
+                                            &lt;option
                                                 className="surveyactions--option"
                                                 value="Duplicate"
                                             >
                                                 Duplicate
-                                            </option>
-                                            <option
+                                            &lt;/option>
+                                            &lt;option
                                                 className="surveyactions--option"
                                                 value="Extend"
                                             >
                                                 Extend
-                                            </option>
-                                            <option
+                                            &lt;/option>
+                                            &lt;option
                                                 className="surveyactions--option"
                                                 value="Delete"
                                             >
                                                 Delete
-                                            </option>
-                                        </select>
+                                            &lt;/option>
+                                        &lt;/select>
                                     ) : page === "history" ? (
-                                        <button
+                                        &lt;button
                                             className="viewresult-button"
                                             onClick={() => handleViewResultsModalChange(survey)}
                                         >
                                             View Results
-                                        </button>
+                                        &lt;/button>
                                     ) : null}
                                     {/* Add more options as needed */}
-                                </td>
-                            </tr>
+                                &lt;/td>
+                            &lt;/tr>
                         ))}
-                        </tbody>
-                    </table>
+                        &lt;/tbody>
+                    &lt;/table>
                 ) : (
-                    <div className="no-surveys">
+                    &lt;div className="no-surveys">
                         {page === "home" ? `No Surveys Yet` : `No Surveys Created`}
-                    </div>
+                    &lt;/div>
                 )}
-            </div>
+            &lt;/div>
             {/* View Results Modal*/}
-            {showViewResultsModal && (
-                <ViewResults
+            {showViewResultsModal &amp;&amp; (
+                &lt;ViewResults
                     handleViewResultsModalChange={handleViewResultsModalChange}
                     viewingCurrentSurvey={viewingCurrentSurvey}
                     course={course}
                 />
             )}
             {/* Error Modal for updating roster */}
-            {showUpdateModal && (
-                <div className="update-modal">
-                    <div className="update-modal-content">
-                        <div className="CancelContainer">
-                            <button
+            {showUpdateModal &amp;&amp; (
+                &lt;div className="update-modal">
+                    &lt;div className="update-modal-content">
+                        &lt;div className="CancelContainer">
+                            &lt;button
                                 className="CancelButton"
                                 style={{top: "0px"}}
                                 onClick={handleUpdateModalChange}
                             >
                                 ×
-                            </button>
-                        </div>
-                        <h2 className="update-modal--heading">
+                            &lt;/button>
+                        &lt;/div>
+                        &lt;h2 className="update-modal--heading">
                             Update Roster for {course.code} {course.name}
-                        </h2>
-                        <form onSubmit={handleUpdateRosterSubmit}>
+                        &lt;/h2>
+                        &lt;form onSubmit={handleUpdateRosterSubmit}>
                             {/* File input */}
-                            <div className="form__item file-input-wrapper">
-                                <label className="form__item--label form__item--file">
+                            &lt;div className="form__item file-input-wrapper">
+                                &lt;label className="form__item--label form__item--file">
                                     Roster (CSV File) - Requires Emails in Columns 1, First Names
                                     in Columns 2 and Last Names in Columns 3
-                                    <input
+                                    &lt;input
                                         type="file"
                                         id="updateroster-file-input"
                                         className={`updateroster-file-input`}
                                         onChange={(e) => setRosterFile(e.target.files[0])}
                                         required
                                     />
-                                </label>
-                            </div>
+                                &lt;/label>
+                            &lt;/div>
                             {/* Radio Buttons */}
-                            <div className="update-form__item">
-                                <div className="update-radio-options">
-                                    <div className="update-radio-button--item">
-                                        <RadioButton
+                            &lt;div className="update-form__item">
+                                &lt;div className="update-radio-options">
+                                    &lt;div className="update-radio-button--item">
+                                        &lt;RadioButton
                                             inputId="replace"
                                             name="replace"
                                             value="replace"
                                             onChange={(e) => setUpdateRosterOption(e.value)}
                                             checked={updateRosterOption === "replace"}
                                         />
-                                        <label htmlFor="replace" className="update-radio--label">
+                                        &lt;label htmlFor="replace" className="update-radio--label">
                                             Replace
-                                        </label>
-                                    </div>
+                                        &lt;/label>
+                                    &lt;/div>
 
-                                    <div className="update-radio-button--item">
-                                        <RadioButton
+                                    &lt;div className="update-radio-button--item">
+                                        &lt;RadioButton
                                             inputId="expand"
                                             name="expand"
                                             value="expand"
                                             onChange={(e) => setUpdateRosterOption(e.value)}
                                             checked={updateRosterOption === "expand"}
                                         />
-                                        <label htmlFor="expand" className="update-radio--label">
+                                        &lt;label htmlFor="expand" className="update-radio--label">
                                             Expand
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="form__submit--container">
-                                <button type="submit" className="update-form__submit">
+                                        &lt;/label>
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                            &lt;div className="form__submit--container">
+                                &lt;button type="submit" className="update-form__submit">
                                     Update
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                                &lt;/button>
+                            &lt;/div>
+                        &lt;/form>
+                    &lt;/div>
+                &lt;/div>
             )}
             {/* Error Modal */}
-            {showErrorModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h2>Error(s)</h2>
+            {showErrorModal &amp;&amp; (
+                &lt;div className="modal">
+                    &lt;div className="modal-content">
+                        &lt;h2>Error(s)&lt;/h2>
                         {
-                            updateRosterError.length > 0 && updateRosterError.map((err) => (
-                                <p>{err}</p>
+                            updateRosterError.length > 0 &amp;&amp; updateRosterError.map((err) => (
+                                &lt;p>{err}&lt;/p>
                             ))
                         }
-                        <button className="roster-file--error-btn" onClick={handleErrorModalClose}>OK</button>
-                    </div>
-                </div>
+                        &lt;button className="roster-file--error-btn" onClick={handleErrorModalClose}>OK&lt;/button>
+                    &lt;/div>
+                &lt;/div>
             )}
 
-            <Toast
+            &lt;Toast
                 message={`Roster for ${course.code} ${course.name} successfully updated!`}
                 isVisible={showToast}
                 onClose={() => setShowToast(false)}
             />
-        </div>
+        &lt;/div>
     );
 };
 
 export default Course;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="About.html">About</a></li><li><a href="AddCourse.html">AddCourse</a></li><li><a href="SideBar.html">SideBar</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Course">Course</a></li><li><a href="global.html#History">History</a></li><li><a href="global.html#Home">Home</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Feb 16 2024 18:16:32 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

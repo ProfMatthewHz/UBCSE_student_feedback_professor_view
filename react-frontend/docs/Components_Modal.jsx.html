@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: Components/Modal.jsx</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,43 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: Components/Modal.jsx</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from 'react';
+import "../styles/modal.css";
 
 
-    <h3> </h3>
+/**
+ * The Modal component is a reusable component that displays a modal window.
+ */
 
-
-
-
-
-
-
-
-
-
-    
+export default function Modal({open,children,width,maxWidth}) {
 
 
 
+    if (!open) return null
 
-
+    else{
+    // The Modal component renders a modal window with the specified content.
+    return (
+      &lt;div className="modal">
+        &lt;div style= {{width: width, maxWidth: maxWidth}} className="modal-content modal-phone">
+          {children}
+        &lt;/div>
+      &lt;/div>
+    );
+    }
+}
+</code></pre>
+        </article>
+    </section>
 
 
 
