@@ -108,7 +108,7 @@ const About = () => {
               <h2>Back-End Developer</h2>
               <div className="about-page--contacts">
                 <a
-                    href="https://wwwwww.linkedin.com/in/tariqnazeem"
+                    href="https://www.linkedin.com/in/tariq-nazeem-0559ba22a/"
                     target="_blank"
                 >
                   <FaLinkedin/>
