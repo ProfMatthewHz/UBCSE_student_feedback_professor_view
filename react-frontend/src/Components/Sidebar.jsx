@@ -1,12 +1,31 @@
 import "../styles/sidebar.css";
 import React, { useEffect, useState } from "react";
-import { HashLink as Link } from "react-router-hash-link";
+import { Link, NavLink } from "react-router-dom";
+import UBLogo from "../assets/UBLogo.png";
 import Dropdown from "./Dropdown";
 import Modal from "./Modal";
 import AddCourse from "../pages/AddCourse";
 import AddRubric from "./AddRubric";
 
+
+
+/** Combining NavBar into Side Bar*/
+
+/**
+ * The Sidebar component is a reusable component that displays a sidebar.
+ * @param props
+ * @returns {Element}
+ * @constructor
+ */
+
 function SideBar(props) {
+
+  const [clicked, setClicked] = useState(false)
+
+  const handleClick = () => {
+    setClicked((prev) => !prev)
+  }
+
   const [activeButton, setActiveButton] = useState(false);
   const [dropdown_value, setDropDownValue] = useState("");
   const sidebar_items = props.content_dictionary["Courses"] ? Object.values(props.content_dictionary["Courses"])
@@ -16,61 +35,63 @@ function SideBar(props) {
   // Add course stuff
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
 
-  const handleAddCourseModal = () => {
-    setShowAddCourseModal(prevState => !prevState);
-  };
-
-  // + Add Rubric for Library Page
-  const [showAddRubricModal, setShowAddRubricModal] = useState(false);
-
-  const handleAddRubricModal = () => {
-    setShowAddRubricModal(prevState => !prevState);
-  }
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const sidebar_items_positions = sidebar_items.map((item) => {
-        const connected_course = document.getElementById(item);
-        if (connected_course) {
-          return document.getElementById(item).offsetTop - 366;
-        }
-      });
-
-      for (let i = sidebar_items.length - 1; i >= 0; i--) {
-        if (scrollPosition >= sidebar_items_positions[i]) {
-          setActiveButton(sidebar_items[i] + "-Option");
-          break;
-        }
-      }
+    const handleAddCourseModal = () => {
+        setShowAddCourseModal(prevState => !prevState);
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [sidebar_items]);
+    // + Add Rubric for Library Page
+    const [showAddRubricModal, setShowAddRubricModal] = useState(false);
 
-  useEffect(() => {
-    if (props.route === "/history") {
-      if (!dropdown_value) {
-        props.updateCurrentTerm("");
-      } else if (
-        dropdown_value &&
-        props.content_dictionary["Terms"][dropdown_value]
-      ) {
-        setTermContents(
-          Object.values(props.content_dictionary["Terms"][dropdown_value])
-        );
-        props.updateCurrentTerm(dropdown_value);
-      } else {
-        setTermContents([]);
-      }
+    const handleAddRubricModal = () => {
+        setShowAddRubricModal(prevState => !prevState);
     }
-  }, [dropdown_value, props.content_dictionary]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollPosition = window.scrollY;
+            const sidebar_items_positions = sidebar_items.map((item) => {
+                const connected_course = document.getElementById(item);
+                if (connected_course) {
+                    return document.getElementById(item).offsetTop - 366;
+                }
+            });
+
+            for (let i = sidebar_items.length - 1; i >= 0; i--) {
+                if (scrollPosition >= sidebar_items_positions[i]) {
+                    setActiveButton(sidebar_items[i] + "-Option");
+                    break;
+                }
+            }
+        };
+        // Add event listener to the window
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [sidebar_items]);
+
+    useEffect(() => {
+        if (props.route === "/history") {
+            if (!dropdown_value) {
+                props.updateCurrentTerm("");
+            } else if (
+                dropdown_value &&
+                props.content_dictionary["Terms"][dropdown_value]
+            ) {
+                setTermContents(
+                    Object.values(props.content_dictionary["Terms"][dropdown_value])
+                );
+                props.updateCurrentTerm(dropdown_value);
+            } else {
+                setTermContents([]);
+            }
+        }
+    }, [dropdown_value, props.content_dictionary]);
 
   return (
     <>
+      
+
       {/* Add Course Modal Below */}
       <Modal
         open={showAddCourseModal}
@@ -78,6 +99,7 @@ function SideBar(props) {
         width={"750px"}
         maxWidth={"90%"}
       >
+       
         <div className="CancelContainer">
           <button className="CancelButton" onClick={handleAddCourseModal}>
             ×
@@ -138,7 +160,7 @@ function SideBar(props) {
                   termContents.length > 0 ? (
                     termContents.map((item) => {
                       return (
-                        <Link to={"#" + item.code}>
+                        <a href={"#" + item.code}>
                           <div
                             onClick={() =>
                               setActiveButton(item.code + "-Option")
@@ -152,7 +174,7 @@ function SideBar(props) {
                           >
                             {item.code}
                           </div>
-                        </Link>
+                        </a>
                       );
                     })
                   ) : (
@@ -168,7 +190,7 @@ function SideBar(props) {
                 {contents.length > 0 ? (
                   contents.map((item) => {
                     return (
-                      <Link to={"#" + item}>
+                      <a href={"#" + item}>
                         <div
                           onClick={() => setActiveButton(item + "-Option")}
                           id={item + "-Option"}
@@ -180,7 +202,7 @@ function SideBar(props) {
                         >
                           {item}
                         </div>
-                      </Link>
+                      </a>
                     );
                   })
                 ) : (

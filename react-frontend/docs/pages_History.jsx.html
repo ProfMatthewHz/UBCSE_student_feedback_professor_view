@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/History.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/History.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, {useState, useEffect} from "react";
+import SideBar from "../Components/Sidebar";
+import Course from "../Components/Course";
+import "../styles/home.css";
+
+/**
+ * The History component displays a historical list of courses based on term selection.
+ * It allows users to view courses they have been involved with in past semesters.
+ */
+
+const History = () => {
+    const [courses, setCourses] = useState([]); // State for storing courses
+    const [terms, setTerms] = useState({}); // State for storing terms and associated courses
+    const [currentTerm, setCurrentTerm] = useState(''); // State to track the currently selected term
+
+    /**
+     * Updates the currently selected term.
+     * @param {string} newValue The new term value to set.
+     */
+    const updateCurrentTerm = (newValue) => {
+        setCurrentTerm(newValue)
+    }
+
+
+    const getCurrentYear = () => {
+        const date = new Date();
+        return date.getFullYear();
+    };
+
+    // Using 2023-2024 course schedule
+    /**
+     * Determines the current semester based on the current date.
+     * @returns {number} The current semester encoded as an integer (1 for Winter, 2 for Spring, 3 for Summer, 4 for Fall).
+     */
+    const getCurrentSemester = () => {
+        const date = new Date();
+        const month = date.getMonth(); // 0 for January, 1 for February, etc.
+        const day = date.getDate();
+
+        // Summer Sessions (May 30 to Aug 18)
+        if (
+            (month === 4 &amp;&amp; day >= 30) ||
+            (month > 4 &amp;&amp; month &lt; 7) ||
+            (month === 7 &amp;&amp; day &lt;= 18)
+        ) {
+            return 3; // Summer
+        }
+
+        // Fall Semester (Aug 28 to Dec 20)
+        if (
+            (month === 7 &amp;&amp; day >= 28) ||
+            (month > 7 &amp;&amp; month &lt; 11) ||
+            (month === 11 &amp;&amp; day &lt;= 20)
+        ) {
+            return 4; // Fall
+        }
+
+        // Winter Session (Dec 28 to Jan 19)
+        if ((month === 11 &amp;&amp; day >= 28) || (month === 0 &amp;&amp; day &lt;= 19)) {
+            return 1; // Winter
+        }
+
+        // If none of the above conditions are met, it must be Spring (Jan 24 to May 19)
+        return 2; // Spring
+    };
+
+    /**
+     * Converts semester names to their corresponding integer codes.
+     * @param {string} semester The name of the semester.
+     * @returns {number} The integer code of the semester.
+     */
+    const getSemestermAsInt = (semester) => {
+        if (semester === 'fall') {
+            return 4;
+        } else if (semester === 'summer') {
+            return 3;
+        } else if (semester === 'spring') {
+            return 2;
+        } else {
+            return 1; // winter
+        }
+    }
+
+    /**
+     * This useEffect hook is triggered on component mount due to the empty dependency array ([]).
+     * Its primary role is to fetch historical terms and the courses associated with each term from an API.
+     */
+    useEffect(() => {
+        // First, a fetch request is made to retrieve the terms (e.g., Fall 2023, Spring 2024) for which the instructor has courses.
+        fetch(
+            process.env.REACT_APP_API_URL + "instructorTermsPost.php",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                    currentYear: getCurrentYear(),
+                    currentSemester: getCurrentSemester(),
+                }),
+            }
+        )
+            .then((res) => res.json()) // Parsing the response to JSON format.
+            .then((result) => { // Handling the parsed JSON data.
+                const all_courses = {} // An object to store courses grouped by their terms.
+
+                // Mapping through each term received from the first API call to fetch courses for those terms.
+                const fetchCourses = result.map((term) => {
+
+                    // Constructing a key for each term combining its name and year for easy identification and storage.
+                    const term_key = term.semester.charAt(0).toUpperCase() + term.semester.slice(1) + " " + term.year
+                    all_courses[term_key] = []
+                    return fetch(
+                        process.env.REACT_APP_API_URL + "instructorCoursesInTerm.php",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                            body: new URLSearchParams({
+                                semester: getSemestermAsInt(term.semester),
+                                year: parseInt(term.year),
+                            }),
+                        }
+                    )
+                        .then((res2) => res2.json())
+                        .then((result2) => {
+                            all_courses[term_key].push(...result2)
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
+
+                });
+
+                Promise.all(fetchCourses)
+                    .then(() => {
+
+                        const courses_only = Object.values(all_courses).flat(); // Update the terms state with all terms and courses
+                        setTerms(all_courses)
+                        setCourses(courses_only); // Update the courses state with all courses
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+
+
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }, []);
+
+    // Prepare content for the Sidebar component
+    const sidebar_content = {
+        Terms: Object.entries(terms).length > 0 ? Object.fromEntries(Object.entries(terms)) : [],
+        Courses: courses.length > 0 ? courses.map((course) => course.code) : [],
+    };
+
+    return (
+        &lt;>
+            &lt;SideBar route="/history" content_dictionary={sidebar_content} currentTerm={currentTerm}
+                     updateCurrentTerm={updateCurrentTerm}/>
+            &lt;div className="container home--container">
+                {currentTerm !== "" &amp;&amp; Object.entries(terms).length > 0 ? (
+                    Object.entries(terms).map(([term, courses]) => (
+                        term === currentTerm ? (
+                                &lt;div key={term} className="containerOfCourses">
+                                    {courses.length > 0 ? (
+                                        courses.map((course) => (
+                                            &lt;Course key={course.id} course={course} page="history"/>
+                                        ))
+                                    ) : (
+                                        &lt;div className="no-course">
+                                            &lt;h1>No Courses Found&lt;/h1>
+                                        &lt;/div>
+                                    )}
+                                &lt;/div>
+                            ) :
+                            null
+                    ))
+                ) : (
+                    &lt;div className="termContainer">
+                        &lt;div className="termContent">
+                            {currentTerm === "" &amp;&amp; Object.entries(terms).length > 0 ? &lt;h1>No Terms Selected&lt;/h1> :
+                                &lt;h1>No Terms Found&lt;/h1>}
+                        &lt;/div>
+                    &lt;/div>
+                )}
+            &lt;/div>
+        &lt;/>
+    );
+};
+
+export default History;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="About.html">About</a></li><li><a href="AddCourse.html">AddCourse</a></li><li><a href="SideBar.html">SideBar</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Course">Course</a></li><li><a href="global.html#History">History</a></li><li><a href="global.html#Home">Home</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Feb 16 2024 18:16:32 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

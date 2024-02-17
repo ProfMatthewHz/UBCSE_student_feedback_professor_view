@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router";
 import { HashRouter } from "react-router-dom";
 import Navbar from "./Components/Navbar";
+import SideBar from "./Components/Sidebar";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import History from "./pages/History";

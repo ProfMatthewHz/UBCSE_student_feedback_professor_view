@@ -6,10 +6,12 @@ Chart.register(BarElement, LinearScale, CategoryScale);
 
 const BarChart = (results) => {
 
-  const results_without_headers = results["survey_data"].slice(1);
-  const result_labels = results_without_headers.map(item => item[0]);
-  const result_data = results_without_headers.map(item => item[1]);
 
+  const results_without_headers = results["survey_data"].slice(1); // Remove the headers
+  const result_labels = results_without_headers.map(item => item[0]); // Get the labels
+  const result_data = results_without_headers.map(item => item[1]); // Get the data
+
+  // The data for the bar chart
   const data = {
     labels: result_labels,
     datasets: [
@@ -23,6 +25,7 @@ const BarChart = (results) => {
     ],
   };
 
+  // The options for the bar chart
   const options = {
     scales: {
       x: {
@@ -45,6 +48,7 @@ const BarChart = (results) => {
     },
   };
 
+  // Return the bar chart
   return (
     <div>
      {/* <h2>Number of Students Per Normalized Averages</h2>*/}
