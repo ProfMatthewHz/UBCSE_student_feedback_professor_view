@@ -3,6 +3,7 @@ import SideBar from "../Components/Sidebar";
 import Rubric from "../Components/Rubric";
 import "../styles/library.css";
 
+
 const Library = () => {
     // State to store the list of rubrics
     const [rubrics, setRubrics] = useState([])
@@ -40,26 +41,28 @@ const Library = () => {
     };
     console.log("Sidebar content", sidebar_content)
 
-    // The Library component renders a SideBar component and a list of Rubric components.c
-    return (
-        <>
-            <SideBar route="/library" content_dictionary={sidebar_content} getRubrics={fetchRubrics}/>
-            <div>Library</div>
-            <div className="container library--container">
-                <div className="container-of-rubrics">
-                    {rubrics.length > 0 ? (
-                        rubrics.map((rubric) => (
-                            <Rubric rubric_id={rubric.id} getRubrics={fetchRubrics}/>
-                        ))
-                    ) : (
-                        <div className="no-course">
-                            <h1>No Rubrics Found</h1>
-                        </div>
-                    )}
-                </div>
+  return (
+    <>
+      <SideBar route="/library" content_dictionary={sidebar_content} getRubrics={fetchRubrics} />
+      <div>Library</div>
+      <div className="library--container">
+        <div className="container-of-rubrics">
+          {rubrics.length > 0 ? (
+            <div>
+               <div className="yes-course"><h1>Rubrics</h1></div>
+            {rubrics.map((rubric) => (
+              <Rubric rubric_id={rubric.id} getRubrics={fetchRubrics}/>
+            ))}
             </div>
-        </>
-    );
+          ) : (
+            <div className="no-course">
+              <h1>No Rubrics Found</h1>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Library;

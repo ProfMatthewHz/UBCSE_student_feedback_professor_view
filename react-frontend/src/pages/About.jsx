@@ -1,10 +1,13 @@
 import React from "react";
 import "../styles/about.css";
+import AboutSidebar from "../Components/AboutSidebar";
 import AriannaPFP from "../assets/fall2023team/ariannaescobarreyes.jpg";
 import JustinPFP from "../assets/fall2023team/justinvariara.png";
 import KoreyPFP from "../assets/fall2023team/koreyliu.jpg"
 import ArdianPFP from "../assets/fall2023team/ardianmuriqi.jpg"
 import AhmedPFP from "../assets/fall2023team/ahmed_alabadi.jpg"
+import MarianPFP from "../assets/spring2024team/marianhuynh.png";
+import MattPFP from "../assets/spring2024team/matthewprier.jpg"
 import {FaLinkedin} from "react-icons/fa";
 import {MdEmail} from "react-icons/md";
 import {FaLink} from "react-icons/fa";
@@ -16,31 +19,33 @@ import {FaLink} from "react-icons/fa";
  */
 
 const About = () => {
-    return (
-        <div className="about-page--container">
-            <div className="about-page--individual-team-container">
-                <h1>Development Team</h1>
-                <div className="about-page--team-info">
-                    <h1>Fall 2023</h1>
-                    <div className="about-page--team-members">
-                        <div className="about-page--profile">
-                          {/* The following code is repeated for each team member */}
-                            <img src={AriannaPFP} alt="Picture of Arianna"/>
-                            <h1>Arianna Escobar-Reyes</h1>
-                            <h2>Design Founder & Lead</h2>
-                            <h2>Full Stack Developer</h2>
-                            <div className="about-page--contacts">
-                                <a
-                                    href="https://www.linkedin.com/in/arianna-escobar-reyes/"
-                                    target="_blank"
-                                >
-                                    <FaLinkedin/>
-                                </a>
-                                <a href="mailto:escobarreyesarianna@gmail.com" target="_blank">
-                                    <MdEmail/>
-                                </a>
-                            </div>
-                        </div>
+  
+  return (
+    <>
+  <AboutSidebar />
+    <div className="about-page--container">
+      <div className="about-page--individual-team-container">
+        <h1>Development Team</h1>
+        <div className="about-page--team-info">
+          <h1>Fall 2023</h1>
+          <div className="about-page--team-members">
+            <div className="about-page--profile">
+              <img src={AriannaPFP} alt="Picture of Arianna" />
+              <h1>Arianna Escobar-Reyes</h1>
+              <h2>Design Founder & Lead</h2>
+              <h2>Full Stack Developer</h2>
+              <div className="about-page--contacts">
+                <a
+                  href="https://www.linkedin.com/in/arianna-escobar-reyes/"
+                  target="_blank"
+                >
+                  <FaLinkedin />
+                </a>
+                <a href="mailto:escobarreyesarianna@gmail.com" target="_blank">
+                  <MdEmail />
+                </a>
+              </div>
+            </div>
 
                         <div className="about-page--profile">
                             <img src={JustinPFP} alt="Picture of Justin"/>
@@ -97,21 +102,60 @@ const About = () => {
                             </div>
                         </div>
 
-                        <div className="about-page--profile">
-                            <img src={AhmedPFP} alt="Picture of Ahmed"/>
-                            <h1>Ahmed Alabadi</h1>
-                            <h2>Full Stack Developer</h2>
-                            <div className="about-page--contacts">
-                                <a href="mailto:alabadiahmed1129@gmail.com" target="_blank">
-                                    <MdEmail/>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div className="about-page--profile">
+              <img src={AhmedPFP} alt="Picture of Ahmed" />
+              <h1>Ahmed Alabadi</h1>
+              <h2>Full Stack Developer</h2>
+              <div className="about-page--contacts">
+                <a href="mailto:alabadiahmed1129@gmail.com" target="_blank">
+                  <MdEmail />
+                </a>
+              </div>
             </div>
+
+            <div className="about-page--profile">
+              <img src={MarianPFP} alt="Picture of Marian" />
+              <h1>Marian Huynh</h1>
+              <h2>Front-End Developer</h2>
+              <div className="about-page--contacts">
+                <a
+                  href="https://www.linkedin.com/in/marian-huynh-b7a068211/"
+                  target="_blank"
+                >
+                  <FaLinkedin />
+                </a>
+                <a href="mailto:marianvhuy@gmail.com" target="_blank">
+                  <MdEmail />
+                </a>
+              </div>
+            </div>
+
+            <div className="about-page--profile">
+              <img src={MattPFP} alt="Picture of Matt" />
+              <h1>Matthew Prier</h1>
+              <h2>Full Stack Developer</h2>
+              <div className="about-page--contacts">
+                <a
+                  href="https://www.linkedin.com/in/matthewprier"
+                  target="_blank"
+                >
+                  <FaLinkedin />
+                </a>
+                <a href="mailto:mrprier@hotmail.com" target="_blank">
+                  <MdEmail />
+                </a>
+              </div>
+            </div>
+
+            
+              
+            
+          </div>          
         </div>
-    );
+      </div>
+    </div>
+    </>
+  );
 };
 
 export default About;

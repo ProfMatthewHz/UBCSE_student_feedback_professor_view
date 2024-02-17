@@ -93,22 +93,22 @@ const Home = () => {
    * The Home component renders a SideBar component and a list of Course components.
    */
   return (
-      <>
-        <SideBar route="/" content_dictionary={sidebar_content} getCourses={fetchCourses}/>
-        <div className="container home--container">
-          <div className="containerOfCourses">
-            {courses.length > 0 ? (
-                courses.map((course) => (
-                    <Course key={course.id} course={course} page="home"/>
-                ))
-            ) : (
-                <div className="no-course">
-                  <h1>No Courses Yet!</h1>
-                </div>
-            )}
-          </div>
+    <>
+      <SideBar route="/" content_dictionary={sidebar_content} getCourses={fetchCourses} />
+      <div className="home--container">
+        <div className="containerOfCourses">
+          {courses.length > 0 ? (
+            courses.map((course) => (
+              <Course key={course.id} course={course} page="home" />
+            ))
+          ) : (
+            <div className="no-course">
+              <h1>No Courses Yet</h1>
+            </div>
+          )}
         </div>
-      </>
+      </div>
+    </>
   );
 };
 
