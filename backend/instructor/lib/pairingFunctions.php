@@ -95,6 +95,8 @@ function processReviewRows($rows, $student_data, $pm_mult, $pairing_mode) {
     $pairings = parse_managed_teams($rows, $student_data, $pm_mult);
   } else if ($pairing_mode == 4) {
     $pairings = parse_manager_review($rows, $student_data);
+  } else if ($pairing_mode == 5){
+    $pairings = parse_manager_review($rows, $student_data);
   }
   $roles = calculateRoles($pairings);
   $ret_val = array("pairings" => $pairings, "roles" => $roles);
