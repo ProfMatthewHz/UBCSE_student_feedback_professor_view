@@ -9,6 +9,7 @@ import Modal from "./Modal";
 import Toast from "./Toast";
 import ViewResults from "./ViewResults";
 import {RadioButton} from "primereact/radiobutton";
+import NewDropDown from "./NewDropDown";
 
 /**
  * @component
@@ -1759,7 +1760,8 @@ const Course = ({course, page}) => {
                     </label>
                     <label className="add-survey--label" for="subject-line">
                         Pairing Modes
-                        <select
+                        <NewDropDown pm={pairingModesNames}/>
+                        {/* <select
                             value={valuePairing}
                             onChange={handleChangePairing}
                             id="pairing-mode"
@@ -1767,7 +1769,7 @@ const Course = ({course, page}) => {
                             {pairingModesNames.map((pairing) => (
                                 <option value={pairing}>{pairing}</option>
                             ))}
-                        </select>
+                        </select> */}
                     </label>
                     {validPairingModeForMultiplier && (
                         <label className="add-survey--label" for="subject-line">
