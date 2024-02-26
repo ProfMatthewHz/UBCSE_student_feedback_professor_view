@@ -1,16 +1,31 @@
 <?php
+
+  require_once __DIR__ . '/../vendor/autoload.php';
+  use Firebase\JWT\JWT;
+  use Firebase\JWT\Key;
   error_reporting(-1); // reports all errors
   ini_set("display_errors", "1"); // shows all errors
   ini_set("log_errors", 1);
-  session_start();
+//  session_start();
   require "lib/constants.php";
-
-  if(!isset($_SESSION['student_id'])) {
-    header("Location: ".SITE_HOME."index.php");
-    exit();
+//  if(!isset($_SESSION['student_id'])) {
+//    header("Location: ".SITE_HOME."index.php");
+//    exit();
+//  }
+  if (!isset($_COOKIE['student_id'])) {
+      header("Location: ".SITE_HOME."index.php");
+      exit();
   }
-  
-  $student_id = $_SESSION['student_id'];
+
+  $secretKey = "myAppJWTKey2024!#$";
+  $jwt = $_COOKIE['student_id'];
+  $alg = 'HS256';
+  $decoded = JWT::decode($jwt, new Key($secretKey, $alg));
+  $student_id = $decoded->data->student_id;
+
+//  echo ("".$student_id);
+
+//  $student_id = $_SESSION['student_id'];
   require "lib/database.php";
   require "lib/surveyQueries.php";
   $con = connectToDatabase();
@@ -18,9 +33,9 @@
   $term = MONTH_MAP_SEMESTER[$month];
   $year = idate('Y');
 
-  $past_surveys = getClosedSurveysForTerm($con, $term, $year, $_SESSION['student_id']);
-  $current_surveys = getCurrentSurveys($con, $_SESSION['student_id']);
-  $upcoming_surveys = getUpcomingSurveys($con, $_SESSION['student_id']);
+  $past_surveys = getClosedSurveysForTerm($con, $term, $year, $student_id);
+  $current_surveys = getCurrentSurveys($con,   $student_id);
+  $upcoming_surveys = getUpcomingSurveys($con,   $student_id);
  ?>
 <!doctype html>
 <html lang="en">

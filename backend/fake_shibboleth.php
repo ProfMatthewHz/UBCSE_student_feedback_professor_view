@@ -1,14 +1,23 @@
   <?php
-//error logging
+  // JWT //
+  require_once __DIR__ . '/../vendor/autoload.php';
+  use Firebase\JWT\JWT;
+  use Firebase\JWT\Key;
+
+
+
+  //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-session_start();
+//session_start();
 require "lib/constants.php";
 require "lib/database.php";
 require "lib/studentQueries.php";
+
+  $response = [];
 
 // Sanity check that prevents this from being used on the production server
 if(!empty($_SERVER['uid'])) {
@@ -21,20 +30,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $con = connectToDatabase();
   if (empty($_POST["UBIT"])) {
     http_response_code(400);
-    echo "Bad Request: Missing parameters.";
-    exit();
+//    echo "Bad Request: Missing parameters.";
+//    exit();
+      $response['error'] = "Bad Request: Missing parameters.";
+
+      header('Content-Type: application/json');
+      echo json_encode($response);
+      exit();
   }
   $email = $_POST['UBIT']."@buffalo.edu";
   $id_and_name = getStudentInfoFromEmail($con, $email);
   if (empty($id_and_name)) {
      http_response_code(400);
-     echo 'Double-check UBIT: ' . $email . ' is not in the system.';
-     exit();
+//     echo 'Double-check UBIT: ' . $email . ' is not in the system.';
+//     exit();
+
+      $response['error'] = 'Double-check UBIT: ' . $email . ' is not in the system.';
+
+      header('Content-Type: application/json');
+      echo json_encode($response);
+      exit();
   }
-  session_regenerate_id();
-  $_SESSION['student_id'] = $id_and_name[0];
-  header("Location: ".SITE_HOME."courseSelect.php");
-  exit();
+//  session_regenerate_id();
+//  $_SESSION['student_id'] = $id_and_name[0];
+//  header("Location: ".SITE_HOME."courseSelect.php");
+//  exit();
+
+    // replacement //
+    $secretKey = "myAppJWTKey2024!#$";
+    $payload = [
+        "data" => [
+            "student_id" => $id_and_name[0] // Custom data
+        ]
+    ];
+    $jwt_studentId = JWT::encode($payload, $secretKey, 'HS256');
+
+    // sending this shit as a cookie //
+    http_response_code(200);
+    setcookie('student_id', $jwt_studentId);
+    header("Location: ".SITE_HOME."courseSelect.php");
+    exit();
+
 }
 ?>
 <!doctype html>
