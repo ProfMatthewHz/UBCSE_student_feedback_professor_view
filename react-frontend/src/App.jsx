@@ -1,10 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./Components/Navbar";
-import SideBar from "./Components/Sidebar";
 import Home from "./pages/Home";
-import About from "./pages/About";
-import History from "./pages/History";
-import Library from "./pages/Library";
+
 
 function App() {
 
@@ -16,10 +13,7 @@ function App() {
         <Navbar />
         <Routes>
           {/* Add Routes here with a component to render at that Route */}
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/library" element={<Library />} />
+          <Route path="/" element={<Home />} />{ /*only one page with 3 options directing to diff locations on the page*/} 
         </Routes>
       </div>
     </Router>
