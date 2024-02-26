@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/newdropdown.css";
 
-const NewDropDown = ({pm}) => {
+const NewDropDown = ({pm, handleChangePairing}) => {
   const [open, setOpen] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const [image, setImage] = useState("");
@@ -11,7 +11,10 @@ const NewDropDown = ({pm}) => {
   const handleOpen = () => {
     setOpen(!open);
   };
-
+  
+  const handleCloseImage = () => {
+    setShowImage(false);
+  }
   const handleImageClick = (e, pairingMode) => {
     e.stopPropagation();
     if(open) {
@@ -42,8 +45,10 @@ const NewDropDown = ({pm}) => {
   const handlePairingClick = (e, pairingMode) => {
     e.stopPropagation();
     setSelectedPairing(pairingMode);
+    handleChangePairing(pairingMode);
     setOpen(false);
   }
+
   return (
     <div className="dropdown">
       <button className="dropdown-button" onClick={handleOpen}>
@@ -66,6 +71,9 @@ const NewDropDown = ({pm}) => {
       </ul>) : null}
       {showImage ? (
         <div className="pairing-mode-image">
+          <button className="close-image-button" onClick={handleCloseImage}>
+            Close
+          </button>
           <img src={image} alt="Pairing Mode Visual"/>
         </div>
       ) : null}

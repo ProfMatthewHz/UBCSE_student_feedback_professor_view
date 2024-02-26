@@ -234,17 +234,17 @@ const Course = ({course, page}) => {
     const handleChangeMultiplierNumber = (e) => {
         setMultiplierNumber(e.target.value);
     };
-    const handleChangePairing = (e) => {
+    const handleChangePairing = (pairing) => {
         var boolean = false;
 
         let multiplierCheckArray = pairingModesFull.mult.map(
             (element) => element.description
         );
-        if (multiplierCheckArray.includes(e.target.value)) {
+        if (multiplierCheckArray.includes(pairing)) {
             boolean = true;
         }
 
-        setValuePairing(e.target.value);
+        setValuePairing(pairing);
         setMultiplier(boolean);
     };
 
@@ -1760,7 +1760,9 @@ const Course = ({course, page}) => {
                     </label>
                     <label className="add-survey--label" for="subject-line">
                         Pairing Modes
-                        <NewDropDown pm={pairingModesNames}/>
+                        <NewDropDown 
+                            pm={pairingModesNames}
+                            handleChangePairing={handleChangePairing}/>
                         {/* <select
                             value={valuePairing}
                             onChange={handleChangePairing}
