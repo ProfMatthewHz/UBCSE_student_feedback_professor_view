@@ -131,125 +131,63 @@ function SideBar(props) {
      
 
       <div className = "title">
+        <div className ="headerTitle">
         <h1>TEAMWORK</h1>
           <h1>EVALUATION</h1>
+          </div>
         <div className="sidebar">
 
           <nav> 
-            <ul className={`${clicked ? "open" : ""}`}>
-              <li>
-                <NavLink to="/">Home</NavLink>
-                
-                    {props.route==="/" && Object.entries(props.content_dictionary).map(([title, contents]) => {
-                          return props.route === "/history" ? (
-                          
-                        <div
-                          className="sidebar-content"
-                          style={title === "Courses" ? { maxHeight: "75%" } : null}
-                        >
-                          
-                          {(title === "Courses" && dropdown_value !== "") 
-                          // ||title === "Terms" 
-                          ? (
-                            <h1>{title}</h1>
-                          ) : null}
 
-                          
-                          <div className="sidebar-list">
-                            {
-                          
-                            title === "Courses" && dropdown_value !== "" && props.route ==="/" ? (
-                              // dropdown bar
-                              termContents.length > 0 ? (
-                                termContents.map((item) => {
-                                  return (
-                                    <a href={"#" + item.code}>
-                                      <div
-                                        onClick={() =>
-                                          setActiveButton(item.code + "-Option")
-                                        }
-                                        id={item.code + "-Option"}
-                                        className={
-                                          activeButton === item.code + "-Option"
-                                            ? "active"
-                                            : item.code + "-Option"
-                                        }
-                                      >
-                                        {item.code}
-                                      </div>
-                                    </a>
-                                  );
-                                })
-                              ) : (
-                                <div className="no-content">No {title}</div>
-                              )
-                            ) : null}
-                          </div>
-                        </div>
-
-                      ) : (
-                        <div className="sidebar-content" style={{ minHeight: "90%" }}>
+          <div className="sidebar-content" style={{ minHeight: "90%" }}>
                           {/* list of courses */}
                           <div className="sidebar-list">
-                            {contents.length > 0 ? (
-                              contents.map((item) => {
-                                return (
-                                  <a href={"#" + item}>
-                                    <div
-                                      onClick={() => setActiveButton(item + "-Option")}
-                                      id={item + "-Option"}
-                                      className={
-                                        activeButton === item + "-Option"
-                                          ? "active"
-                                          : item + "-Option"
-                                      }
-                                    >
-                                      {item}
-                                    </div>
-                                  </a>
-                                );
-                              })
-                            ) : (
-                              <div className="no-content">No Courses</div>
-                            )}
-                          </div>
-
-
-                          {/* add course button */}
-                          {props.route === "/" ? (
-                            <div class="button-container">
-                            <button
-                              className="add_course-btn"
-                              onClick={handleAddCourseModal}
+                          <a href="#Open Surveys">
+                              <div
+                                onClick={() => setActiveButton("Open Surveys-Option")}
+                                id="Open Surveys-Option"
+                                className={activeButton === "Open Surveys-Option" ? "active" : "Open Surveys-Option"}
+                              >
+                                Open Surveys
+                              </div>
+                            </a>
+                          <a href="#Future Surveys">
+                            <div
+                              onClick={() => setActiveButton("Future Surveys-Option")}
+                              id="Future Surveys-Option"
+                              className={activeButton === "Future Surveys-Option" ? "active" : "Future Surveys-Option"}
                             >
-                              + Add Course
-                            </button>
+                             Future Surveys
+                            </div>
+                          </a>
+                          <a href="#Closed Surveys">
+                            <div
+                              onClick={() => setActiveButton("Closed Surveys-Option")}
+                              id="Closed Surveys-Option"
+                              className={activeButton === "Closed Surveys-Option" ? "active" : "Closed Surveys-Option"}
+                            >
+                              Closed Surveys
+                            </div>
+                          </a>
+                                          
+                            
+                        
+                            
                           </div>
 
 
-                          ) 
                         
-                          : null}  
+
+
+             
                         
                       
 
                         </div>
-                      );
-                    })} 
-              </li>
-            </ul>
+                   
 
 
-            {/* Hamburger menu for phone, commented out bc of hertz request with only having Home
-                May be changed in the future so just uncomment the code below and a hamburger menu will
-                show on mobile
-            */}
-            {/* <div id="nav-mobile" onClick={handleClick}>
-              <i
-                id="nav-bar"
-                className={`fas ${clicked ? "fa-times" : "fa-bars"}`}
-              ></i>
-            </div> */}
+
           </nav>
 
   
