@@ -115,6 +115,10 @@ const Home = () => {
                         <th>Survey Actions</th>
                     </tr>
                     </thead>
+
+
+
+
                 </table>
                 
                 
@@ -136,6 +140,10 @@ const Home = () => {
                         <th>Survey Name</th>
                     </tr>
                     </thead>
+
+
+
+
                 </table>
                 
                 
@@ -159,6 +167,11 @@ const Home = () => {
                         <th>Survey Actions</th>
                     </tr>
                     </thead>
+
+                 
+
+
+
                 </table>
                 
                 
