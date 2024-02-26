@@ -111,11 +111,52 @@ const Home = () => {
                         <th>Survey Closes</th>
                         <th>Course Name</th>
                         <th>Survey Name</th>
-                        <th>Completion Rate</th>
-                        <th>Survey Actions</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
+                    <tbody>
+                            <tr className="survey-row" >
+                               
+                                  <td>
+                                  <div className="warning">
+                                    2/25/2024
+                                    <br/>
+                                    11:59PM
+                                    </div>
+                                  </td>
+                                
+                                <td>CSE 115 </td>
+                                <td>ADEPT Evaluation</td>
+                                <td>More Responses Needed</td>
+                                <td><button>Start</button></td>
+                            </tr>
 
+                            <tr className="survey-row" >
+                                  <td>
+                                    2/26/2024
+                                    <br/>
+                                    11:59PM
+                                  </td>
+                                <td>CSE 444 </td>
+                                <td>Miss Claus Evaluation</td>
+                                <td>100%</td>
+                                <td><button>Revise</button></td>
+                            </tr>
+
+                            <tr className="survey-row" >
+                                  <td>
+                                    2/29/2024
+                                    <br/>
+                                    11:59PM
+                                  </td>
+                                <td>CSE 404 </td>
+                                <td>PM Evaluation</td>
+                                <td>91%</td>
+                                <td><button>Continue</button></td>
+                            </tr>
+                       
+                        </tbody>
 
 
 
@@ -138,11 +179,28 @@ const Home = () => {
                         <th>Survey Closes</th>
                         <th>Course Name</th>
                         <th>Survey Name</th>
+                  
                     </tr>
                     </thead>
+                    <tr className="survey-row" >
+                        <td>
+                          3/26/202
+                          <br/>
+                          11:59PM
+                        </td>
+                      <td>CSE 444 </td>
+                      <td>Miss Claus Evaluation</td>
+                   </tr>
 
-
-
+                   <tr className="survey-row" >
+                        <td>
+                          4/26/202
+                          <br/>
+                          11:59PM
+                        </td>
+                      <td>CSE 777 </td>
+                      <td>Miss Claus Evaluation</td>
+                   </tr>
 
                 </table>
                 
@@ -164,13 +222,52 @@ const Home = () => {
                         <th>Survey Closed</th>
                         <th>Course Name</th>
                         <th>Survey Name</th>
-                        <th>Survey Actions</th>
+                        <th>Submission</th>
+                        <th>Feedback</th>
                     </tr>
                     </thead>
 
-                 
+                    <tbody>
 
+                    <tr className="survey-row" >
+                          <td>
+                            1/26/2024
+                            <br/>
+                            11:59PM
+                          </td>
+                        <td>CSE 444 </td>
+                        <td>Something Evaluation</td>
+                        <td><button>View Submission</button></td>
+                        <td><button>View Feedback</button></td>
+                        
+                    </tr>
+                        </tbody>
 
+                        <tr className="survey-row" >
+                          <td>
+                            1/23/2024
+                            <br/>
+                            11:59PM
+                          </td>
+                        <td>CSE 111 </td>
+                        <td>Another Evaluation</td>
+                        <td><button>View Submission</button></td>
+                        <td><button>View Feedback</button></td>
+                    </tr>
+                        
+
+                    <tr className="survey-row" >
+                          <td>
+                            1/22/2024
+                            <br/>
+                            11:59PM
+                          </td>
+                        <td>CSE 111 </td>
+                        <td>Santa Evaluation</td>
+                        <td><button>View Submission</button></td>
+                        <td><button>View Feedback</button></td>
+                    </tr>
+                        
 
                 </table>
                 
