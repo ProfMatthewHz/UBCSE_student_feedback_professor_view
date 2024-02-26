@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import SideBar from "../Components/Sidebar";
 import "../styles/home.css";
+import "../styles/course.css";
 import Course from "../Components/Course";
 
 /**
@@ -97,15 +98,75 @@ const Home = () => {
       <SideBar route="/" content_dictionary={sidebar_content} getCourses={fetchCourses} />
       <div className="home--container">
         <div className="containerOfCourses">
-          {courses.length > 0 ? (
-            courses.map((course) => (
-              <Course key={course.id} course={course} page="home" />
-            ))
-          ) : (
-            <div className="no-course">
-              <h1>No Courses Yet</h1>
+          <div id="Open Surveys" class="courseContainer">
+          <div className="courseContent">
+                <div className="courseHeader">
+                    <h2>
+                        Open Surveys
+                    </h2>
+                </div>
+                <table className="surveyTable">
+                    <thead>
+                    <tr>
+                        <th>Survey Closes</th>
+                        <th>Course Name</th>
+                        <th>Survey Name</th>
+                        <th>Completion Rate</th>
+                        <th>Survey Actions</th>
+                    </tr>
+                    </thead>
+                </table>
+                
+                
             </div>
-          )}
+          </div>
+
+          <div id="Future Surveys" class="courseContainer">
+          <div className="courseContent">
+                <div className="courseHeader">
+                    <h2>
+                        Future Surveys
+                    </h2>
+                </div>
+                <table className="surveyTable">
+                    <thead>
+                    <tr>
+                        <th>Survey Closes</th>
+                        <th>Course Name</th>
+                        <th>Survey Name</th>
+                    </tr>
+                    </thead>
+                </table>
+                
+                
+            </div>
+          </div>
+
+
+          <div id="Closed Surveys" class="courseContainer">
+          <div className="courseContent">
+                <div className="courseHeader">
+                    <h2>
+                        Closed Surveys
+                    </h2>
+                </div>
+                <table className="surveyTable">
+                    <thead>
+                    <tr>
+                        <th>Survey Closed</th>
+                        <th>Course Name</th>
+                        <th>Survey Name</th>
+                        <th>Survey Actions</th>
+                    </tr>
+                    </thead>
+                </table>
+                
+                
+            </div>
+          </div>
+
+
+
         </div>
       </div>
     </>
