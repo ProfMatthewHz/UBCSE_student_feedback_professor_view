@@ -5,6 +5,7 @@ const NewDropDown = ({pm}) => {
   const [open, setOpen] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const [image, setImage] = useState("");
+  
 
   const handleOpen = () => {
     setOpen(!open);
@@ -55,7 +56,9 @@ const NewDropDown = ({pm}) => {
         {pm.map((pairing) => (
           <li className="menu-item" key={pairing} value={pairing}>
             <button className="pair">{pairing}</button>
-            <button className="pairing-mode-visual" onClick={(e) => handleImageClick(pairing, e)}>Test</button>
+            <button className="pairing-mode-visual" onClick={(e) => handleImageClick(pairing, e)}>
+              <img src="../src/assets/help.png" alt="" />
+            </button>
           </li>
         ))}
       </ul>) : null}

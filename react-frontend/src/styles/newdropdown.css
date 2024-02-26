@@ -8,6 +8,7 @@
     display: flex;
     flex-direction: column;
     /* z-index: 1; */
+    border-radius: 25px;
     
 }
 
@@ -26,7 +27,7 @@
     width: calc(100% - 80px);
     border-radius: 25px;
     /* justify-content: space-between; */
-    margin-top: 44px;
+    margin-top: 42px;
     display: flex;
 }
 
@@ -53,20 +54,33 @@
     flex: 1;
     text-align: left;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 15px;
+    font-weight: 450;
     
 }
 
 .pair:hover {
-    background-color: rgb(50, 90, 199)
+    background-color: rgb(20, 70, 206)
 }
 
 .pairing-mode-visual {
-    background-color: #df214a;
-    margin-right: 0px;
-    display: block;
+    margin-right: 5px;
     overflow: hidden;
+    background-color: #225cb5;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.pairing-mode-visual img {
+    max-width: 23px;
+    max-height: 23px;
+    
+}
+.pairing-mode-visual img:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease-in-out;
+    
 }
 
 .dropdown-button {
