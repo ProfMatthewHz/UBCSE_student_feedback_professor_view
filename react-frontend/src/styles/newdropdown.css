@@ -65,6 +65,8 @@
 .pairing-mode-visual {
     background-color: #df214a;
     margin-right: 0px;
+    display: block;
+    overflow: hidden;
 }
 
 .dropdown-button {
@@ -81,3 +83,20 @@
     border: none;
 }
 
+.pairing-mode-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); /* Adjust the background color and opacity as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure a high z-index to overlay other elements */
+  }
+.pairing-mode-image img {
+    max-width: 80%;
+    max-height: 80%;
+
+}
