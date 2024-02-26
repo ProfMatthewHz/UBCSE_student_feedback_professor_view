@@ -23,7 +23,7 @@
   $decoded = JWT::decode($jwt, new Key($secretKey, $alg));
   $student_id = $decoded->data->student_id;
 
-//  echo ("".$student_id);
+  echo ("".$student_id);
 
 //  $student_id = $_SESSION['student_id'];
   require "lib/database.php";
