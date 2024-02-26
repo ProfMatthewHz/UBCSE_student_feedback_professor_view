@@ -5,13 +5,14 @@ const NewDropDown = ({pm}) => {
   const [open, setOpen] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const [image, setImage] = useState("");
-  
+  const [selectedPairing, setSelectedPairing] = useState("Each Team Member Reviewed by Entire Team + Manager")
+
 
   const handleOpen = () => {
     setOpen(!open);
   };
 
-  const handleImageClick = (pairingMode,e) => {
+  const handleImageClick = (e, pairingMode) => {
     e.stopPropagation();
     if(open) {
       switch(pairingMode) {
@@ -36,27 +37,28 @@ const NewDropDown = ({pm}) => {
           break;
       }
     }
+  }
 
-  
+  const handlePairingClick = (e, pairingMode) => {
+    e.stopPropagation();
+    setSelectedPairing(pairingMode);
+    setOpen(false);
   }
   return (
     <div className="dropdown">
       <button className="dropdown-button" onClick={handleOpen}>
         <div className="dropdown-text">
-          <div>Title</div>
-          {/* <div
-            className="material-icons"
-            style={{
-              transform: `rotate(${open ? 180 : 0}deg)`,
-              transition: "all 0.25s",
-            }}></div> */}
+          <div>{selectedPairing}</div>
+            {<div className="dropdown-icon">
+             <img src="../src/assets/dropdown-icon.png"/> 
+            </div>}
         </div>
       </button>
       {open ? (<ul className="menu">
         {pm.map((pairing) => (
           <li className="menu-item" key={pairing} value={pairing}>
-            <button className="pair">{pairing}</button>
-            <button className="pairing-mode-visual" onClick={(e) => handleImageClick(pairing, e)}>
+            <button className="pair" onClick={(e) => handlePairingClick(e, pairing)} >{pairing}</button>
+            <button className="pairing-mode-visual" onClick={(e) => handleImageClick(e, pairing)}>
               <img src="../src/assets/help.png" alt="" />
             </button>
           </li>

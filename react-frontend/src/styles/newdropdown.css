@@ -12,6 +12,16 @@
     
 }
 
+.dropdown-text {
+    display: flex;
+    justify-content: space-between;
+}
+.dropdown-icon img {
+    max-width: 13px;
+    max-height: 13px;
+    margin-right: 0px;
+    
+}
 .menu {
     /* position: absolute;
     list-style-type: none;
