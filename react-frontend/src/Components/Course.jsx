@@ -396,26 +396,26 @@ const Course = ({course, page}) => {
 
         //date and time keyboard typing bound checks.
 
-        let minDateObject = new Date("2023-08-31T00:00:00"); //first day of class
-        let maxDateObject = new Date("2023-12-31T00:00:00"); //last day of class
+       // let minDateObject = new Date("2023-08-31T00:00:00"); //first day of class
+       // let maxDateObject = new Date("2023-12-31T00:00:00"); //last day of class
         let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
         let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
-        if (startDateObject < minDateObject) {
-            setStartDateBoundError(true);
-            return;
-        }
-        if (startDateObject > maxDateObject) {
-            setStartDateBound1Error(true);
-            return;
-        }
-        if (endDateObject < minDateObject) {
-            setEndDateBoundError(true);
-            return;
-        }
-        if (endDateObject > maxDateObject) {
-            setStartDateBound1Error(true);
-            return;
-        }
+        // if (startDateObject < minDateObject) {
+        //     setStartDateBoundError(true);
+        //     return;
+        // }
+        // if (startDateObject > maxDateObject) {
+        //     setStartDateBound1Error(true);
+        //     return;
+        // }
+        // if (endDateObject < minDateObject) {
+        //     setEndDateBoundError(true);
+        //     return;
+        // }
+        // if (endDateObject > maxDateObject) {
+        //     setStartDateBound1Error(true);
+        //     return;
+        // }
         //END:date and time keyboard typing bound checks.
 
         //special startdate case. Startdate cannot be before the current day.
@@ -570,26 +570,26 @@ const Course = ({course, page}) => {
 
         //date and time keyboard typing bound checks.
 
-        let minDateObject = new Date("2023-08-31T00:00:00"); //first day of class
-        let maxDateObject = new Date("2023-12-31T00:00:00"); //last day of class
+        // let minDateObject = new Date("2023-08-31T00:00:00"); //first day of class
+        // let maxDateObject = new Date("2023-12-31T00:00:00"); //last day of class
         let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
         let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
-        if (startDateObject < minDateObject) {
-            setStartDateBoundError(true);
-            return;
-        }
-        if (startDateObject > maxDateObject) {
-            setStartDateBound1Error(true);
-            return;
-        }
-        if (endDateObject < minDateObject) {
-            setEndDateBoundError(true);
-            return;
-        }
-        if (endDateObject > maxDateObject) {
-            setStartDateBound1Error(true);
-            return;
-        }
+        // if (startDateObject < minDateObject) {
+        //     setStartDateBoundError(true);
+        //     return;
+        // }
+        // if (startDateObject > maxDateObject) {
+        //     setStartDateBound1Error(true);
+        //     return;
+        // }
+        // if (endDateObject < minDateObject) {
+        //     setEndDateBoundError(true);
+        //     return;
+        // }
+        // if (endDateObject > maxDateObject) {
+        //     setStartDateBound1Error(true);
+        //     return;
+        // }
         //END:date and time keyboard typing bound checks.
 
         //special startdate case. Startdate cannot be before the current day.
