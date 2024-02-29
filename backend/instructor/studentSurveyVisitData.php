@@ -1,51 +1,53 @@
 <?php
-
-require "lib/database.php";
-require "lib/constants.php";
-require "lib/constants.php";
-
-
-session_start();
-ini_set("display_errors", 1);
+error_reporting(-1); // reports all errors
+ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
+
+require_once "../lib/database.php";
 $con = connectToDatabase();
 
-if (!isset($_SESSION['id'])) {
-    http_response_code(403);
-    echo "Forbidden: You must be logged in to access this page.";
-    exit();
-  }
-$instructor_id = $_SESSION['id'];
+// Check if connection is successful
+if (!$con) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
-$survey_data = array();
 
-// Query to fetch data from student_visit_data table
-$query = "SELECT survey_id, student_id, timestamp, counter FROM student_visit_data WHERE instructor_id = ?";
-$stmt = $con->prepare($query);
-$stmt->bind_param("i", $instructor_id);
+
+// Define the student ID and survey ID from GET parameters
+$student_id_to_check = $_GET['student_id'];
+$survey_id = $_GET['survey_id'];
+
+// Perform the SQL query to check if the student exists
+$sql = "SELECT id FROM students WHERE id = ?";
+$stmt = $con->prepare($sql);
+$stmt->bind_param("i", $student_id_to_check);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Iterate over the result set and populate the dictionary
-while ($row = $result->fetch_assoc()) {
-    $survey_id = $row['survey_id'];
-    $student_id = $row['student_id'];
-    $timestamp = $row['timestamp'];
-    $counter = $row['counter'];
+// Check if query was successful
+if ($result->num_rows > 0) {
+    // Student exists
+    echo "Student with ID $student_id_to_check exists in the database.";
 
-    // Store data in the dictionary
-    if (!isset($survey_data[$survey_id])) {
-        $survey_data[$survey_id] = array();
+    // Update visit_count and last_visit based on student_id and survey_id
+    $current_timestamp = date('Y-m-d H:i:s');
+    $sql_update = "UPDATE student_visit_data SET visit_count = visit_count + 1, last_visit = ? WHERE student_id = ? AND survey_id = ?";
+    $stmt_update = $con->prepare($sql_update);
+    $stmt_update->bind_param("sii", $current_timestamp, $student_id_to_check, $survey_id);
+    $stmt_update->execute();
+    $affected_rows = $stmt_update->affected_rows;
+
+    if ($affected_rows > 0) {
+        echo "Visit count and last visit timestamp updated successfully.";
+    } else {
+        echo "Failed to update visit count and last visit timestamp.";
     }
-    $survey_data[$survey_id][] = array(
-        'student_id' => $student_id,
-        'timestamp' => $timestamp,
-        'counter' => $counter
-    );
+} else {
+    // Student does not exist
+    echo "Student with ID $student_id_to_check does not exist in the database.";
 }
 
-// Output the survey data dictionary
-echo json_encode($survey_data);
-
+// Close the connection
+mysqli_close($con);
 ?>
