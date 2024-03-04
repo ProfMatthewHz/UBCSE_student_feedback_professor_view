@@ -81,7 +81,7 @@ const Home = () => {
           console.log(err);
         });
   };
-
+/** */
   // Fetch courses when the component mounts
   useEffect(() => {
     fetchCourses()
@@ -91,6 +91,46 @@ const Home = () => {
   const sidebar_content = {
     Courses: courses ? courses.map((course) => course.code) : [],
   };
+
+  const [surveys, setSurveys] = useState([]);
+
+  /**
+   * Perform a POST call to courseSurveysQueries, or where ever to find students info
+   */
+  function updateAllSurveys() {
+      fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", { // TODO: need to update the api url
+          method: "POST",
+          headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+          }
+      })
+          .then((res) => res.json())
+          .then((result) => {
+              console.log(result);
+              const activeSurveys = result.active.map((survey_info) => ({
+                  ...survey_info,
+                  expired: false,
+              }));
+              console.log(result);
+              const expiredSurveys = result.expired.map((survey_info) => ({
+                  ...survey_info,
+                  expired: true,
+              }));
+              const upcomingSurveys = result.upcoming.map((survey_info) => ({
+                  ...survey_info,
+                  expired: false,
+              }));
+              console.log(result);
+
+              setSurveys([...activeSurveys, ...expiredSurveys, ...upcomingSurveys]);
+          })
+          .catch((err) => {
+              console.log(err);
+          });
+  }
+
+
+
 
   /**
    * The Home component renders a SideBar component and a list of Course components.
