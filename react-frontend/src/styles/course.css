@@ -58,6 +58,7 @@ select.surveyactions--select {
   justify-content: end;
 }
 
+
 .courseHeader h2 {
   font-size: 20px;
   font-weight: bold;
@@ -108,11 +109,15 @@ select.surveyactions--select {
 }
 
 .surveyTable th,
-.surveyTable td {
+.surveyTable td{
   /*border-bottom: 1px solid #225cb5;*/
   padding: 15px 15px;
   color: #225cb5;
   text-align: center;
+  max-width: 10%;
+  max-height: 10%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .surveyTable td .warning{
@@ -132,6 +137,10 @@ select.surveyactions--select {
   border: solid 1px #EF6C22;
   transition-duration: 0.4s;
   transition-property: background-color;
+}
+
+.surveyTable td button .openSurveyButton{
+  width: 106px;
 }
 
 .surveyTable td button:hover {

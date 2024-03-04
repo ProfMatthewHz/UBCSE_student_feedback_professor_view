@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import SideBar from "../Components/Sidebar";
 import "../styles/home.css";
 import "../styles/course.css";
+import Modal from "../Components/RubricModal";
 import Course from "../Components/Course";
 
 /**
@@ -11,6 +12,7 @@ import Course from "../Components/Course";
 const Home = () => {
   // State to store the list of courses
   const [courses, setCourses] = useState([]);
+  const [openModal,setOpenModal] = useState(false);
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -95,6 +97,7 @@ const Home = () => {
    */
   return (
     <>
+    <Modal open={openModal} onClose={()=>setOpenModal(false)}/>
       <SideBar route="/" content_dictionary={sidebar_content} getCourses={fetchCourses} />
       <div className="home--container">
         <div className="containerOfCourses">
@@ -129,7 +132,7 @@ const Home = () => {
                                 <td>CSE 115 </td>
                                 <td>ADEPT Evaluation</td>
                                 <td>More Responses Needed</td>
-                                <td><button>Start</button></td>
+                                <td><button><div className="openSurveyButton">Start</div></button></td>
                             </tr>
 
                             <tr className="survey-row" >
@@ -141,7 +144,7 @@ const Home = () => {
                                 <td>CSE 444 </td>
                                 <td>Miss Claus Evaluation</td>
                                 <td>100%</td>
-                                <td><button>Revise</button></td>
+                                <td><button><div className="openSurveyButton">Revise</div></button></td>
                             </tr>
 
                             <tr className="survey-row" >
@@ -153,7 +156,7 @@ const Home = () => {
                                 <td>CSE 404 </td>
                                 <td>PM Evaluation</td>
                                 <td>91%</td>
-                                <td><button>Continue</button></td>
+                                <td><button><div className="openSurveyButton">Continue</div></button></td>
                             </tr>
                        
                         </tbody>
@@ -238,7 +241,8 @@ const Home = () => {
                         <td>CSE 444 </td>
                         <td>Something Evaluation</td>
                         <td><button>View Submission</button></td>
-                        <td><button>View Feedback</button></td>
+          
+                        <td><button onClick={()=>setOpenModal(true)}>View Feedback</button> </td>
                         
                     </tr>
                         </tbody>
@@ -271,8 +275,8 @@ const Home = () => {
 
                 </table>
                 
-                
             </div>
+            
           </div>
 
 
