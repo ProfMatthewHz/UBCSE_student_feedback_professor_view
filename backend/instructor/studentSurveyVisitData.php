@@ -15,11 +15,10 @@ if (!$con) {
 
 if (!isset($_SESSION['id'])) {
     http_response_code(403);
-    echo "Forbidden: You must be logged in to access this page.";
+    echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
     exit();
-  }
-  $instructor_id = $_SESSION['id'];
-  
+}
+$instructor_id = $_SESSION['id'];
 
 // Define the student ID and survey ID from GET parameters
 $student_id_to_check = $_GET['student_id'];
@@ -35,7 +34,7 @@ $result = $stmt->get_result();
 // Check if query was successful
 if ($result->num_rows > 0) {
     // Student exists
-    echo "Student with ID $student_id_to_check exists in the database.";
+    $response = array();
 
     // Update visit_count and last_visit based on student_id and survey_id
     $current_timestamp = date('Y-m-d H:i:s');
@@ -46,15 +45,19 @@ if ($result->num_rows > 0) {
     $affected_rows = $stmt_update->affected_rows;
 
     if ($affected_rows > 0) {
-        echo "Visit count and last visit timestamp updated successfully.";
+        $response["message"] = "Visit count and last visit timestamp updated successfully.";
     } else {
-        echo "Failed to update visit count and last visit timestamp.";
+        $response["error"] = "Failed to update visit count and last visit timestamp.";
     }
 } else {
     // Student does not exist
-    echo "Student with ID $student_id_to_check does not exist in the database.";
+    $response["error"] = "Student with ID $student_id_to_check does not exist in the database.";
 }
 
 // Close the connection
 mysqli_close($con);
+
+// Return response as JSON
+header('Content-Type: application/json');
+echo json_encode($response);
 ?>
