@@ -24,6 +24,9 @@
   $student_id = $decoded->data->student_id;
   echo ("".$student_id);
 
+  // fetch api response array //
+  $response = [];
+
 //  $student_id = $_SESSION['student_id'];
   require "lib/database.php";
   require "lib/surveyQueries.php";
@@ -70,27 +73,46 @@
               if(count($past_surveys) > 0) {
                 foreach ($past_surveys as $key => $value) {
                   $e = $value[2];
-                  $display_name = '('.$value[0].') '.$value[1].' closed '.$e->format('M d').' at '.$e->format('g:i a');
-                  echo('<p><i>'.$display_name.'</i> ');
+//                  $display_name = '('.$value[0].') '.$value[1].' closed '.$e->format('M d').' at '.$e->format('g:i a');
+//                  echo('<p><i>'.$display_name.'</i> ');
+
+                  // prepare each survey //
+                    $pastSurveyData = [
+                            'surveyID' => $key,
+                            'courseName' => $value[0],
+                            'surveyName' => $value[1],
+                            'closingDate' => $e,
+                            'myAvgLink' => '',
+                            'mySubLink' => ''
+                    ];
+
+                    $response[] = $pastSurveyData;
+
                   // Check to see if the student was evaluated in this survey
                   if ($value[5]) {
                     if ($value[6]) {
-                      echo (' <a href="'.SITE_HOME.'startResults.php?survey='.$key.'">My Averages</a> ');
+//                      echo (' <a href="'.SITE_HOME.'startResults.php?survey='.$key.'">My Averages</a> ');
+                      $pastSurveyData['myAvgLink'] = ' <a href="'.SITE_HOME.'startResults.php?survey='.$key.'">My Averages</a> ';
                     } else {
-                      echo (' No evaluations received ');
+//                      echo (' No evaluations received ');
+                        $pastSurveyData['myAvgLink'] = ' No evaluations received ';
                     }
                   }
                   if ($value[3]) {
                     if ($value[4]) {
-                      echo (' <a href="'.SITE_HOME.'startReview.php?survey='.$key.'">My Submissions</a> ');
+//                      echo (' <a href="'.SITE_HOME.'startReview.php?survey='.$key.'">My Submissions</a> ');
+                        $pastSurveyData['mySubLink'] = ' <a href="'.SITE_HOME.'startReview.php?survey='.$key.'">My Submissions</a> ';
                     } else {
-                      echo (' Submission not completed ');
+//                      echo (' Submission not completed ');
+                        $pastSurveyData['mySubLink'] = ' Submission not completed ';
                     }
                   }
-                  echo('</p>');
+//                  echo('</p>');
+                    $response[] = $pastSurveyData;
                 }
               } else {
-                echo('<p><i>No closed surveys for this term</i></p>');
+//                echo('<p><i>No closed surveys for this term</i></p>');
+                $response['haveSurvey'] = 'No closed surveys for this term';
               }
               ?>
             </div>
