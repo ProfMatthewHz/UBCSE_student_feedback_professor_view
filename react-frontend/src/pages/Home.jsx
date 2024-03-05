@@ -98,7 +98,7 @@ const Home = () => {
    * Perform a POST call to courseSurveysQueries, or where ever to find students info
    */
   function updateAllSurveys() {
-      fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", { // TODO: need to update the api url
+      fetch(process.env.REACT_APP_API_URL_STUDENT + "courseSelect.php", { // TODO: need to update the api url
           method: "POST",
           headers: {
               "Content-Type": "application/x-www-form-urlencoded",
