@@ -82,8 +82,8 @@
                             'courseName' => $value[0],
                             'surveyName' => $value[1],
                             'closingDate' => $e,
-                            'myAvgLink' => '',
-                            'mySubLink' => ''
+//                            'myAvgLink' => '',
+//                            'mySubLink' => ''
                     ];
 
                     $response[] = $pastSurveyData;
