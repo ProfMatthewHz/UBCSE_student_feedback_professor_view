@@ -52,11 +52,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       exit();
   }
 
+    // replacement //
+    $secretKey = "myAppJWTKey2024!#$";
+    $payload = [
+        "data" => [
+            "student_id" => $id_and_name[0] // Custom data
+        ]
+    ];
+    $jwt_studentId = JWT::encode($payload, $secretKey, 'HS256');
+
+    // sending this shit as a cookie //
     http_response_code(200);
+    setcookie('student_id', $jwt_studentId);
     $student_id = $id_and_name[0];
     $_SERVER['student_id'] = $student_id;
-    header("Location: ".SITE_HOME."courseSelect.php");
+    header("Location: ".SITE_HOME."endpoints.php");
     exit();
+
+//    http_response_code(200);
+//    $student_id = $id_and_name[0];
+//    $_SERVER['student_id'] = $student_id;
+//    header("Location: ".SITE_HOME."courseSelect.php");
+//    exit();
 }
 ?>
 <!doctype html>

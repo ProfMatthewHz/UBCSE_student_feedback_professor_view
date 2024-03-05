@@ -1,10 +1,14 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 
 require "lib/constants.php";
-require "lib/database.php";
 require "lib/studentQueries.php";
 require "lib/database.php";
 require "lib/surveyQueries.php";
@@ -18,14 +22,21 @@ $year = idate('Y');
 
 $response = [];
 
-if(empty($_SERVER['student_id'])) {
-    http_response_code(400);
-    $response['error'] = 'missing student_id';
-    echo json_encode($response);
-    exit();
-}
 
-$student_id = $_SERVER['student_id'];
+//if(empty($_SERVER['student_id'])) {
+//    http_response_code(400);
+//    $response['error'] = 'missing student_id';
+//    echo json_encode($response);
+//    exit();
+//}
+
+$secretKey = "myAppJWTKey2024!#$";
+$jwt = $_COOKIE['student_id'];
+$alg = 'HS256';
+$decoded = JWT::decode($jwt, new Key($secretKey, $alg));
+$student_id = $decoded->data->student_id;
+
+//$student_id = $_SERVER['student_id'];
 
 $past_surveys = getClosedSurveysForTerm($con, $term, $year, $student_id);
 $current_surveys = getCurrentSurveys($con,   $student_id);
@@ -79,7 +90,7 @@ if(count($upcoming_surveys) > 0) {
         $upcomingSurveysResponse[] = $upcomingSurveyData;
     }
 } else {
-    $currentSurveysResponse[] = 'Nothing planned yet. Check back later!';
+    $upcomingSurveysResponse[] = 'Nothing planned yet. Check back later!';
 }
 
 
