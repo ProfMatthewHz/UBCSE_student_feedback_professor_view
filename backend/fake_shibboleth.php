@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     setcookie('student_id', $jwt_studentId);
     $student_id = $id_and_name[0];
     $_SERVER['student_id'] = $student_id;
-    header("Location: ".SITE_HOME."endpoints.php");
+    header("Location: ".SITE_HOME."courseSelect.php");
     exit();
 
 //    http_response_code(200);
