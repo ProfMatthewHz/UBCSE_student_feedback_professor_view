@@ -172,7 +172,7 @@ const Home = () => {
                                 <td>CSE 115 </td>
                                 <td>ADEPT Evaluation</td>
                                 <td>More Responses Needed</td>
-                                <td><button><div className="openSurveyButton">Start</div></button></td>
+                                <td><button>Start</button></td>
                             </tr>
 
                             <tr className="survey-row" >
@@ -184,7 +184,7 @@ const Home = () => {
                                 <td>CSE 444 </td>
                                 <td>Miss Claus Evaluation</td>
                                 <td>100%</td>
-                                <td><button><div className="openSurveyButton">Revise</div></button></td>
+                                <td><button>Revise</button></td>
                             </tr>
 
                             <tr className="survey-row" >
@@ -196,7 +196,7 @@ const Home = () => {
                                 <td>CSE 404 </td>
                                 <td>PM Evaluation</td>
                                 <td>91%</td>
-                                <td><button><div className="openSurveyButton">Continue</div></button></td>
+                                <td><button>Continue</button></td>
                             </tr>
                        
                         </tbody>
