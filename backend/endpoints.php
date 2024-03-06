@@ -51,7 +51,7 @@ if(count($past_surveys) > 0) {
             'surveyID' => $key,
             'courseName' => $value[0],
             'surveyName' => $value[1],
-            'closingDate' => $value[2]
+            'closedDate' => $value[2]
         ];
         $pastSurveysResponse[] = $pastSurveyData;
     }
@@ -68,7 +68,7 @@ if(count($current_surveys) > 0) {
             'surveyID' => $key,
             'courseName' => $value[0],
             'surveyName' => $value[1],
-            'closingDate' => $value[2]
+            'deadlineDate' => $value[2]
         ];
         $currentSurveysResponse[] = $currentSurveyData;
     }
@@ -85,7 +85,7 @@ if(count($upcoming_surveys) > 0) {
             'surveyID' => $key,
             'courseName' => $value[0],
             'surveyName' => $value[1],
-            'closingDate' => $value[2]
+            'openingDate' => $value[2]
         ];
         $upcomingSurveysResponse[] = $upcomingSurveyData;
     }
