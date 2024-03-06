@@ -11,7 +11,10 @@ import Course from "../Components/Course";
  */
 const Home = () => {
   // State to store the list of courses
+  const [coursesCurrent, setCoursesCurrent] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [coursesPast, setCoursesPast] = useState([]);
+  const [coursesFuture, setCoursesFuture] = useState([]);
   const [openModal,setOpenModal] = useState(false);
 
   const getCurrentYear = () => {
@@ -86,6 +89,95 @@ const Home = () => {
   useEffect(() => {
     fetchCourses()
   }, []);
+
+    const fetchCurrent = () => {
+        // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
+        const url = `${process.env.REACT_APP_API_URL}endpoints.php?type=current`;
+
+        fetch(url, {
+            method: "GET",
+            // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
+        })
+            .then((res) => res.json())
+            .then((result) => {
+                // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
+                setCoursesCurrent(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+    /** */
+    // Fetch courses when the component mounts
+    useEffect(() => {
+        fetchCurrent()
+    }, []);
+
+    console.log("CURRENT");
+    console.log(coursesCurrent);
+
+
+
+
+
+    //past evals
+    const fetchPast = () => {
+        // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
+        const url = `${process.env.REACT_APP_API_URL}endpoints.php?type=past`;
+
+        fetch(url, {
+            method: "GET",
+            // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
+        })
+            .then((res) => res.json())
+            .then((result) => {
+                // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
+                setCoursesPast(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+    /** */
+    // Fetch courses when the component mounts
+    useEffect(() => {
+        fetchPast()
+    }, []);
+
+    console.log("PAST");
+    console.log(coursesPast);
+
+
+    const fetchFuture = () => {
+        // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
+        const url = `${process.env.REACT_APP_API_URL}endpoints.php?type=upcoming`;
+
+        fetch(url, {
+            method: "GET",
+            // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
+        })
+            .then((res) => res.json())
+            .then((result) => {
+                // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
+                setCoursesFuture(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+    /** */
+    // Fetch courses when the component mounts
+    useEffect(() => {
+        fetchFuture()
+    }, []);
+
+    console.log("FUTURE");
+    console.log(coursesFuture);
+
+
 
   // Preparing content for the Sidebar component
   const sidebar_content = {
