@@ -47,10 +47,10 @@
   }
   
   .styled-input {
-    width: 100%;
+    width: 90%;
     padding: 8px 15px;
     border: none;
-    border-bottom: 2px solid #e0e0e0;
+    
     font-size: 16px;
     background-color: transparent;
     outline: none;
@@ -119,13 +119,15 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: relative;
   }
-  .CancelButton{
+  .styled-input > .CancelButton{
     position: absolute;
-    right: 20px;
+    top: 5px; /* Adjust the top distance as needed */
+    right: 5px; /* Adjust the right distance as needed */
     padding: 5px;
-    background-color: #fff;
+    color:  #fff;;
+    background-color: transparent;
   }
-
+  
   /* .modal-content p {
     width: 70%;
     height: 10px;

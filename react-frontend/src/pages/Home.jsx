@@ -15,6 +15,7 @@ const Home = () => {
   const [rubricPast, setRubricPast] = useState([]);
   const [rubricFuture, setRubricFuture] = useState([]);
   const [openModal,setOpenModal] = useState(false);
+  
 
 
   const reformatTime = (data) => {
@@ -55,9 +56,33 @@ const Home = () => {
     });
   };
 
-  
+  const openChooseAction = (amtCompleted) => {
+    if (amtCompleted === 0) {
+      return "Start";
+    } else if (amtCompleted === 100) {
+      return "Revise";
+    } else {
+      return "Continue";
+    }
 
+  }
 
+/**  Checks how far away the due date is from the current date.
+* Return 0 if due date > 3 days away
+* Return 1 if due date < 3 days away
+*/
+  const dateWarning = (date) => {
+    
+      const currentDate = new Date();
+      const inputDate = new Date(date);
+      const threeDaysAhead = new Date();
+      threeDaysAhead.setDate(currentDate.getDate() + 3);
+    
+      const result = inputDate <= threeDaysAhead ? 1 : 0;
+    
+      return result;
+    
+  }
     const fetchCurrent = () => {
         // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
         const url = `${process.env.REACT_APP_API_URL}endpoints.php?type=current`;
@@ -82,13 +107,9 @@ const Home = () => {
         fetchCurrent()
     }, []);
 
-    console.log("CURRENT");
-    console.log(rubricCurrent);
-    
-
-
-
-
+    // console.log("CURRENT");
+    // console.log(rubricCurrent);
+  
     //past evals
     const fetchPast = () => {
         // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
@@ -114,8 +135,8 @@ const Home = () => {
         fetchPast()
     }, []);
 
-    console.log("PAST");
-    console.log(rubricPast);
+    // console.log("PAST");
+    // console.log(rubricPast);
 
 
     const fetchFuture = () => {
@@ -142,12 +163,34 @@ const Home = () => {
         fetchFuture()
     }, []);
 
-    console.log("FUTURE");
+    // console.log("FUTURE");
   
-    console.log(rubricFuture);
+    // console.log(rubricFuture);
 
 
+    const handleButtonClick = () => {
+    // Assuming sendPostRequest is a function to handle the POST request
+      console.log("View Feedback Clicked");
+     }
+
+    const combinedClickHandler = () => {
+      handleButtonClick();
+      setOpenModal(true);
+    };
+
+    const tempCurrentData = [
+      {"courseName": "Computer Security","openingDate": {"date": "2024-3-10 01:58:06.000000", "timezone_type": 3, "timezone": "Europe/Berlin"},"surveyID": 23,"surveyName": "Dummy Name 5","completeRate":0},
+      { "courseName": "Algorithms and Complexity","openingDate": {"date": "2024-3-21 04:25:09.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 27, "surveyName": "Dummy Name 1","completeRate":100},{
+        "courseName": "Software Project Managment", "openingDate": {"date": "2024-3-22 00:43:04.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 19,"surveyName": "CSE 404 #2","completeRate":13
+      }
+    ];
    
+    const tempPastData = [
+      {"courseName": "Computer Security","openingDate": {"date": "2024-1-23 01:58:06.000000", "timezone_type": 3, "timezone": "Europe/Berlin"},"surveyID": 23,"surveyName": "Dummy Name 5"},
+      { "courseName": "Algorithms and Complexity","openingDate": {"date": "2024-2-27 04:25:09.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 27, "surveyName": "Dummy Name 1"},{
+        "courseName": "Software Project Managment", "openingDate": {"date": "2024-2-28 00:43:04.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 19,"surveyName": "CSE 404 #2"
+      }
+    ];
  
 
 
@@ -171,26 +214,45 @@ const Home = () => {
                         Open Surveys
                     </h2>
                 </div>
-                {rubricCurrent.length > 1 ? (
+                {tempCurrentData.length > 1 ? (
                         <table className="surveyTable">
                           <thead>
                             <tr>
                               <th>Survey Closes</th>
                               <th>Course Name</th>
                               <th>Survey Name</th>
+                              <th>Completion Rate</th>
+                              <th>Action</th>
+
+
                             </tr>
                           </thead>
 
                           <tbody>
-                            {sortByDate(rubricCurrent).map((item, index) => (
+                            {sortByDate(tempCurrentData).map((item, index) => (
                               <tr key={index} className="survey-row">
-                                <td>
-                                  {reformatDate(item.openingDate.date)}
-                                  <br />
-                                  {reformatTime(item.openingDate.date)}
-                                </td>
+
+                                {/* if the date is < 3 days away, make the text red */}
+                                {dateWarning(item.openingDate.date) > 0?(
+                                    <td><div className="warning">
+                                    {reformatDate(item.openingDate.date)}
+                                    <br />
+                                    {reformatTime(item.openingDate.date)}
+                                    </div> </td>
+
+
+                                  ):(
+                                    <td>
+                                    {reformatDate(item.openingDate.date)}
+                                    <br />
+                                    {reformatTime(item.openingDate.date)}
+                                  </td>
+                                ) }
+                                
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
+                                <td>{item.completeRate}% Completed</td>
+                                <td><button>{openChooseAction(item.completeRate)}</button></td>
                               </tr>
                             ))}
                           </tbody>
@@ -237,6 +299,7 @@ const Home = () => {
                                 </td>
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
+                              
                               </tr>
                             ))}
                           </tbody>
@@ -265,7 +328,7 @@ const Home = () => {
                
                 
 
-                {rubricPast.length > 1 ? (
+                {tempPastData.length > 1 ? (
                         <table className="surveyTable">
                           <thead>
                             <tr>
@@ -278,7 +341,7 @@ const Home = () => {
                           </thead>
 
                           <tbody>
-                            {sortByDate(rubricPast).map((item, index) => (
+                            {sortByDate(tempPastData).map((item, index) => (
                               <tr key={index} className="survey-row">
                                 <td>
                                   {reformatDate(item.openingDate.date)}
@@ -287,6 +350,8 @@ const Home = () => {
                                 </td>
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
+                                <td><button>View Submission</button></td>
+                               <td><button onClick={combinedClickHandler}>View Feedback</button></td>
                               </tr>
                             ))}
                           </tbody>
