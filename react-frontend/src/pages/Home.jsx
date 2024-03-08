@@ -3,7 +3,7 @@ import SideBar from "../Components/Sidebar";
 import "../styles/home.css";
 import "../styles/course.css";
 import Modal from "../Components/RubricModal";
-import Course from "../Components/Course";
+
 
 /**
  * The Home component is the main component that users see when they visit the home page.
@@ -11,84 +11,52 @@ import Course from "../Components/Course";
  */
 const Home = () => {
   // State to store the list of courses
-  const [coursesCurrent, setCoursesCurrent] = useState([]);
-  const [courses, setCourses] = useState([]);
-  const [coursesPast, setCoursesPast] = useState([]);
-  const [coursesFuture, setCoursesFuture] = useState([]);
+  const [rubricCurrent, setRubricCurrent] = useState([]);
+  const [rubricPast, setRubricPast] = useState([]);
+  const [rubricFuture, setRubricFuture] = useState([]);
   const [openModal,setOpenModal] = useState(false);
 
-  const getCurrentYear = () => {
-    const date = new Date();
-    return date.getFullYear();
+
+  const reformatTime = (data) => {
+    const dataList = data.split(' ');
+    const timeString = dataList[1];
+    const date = new Date(`1970-01-01T${timeString}Z`);
+    const formattedTime = date.toLocaleTimeString('en-US', {
+      hour12: true,
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+    return formattedTime;
   };
 
-  /**
-   * Determines the current semester based on the current date.
-   * Semesters are determined by specific date ranges within the year.
-   * @returns {number} The current semester encoded as an integer (1 for Winter, 2 for Spring, 3 for Summer, 4 for Fall).
-   */
-  const getCurrentSemester = () => {
-    const date = new Date();
-    const month = date.getMonth(); // 0 for January, 1 for February, etc.
-    const day = date.getDate();
+  const reformatDate = (data) => {
+    const dataList = data.split(' ');
+    const originalDate= dataList[0];
+    const dateParts = originalDate.split('-');
+    const year = dateParts[0];
+    const month = dateParts[1];
+    const day = dateParts[2];
+    // Create a new Date object with the parts
+    const reformattedDate = new Date(`${month}/${day}/${year}`);
 
-    // Summer Sessions (May 30 to Aug 18)
-    if (
-        (month === 4 && day >= 30) ||
-        (month > 4 && month < 7) ||
-        (month === 7 && day <= 18)
-    ) {
-      return 3; // Summer
-    }
+    // Use the toLocaleDateString method to format the date as MM/DD/YYYY
+    const formattedDateString = reformattedDate.toLocaleDateString('en-US');
 
-    // Fall Semester (Aug 28 to Dec 20)
-    if (
-        (month === 7 && day >= 28) ||
-        (month > 7 && month < 11) ||
-        (month === 11 && day <= 20)
-    ) {
-      return 4; // Fall
-    }
+    return formattedDateString;
+  }
 
-    // Winter Session (Dec 28 to Jan 19)
-    if ((month === 11 && day >= 28) || (month === 0 && day <= 19)) {
-      return 1; // Winter
-    }
-
-    // If none of the above conditions are met, it must be Spring (Jan 24 to May 19)
-    return 2; // Spring
+  const sortByDate= (dataArray) => {
+    return [...dataArray].sort((a, b) => {
+      const dateA = new Date(a.openingDate.date);
+      const dateB = new Date(b.openingDate.date);
+      return dateA - dateB;
+    });
   };
 
-  /**
-   * Fetches the list of courses for the current semester and year from an external API.
-    */
-  const fetchCourses = () => {
-    fetch(
-        process.env.REACT_APP_API_URL + "instructorCoursesInTerm.php",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams({
-            semester: getCurrentSemester(),
-            year: getCurrentYear(),
-          }),
-        }
-    )
-        .then((res) => res.json())
-        .then((result) => {
-          setCourses(result);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-  };
-/** */
-  // Fetch courses when the component mounts
-  useEffect(() => {
-    fetchCourses()
-  }, []);
+  
+
 
     const fetchCurrent = () => {
         // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
@@ -101,7 +69,7 @@ const Home = () => {
             .then((res) => res.json())
             .then((result) => {
                 // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-                setCoursesCurrent(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+                setRubricCurrent(result); // Consider renaming this function to reflect that it now sets surveys, not courses
             })
             .catch((err) => {
                 console.log(err);
@@ -115,8 +83,8 @@ const Home = () => {
     }, []);
 
     console.log("CURRENT");
-    console.log(coursesCurrent);
-
+    console.log(rubricCurrent);
+    
 
 
 
@@ -133,7 +101,7 @@ const Home = () => {
             .then((res) => res.json())
             .then((result) => {
                 // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-                setCoursesPast(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+                setRubricPast(result); // Consider renaming this function to reflect that it now sets surveys, not courses
             })
             .catch((err) => {
                 console.log(err);
@@ -147,7 +115,7 @@ const Home = () => {
     }, []);
 
     console.log("PAST");
-    console.log(coursesPast);
+    console.log(rubricPast);
 
 
     const fetchFuture = () => {
@@ -161,7 +129,7 @@ const Home = () => {
             .then((res) => res.json())
             .then((result) => {
                 // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-                setCoursesFuture(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+                setRubricFuture(result); // Consider renaming this function to reflect that it now sets surveys, not courses
             })
             .catch((err) => {
                 console.log(err);
@@ -175,52 +143,15 @@ const Home = () => {
     }, []);
 
     console.log("FUTURE");
-    console.log(coursesFuture);
+  
+    console.log(rubricFuture);
 
 
+   
+ 
 
-  // Preparing content for the Sidebar component
-  const sidebar_content = {
-    Courses: courses ? courses.map((course) => course.code) : [],
-  };
 
-  const [surveys, setSurveys] = useState([]);
-
-  /**
-   * Perform a POST call to courseSurveysQueries, or where ever to find students info
-   */
-  function updateAllSurveys() {
-      fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", { // TODO: need to update the api url
-          method: "POST",
-          headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-          }
-      })
-          .then((res) => res.json())
-          .then((result) => {
-              console.log(result);
-              const activeSurveys = result.active.map((survey_info) => ({
-                  ...survey_info,
-                  expired: false,
-              }));
-              console.log(result);
-              const expiredSurveys = result.expired.map((survey_info) => ({
-                  ...survey_info,
-                  expired: true,
-              }));
-              const upcomingSurveys = result.upcoming.map((survey_info) => ({
-                  ...survey_info,
-                  expired: false,
-              }));
-              console.log(result);
-
-              setSurveys([...activeSurveys, ...expiredSurveys, ...upcomingSurveys]);
-          })
-          .catch((err) => {
-              console.log(err);
-          });
-  }
-
+  
 
 
 
@@ -230,7 +161,7 @@ const Home = () => {
   return (
     <>
     <Modal open={openModal} onClose={()=>setOpenModal(false)}/>
-      <SideBar route="/" content_dictionary={sidebar_content} getCourses={fetchCourses} />
+      <SideBar route="/" content_dictionary={rubricCurrent} getCourses={fetchCurrent} />
       <div className="home--container">
         <div className="containerOfCourses">
           <div id="Open Surveys" class="courseContainer">
@@ -240,62 +171,40 @@ const Home = () => {
                         Open Surveys
                     </h2>
                 </div>
-                <table className="surveyTable">
-                    <thead>
-                    <tr>
-                        <th>Survey Closes</th>
-                        <th>Course Name</th>
-                        <th>Survey Name</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                            <tr className="survey-row" >
-                               
-                                  <td>
-                                  <div className="warning">
-                                    2/25/2024
-                                    <br/>
-                                    11:59PM
-                                    </div>
-                                  </td>
-                                
-                                <td>CSE 115 </td>
-                                <td>ADEPT Evaluation</td>
-                                <td>More Responses Needed</td>
-                                <td><button><div className="openSurveyButton">Start</div></button></td>
+                {rubricCurrent.length > 1 ? (
+                        <table className="surveyTable">
+                          <thead>
+                            <tr>
+                              <th>Survey Closes</th>
+                              <th>Course Name</th>
+                              <th>Survey Name</th>
                             </tr>
+                          </thead>
 
-                            <tr className="survey-row" >
-                                  <td>
-                                    2/26/2024
-                                    <br/>
-                                    11:59PM
-                                  </td>
-                                <td>CSE 444 </td>
-                                <td>Miss Claus Evaluation</td>
-                                <td>100%</td>
-                                <td><button><div className="openSurveyButton">Revise</div></button></td>
-                            </tr>
-
-                            <tr className="survey-row" >
-                                  <td>
-                                    2/29/2024
-                                    <br/>
-                                    11:59PM
-                                  </td>
-                                <td>CSE 404 </td>
-                                <td>PM Evaluation</td>
-                                <td>91%</td>
-                                <td><button><div className="openSurveyButton">Continue</div></button></td>
-                            </tr>
-                       
-                        </tbody>
-
-
-
-                </table>
+                          <tbody>
+                            {sortByDate(rubricCurrent).map((item, index) => (
+                              <tr key={index} className="survey-row">
+                                <td>
+                                  {reformatDate(item.openingDate.date)}
+                                  <br />
+                                  {reformatTime(item.openingDate.date)}
+                                </td>
+                                <td>{item.courseName}</td>
+                                <td>{item.surveyName}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <table className="surveyTable">
+                        <thead>
+                          <tr>
+                            <th>No Open Surveys</th>
+                            
+                          </tr>
+                        </thead>
+                        </table>
+                      )}
                 
                 
             </div>
@@ -308,38 +217,40 @@ const Home = () => {
                         Future Surveys
                     </h2>
                 </div>
-                <table className="surveyTable">
-                    <thead>
-                    <tr>
-                        <th>Survey Closes</th>
-                        <th>Course Name</th>
-                        <th>Survey Name</th>
-                  
-                    </tr>
-                    </thead>
-                    <tr className="survey-row" >
-                        <td>
-                          3/26/202
-                          <br/>
-                          11:59PM
-                        </td>
-                      <td>CSE 444 </td>
-                      <td>Miss Claus Evaluation</td>
-                   </tr>
+                 {rubricFuture.length > 1 ? (
+                        <table className="surveyTable">
+                          <thead>
+                            <tr>
+                              <th>Survey Closes</th>
+                              <th>Course Name</th>
+                              <th>Survey Name</th>
+                            </tr>
+                          </thead>
 
-                   <tr className="survey-row" >
-                        <td>
-                          4/26/202
-                          <br/>
-                          11:59PM
-                        </td>
-                      <td>CSE 777 </td>
-                      <td>Miss Claus Evaluation</td>
-                   </tr>
-
-                </table>
-                
-                
+                          <tbody>
+                            {sortByDate(rubricFuture).map((item, index) => (
+                              <tr key={index} className="survey-row">
+                                <td>
+                                  {reformatDate(item.openingDate.date)}
+                                  <br />
+                                  {reformatTime(item.openingDate.date)}
+                                </td>
+                                <td>{item.courseName}</td>
+                                <td>{item.surveyName}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <table className="surveyTable">
+                        <thead>
+                          <tr>
+                            <th>No Future Surveys</th>
+                            
+                          </tr>
+                        </thead>
+                        </table>
+                      )}
             </div>
           </div>
 
@@ -351,62 +262,48 @@ const Home = () => {
                         Closed Surveys
                     </h2>
                 </div>
-                <table className="surveyTable">
-                    <thead>
-                    <tr>
-                        <th>Survey Closed</th>
-                        <th>Course Name</th>
-                        <th>Survey Name</th>
-                        <th>Submission</th>
-                        <th>Feedback</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-
-                    <tr className="survey-row" >
-                          <td>
-                            1/26/2024
-                            <br/>
-                            11:59PM
-                          </td>
-                        <td>CSE 444 </td>
-                        <td>Something Evaluation</td>
-                        <td><button>View Submission</button></td>
-          
-                        <td><button onClick={()=>setOpenModal(true)}>View Feedback</button> </td>
-                        
-                    </tr>
-                        </tbody>
-
-                        <tr className="survey-row" >
-                          <td>
-                            1/23/2024
-                            <br/>
-                            11:59PM
-                          </td>
-                        <td>CSE 111 </td>
-                        <td>Another Evaluation</td>
-                        <td><button>View Submission</button></td>
-                        <td><button>View Feedback</button></td>
-                    </tr>
-                        
-
-                    <tr className="survey-row" >
-                          <td>
-                            1/22/2024
-                            <br/>
-                            11:59PM
-                          </td>
-                        <td>CSE 111 </td>
-                        <td>Santa Evaluation</td>
-                        <td><button>View Submission</button></td>
-                        <td><button>View Feedback</button></td>
-                    </tr>
-                        
-
-                </table>
+               
                 
+
+                {rubricPast.length > 1 ? (
+                        <table className="surveyTable">
+                          <thead>
+                            <tr>
+                                <th>Survey Closed</th>
+                                <th>Course Name</th>
+                                <th>Survey Name</th>
+                                <th>Submission</th>
+                                <th>Feedback</th>
+                            </tr>
+                          </thead>
+
+                          <tbody>
+                            {sortByDate(rubricPast).map((item, index) => (
+                              <tr key={index} className="survey-row">
+                                <td>
+                                  {reformatDate(item.openingDate.date)}
+                                  <br />
+                                  {reformatTime(item.openingDate.date)}
+                                </td>
+                                <td>{item.courseName}</td>
+                                <td>{item.surveyName}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <table className="surveyTable">
+                        <thead>
+                          <tr>
+                            <th>No Closed Surveys</th>
+                            
+                          </tr>
+                        </thead>
+                        </table>
+                      )}
+
+
+
             </div>
             
           </div>
