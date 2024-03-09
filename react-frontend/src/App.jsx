@@ -4,6 +4,7 @@ import About from "./pages/About";
 import History from "./pages/History";
 import Library from "./pages/Library";
 import StudentHome from "./pages/studentHome";
+import SurveyForm from "./pages/SurveyForm"
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/history" element={<History />} />
           <Route path="/library" element={<Library />} /> */}
           <Route path="/" element={<StudentHome />} />
+          <Route path="/SurveyForm" element={<SurveyForm />} />
         </Routes>
       </div>
     </Router>

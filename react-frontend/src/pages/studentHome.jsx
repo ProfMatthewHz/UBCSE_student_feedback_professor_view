@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import { useNavigate } from 'react-router-dom';
 import SideBar from "../Components/studentSidebar";
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
@@ -16,8 +17,15 @@ const StudentHome = () => {
   const [rubricFuture, setRubricFuture] = useState([]);
   const [openModal,setOpenModal] = useState(false);
   
+  const navigate = useNavigate();
 
+  //redirects to temporary page for open action buton
+  const comingSoon = () => {
+    // Navigate to the 'comingsoon' page
+    navigate('/SurveyForm');
+  };
 
+  //reformat time to 00:00:00 PM/AM
   const reformatTime = (data) => {
     const dataList = data.split(' ');
     const timeString = dataList[1];
@@ -32,6 +40,7 @@ const StudentHome = () => {
     return formattedTime;
   };
 
+  //reformat date to month/day/yr
   const reformatDate = (data) => {
     const dataList = data.split(' ');
     const originalDate= dataList[0];
@@ -48,6 +57,7 @@ const StudentHome = () => {
     return formattedDateString;
   }
 
+  //sort surveys from soonest closed date to latest
   const sortByDate= (dataArray) => {
     return [...dataArray].sort((a, b) => {
       const dateA = new Date(a.openingDate.date);
@@ -56,6 +66,7 @@ const StudentHome = () => {
     });
   };
 
+  //choose action name for open survey button 
   const openChooseAction = (amtCompleted) => {
     if (amtCompleted === 0) {
       return "Start";
@@ -83,115 +94,127 @@ const StudentHome = () => {
       return result;
     
   }
-    const fetchCurrent = () => {
-        // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
-        const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`;
 
-        fetch(url, {
-            method: "GET",
-            // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-                setRubricCurrent(result); // Consider renaming this function to reflect that it now sets surveys, not courses
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
 
-    /** */
-    // Fetch courses when the component mounts
-    useEffect(() => {
-        fetchCurrent()
-    }, []);
+  const fetchCurrent = () => {
+      // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
+      const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`;
 
-    // console.log("CURRENT");
-    // console.log(rubricCurrent);
+      fetch(url, {
+          method: "GET",
+          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
+      })
+          .then((res) => res.json())
+          .then((result) => {
+              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
+              setRubricCurrent(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+          })
+          .catch((err) => {
+              console.log(err);
+          });
+  };
+
+  useEffect(() => {
+      fetchCurrent()
+  }, []);
+
+  // console.log("CURRENT");
+  // console.log(rubricCurrent);
+
+  //past evals
+  const fetchPast = () => {
+      // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
+      const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=past`;
+
+      fetch(url, {
+          method: "GET",
+          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
+      })
+          .then((res) => res.json())
+          .then((result) => {
+              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
+              setRubricPast(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+          })
+          .catch((err) => {
+              console.log(err);
+          });
+  };
+
+  useEffect(() => {
+      fetchPast()
+  }, []);
+  // console.log("PAST");
+  // console.log(rubricPast);
+
+
+  const fetchFuture = () => {
+      // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
+      const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=upcoming`;
+
+      fetch(url, {
+          method: "GET",
+          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
+      })
+          .then((res) => res.json())
+          .then((result) => {
+              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
+              setRubricFuture(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+          })
+          .catch((err) => {
+              console.log(err);
+          });
+  };
+
+  useEffect(() => {
+      fetchFuture()
+  }, []);
+
+
+  //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
+  const postDataToApi = (postData) => {
+    console.log("Feedback Count Updated");
+    const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`; //TODO: update URL point
+
+    // POST request to send additional data
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(postData),
+    })
+      .then((response) => response.json())
+      .then((postDataResult) => {
+        // Handle the response from the POST request if needed
+        console.log('POST Request Result:', postDataResult);
+      })
+      .catch((postErr) => {
+        console.error('Error in POST request:', postErr);
+      });
+  };
+
+
+
+  const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
+    postDataToApi(postData);
+    setOpenModal(true);
+  };
+
+  const tempCurrentData = [
+    {"courseName": "Computer Security","openingDate": {"date": "2024-3-10 01:58:06.000000", "timezone_type": 3, "timezone": "Europe/Berlin"},"surveyID": 23,"surveyName": "Dummy Name 5","completeRate":0},
+    { "courseName": "Algorithms and Complexity","openingDate": {"date": "2024-3-21 04:25:09.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 27, "surveyName": "Dummy Name 1","completeRate":100},{
+      "courseName": "Software Project Managment", "openingDate": {"date": "2024-3-22 00:43:04.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 19,"surveyName": "CSE 404 #2","completeRate":13
+    }
+  ];
   
-    //past evals
-    const fetchPast = () => {
-        // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
-        const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=past`;
-
-        fetch(url, {
-            method: "GET",
-            // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-                setRubricPast(result); // Consider renaming this function to reflect that it now sets surveys, not courses
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-
-    /** */
-    // Fetch courses when the component mounts
-    useEffect(() => {
-        fetchPast()
-    }, []);
-
-    // console.log("PAST");
-    // console.log(rubricPast);
-
-
-    const fetchFuture = () => {
-        // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
-        const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=upcoming`;
-
-        fetch(url, {
-            method: "GET",
-            // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-                setRubricFuture(result); // Consider renaming this function to reflect that it now sets surveys, not courses
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-
-    /** */
-    // Fetch courses when the component mounts
-    useEffect(() => {
-        fetchFuture()
-    }, []);
-
-    // console.log("FUTURE");
-  
-    // console.log(rubricFuture);
-
-
-    const handleButtonClick = () => {
-    // Assuming sendPostRequest is a function to handle the POST request
-      console.log("View Feedback Clicked");
-     }
-
-    const combinedClickHandler = () => {
-      handleButtonClick();
-      setOpenModal(true);
-    };
-
-    const tempCurrentData = [
-      {"courseName": "Computer Security","openingDate": {"date": "2024-3-10 01:58:06.000000", "timezone_type": 3, "timezone": "Europe/Berlin"},"surveyID": 23,"surveyName": "Dummy Name 5","completeRate":0},
-      { "courseName": "Algorithms and Complexity","openingDate": {"date": "2024-3-21 04:25:09.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 27, "surveyName": "Dummy Name 1","completeRate":100},{
-        "courseName": "Software Project Managment", "openingDate": {"date": "2024-3-22 00:43:04.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 19,"surveyName": "CSE 404 #2","completeRate":13
-      }
-    ];
-   
-    const tempPastData = [
-      {"courseName": "Computer Security","openingDate": {"date": "2024-1-23 01:58:06.000000", "timezone_type": 3, "timezone": "Europe/Berlin"},"surveyID": 23,"surveyName": "Dummy Name 5"},
-      { "courseName": "Algorithms and Complexity","openingDate": {"date": "2024-2-27 04:25:09.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 27, "surveyName": "Dummy Name 1"},{
-        "courseName": "Software Project Managment", "openingDate": {"date": "2024-2-28 00:43:04.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 19,"surveyName": "CSE 404 #2"
-      }
-    ];
+  const tempPastData = [
+    {"courseName": "Computer Security","openingDate": {"date": "2024-1-23 01:58:06.000000", "timezone_type": 3, "timezone": "Europe/Berlin"},"surveyID": 23,"surveyName": "Dummy Name 5"},
+    { "courseName": "Algorithms and Complexity","openingDate": {"date": "2024-2-27 04:25:09.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 27, "surveyName": "Dummy Name 1"},{
+      "courseName": "Software Project Managment", "openingDate": {"date": "2024-2-28 00:43:04.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 19,"surveyName": "CSE 404 #2"
+    }
+  ];
  
+
 
 
   
@@ -252,7 +275,7 @@ const StudentHome = () => {
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
                                 <td>{item.completeRate}% Completed</td>
-                                <td><button>{openChooseAction(item.completeRate)}</button></td>
+                                <td><button onClick={comingSoon}>{openChooseAction(item.completeRate)}</button></td>
                               </tr>
                             ))}
                           </tbody>
@@ -350,8 +373,9 @@ const StudentHome = () => {
                                 </td>
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
-                                <td><button>View Submission</button></td>
-                               <td><button onClick={combinedClickHandler}>View Feedback</button></td>
+                                {/* <td><button>View Submission</button></td> */}
+                                <td></td>
+                               <td><button onClick={combinedClickHandler({"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID})}>View Feedback</button></td>
                               </tr>
                             ))}
                           </tbody>
