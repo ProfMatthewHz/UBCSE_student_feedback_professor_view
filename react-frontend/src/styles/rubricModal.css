@@ -50,6 +50,7 @@ label {
   width: 100%;
   padding: 8px 15px;
   border: none;
+  border-radius: 8px;
   font-size: 16px;
   background-color: transparent;
   outline: none;
@@ -119,10 +120,17 @@ label {
   position: relative;
 }
 .CancelButton{
+  color:#ffffff;
+  background-color: transparent;
+  border-radius: 0 5px 0 0;
+  border-style: none;
+  font-size: 20px;
+  font-weight: 800;
+  padding: 6px 16px;
   position: absolute;
-  right: 20px;
-  padding: 5px;
-  background-color: #fff;
+  right: 10px;
+  text-align: center;
+  text-decoration: none;
 }
 
 /* .modal-content p {

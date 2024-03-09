@@ -41,7 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $_SESSION["surveyTypes"] = getSurveyTypes($con);
   // redirect the instructor to the next page
   http_response_code(302);
-  header("Location: ".INSTRUCTOR_HOME."surveys.php");
+  // header("Location: ".INSTRUCTOR_HOME."surveys.php");
+  header("Location: "."http://localhost/StudentSurvey/react-frontend/build");
   exit();
 }
 ?>
