@@ -171,32 +171,33 @@ const StudentHome = () => {
 
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
-  const postDataToApi = (postData) => {
-    console.log("Feedback Count Updated");
-    const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`; //TODO: update URL point
+  // const postDataToApi = (postData) => {
+  //   console.log("Feedback Count Updated");
+  //   const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`; //TODO: update URL point
 
-    // POST request to send additional data
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(postData),
-    })
-      .then((response) => response.json())
-      .then((postDataResult) => {
-        // Handle the response from the POST request if needed
-        console.log('POST Request Result:', postDataResult);
-      })
-      .catch((postErr) => {
-        console.error('Error in POST request:', postErr);
-      });
-  };
+  //   // POST request to send additional data
+  //   fetch(url, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(postData),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((postDataResult) => {
+  //       // Handle the response from the POST request if needed
+  //       console.log('POST Request Result:', postDataResult);
+  //     })
+  //     .catch((postErr) => {
+  //       console.error('Error in POST request:', postErr);
+  //     });
+  // };
 
 
 
   const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
-    postDataToApi(postData);
+    // postDataToApi(postData);
+    console.log("View Feedback Clicked")
     setOpenModal(true);
   };
 
@@ -375,7 +376,8 @@ const StudentHome = () => {
                                 <td>{item.surveyName}</td>
                                 {/* <td><button>View Submission</button></td> */}
                                 <td></td>
-                               <td><button onClick={combinedClickHandler({"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID})}>View Feedback</button></td>
+                               <td><button onClick={() => combinedClickHandler({"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID})}>View Feedback</button></td>
+                               
                               </tr>
                             ))}
                           </tbody>
