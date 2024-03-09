@@ -183,10 +183,20 @@
   
   }
   
- 
+  .studentSidebar .title .sidebar > div {
+    margin: 5%;
+  }
   
   
   
+  .studentSidebar .sidebar-list::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  .studentSidebar .sidebar-list::-webkit-scrollbar-thumb {
+    background-color: #ffffff;
+    border-radius: 15px;
+  }
   
   
   .studentSidebar .sidebar-content a {  /*courses and rubric options*/
@@ -227,8 +237,15 @@
     margin-left: 5%;
     margin-bottom: 10%;
   
+  
   }
-
+  
+  .studentSidebar .sidebar-list .no-content {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 400;
+    font-style: italic;
+  }
 
 
 
