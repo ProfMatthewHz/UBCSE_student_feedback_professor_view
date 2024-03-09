@@ -160,8 +160,9 @@
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
       $e = new DateTime($row[4]);
+      $s = new DateTime($row[3]);
       $fully_submitted = ($row[5] == $row[6]);
-      $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false);
+      $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false, $s);
     }
     $stmt->close();
 
@@ -179,8 +180,9 @@
         $retVal[$row[2]] = $survey;
       } else {
         $e = new DateTime($row[4]);
+        $s = new DateTime($row[3]);
         $evaluated = ($row[5] > 0);
-        $retVal[$row[2]] = array($row[0], $row[1], $e, false, false, true, $evaluated);
+        $retVal[$row[2]] = array($row[0], $row[1], $e, false, false, true, $evaluated, $s);
       }
     }
     $stmt->close();
@@ -197,8 +199,9 @@
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
       $e = new DateTime($row[4]);
+      $s = new DateTime($row[3]);
       $fully_submitted = ($row[5] == $row[6]);
-      $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false);
+      $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false, $s);
     }
     $stmt->close();
     // Sort the array to be in chronological order
@@ -214,7 +217,8 @@
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
       $s = new DateTime($row[3]);
-      $retVal[$row[2]] = array($row[0], $row[1], $s, true, false, false, false);
+      $e = new DateTime($row[4]);
+      $retVal[$row[2]] = array($row[0], $row[1], $s, true, false, false, false, $e);
     }
     $stmt->close();
     // Sort the array to be in chronological order

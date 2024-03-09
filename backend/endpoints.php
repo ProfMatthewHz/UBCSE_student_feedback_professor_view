@@ -51,13 +51,15 @@ if(count($past_surveys) > 0) {
             'surveyID' => $key,
             'courseName' => $value[0],
             'surveyName' => $value[1],
-            'closedDate' => $value[2]
+            'closedDate' => $value[2],
+            'openingDate' => $value[7]
         ];
         $pastSurveysResponse[] = $pastSurveyData;
     }
-} else {
-    $pastSurveysResponse[] = 'No closed surveys for this term';
 }
+//else {
+//    $pastSurveysResponse[] = 'No closed surveys for this term';
+//}
 
 // grab all the current surveys //
 $currentSurveysResponse = [];
@@ -68,13 +70,15 @@ if(count($current_surveys) > 0) {
             'surveyID' => $key,
             'courseName' => $value[0],
             'surveyName' => $value[1],
-            'deadlineDate' => $value[2]
+            'deadlineDate' => $value[2],
+            'openingDate' => $value[7]
         ];
         $currentSurveysResponse[] = $currentSurveyData;
     }
-} else {
-    $currentSurveysResponse[] = 'No active surveys for this term';
 }
+//else {
+//    $currentSurveysResponse[] = 'No active surveys for this term';
+//}
 
 // grab all the upcoming surveys //
 $upcomingSurveysResponse = [];
@@ -85,13 +89,15 @@ if(count($upcoming_surveys) > 0) {
             'surveyID' => $key,
             'courseName' => $value[0],
             'surveyName' => $value[1],
-            'openingDate' => $value[2]
+            'openingDate' => $value[2],
+            'closingDate' => $value[7]
         ];
         $upcomingSurveysResponse[] = $upcomingSurveyData;
     }
-} else {
-    $upcomingSurveysResponse[] = 'Nothing planned yet. Check back later!';
 }
+//else {
+//    $upcomingSurveysResponse[] = 'Nothing planned yet. Check back later!';
+//}
 
 
 // get users surveys api endpoint //
