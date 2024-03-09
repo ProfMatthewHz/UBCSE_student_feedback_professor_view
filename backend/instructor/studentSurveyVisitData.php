@@ -1,4 +1,6 @@
+
 <?php
+// this is for the student side meaning once a student logged in it sends it back to this side and gets updated in the db 
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
@@ -18,11 +20,24 @@ if (!isset($_SESSION['id'])) {
     echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
     exit();
 }
-$instructor_id = $_SESSION['id'];
 
-// Define the student ID and survey ID from GET parameters
-$student_id_to_check = $_GET['student_id'];
-$survey_id = $_GET['survey_id'];
+// Read the raw JSON data from the request body
+$json_data = file_get_contents('php://input');
+
+// Decode the JSON data into a PHP associative array
+$request_data = json_decode($json_data, true);
+
+// Check if the JSON data is valid
+if ($request_data === null) {
+    // Invalid JSON data
+    http_response_code(400);
+    echo json_encode(array("error" => "Invalid JSON data in request body."));
+    exit();
+}
+
+// Extract student ID and survey ID from the decoded JSON data
+$student_id_to_check = $request_data['student_id'];
+$survey_id = $request_data['survey_id'];
 
 // Perform the SQL query to check if the student exists
 $sql = "SELECT id FROM students WHERE id = ?";
