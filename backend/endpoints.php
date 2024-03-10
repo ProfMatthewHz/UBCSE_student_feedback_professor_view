@@ -1,17 +1,23 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+//require_once __DIR__ . '/../vendor/autoload.php';
+//use Firebase\JWT\JWT;
+//use Firebase\JWT\Key;
 
 
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
+session_start();
 
 require "lib/constants.php";
 require "lib/studentQueries.php";
 require "lib/database.php";
 require "lib/surveyQueries.php";
+
+if(!isset($_SESSION['student_id'])) {
+    header("Location: ".SITE_HOME."fake_shibboleth.php");
+    exit();
+}
 
 header('Content-Type: application/json');
 
@@ -23,24 +29,17 @@ $year = idate('Y');
 $response = [];
 
 
-//if(empty($_SERVER['student_id'])) {
-//    http_response_code(400);
-//    $response['error'] = 'missing student_id';
-//    echo json_encode($response);
-//    exit();
-//}
+//$secretKey = "myAppJWTKey2024!#$";
+//$jwt = $_COOKIE['student_id'];
+//$alg = 'HS256';
+//$decoded = JWT::decode($jwt, new Key($secretKey, $alg));
+//$student_id = $decoded->data->student_id;
 
-$secretKey = "myAppJWTKey2024!#$";
-$jwt = $_COOKIE['student_id'];
-$alg = 'HS256';
-$decoded = JWT::decode($jwt, new Key($secretKey, $alg));
-$student_id = $decoded->data->student_id;
 
-//$student_id = $_SERVER['student_id'];
-
-$past_surveys = getClosedSurveysForTerm($con, $term, $year, $student_id);
-$current_surveys = getCurrentSurveys($con,   $student_id);
-$upcoming_surveys = getUpcomingSurveys($con,   $student_id);
+$student_id = $_SESSION['student_id'];
+$past_surveys = getClosedSurveysForTerm($con, $term, $year, $_SESSION['student_id']);
+$current_surveys = getCurrentSurveys($con, $_SESSION['student_id']);
+$upcoming_surveys = getUpcomingSurveys($con, $_SESSION['student_id']);
 
 // grabbing all the past surveys //
 $pastSurveysResponse = [];
@@ -51,7 +50,7 @@ if(count($past_surveys) > 0) {
             'surveyID' => $key,
             'courseName' => $value[0],
             'surveyName' => $value[1],
-            'closedDate' => $value[2],
+            'closingDate' => $value[2],
             'openingDate' => $value[7]
         ];
         $pastSurveysResponse[] = $pastSurveyData;
@@ -70,7 +69,7 @@ if(count($current_surveys) > 0) {
             'surveyID' => $key,
             'courseName' => $value[0],
             'surveyName' => $value[1],
-            'deadlineDate' => $value[2],
+            'closingDate' => $value[2],
             'openingDate' => $value[7],
             'completionRate' => getCompletionRate($con, $key)
         ];
@@ -127,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     }
 
     echo json_encode($response);
+
 }
 
 

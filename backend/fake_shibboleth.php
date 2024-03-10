@@ -1,10 +1,8 @@
   <?php
-  // JWT //
-  require_once __DIR__ . '/../vendor/autoload.php';
-  use Firebase\JWT\JWT;
-  use Firebase\JWT\Key;
-
-
+//  // JWT //
+//  require_once __DIR__ . '/../vendor/autoload.php';
+//  use Firebase\JWT\JWT;
+//  use Firebase\JWT\Key;
 
   //error logging
 error_reporting(-1); // reports all errors
@@ -12,7 +10,7 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-//session_start();
+session_start();
 require "lib/constants.php";
 require "lib/database.php";
 require "lib/studentQueries.php";
@@ -52,20 +50,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       exit();
   }
 
-    // replacement //
-    $secretKey = "myAppJWTKey2024!#$";
-    $payload = [
-        "data" => [
-            "student_id" => $id_and_name[0] // Custom data
-        ]
-    ];
-    $jwt_studentId = JWT::encode($payload, $secretKey, 'HS256');
+//    // replacement //
+//    $secretKey = "myAppJWTKey2024!#$";
+//    $payload = [
+//        "data" => [
+//            "student_id" => $id_and_name[0] // Custom data
+//        ]
+//    ];
+//    $jwt_studentId = JWT::encode($payload, $secretKey, 'HS256');
+//
+//    // sending this shit as a cookie //
+//    http_response_code(200);
+//    setcookie('student_id', $jwt_studentId);
+//    $student_id = $id_and_name[0];
+//    $_SERVER['student_id'] = $student_id;
 
-    // sending this shit as a cookie //
-    http_response_code(200);
-    setcookie('student_id', $jwt_studentId);
-    $student_id = $id_and_name[0];
-    $_SERVER['student_id'] = $student_id;
+    session_regenerate_id();
+    $_SESSION['student_id'] = $id_and_name[0];
     header("Location: "."http://localhost/StudentSurvey/react-frontend/build");
     // http://localhost/StudentSurvey/react-frontend/build //
     exit();
