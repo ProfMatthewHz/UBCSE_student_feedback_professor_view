@@ -25,7 +25,7 @@ function App() {
           {/* Student Side Paths */}
           <Route path="/student" element={<StudentHome />} /> 
           {/* Coming Sprint 3 Page */}
-          <Route path="/studentsurveyform" element={<SurveyForm />} /> 
+          <Route path="/SurveyForm" element={<SurveyForm />} /> 
 
         </Routes>
       </div>

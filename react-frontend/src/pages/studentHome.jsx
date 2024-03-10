@@ -60,8 +60,8 @@ const StudentHome = () => {
   //sort surveys from soonest closed date to latest
   const sortByDate= (dataArray) => {
     return [...dataArray].sort((a, b) => {
-      const dateA = new Date(a.openingDate.date);
-      const dateB = new Date(b.openingDate.date);
+      const dateA = new Date(a.closingDate.date);
+      const dateB = new Date(b.closingDate.date);
       return dateA - dateB;
     });
   };
@@ -118,8 +118,8 @@ const StudentHome = () => {
       fetchCurrent()
   }, []);
 
-  // console.log("CURRENT");
-  // console.log(rubricCurrent);
+  console.log("CURRENT");
+  console.log(rubricCurrent);
 
   //past evals
   const fetchPast = () => {
@@ -143,8 +143,8 @@ const StudentHome = () => {
   useEffect(() => {
       fetchPast()
   }, []);
-  // console.log("PAST");
-  // console.log(rubricPast);
+  console.log("PAST");
+  console.log(rubricPast);
 
 
   const fetchFuture = () => {
@@ -168,7 +168,8 @@ const StudentHome = () => {
   useEffect(() => {
       fetchFuture()
   }, []);
-
+console.log("Future Surveys")
+console.log(rubricFuture)
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
   const postDataToApi = (postData) => {
@@ -201,19 +202,7 @@ const StudentHome = () => {
     setOpenModal(true);
   };
 
-  const tempCurrentData = [
-    {"courseName": "Computer Security","openingDate": {"date": "2024-3-10 01:58:06.000000", "timezone_type": 3, "timezone": "Europe/Berlin"},"surveyID": 23,"surveyName": "Dummy Name 5","completeRate":0},
-    { "courseName": "Algorithms and Complexity","openingDate": {"date": "2024-3-21 04:25:09.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 27, "surveyName": "Dummy Name 1","completeRate":100},{
-      "courseName": "Software Project Managment", "openingDate": {"date": "2024-3-22 00:43:04.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 19,"surveyName": "CSE 404 #2","completeRate":13
-    }
-  ];
-  
-  const tempPastData = [
-    {"courseName": "Computer Security","openingDate": {"date": "2024-1-23 01:58:06.000000", "timezone_type": 3, "timezone": "Europe/Berlin"},"surveyID": 23,"surveyName": "Dummy Name 5"},
-    { "courseName": "Algorithms and Complexity","openingDate": {"date": "2024-2-27 04:25:09.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 27, "surveyName": "Dummy Name 1"},{
-      "courseName": "Software Project Managment", "openingDate": {"date": "2024-2-28 00:43:04.000000", "timezone_type": 3, "timezone": "Europe/Berlin"}, "surveyID": 19,"surveyName": "CSE 404 #2"
-    }
-  ];
+
  
 
 
@@ -238,7 +227,7 @@ const StudentHome = () => {
                         Open Surveys
                     </h2>
                 </div>
-                {tempCurrentData.length > 1 ? (
+                {rubricCurrent.length > 0 ? (
                         <table className="surveyTable">
                           <thead>
                             <tr>
@@ -253,30 +242,30 @@ const StudentHome = () => {
                           </thead>
 
                           <tbody>
-                            {sortByDate(tempCurrentData).map((item, index) => (
+                            {sortByDate(rubricCurrent).map((item, index) => (
                               <tr key={index} className="survey-row">
 
                                 {/* if the date is < 3 days away, make the text red */}
-                                {dateWarning(item.openingDate.date) > 0?(
+                                {dateWarning(item.closingDate.date) > 0?(
                                     <td><div className="warning">
-                                    {reformatDate(item.openingDate.date)}
+                                    {reformatDate(item.closingDate.date)}
                                     <br />
-                                    {reformatTime(item.openingDate.date)}
+                                    {reformatTime(item.closingDate.date)}
                                     </div> </td>
 
 
                                   ):(
                                     <td>
-                                    {reformatDate(item.openingDate.date)}
+                                    {reformatDate(item.closingDate.date)}
                                     <br />
-                                    {reformatTime(item.openingDate.date)}
+                                    {reformatTime(item.closingDate.date)}
                                   </td>
                                 ) }
                                 
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
-                                <td>{item.completeRate}% Completed</td>
-                                <td><button onClick={comingSoon}>{openChooseAction(item.completeRate)}</button></td>
+                                <td>{item.completionRate*100}% Completed</td>
+                                <td><button onClick={comingSoon}>{openChooseAction(item.completionRate*100)}</button></td>
                               </tr>
                             ))}
                           </tbody>
@@ -303,7 +292,7 @@ const StudentHome = () => {
                         Future Surveys
                     </h2>
                 </div>
-                 {rubricFuture.length > 1 ? (
+                 {rubricFuture.length > 0 ? (
                         <table className="surveyTable">
                           <thead>
                             <tr>
@@ -317,9 +306,9 @@ const StudentHome = () => {
                             {sortByDate(rubricFuture).map((item, index) => (
                               <tr key={index} className="survey-row">
                                 <td>
-                                  {reformatDate(item.openingDate.date)}
+                                  {reformatDate(item.closingDate.date)}
                                   <br />
-                                  {reformatTime(item.openingDate.date)}
+                                  {reformatTime(item.closingDate.date)}
                                 </td>
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
@@ -352,7 +341,7 @@ const StudentHome = () => {
                
                 
 
-                {tempPastData.length > 1 ? (
+                {rubricPast.length > 0 ? (
                         <table className="surveyTable">
                           <thead>
                             <tr>
@@ -365,12 +354,12 @@ const StudentHome = () => {
                           </thead>
 
                           <tbody>
-                            {sortByDate(tempPastData).map((item, index) => (
+                            {sortByDate(rubricPast).map((item, index) => (
                               <tr key={index} className="survey-row">
                                 <td>
-                                  {reformatDate(item.openingDate.date)}
+                                  {reformatDate(item.closingDate.date)}
                                   <br />
-                                  {reformatTime(item.openingDate.date)}
+                                  {reformatTime(item.closingDate.date)}
                                 </td>
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
