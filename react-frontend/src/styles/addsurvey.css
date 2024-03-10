@@ -57,6 +57,7 @@ label.add-survey--label-pairing {
 label.add-survey--label-pairing div.pairing-mode-img-wrapper {
   display: flex;
   flex-direction: row;
+  margin-left: auto;
 }
 
 /* label.add-survey--label-pairing div.drop-down-wrapper {
