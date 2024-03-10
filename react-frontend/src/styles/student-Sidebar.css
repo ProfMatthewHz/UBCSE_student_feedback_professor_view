@@ -1,0 +1,110 @@
+.title{
+  width: 195px;
+  height: 100%; 
+  background: #225CB5;
+  top: 0;
+  left: 0;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+}
+
+.headerTitle{
+  padding-top:10px;
+}
+
+.title h1{ /*Evalutation Tool Title*/
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1;
+  text-decoration: none;
+  text-align: center;
+}
+
+.title .sidebar {
+  width: 195px;
+  height: calc(100vh - 160px); 
+  background: #225CB5;
+  position: fixed;
+  top: 160px;
+  display: flex;
+  flex-direction: column;
+  padding-top: 2%;
+  text-align: center;
+
+}
+
+.title .sidebar > div {
+  margin: 5%;
+}
+
+
+
+.sidebar-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-list::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 15px;
+}
+
+
+.sidebar-content a {  /*courses and rubric options*/
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: none;
+
+}
+
+.sidebar-content a > div {
+  align-items: center;
+  font-size: 20px;
+  padding: 6% 6%;
+  margin-right: 5%;
+  margin-left: 5%;
+  margin-bottom: 10%;
+}
+
+.sidebar-content a > div:hover {
+  background-color: #103876;
+  border-radius: 5px;
+  transition-duration: 0.4s;
+  padding: 6% 6%;
+  margin-right: 5%;
+  margin-left: 5%;
+  margin-bottom: 10%;
+
+}
+
+.sidebar-content a .active {
+  color: #154185;
+  background-color: #ffffff;
+  border-radius: 5px;
+  pointer-events: none;
+  padding: 6% 6%;
+  margin-right: 5%;
+  margin-left: 5%;
+  margin-bottom: 10%;
+
+
+}
+
+.sidebar-list .no-content {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Media queries for responsiveness */
+@media screen and (max-width: 800px) {
+  .sidebar {
+    display: none;
+  }
+}
+ 
+
+
