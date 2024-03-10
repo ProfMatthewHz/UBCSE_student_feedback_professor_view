@@ -17,15 +17,15 @@ function App() {
           {/* Add Routes here with a component to render at that Route */}
 
           {/* Professor Side Paths */}
-          {/* <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/history" element={<History />} />
-          <Route path="/library" element={<Library />} /> */}
+          <Route path="/library" element={<Library />} />
 
           {/* Student Side Paths */}
-          <Route path="/" element={<StudentHome />} /> 
+          <Route path="/student" element={<StudentHome />} /> 
           {/* Coming Sprint 3 Page */}
-          <Route path="/surveyform" element={<SurveyForm />} /> 
+          <Route path="/studentsurveyform" element={<SurveyForm />} /> 
 
         </Routes>
       </div>

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
-import SideBar from "../Components/studentSidebar";
+import StudentSideBar from "../Components/studentSidebar";
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
 import Modal from "../Components/RubricModal";
@@ -171,27 +171,27 @@ const StudentHome = () => {
 
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
-  // const postDataToApi = (postData) => {
-  //   console.log("Feedback Count Updated");
-  //   const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`; //TODO: update URL point
+  const postDataToApi = (postData) => {
+    console.log("Feedback Count Updated");
+    const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?type=current`; 
 
-  //   // POST request to send additional data
-  //   fetch(url, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify(postData),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((postDataResult) => {
-  //       // Handle the response from the POST request if needed
-  //       console.log('POST Request Result:', postDataResult);
-  //     })
-  //     .catch((postErr) => {
-  //       console.error('Error in POST request:', postErr);
-  //     });
-  // };
+    // POST request to send additional data
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(postData),
+    })
+      .then((response) => response.json())
+      .then((postDataResult) => {
+        // Handle the response from the POST request if needed
+        console.log('POST Request Result:', postDataResult);
+      })
+      .catch((postErr) => {
+        console.error('Error in POST request:', postErr);
+      });
+  };
 
 
 
@@ -228,7 +228,7 @@ const StudentHome = () => {
   return (
     <>
     <Modal open={openModal} onClose={()=>setOpenModal(false)}/>
-      <SideBar route="/" content_dictionary={rubricCurrent} getCourses={fetchCurrent} />
+      <StudentSideBar />
       <div className="home--container">
         <div className="containerOfCourses">
           <div id="Open Surveys" class="courseContainer">

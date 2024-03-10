@@ -419,8 +419,10 @@ function SideBar(props) {
                     
               </li>
               <li>
-                <NavLink to="/about">About</NavLink>
-                    
+                <NavLink to="/about">About</NavLink>  
+              </li>
+              <li>
+                <NavLink to="/student">Student Side</NavLink>  
               </li>
             </ul>
 

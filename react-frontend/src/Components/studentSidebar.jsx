@@ -1,20 +1,10 @@
-import "../styles/sidebar.css";
+
 import React, { useEffect, useRef, useState } from "react";
 //import { Link, NavLink } from "react-router-dom";
+import "../styles/studentSidebar.css";
 
 
-
-
-/** Combining NavBar into Side Bar*/
-
-/** 
- * The Sidebar component is a reusable component that displays a sidebar.
- * @param props
- * @returns {Element}
- * @constructor
- */
-
-function SideBar(props) {
+function StudentSideBar() {
 
  
 
@@ -53,7 +43,6 @@ function SideBar(props) {
   return (
     <>
 
-<div className="studentSidebar">
       <div className = "title">
         
           <div className ="headerTitle">
@@ -110,10 +99,10 @@ function SideBar(props) {
 
           </div>
         </div> 
-      </div>
+      
   
     </>
   );
 }
 
-export default SideBar;
+export default StudentSideBar;

@@ -1,4 +1,4 @@
-.studentSidebar .title{
+.title{
   width: 195px;
   height: 100%; 
   background: #225CB5;
@@ -9,11 +9,11 @@
   flex-direction: column;
 }
 
-.studentSidebar .headerTitle{
+.headerTitle{
   padding-top:10px;
 }
 
-.studentSidebar .title h1{ /*Evalutation Tool Title*/
+.title h1{ /*Evalutation Tool Title*/
   color: #ffffff;
   font-size: 28px;
   font-weight: bold;
@@ -22,7 +22,7 @@
   text-align: center;
 }
 
-.studentSidebar .title .sidebar {
+.title .sidebar {
   width: 195px;
   height: calc(100vh - 160px); 
   background: #225CB5;
@@ -35,23 +35,23 @@
 
 }
 
-.studentSidebar .title .sidebar > div {
+.title .sidebar > div {
   margin: 5%;
 }
 
 
 
-.studentSidebar .sidebar-list::-webkit-scrollbar {
+.sidebar-list::-webkit-scrollbar {
   width: 5px;
 }
 
-.studentSidebar .sidebar-list::-webkit-scrollbar-thumb {
+.sidebar-list::-webkit-scrollbar-thumb {
   background-color: #ffffff;
   border-radius: 15px;
 }
 
 
-.studentSidebar .sidebar-content a {  /*courses and rubric options*/
+.sidebar-content a {  /*courses and rubric options*/
   color: #ffffff;
   font-size: 20px;
   font-weight: bold;
@@ -59,7 +59,7 @@
 
 }
 
-.studentSidebar .sidebar-content a > div {
+.sidebar-content a > div {
   align-items: center;
   font-size: 20px;
   padding: 6% 6%;
@@ -68,7 +68,7 @@
   margin-bottom: 10%;
 }
 
-.studentSidebar .sidebar-content a > div:hover {
+.sidebar-content a > div:hover {
   background-color: #103876;
   border-radius: 5px;
   transition-duration: 0.4s;
@@ -79,7 +79,7 @@
 
 }
 
-.studentSidebar .sidebar-content a .active {
+.sidebar-content a .active {
   color: #154185;
   background-color: #ffffff;
   border-radius: 5px;
@@ -89,12 +89,22 @@
   margin-left: 5%;
   margin-bottom: 10%;
 
+
 }
 
+.sidebar-list .no-content {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
+}
 
-
-
+/* Media queries for responsiveness */
+@media screen and (max-width: 800px) {
+  .sidebar {
+    display: none;
+  }
+}
  
-
 
 
