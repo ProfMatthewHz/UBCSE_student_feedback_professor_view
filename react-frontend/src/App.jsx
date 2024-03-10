@@ -1,29 +1,37 @@
-import { Routes, Route } from "react-router";
-import { HashRouter } from "react-router-dom";
-import Navbar from "./Components/Navbar";
-import SideBar from "./Components/Sidebar";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import History from "./pages/History";
 import Library from "./pages/Library";
+import StudentHome from "./pages/studentHome";
+import SurveyForm from "./pages/SurveyForm"
 
 function App() {
 
   return (
-    <HashRouter>
-      {/* <Router > */}
+    <Router basename={process.env.REACT_APP_BASE_URL}>
       <div className="app">
         <div className="background-design"></div>
-        <Navbar />
+      
         <Routes>
           {/* Add Routes here with a component to render at that Route */}
+
+          {/* Professor Side Paths */}
           <Route path="/" element={<Home />} />
           <Route path="/history" element={<History />} />
           <Route path="/library" element={<Library />} />
-          <Route path="/about" element={<About />} />
+
+          {/* Student Side Paths */}
+          <Route path="/student" element={<StudentHome />} /> 
+          {/* Coming Sprint 3 Page */}
+          <Route path="/SurveyForm" element={<SurveyForm />} /> 
+
         </Routes>
       </div>
-    </HashRouter>
+    </Router>
+
+
+    
   );
 }
 

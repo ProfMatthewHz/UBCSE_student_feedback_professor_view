@@ -22,7 +22,7 @@ const ViewResults = ({
     const [normalizedTableHeaders, setNormalizedTableHeaders] = useState(null); // For Normalized Results
     const [normalizedResults, setNormalizedResults] = useState([]); // For Normalized Results
     const [currentCSVData, setCurrentCSVData] = useState(null); // For CSV Download
-
+    const [feedbackCountData, setFeedbackCountData] = useState([]); //For Feedback View Count
     /**
      * Maps headers to values
      * @param headers
@@ -62,6 +62,7 @@ const ViewResults = ({
             .then((res) => res.json())
             .then((result) => {
                 if (surveytype == "raw-full") {
+                   
                     setShowNormalizedSurveyResults(null);
                     setShowRawSurveyResults(result.slice(1));
                     setRawResultsHeaders(result[0]);
@@ -76,6 +77,8 @@ const ViewResults = ({
                 } else {
                     // else if surveytype == "average" (For Normalized Results)
                     setShowRawSurveyResults(null);
+                    console.log("------RIGHT HERE----------");
+                    console.log(result)
 
                     if (result.length > 1) {
                         const results_without_headers = result.slice(1);
@@ -114,7 +117,7 @@ const ViewResults = ({
 
                         labels = Object.entries(labels);
                         labels.unshift(["Normalized Averages", "Number of Students"]);
-
+                       
                         console.log(labels);
                         console.log(result);
                         const mappedNormalizedResults = mapHeadersToValues(
@@ -150,6 +153,55 @@ const ViewResults = ({
         console.log(showRawSurveyResults);
         // console.log(rawResultsRecords)
     }, []);
+
+
+    //Get feedback view count data from database
+    const fetchFeedbackCount = () => {
+        // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
+        const url = `${process.env.REACT_APP_API_URL}studentSurveyCount.php?type=upcoming`;
+  
+        fetch(url, {
+            method: "GET",
+            // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
+        })
+            .then((res) => res.json())
+            .then((result) => {
+                // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
+                setFeedbackCountData(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+  
+    useEffect(() => {
+        fetchFeedbackCount()
+    }, []);
+  
+  
+    //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
+    const postDataToApi = (postData) => {
+      console.log("Feedback Count Updated");
+      const url = `${process.env.REACT_APP_API_URL}studentSurveyCount.php?type=current`; 
+  
+      // POST request to send additional data
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      })
+        .then((response) => response.json())
+        .then((postDataResult) => {
+          // Handle the response from the POST request if needed
+          console.log('POST Request Result:', postDataResult);
+        })
+        .catch((postErr) => {
+          console.error('Error in POST request:', postErr);
+        });
+    };
+  
 
     return (
         <div className="viewresults-modal">

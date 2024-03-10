@@ -50,7 +50,7 @@ label {
   width: 100%;
   padding: 8px 15px;
   border: none;
-  border-bottom: 2px solid #e0e0e0;
+  border-radius: 8px;
   font-size: 16px;
   background-color: transparent;
   outline: none;
@@ -111,14 +111,34 @@ label {
 
 /* Modal content container */
 .modal-content {
-  width: 1300px;
+  width: 90%;
+  max-height: fit-content;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
 }
+.CancelButton{
+  color:#ffffff;
+  background-color: transparent;
+  border-radius: 0 5px 0 0;
+  border-style: none;
+  font-size: 20px;
+  font-weight: 800;
+  padding: 6px 16px;
+  position: absolute;
+  right: 10px;
+  text-align: center;
+  text-decoration: none;
+}
 
+/* .modal-content p {
+  width: 70%;
+  height: 10px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+} */
 .flex-container-center {
   display: flex;
   flex-direction: column;

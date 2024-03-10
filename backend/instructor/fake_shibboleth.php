@@ -41,7 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $_SESSION["surveyTypes"] = getSurveyTypes($con);
   // redirect the instructor to the next page
   http_response_code(302);
-  header("Location: ".INSTRUCTOR_HOME);
+  // header("Location: ".INSTRUCTOR_HOME."surveys.php");
+  header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
   exit();
 }
 ?>
