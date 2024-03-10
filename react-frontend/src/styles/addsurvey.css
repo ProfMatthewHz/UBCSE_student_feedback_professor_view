@@ -107,23 +107,29 @@ label.add-survey--label select {
   padding: 10px;
 }
 
-label.add-survey--label div.drop-down-wrapper select.pairing {
+label.add-survey--label-pairing div.drop-down-wrapper {
+  flex-direction: column;
+  gap: 5px;
+}
+
+label.add-survey--label-pairing div.drop-down-wrapper select.pairing {
   background-color: #225cb5;
   color: #fff;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
   padding: 10px;
-  width: 400px;
-  /* display: flex; */
-  position: absolute;
+  width: 330px;
+  display: flex;
+  /* position: absolute; */
 }
 
-label.add-survey--label img.pairing-mode-img {
-  width: 150px;
-  margin-left: auto;
+label.add-survey--label-pairing img.pairing-mode-img {
+  width: 220px;
+  /* margin-left: auto; */
   display: flex;
-  margin-right: 5px;
+  /* margin-right: 5px; */
+  float: right;
 }
 label.add-survey--error-label {
   color: #af0e0e;
