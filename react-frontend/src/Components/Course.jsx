@@ -218,7 +218,7 @@ const Course = ({course, page}) => {
         return value;
     };
     const getInitialStatePairing = () => {
-        const value = "Each Team Member Reviewed By Entire Team";
+        const value = "TEAM";
         return value;
     };
 
@@ -226,6 +226,7 @@ const Course = ({course, page}) => {
     const [valuePairing, setValuePairing] = useState(getInitialStatePairing);
     const [multiplierNumber, setMultiplierNumber] = useState("one");
     const [validPairingModeForMultiplier, setMultiplier] = useState(false);
+    const [pairingImage, setPairingImage] = useState("../src/assets/pairingmodes/TEAM.png");
 
     const handleChangeRubric = (e) => {
         setValueRubric(e.target.value);
@@ -233,6 +234,30 @@ const Course = ({course, page}) => {
     const handleChangeMultiplierNumber = (e) => {
         setMultiplierNumber(e.target.value);
     };
+
+    const handleUpdateImage = (e) => {
+        console.log(e.target.value);
+        switch(e.target.value) {
+            case 'TEAM':
+                setPairingImage("../src/assets/pairingmodes/TEAM.png");
+                break;
+            case 'TEAM + SELF':
+                setPairingImage("../src/assets/pairingmodes/TEAM+SELF.png");
+                break;
+            case 'TEAM + SELF + MANAGER':
+                setPairingImage("../src/assets/pairingmodes/TEAM+SELF+MANAGER.png");
+                break;
+            case 'Single Pairs':
+                setPairingImage("../src/assets/pairingmodes/SinglePairs.png");
+                break;
+            case 'PM':
+                setPairingImage("../src/assets/pairingmodes/PM.png");
+                break;
+            default:
+                console.log('Unexpected pairing mode: ${pairingMode}');
+                break;
+        }
+    }
     const handleChangePairing = (e) => {
         var boolean = false;
 
@@ -242,7 +267,8 @@ const Course = ({course, page}) => {
         if (multiplierCheckArray.includes(e.target.value)) {
             boolean = true;
         }
-
+        
+        handleUpdateImage(e);
         setValuePairing(e.target.value);
         setMultiplier(boolean);
     };
@@ -1757,17 +1783,24 @@ const Course = ({course, page}) => {
                             ))}
                         </select>
                     </label>
-                    <label className="add-survey--label" for="subject-line">
-                        Pairing Modes
-                        <select
-                            value={valuePairing}
-                            onChange={handleChangePairing}
-                            id="pairing-mode"
-                        >
-                            {pairingModesNames.map((pairing) => (
-                                <option value={pairing}>{pairing}</option>
-                            ))}
-                        </select>
+                    <label className="add-survey--label-pairing" for="subject-line">
+                        <div className="drop-down-wrapper">
+                            Pairing Modes
+                            <select className="pairing"
+                                value={valuePairing}
+                                onChange={handleChangePairing}
+                                id="pairing-mode"
+                            >
+                                {pairingModesNames.map((pairing) => (
+                                    <option className= "pairing-option" value={pairing}>{pairing}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="pairing-mode-img-wrapper">
+                            <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
+                        </div>
+                        
+                        
                     </label>
                     {validPairingModeForMultiplier && (
                         <label className="add-survey--label" for="subject-line">
