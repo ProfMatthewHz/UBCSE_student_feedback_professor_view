@@ -1677,8 +1677,8 @@ const Course = ({course, page}) => {
                                             className={(StartDateGreaterError || StartAfterCurrentError || emptyStartDateError || startDateBoundError || startDateBound1Error) ? "add-survey-input-error" : null}
                                             id="start-date"
                                             type="date"
-                                            min="2023-08-31"
-                                            max="2023-12-31"
+                                            min="2024-03-09"
+                                            max="2024-12-31"
                                             placeholder="Enter Start Date"
                                         />
                                     </label>
@@ -1739,8 +1739,8 @@ const Course = ({course, page}) => {
                                             className={(emptyEndDateError || endDateBoundError || endDateBound1Error) ? "add-survey-input-error" : null}
                                             id="end-date"
                                             type="date"
-                                            min="2023-08-31"
-                                            max="2023-12-31"
+                                            min="2024-03-09"
+                                            max="2024-12-31"
                                             placeholder="Enter End Date"
                                         />
                                     </label>
