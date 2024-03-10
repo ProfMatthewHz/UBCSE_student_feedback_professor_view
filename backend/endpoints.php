@@ -71,7 +71,8 @@ if(count($current_surveys) > 0) {
             'courseName' => $value[0],
             'surveyName' => $value[1],
             'deadlineDate' => $value[2],
-            'openingDate' => $value[7]
+            'openingDate' => $value[7],
+            'completionRate' => getCompletionRate($con, $key)
         ];
         $currentSurveysResponse[] = $currentSurveyData;
     }
@@ -90,7 +91,7 @@ if(count($upcoming_surveys) > 0) {
             'courseName' => $value[0],
             'surveyName' => $value[1],
             'openingDate' => $value[2],
-            'closingDate' => $value[7]
+            'closingDate' => $value[7],
         ];
         $upcomingSurveysResponse[] = $upcomingSurveyData;
     }

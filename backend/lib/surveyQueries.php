@@ -225,4 +225,47 @@
     uasort($retVal, 'chronologicalComparator');
     return $retVal;
   }
+
+
+  function getCompletionRate($con, $survey_id) {
+
+    $reviewIds = [];
+    // get an array of review_ids within reviews table that correspond to survey_id //
+    $sql = "SELECT id FROM reviews WHERE survey_id = ?";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("i", $survey_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+      $reviewIds[] = $row['id'];
+    }
+
+    $stmt->close();
+    $denominator = count($reviewIds);
+
+    if ($denominator == 0) {
+        return 0;
+    }
+
+    $numerator = 0;
+    // get the number of rows in Evals that have a review id in reviewIDs
+    $placeholders = implode(',', array_fill(0, count($reviewIds), '?'));
+    $sql2 = "SELECT COUNT(*) FROM evals WHERE review_id IN ($placeholders)";
+    $stmt2 = $con->prepare($sql2);
+    $types = str_repeat('i', count($reviewIds));
+    $stmt2->bind_param($types, ...$reviewIds);
+    $stmt2->execute();
+    $stmt2->bind_result($numerator);
+    $stmt2->fetch();
+    $stmt2->close();
+
+    if ($numerator == 0) {
+        return 0;
+    }
+
+    $compRate = $numerator/$denominator;
+    return $compRate;
+
+  }
 ?>
