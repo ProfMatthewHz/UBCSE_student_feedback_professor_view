@@ -9,7 +9,11 @@ import Modal from "./Modal";
 import Toast from "./Toast";
 import ViewResults from "./ViewResults";
 import {RadioButton} from "primereact/radiobutton";
-
+import Team from "../assets/pairingmodes/TEAM.png"
+import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
+import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
+import PM from "../assets/pairingmodes/PM.png"
+import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 /**
  * @component
  * @param {Object} course 
@@ -226,7 +230,7 @@ const Course = ({course, page}) => {
     const [valuePairing, setValuePairing] = useState(getInitialStatePairing);
     const [multiplierNumber, setMultiplierNumber] = useState("one");
     const [validPairingModeForMultiplier, setMultiplier] = useState(false);
-    const [pairingImage, setPairingImage] = useState("../src/assets/pairingmodes/TEAM.png");
+    const [pairingImage, setPairingImage] = useState(Team);
 
     const handleChangeRubric = (e) => {
         setValueRubric(e.target.value);
@@ -239,19 +243,19 @@ const Course = ({course, page}) => {
         console.log(e.target.value);
         switch(e.target.value) {
             case 'TEAM':
-                setPairingImage("../src/assets/pairingmodes/TEAM.png");
+                setPairingImage(Team);
                 break;
             case 'TEAM + SELF':
-                setPairingImage("../src/assets/pairingmodes/TEAM+SELF.png");
+                setPairingImage(TeamSelf);
                 break;
             case 'TEAM + SELF + MANAGER':
-                setPairingImage("../src/assets/pairingmodes/TEAM+SELF+MANAGER.png");
+                setPairingImage(TeamSelfManager);
                 break;
             case 'Single Pairs':
-                setPairingImage("../src/assets/pairingmodes/SinglePairs.png");
+                setPairingImage(SinglePairs);
                 break;
             case 'PM':
-                setPairingImage("../src/assets/pairingmodes/PM.png");
+                setPairingImage(PM);
                 break;
             default:
                 console.log('Unexpected pairing mode: ${pairingMode}');
