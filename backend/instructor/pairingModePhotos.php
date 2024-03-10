@@ -1,8 +1,8 @@
 <?php
 // This is pairingModePhotos.php file
-// this is in backend/instructor 
-error_reporting(-1); // reports all errors
-ini_set("display_errors", "1"); // shows all errors
+// This is in backend/instructor 
+error_reporting(-1); // Reports all errors
+ini_set("display_errors", "1"); // Shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
@@ -20,7 +20,6 @@ if (!isset($_SESSION['id'])) {
     echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
     exit();
 }
-// $instructor_id = $_SESSION['id'];
 
 // Check if description parameter is provided via GET request
 if (isset($_GET['description'])) {
