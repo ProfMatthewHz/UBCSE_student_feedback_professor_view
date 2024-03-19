@@ -5,6 +5,7 @@ import History from "./pages/History";
 import Library from "./pages/Library";
 import StudentHome from "./pages/studentHome";
 import SurveyForm from "./pages/SurveyForm"
+import SurveyPreview from "./pages/SurveyPreview"
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
           <Route path="/student" element={<StudentHome />} /> 
           {/* Coming Sprint 3 Page */}
           <Route path="/SurveyForm" element={<SurveyForm />} /> 
+          <Route path ="/SurveyPreview" element={<SurveyPreview />} />
 
         </Routes>
       </div>

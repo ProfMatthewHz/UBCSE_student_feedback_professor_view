@@ -14,6 +14,10 @@ import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
 import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
 import PM from "../assets/pairingmodes/PM.png"
 import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
+// import SurveyForm from "./pages/SurveyForm"
+import { Link, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 /**
  * @component
  * @param {Object} course 
@@ -781,7 +785,7 @@ const Course = ({course, page}) => {
 
         return;
     }
-
+    let Navigate = useNavigate();
     const handleActionButtonChange = (e, survey) => {
         setActionsButtonValue(e.target.value);
 
@@ -800,6 +804,9 @@ const Course = ({course, page}) => {
         }
         if (e.target.value == "View Results") {
             handleViewResultsModalChange(survey);
+        }
+        if (e.target.value == "Preview Survey") {
+            Navigate("/SurveyPreview");
         }
         setActionsButtonValue("");
     };
@@ -1924,6 +1931,12 @@ const Course = ({course, page}) => {
                                                 value="Delete"
                                             >
                                                 Delete
+                                            </option>
+                                            <option
+                                                className="surveyactions--option"
+                                                value="Preview Survey"
+                                            >
+                                                Preview Survey
                                             </option>
                                         </select>
                                     ) : page === "history" ? (

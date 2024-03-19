@@ -1,0 +1,29 @@
+div.row-container {
+    display: flex;
+    width: auto;
+    flex-direction: column;
+}
+
+.row-header {
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    /* cursor: pointer; */
+    background-color: #225cb5;
+    /* z-index: 3; */
+    text-align: left;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    width: 100%;
+}
+
+.table-data-container {
+    
+    border: 1px solid #225cb5;
+}
+
+.table-data-points {
+    text-align: center;
+}
