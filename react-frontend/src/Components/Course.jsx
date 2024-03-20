@@ -806,7 +806,10 @@ const Course = ({course, page}) => {
             handleViewResultsModalChange(survey);
         }
         if (e.target.value == "Preview Survey") {
-            Navigate("/SurveyPreview");
+            Navigate("/SurveyPreview", {state:{survey_name: survey.name, rubric_id: survey.rubric_id, course: course.code}});
+            console.log(survey.name);
+            console.log(survey.rubric_id);
+            console.log(course.code);
         }
         setActionsButtonValue("");
     };
