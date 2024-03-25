@@ -72,13 +72,17 @@ const RubricModal = ({open,onClose,modalData}) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {Object.keys(feedback).map((criterion, index) => (
+                            {feedback.length > 0 ? (
+                                Object.keys(feedback).map((criterion, index) => (
                                         <tr key={index}>
                                             <td>{criterion}</td>
                                             <td>{feedback[criterion].average}</td>
                                             <td>{feedback[criterion].median}</td>
                                         </tr>
-                                    ))}
+                                    ))
+                                    ) : (
+                                        <th colSpan="3">Feedback Results Not Available</th>
+                                    )}
                             </tbody>
                     </table>
 
