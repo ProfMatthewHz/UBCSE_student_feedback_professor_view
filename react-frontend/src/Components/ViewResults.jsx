@@ -77,9 +77,7 @@ const ViewResults = ({
                 } else {
                     // else if surveytype == "average" (For Normalized Results)
                     setShowRawSurveyResults(null);
-                    console.log("------RIGHT HERE----------");
-                    console.log(result)
-
+              
                     if (result.length > 1) {
                         const results_without_headers = result.slice(1);
                         const maxValue = Math.max(
@@ -155,53 +153,51 @@ const ViewResults = ({
     }, []);
 
 
-    //Get feedback view count data from database
-    const fetchFeedbackCount = () => {
-        // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
-        const url = `${process.env.REACT_APP_API_URL}studentSurveyCount.php?type=upcoming`;
-  
-        fetch(url, {
+    
+    //API call to get feedback view count for each student
+    const fetchFeedbackCount = (student_id, survey_id) => {
+        // Send student_id and survey_id back to student
+        const url = `${process.env.REACT_APP_API_URL}studentSurveyCount.php?survey_id=${survey_id}&student_id=${student_id}`;
+    
+        return fetch(url, {
             method: "GET",
-            // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
         })
-            .then((res) => res.json())
-            .then((result) => {
-                // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-                setFeedbackCountData(result); // Consider renaming this function to reflect that it now sets surveys, not courses
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-  
-    useEffect(() => {
-        fetchFeedbackCount()
-    }, []);
-  
-  
-    //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
-    const postDataToApi = (postData) => {
-      console.log("Feedback Count Updated");
-      const url = `${process.env.REACT_APP_API_URL}studentSurveyCount.php?type=current`; 
-  
-      // POST request to send additional data
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-      })
-        .then((response) => response.json())
-        .then((postDataResult) => {
-          // Handle the response from the POST request if needed
-          console.log('POST Request Result:', postDataResult);
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error('HTTP Response error');
+            }
+            return res.json();
         })
-        .catch((postErr) => {
-          console.error('Error in POST request:', postErr);
+        .catch((err) => {
+            console.error('There was a problem with your fetch operation:', err);
+            return "Not Available"; 
         });
     };
   
+
+
+    //call the fetchFeebackCount for each student and update the normalizedResults arr
+    const callFetchFeedbackCount = (survey_id) => {
+        // Iterate thru each student object in normalizedResults, obtain that student's feedback view count from database
+        for (let i = 0; i < normalizedResults.length; i++) {
+
+          //obtains student_id from the username portion of the email
+          const email = normalizedResults[i]["Reviewee name (email)"];
+          const atIndex = email.indexOf('@');
+          const student_id = email.substring(0, atIndex);
+          
+          const feedbackCount = fetchFeedbackCount(student_id, survey_id);
+          
+          // Add pairing "Feedback View Count": feedbackCount into the student's object
+          normalizedResults[i]["Feedback View Count"] = feedbackCount; // Assuming feedbackCount contains the count
+        }
+  
+        // After updating all normalizedResults, set the state with the updated array
+        setNormalizedResults([...normalizedResults]);
+    }
+ 
+    console.log("Normalized Results");
+    console.log(normalizedResults);
 
     return (
         <div className="viewresults-modal">
@@ -241,10 +237,8 @@ const ViewResults = ({
                                 : "survey-result--option"
                         }
                         onClick={() =>
-                            handleSelectedSurveyResultsModalChange(
-                                viewingCurrentSurvey.id,
-                                "average"
-                            )
+                           { handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average"); 
+                            callFetchFeedbackCount(viewingCurrentSurvey.id);} //updates normalizedResults array with feedback view count info added in for each student
                         }
                     >
                         Normalized Results

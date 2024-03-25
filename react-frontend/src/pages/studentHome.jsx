@@ -171,49 +171,36 @@ const StudentHome = () => {
 console.log("Future Surveys")
 console.log(rubricFuture)
 
-  //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
-  const postDataToApi = (postData) => {
-    console.log("Feedback Count Updated");
-    const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?type=current`; 
+  //API call to update view count in database for the specified student
+const fetchFeedbackCount = (student_id, survey_id) => {
+      // Send student_id and survey_id back to student
+      const url = `${process.env.REACT_APP_API_URL}studentSurveyCount.php?survey_id=${survey_id}&student_id=${student_id}`;
 
-    // POST request to send additional data
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(postData),
-    })
-      .then((response) => response.json())
-      .then((postDataResult) => {
-        // Handle the response from the POST request if needed
-        console.log('POST Request Result:', postDataResult);
+      return fetch(url, {
+          method: "GET",
       })
-      .catch((postErr) => {
-        console.error('Error in POST request:', postErr);
+      .then((res) => {
+          if (!res.ok) {
+              throw new Error('HTTP Response error');
+          }
+          return res.json();
+      })
+      .catch((err) => {
+          console.error('There was a problem with your fetch operation:', err);
+          return "Not Available"; 
       });
   };
 
 
-
+  //When the "View Feedback " button is clicked: update feedback count, then open the feedback modal
   const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
-    // postDataToApi(postData);
+    const { student_id, survey_id } = postData; 
+    fetchFeedbackCount(student_id, survey_id); 
     console.log("View Feedback Clicked")
     setOpenModal(true);
   };
 
 
- 
-
-
-
-  
-
-
-
-  /**
-   * The Home component renders a SideBar component and a list of Course components.
-   */
   return (
     <>
     <Modal open={openModal} onClose={()=>setOpenModal(false)}/>
