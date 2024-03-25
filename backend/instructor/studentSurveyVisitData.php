@@ -14,69 +14,63 @@ if (!$con) {
 
 if (!isset($_SESSION['id'])) {
     http_response_code(403);
-    echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
+    echo json_encode(["error" => "Forbidden: You must be logged in to access this page."]);
     exit();
 }
 
-$json_data = file_get_contents('php://input');
-$request_data = json_decode($json_data, true);
+$reviewer_id = isset($_GET['reviewer_id']) ? (int)$_GET['reviewer_id'] : null;
+$survey_id = isset($_GET['survey_id']) ? (int)$_GET['survey_id'] : null;
 
-if ($request_data === null) {
+if (empty($reviewer_id) || empty($survey_id)) {
     http_response_code(400);
-    echo json_encode(array("error" => "Invalid JSON data in request body."));
+    echo json_encode(["error" => "reviewer_id and survey_id are required."]);
     exit();
 }
 
-$reviewer_id = $request_data['reviewer_id'];
-$survey_id = $request_data['survey_id'];
-
-// Check if a related review exists
-$sql_review_exists = "SELECT 1 FROM reviews WHERE reviewer_id = ? AND survey_id = ?";
-$stmt_review_exists = $con->prepare($sql_review_exists);
-$stmt_review_exists->bind_param("ii", $reviewer_id, $survey_id);
-$stmt_review_exists->execute();
-$result_review_exists = $stmt_review_exists->get_result();
-
-if ($result_review_exists->num_rows > 0) {
-    // Proceed if the review exists
-    $current_timestamp = date('Y-m-d H:i:s');
-
-    // Check if a record exists in student_visit_data for the given reviewer_id and survey_id
-    $sql_check_visit = "SELECT visit_count FROM student_visit_data WHERE reviewer_id = ? AND survey_id = ?";
-    $stmt_check_visit = $con->prepare($sql_check_visit);
-    $stmt_check_visit->bind_param("ii", $reviewer_id, $survey_id);
-    $stmt_check_visit->execute();
-    $result_check_visit = $stmt_check_visit->get_result();
-
-    if ($result_check_visit->num_rows > 0) {
-        // If exists, update visit_count and last_visit
-        $row = $result_check_visit->fetch_assoc();
-        $visit_count = $row['visit_count'] + 1;
-
-        $sql_update_visit = "UPDATE student_visit_data SET visit_count = ?, last_visit = ? WHERE reviewer_id = ? AND survey_id = ?";
-        $stmt_update_visit = $con->prepare($sql_update_visit);
-        $stmt_update_visit->bind_param("isii", $visit_count, $current_timestamp, $reviewer_id, $survey_id);
-        $stmt_update_visit->execute();
-    } else {
-        // If not, insert new record with visit_count = 1
-        $visit_count = 1;
-
-        $sql_insert_visit = "INSERT INTO student_visit_data (reviewer_id, survey_id, visit_count, last_visit) VALUES (?, ?, ?, ?)";
-        $stmt_insert_visit = $con->prepare($sql_insert_visit);
-        $stmt_insert_visit->bind_param("iiis", $reviewer_id, $survey_id, $visit_count, $current_timestamp);
-        $stmt_insert_visit->execute();
-    }
-
-    $response = [
-        "reviewer_id" => $reviewer_id,
-        "survey_id" => $survey_id,
-        "count" => $visit_count,
-        "message" => "Student visit data updated successfully."
-    ];
+// Fetch survey name based on survey_id
+$survey_name = "";
+$stmt_survey_name = $con->prepare("SELECT name FROM surveys WHERE id = ?");
+$stmt_survey_name->bind_param("i", $survey_id);
+$stmt_survey_name->execute();
+$result_survey_name = $stmt_survey_name->get_result();
+if ($row = $result_survey_name->fetch_assoc()) {
+    $survey_name = $row['name'];
 } else {
-    // Review does not exist
-    $response = ["error" => "No related review found for given reviewer_id and survey_id."];
+    echo json_encode(["error" => "Survey not found with the provided survey_id."]);
+    exit();
 }
+
+// Check and update/insert into student_visit_data
+$current_timestamp = date('Y-m-d H:i:s');
+$stmt_check_visit = $con->prepare("SELECT visit_count FROM student_visit_data WHERE reviewer_id = ? AND survey_id = ?");
+$stmt_check_visit->bind_param("ii", $reviewer_id, $survey_id);
+$stmt_check_visit->execute();
+$result_check_visit = $stmt_check_visit->get_result();
+
+if ($result_check_visit->num_rows > 0) {
+    // Entry exists, update it
+    $row = $result_check_visit->fetch_assoc();
+    $visit_count = $row['visit_count'] + 1;
+
+    $stmt_update_visit = $con->prepare("UPDATE student_visit_data SET visit_count = ?, last_visit = ? WHERE reviewer_id = ? AND survey_id = ?");
+    $stmt_update_visit->bind_param("isii", $visit_count, $current_timestamp, $reviewer_id, $survey_id);
+    $stmt_update_visit->execute();
+} else {
+    // No entry exists, insert a new one
+    $visit_count = 1;
+
+    $stmt_insert_visit = $con->prepare("INSERT INTO student_visit_data (reviewer_id, survey_id, visit_count, last_visit) VALUES (?, ?, ?, ?)");
+    $stmt_insert_visit->bind_param("iiis", $reviewer_id, $survey_id, $visit_count, $current_timestamp);
+    $stmt_insert_visit->execute();
+}
+
+$response = [
+    "reviewer_id" => $reviewer_id,
+    "survey_id" => $survey_id,
+    "count" => $visit_count,
+    "survey_name" => $survey_name,
+    "message" => "Student visit data updated successfully."
+];
 
 mysqli_close($con);
 header('Content-Type: application/json');
