@@ -189,7 +189,7 @@ const ViewResults = ({
           const feedbackCount = fetchFeedbackCount(student_id, survey_id);
           
           // Add pairing "Feedback View Count": feedbackCount into the student's object
-          normalizedResults[i]["Feedback View Count"] = feedbackCount; // Assuming feedbackCount contains the count
+          normalizedResults[i]["Feedback view count"] = feedbackCount; // Assuming feedbackCount contains the count
         }
   
         // After updating all normalizedResults, set the state with the updated array
