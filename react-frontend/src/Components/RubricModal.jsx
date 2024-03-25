@@ -1,15 +1,50 @@
-import React, {useState} from 'react'
+import React, {useEffect,useState} from 'react'
 import pic from "../assets/UBLogo.png";
 import "../styles/rubricModal.css";
 
-const RubricModal = ({open,onClose}) => {
-    const tempData =[ {"criterion":"TEAMWORK","average":"3","median":"Accepts all assigned team roles, always completes assigned work"},
-                    {"criterion":"LEADERSHIP","average":"3","median":"Takes leadership role, is a good collaborator, always willing to assist teammates"},
-                    {"criterion":"PARTICIPATION","average":"3","median":"Attends and participates in all meetings, comes prepared, and clearly expresses well-developed ideas"},
-                    {"criterion":"PROFESSIONALISM","average":"3","median":"Always courteous to teammates, values teammates' perspectives, knowledge, and experience, and always willing to consider them"},
-                    {"criterion":"QUALITY","average":"3","median":"Frequently commits to shared documents, others rarely need to revise, debug, or fix their work"}
-                    ]
-    const tempFetch = [{"surveyName": "Peer Evaluation Feedback", "rubricData":tempData}]
+const RubricModal = ({open,onClose,modalData}) => {
+   
+    console.log("Modal Data");
+    console.log(modalData);
+
+  
+
+    const { student_id, survey_id, survey_name } = modalData; //obtrains the student_id, survey_id,and survey_name from modalData 
+    //Fetches data for the feedback form/ viewing results
+    const [feedback, setFeedback] = useState([]);
+
+
+    //GET request to backend to retrieve the feedback results using survey_id
+    const fetchFeedback = () => { 
+        const url = `${process.env.REACT_APP_API_URL_STUDENT}resultsEndpoint.php?survey=${survey_id}`;
+  
+        fetch(url, {
+            method: "GET",
+           
+        })
+            .then((res) => res.json())
+            .then((result) => {
+              
+                setFeedback(result); 
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+  
+    useEffect(() => {
+        fetchFeedback()
+    }, []);
+  
+    /**  feedback object is in the following format
+    {
+        "criterion1": {"average":x, "median":x},
+        "criterion2": {"average":x, "median":x},
+        "criterion3": {"average":x, "median":x},
+    }
+    */
+    console.log("FEEDBACK");
+    console.log(feedback);
 
 
 
@@ -22,36 +57,32 @@ const RubricModal = ({open,onClose}) => {
                     <button className = "CancelButton" onClick={onClose}>X</button>
                     <div className="courseHeader">
                 
-                            <h2>{tempFetch[0].surveyName}</h2>
+                            <h2>{survey_name}</h2>
                     
                     </div>
                     <table className="surveyTable">
                         
                             <thead>
-                        
-                            <tr>
+                                <tr>
 
-                                <th>Criterion</th>
-                                <th>Average Score</th>
-                                <th>Median</th>
-                                
-                            </tr>
+                                    <th>Criterion</th>
+                                    <th>Average Score</th>
+                                    <th>Median</th>
+                                    
+                                </tr>
                             </thead>
                             <tbody>
-                            {tempFetch[0].rubricData.map((item, index) => (
-                                    <tr key={index} className="survey-row">
-
-                                        <td>{item.criterion}</td>
-                                        <td>{item.average}</td>
-                                        <td>{item.median}</td>
-                                    
-                                    </tr>
+                                {Object.keys(feedback).map((criterion, index) => (
+                                        <tr key={index}>
+                                            <td>{criterion}</td>
+                                            <td>{feedback[criterion].average}</td>
+                                            <td>{feedback[criterion].median}</td>
+                                        </tr>
                                     ))}
+                            </tbody>
+                    </table>
 
-                                </tbody>
-                </table>
-
-        </div>
+                 </div>
             </div>
          </div>
  

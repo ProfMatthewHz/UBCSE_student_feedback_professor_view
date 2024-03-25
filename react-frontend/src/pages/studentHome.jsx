@@ -16,6 +16,7 @@ const StudentHome = () => {
   const [rubricPast, setRubricPast] = useState([]);
   const [rubricFuture, setRubricFuture] = useState([]);
   const [openModal,setOpenModal] = useState(false);
+  const [modalData, setModalData] = useState(null); 
   
   const navigate = useNavigate();
 
@@ -97,17 +98,14 @@ const StudentHome = () => {
 
 
   const fetchCurrent = () => {
-      // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
       const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`;
 
       fetch(url, {
           method: "GET",
-          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
       })
           .then((res) => res.json())
           .then((result) => {
-              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-              setRubricCurrent(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+              setRubricCurrent(result); 
           })
           .catch((err) => {
               console.log(err);
@@ -123,17 +121,14 @@ const StudentHome = () => {
 
   //past evals
   const fetchPast = () => {
-      // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
       const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=past`;
 
       fetch(url, {
           method: "GET",
-          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
       })
           .then((res) => res.json())
           .then((result) => {
-              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-              setRubricPast(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+              setRubricPast(result); 
           })
           .catch((err) => {
               console.log(err);
@@ -153,12 +148,10 @@ const StudentHome = () => {
 
       fetch(url, {
           method: "GET",
-          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
       })
           .then((res) => res.json())
           .then((result) => {
-              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-              setRubricFuture(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+              setRubricFuture(result); 
           })
           .catch((err) => {
               console.log(err);
@@ -176,7 +169,7 @@ console.log(rubricFuture)
     console.log("Feedback Count Updated");
     const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?type=current`; 
 
-    // POST request to send additional data
+  
     fetch(url, {
       method: 'POST',
       headers: {
@@ -186,7 +179,7 @@ console.log(rubricFuture)
     })
       .then((response) => response.json())
       .then((postDataResult) => {
-        // Handle the response from the POST request if needed
+      
         console.log('POST Request Result:', postDataResult);
       })
       .catch((postErr) => {
@@ -198,25 +191,17 @@ console.log(rubricFuture)
 
   const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
     // postDataToApi(postData);
-    console.log("View Feedback Clicked")
-    setOpenModal(true);
+    console.log("View Feedback Clicked");
+    console.log("postData");
+    console.log(postData);
+    setOpenModal(true); 
+    setModalData(postData); //sends postData to rubric modal
   };
 
 
- 
-
-
-
-  
-
-
-
-  /**
-   * The Home component renders a SideBar component and a list of Course components.
-   */
   return (
     <>
-    <Modal open={openModal} onClose={()=>setOpenModal(false)}/>
+    {modalData && <Modal open={openModal} onClose={() => setOpenModal(false)} modalData={modalData} />}
       <StudentSideBar />
       <div className="home--container">
         <div className="containerOfCourses">

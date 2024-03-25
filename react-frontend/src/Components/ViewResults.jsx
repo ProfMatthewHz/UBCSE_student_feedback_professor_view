@@ -202,6 +202,8 @@ const ViewResults = ({
         });
     };
   
+    console.log("Normalized results");
+    console.log(normalizedResults);
 
     return (
         <div className="viewresults-modal">
@@ -352,7 +354,9 @@ const ViewResults = ({
                                             header={header}
                                             sortable
                                             style={{width: `${100 / normalizedTableHeaders.length}%`}}
-                                        ></Column>
+                                        ></Column> 
+                                        // TODO: Add another column here for feedback count
+                                        
                                     );
                                 })}
                             </DataTable>
