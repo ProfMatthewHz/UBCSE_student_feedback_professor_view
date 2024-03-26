@@ -1,7 +1,7 @@
 import "../styles/sidebar.css";
 import React, { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import UBLogo from "../assets/UBLogo.png";
+
 import Dropdown from "./Dropdown";
 import Modal from "./Modal";
 import AddCourse from "../pages/AddCourse";
@@ -10,13 +10,6 @@ import AddRubric from "./AddRubric";
 
 
 /** Combining NavBar into Side Bar*/
-
-/**
- * The Sidebar component is a reusable component that displays a sidebar.
- * @param props
- * @returns {Element}
- * @constructor
- */
 
 function SideBar(props) {
 
@@ -35,58 +28,58 @@ function SideBar(props) {
   // Add course stuff
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
 
-    const handleAddCourseModal = () => {
-        setShowAddCourseModal(prevState => !prevState);
+  const handleAddCourseModal = () => {
+    setShowAddCourseModal(prevState => !prevState);
+  };
+
+  // + Add Rubric for Library Page
+  const [showAddRubricModal, setShowAddRubricModal] = useState(false);
+
+  const handleAddRubricModal = () => {
+    setShowAddRubricModal(prevState => !prevState);
+  }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const sidebar_items_positions = sidebar_items.map((item) => {
+        const connected_course = document.getElementById(item);
+        if (connected_course) {
+          return document.getElementById(item).offsetTop - 366;
+        }
+      });
+
+      for (let i = sidebar_items.length - 1; i >= 0; i--) {
+        if (scrollPosition >= sidebar_items_positions[i]) {
+          setActiveButton(sidebar_items[i] + "-Option");
+          break;
+        }
+      }
     };
 
-    // + Add Rubric for Library Page
-    const [showAddRubricModal, setShowAddRubricModal] = useState(false);
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [sidebar_items]);
 
-    const handleAddRubricModal = () => {
-        setShowAddRubricModal(prevState => !prevState);
+  useEffect(() => {
+    if (props.route === "/history") {
+      if (!dropdown_value) {
+        props.updateCurrentTerm("");
+      } else if (
+        dropdown_value &&
+        props.content_dictionary["Terms"][dropdown_value]
+      ) {
+        setTermContents(
+          Object.values(props.content_dictionary["Terms"][dropdown_value])
+        );
+        props.updateCurrentTerm(dropdown_value);
+      } else {
+        setTermContents([]);
+      }
     }
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollPosition = window.scrollY;
-            const sidebar_items_positions = sidebar_items.map((item) => {
-                const connected_course = document.getElementById(item);
-                if (connected_course) {
-                    return document.getElementById(item).offsetTop - 366;
-                }
-            });
-
-            for (let i = sidebar_items.length - 1; i >= 0; i--) {
-                if (scrollPosition >= sidebar_items_positions[i]) {
-                    setActiveButton(sidebar_items[i] + "-Option");
-                    break;
-                }
-            }
-        };
-        // Add event listener to the window
-        window.addEventListener("scroll", handleScroll);
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, [sidebar_items]);
-
-    useEffect(() => {
-        if (props.route === "/history") {
-            if (!dropdown_value) {
-                props.updateCurrentTerm("");
-            } else if (
-                dropdown_value &&
-                props.content_dictionary["Terms"][dropdown_value]
-            ) {
-                setTermContents(
-                    Object.values(props.content_dictionary["Terms"][dropdown_value])
-                );
-                props.updateCurrentTerm(dropdown_value);
-            } else {
-                setTermContents([]);
-            }
-        }
-    }, [dropdown_value, props.content_dictionary]);
+  }, [dropdown_value, props.content_dictionary]);
 
   return (
     <>
@@ -426,8 +419,10 @@ function SideBar(props) {
                     
               </li>
               <li>
-                <NavLink to="/about">About</NavLink>
-                    
+                <NavLink to="/about">About</NavLink>  
+              </li>
+              <li>
+                <NavLink to="/student">Student Side</NavLink>  
               </li>
             </ul>
 

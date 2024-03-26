@@ -9,7 +9,11 @@ import Modal from "./Modal";
 import Toast from "./Toast";
 import ViewResults from "./ViewResults";
 import {RadioButton} from "primereact/radiobutton";
-
+import Team from "../assets/pairingmodes/TEAM.png"
+import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
+import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
+import PM from "../assets/pairingmodes/PM.png"
+import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 /**
  * @component
  * @param {Object} course 
@@ -218,7 +222,7 @@ const Course = ({course, page}) => {
         return value;
     };
     const getInitialStatePairing = () => {
-        const value = "Each Team Member Reviewed By Entire Team";
+        const value = "TEAM";
         return value;
     };
 
@@ -226,6 +230,7 @@ const Course = ({course, page}) => {
     const [valuePairing, setValuePairing] = useState(getInitialStatePairing);
     const [multiplierNumber, setMultiplierNumber] = useState("one");
     const [validPairingModeForMultiplier, setMultiplier] = useState(false);
+    const [pairingImage, setPairingImage] = useState(Team);
 
     const handleChangeRubric = (e) => {
         setValueRubric(e.target.value);
@@ -233,6 +238,30 @@ const Course = ({course, page}) => {
     const handleChangeMultiplierNumber = (e) => {
         setMultiplierNumber(e.target.value);
     };
+
+    const handleUpdateImage = (e) => {
+        console.log(e.target.value);
+        switch(e.target.value) {
+            case 'TEAM':
+                setPairingImage(Team);
+                break;
+            case 'TEAM + SELF':
+                setPairingImage(TeamSelf);
+                break;
+            case 'TEAM + SELF + MANAGER':
+                setPairingImage(TeamSelfManager);
+                break;
+            case 'Single Pairs':
+                setPairingImage(SinglePairs);
+                break;
+            case 'PM':
+                setPairingImage(PM);
+                break;
+            default:
+                console.log('Unexpected pairing mode: ${pairingMode}');
+                break;
+        }
+    }
     const handleChangePairing = (e) => {
         var boolean = false;
 
@@ -242,7 +271,8 @@ const Course = ({course, page}) => {
         if (multiplierCheckArray.includes(e.target.value)) {
             boolean = true;
         }
-
+        
+        handleUpdateImage(e);
         setValuePairing(e.target.value);
         setMultiplier(boolean);
     };
@@ -1651,8 +1681,8 @@ const Course = ({course, page}) => {
                                             className={(StartDateGreaterError || StartAfterCurrentError || emptyStartDateError || startDateBoundError || startDateBound1Error) ? "add-survey-input-error" : null}
                                             id="start-date"
                                             type="date"
-                                            min="2023-08-31"
-                                            max="2023-12-31"
+                                            min="2024-03-09"
+                                            max="2024-12-31"
                                             placeholder="Enter Start Date"
                                         />
                                     </label>
@@ -1713,8 +1743,8 @@ const Course = ({course, page}) => {
                                             className={(emptyEndDateError || endDateBoundError || endDateBound1Error) ? "add-survey-input-error" : null}
                                             id="end-date"
                                             type="date"
-                                            min="2023-08-31"
-                                            max="2023-12-31"
+                                            min="2024-03-09"
+                                            max="2024-12-31"
                                             placeholder="Enter End Date"
                                         />
                                     </label>
@@ -1757,17 +1787,24 @@ const Course = ({course, page}) => {
                             ))}
                         </select>
                     </label>
-                    <label className="add-survey--label" for="subject-line">
-                        Pairing Modes
-                        <select
-                            value={valuePairing}
-                            onChange={handleChangePairing}
-                            id="pairing-mode"
-                        >
-                            {pairingModesNames.map((pairing) => (
-                                <option value={pairing}>{pairing}</option>
-                            ))}
-                        </select>
+                    <label className="add-survey--label-pairing" for="subject-line">
+                        <div className="drop-down-wrapper">
+                            Pairing Modes
+                            <select className="pairing"
+                                value={valuePairing}
+                                onChange={handleChangePairing}
+                                id="pairing-mode"
+                            >
+                                {pairingModesNames.map((pairing) => (
+                                    <option className= "pairing-option" value={pairing}>{pairing}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="pairing-mode-img-wrapper">
+                            <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
+                        </div>
+                        
+                        
                     </label>
                     {validPairingModeForMultiplier && (
                         <label className="add-survey--label" for="subject-line">

@@ -160,8 +160,9 @@
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
       $e = new DateTime($row[4]);
+      $s = new DateTime($row[3]);
       $fully_submitted = ($row[5] == $row[6]);
-      $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false);
+      $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false, $s);
     }
     $stmt->close();
 
@@ -179,8 +180,9 @@
         $retVal[$row[2]] = $survey;
       } else {
         $e = new DateTime($row[4]);
+        $s = new DateTime($row[3]);
         $evaluated = ($row[5] > 0);
-        $retVal[$row[2]] = array($row[0], $row[1], $e, false, false, true, $evaluated);
+        $retVal[$row[2]] = array($row[0], $row[1], $e, false, false, true, $evaluated, $s);
       }
     }
     $stmt->close();
@@ -197,8 +199,9 @@
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
       $e = new DateTime($row[4]);
+      $s = new DateTime($row[3]);
       $fully_submitted = ($row[5] == $row[6]);
-      $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false);
+      $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false, $s);
     }
     $stmt->close();
     // Sort the array to be in chronological order
@@ -214,11 +217,55 @@
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
       $s = new DateTime($row[3]);
-      $retVal[$row[2]] = array($row[0], $row[1], $s, true, false, false, false);
+      $e = new DateTime($row[4]);
+      $retVal[$row[2]] = array($row[0], $row[1], $s, true, false, false, false, $e);
     }
     $stmt->close();
     // Sort the array to be in chronological order
     uasort($retVal, 'chronologicalComparator');
     return $retVal;
+  }
+
+
+  function getCompletionRate($con, $survey_id) {
+
+    $reviewIds = [];
+    // get an array of review_ids within reviews table that correspond to survey_id //
+    $sql = "SELECT id FROM reviews WHERE survey_id = ?";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("i", $survey_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+      $reviewIds[] = $row['id'];
+    }
+
+    $stmt->close();
+    $denominator = count($reviewIds);
+
+    if ($denominator == 0) {
+        return 0;
+    }
+
+    $numerator = 0;
+    // get the number of rows in Evals that have a review id in reviewIDs
+    $placeholders = implode(',', array_fill(0, count($reviewIds), '?'));
+    $sql2 = "SELECT COUNT(*) FROM evals WHERE review_id IN ($placeholders)";
+    $stmt2 = $con->prepare($sql2);
+    $types = str_repeat('i', count($reviewIds));
+    $stmt2->bind_param($types, ...$reviewIds);
+    $stmt2->execute();
+    $stmt2->bind_result($numerator);
+    $stmt2->fetch();
+    $stmt2->close();
+
+    if ($numerator == 0) {
+        return 0;
+    }
+
+    $compRate = $numerator/$denominator;
+    return $compRate;
+
   }
 ?>
