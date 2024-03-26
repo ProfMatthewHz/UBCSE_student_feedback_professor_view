@@ -8,37 +8,6 @@ const SurveyPreview = () => {
     const [rubricData, setRubricData] = useState(null);
     console.log(location.state.survey_name);
     
-    // const postData = async () => {
-    //     try {
-    //       const response = await fetch(process.env.REACT_APP_API_URL + "lib/getRubricTable.php", {
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/x-www-form-urlencoded',
-    //           // Add any additional headers if needed
-    //         },
-    //         body: new URLSearchParams({
-    //           rubric: '1', // Example rubric ID, replace with actual data
-    //           // Add any other POST data required by the PHP file
-    //         }),
-    //       });
-      
-    //       if (!response.ok) {
-    //         throw new Error('Network response was not ok');
-    //       }
-      
-    //       const jsonData = await response.json();
-    //       console.log(jsonData); // Handle the response data here
-    //       console.log(jsonData.topics[0].question)
-    //       setRubricData(jsonData);
-    //     } catch (error) {
-    //       console.error('Error:', error);
-    //     }
-    //   };
-      
-    //   useEffect(() => {
-    //     postData();
-    //     console.log(rubricData);
-    //   }, []); // Call postData only once when component mounts
     useEffect(() => {
       const postData = async () => {
           try {
@@ -85,9 +54,6 @@ const SurveyPreview = () => {
                 <SurveyFormRow
                     x={rubricData}
                 />
-                {/* <SurveyFormRow
-                    x={rubricData}
-                /> */}
             </div>
         </div>
     )
