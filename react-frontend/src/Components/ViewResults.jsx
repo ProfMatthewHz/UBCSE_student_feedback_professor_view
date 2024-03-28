@@ -13,6 +13,20 @@ const ViewResults = ({
                          course,
                      }) => {
     /* Viewing Types of Survey Results */
+    var fakeData = [
+        {"Average normalized result": 1.1276065981948336,
+        "Reviewee name (email)": "abby (abby@buffalo.edu)"},
+        {"Average normalized result": 1.0460628695922816,
+        "Reviewee name (email)": "bob (bob@buffalo.edu)"},
+        {"Average normalized result": 0.8586990351696233,
+        "Reviewee name (email)": "gill (gill@buffalo.edu)"}
+    ];
+
+    const fakeFetchData = {"abby": {"count":12},"bob": {"count":31},"gill": {"count":13}};
+
+
+    
+
 
     const [showRawSurveyResults, setShowRawSurveyResults] = useState(null); // For Raw Results
     const [rawResultsHeaders, setRawResultsHeaders] = useState(null); // For Raw Results
@@ -157,7 +171,7 @@ const ViewResults = ({
     //API call to get feedback view count for each student
     const fetchFeedbackCount = (student_id, survey_id) => {
         // Send student_id and survey_id back to student
-        const url = `${process.env.REACT_APP_API_URL}studentSurveyCount.php?survey_id=${survey_id}&student_id=${student_id}`;
+        const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?survey_id=${survey_id}&student_id=${student_id}`;
     
         return fetch(url, {
             method: "GET",
@@ -168,6 +182,11 @@ const ViewResults = ({
             }
             return res.json();
         })
+        .then((data) => {
+            // Val of "count" from the JSON response
+            const count = data.count;
+            return count;
+        })
         .catch((err) => {
             console.error('There was a problem with your fetch operation:', err);
             return "Not Available"; 
@@ -175,26 +194,44 @@ const ViewResults = ({
     };
   
 
+    const fakeFetch = (student_id, survey_id) => {
+        var dict = fakeFetchData[student_id]
+        return dict["count"]
+
+    }
 
     //call the fetchFeebackCount for each student and update the normalizedResults arr
     const callFetchFeedbackCount = (survey_id) => {
         // Iterate thru each student object in normalizedResults, obtain that student's feedback view count from database
-        for (let i = 0; i < normalizedResults.length; i++) {
+        for (let i = 0; i < fakeData.length; i++) {
 
           //obtains student_id from the username portion of the email
-          const email = normalizedResults[i]["Reviewee name (email)"];
-          const atIndex = email.indexOf('@');
-          const student_id = email.substring(0, atIndex);
+          //const email = normalizedResults[i]["Reviewee name (email)"];
+          const email = fakeData[i]["Reviewee name (email)"];
+          const student_id = email.split('(')[1].split('@')[0];
           
-          const feedbackCount = fetchFeedbackCount(student_id, survey_id);
+          //const feedbackCount = fetchFeedbackCount(student_id, survey_id);
+          var feedbackCount = fakeFetch(student_id,survey_id)
           
           // Add pairing "Feedback View Count": feedbackCount into the student's object
-          normalizedResults[i]["Feedback view count"] = feedbackCount; // Assuming feedbackCount contains the count
+         //normalizedResults[i]["Feedback view count"] = feedbackCount; // Assuming feedbackCount contains the count
+        fakeData[i]["Feedback view count"] = feedbackCount
         }
+
   
         // After updating all normalizedResults, set the state with the updated array
-        setNormalizedResults([...normalizedResults]);
+        //setNormalizedResults([...normalizedResults]);
     }
+
+    useEffect(() => {
+        callFetchFeedbackCount("123");
+        
+    }, []);
+
+
+    console.log("Fake results");
+    console.log(fakeData);
+
  
     console.log("Normalized Results");
     console.log(normalizedResults);
