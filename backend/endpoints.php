@@ -51,7 +51,8 @@ if(count($past_surveys) > 0) {
             'courseName' => $value[0],
             'surveyName' => $value[1],
             'closingDate' => $value[2],
-            'openingDate' => $value[7]
+            'openingDate' => $value[7],
+            'email' => $student_id."buffalo.edu"
         ];
         $pastSurveysResponse[] = $pastSurveyData;
     }
