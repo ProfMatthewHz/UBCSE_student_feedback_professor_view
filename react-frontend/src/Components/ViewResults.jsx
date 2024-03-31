@@ -23,10 +23,7 @@ const ViewResults = ({
     const [normalizedTableHeaders, setNormalizedTableHeaders] = useState(null); // For Normalized Results
     const [normalizedResults, setNormalizedResults] = useState([]); // For Normalized Results
     const [currentCSVData, setCurrentCSVData] = useState(null); // For CSV Download
-    var countFromAPI = 0;
-    
-   
-   
+    const [feedbackCountData, setFeedbackCountData] = useState([]); //For Feedback View Count
     /**
      * Maps headers to values
      * @param headers
@@ -47,8 +44,6 @@ const ViewResults = ({
         });
     };
 
-
-
     /**
      * Handles the change of the selected survey results modal
      * @param surveyid
@@ -67,7 +62,7 @@ const ViewResults = ({
         })
             .then((res) => res.json())
             .then((result) => {
-                if (surveytype === "raw-full") {
+                if (surveytype == "raw-full") {
                    
                     setShowNormalizedSurveyResults(null);
                     setShowRawSurveyResults(result.slice(1));
@@ -124,29 +119,19 @@ const ViewResults = ({
                        
                         console.log(labels);
                         console.log(result);
-                        
                         const mappedNormalizedResults = mapHeadersToValues(
                             result[0],
                             result.slice(1)
                         );
                         setCurrentCSVData(result);
                         setShowNormalizedSurveyResults(labels);
-                      
                         setNormalizedResults(mappedNormalizedResults);
-
-                        if (mappedNormalizedResults.length > 0){ //update the normalizedResults map to include feedback count for each student
-                            callFetchFeedbackCount(surveyid,mappedNormalizedResults);
-                        }
-
-                        console.log("mapped normalized results: ", mappedNormalizedResults)
                         setNormalizedTableHeaders(result[0]);
-                      
                     } else {
                         setCurrentCSVData(null);
                         setShowNormalizedSurveyResults(true);
                     }
                 }
-                
             })
             .catch((err) => {
                 console.log(err);
@@ -163,7 +148,6 @@ const ViewResults = ({
         setShowNormalizedSurveyResults(null);
     }, [viewingCurrentSurvey]);
 
-    
     useEffect(() => {
         console.log(showRawSurveyResults);
         // console.log(rawResultsRecords)
@@ -171,13 +155,11 @@ const ViewResults = ({
 
 
     
-    // API call to get feedback view count for each student
-    const fetchFeedbackCount = (email, survey_id) => {
+    //API call to get feedback view count for each student
+    const fetchFeedbackCount = (student_id, survey_id) => {
         // Send student_id and survey_id back to student
-
-        const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?email=${encodeURIComponent(email)}&survey_id=${survey_id}`;
-       
-
+        const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?survey_id=${survey_id}&student_id=${student_id}`;
+    
         return fetch(url, {
             method: "GET",
         })
@@ -187,12 +169,12 @@ const ViewResults = ({
             }
             return res.json();
         })
-        .then((result) => {
-        // Value of "count" from the JSON response
-           console.log("Fetch data: ", result["count"]);
-           countFromAPI=result["count"];
-
-        
+        .then((data) => {
+            // Val of "count" from the JSON response
+            const count = data.count;
+            console.log("API CALL COUNT: ");
+            console.log(count)
+            return count;
         })
         .catch((err) => {
             console.error('There was a problem with your fetch operation:', err);
@@ -201,47 +183,39 @@ const ViewResults = ({
     };
   
 
-    
-
-
-    const callFetchFeedbackCount = async (survey_id,results) => {
-        // Iterate through each student object in normalizedResults and fetch feedback count
-        for (let i = 0; i < results.length; i++) {
-            const email = results[i]["Reviewee name (email)"];
-            const parts = email.split(' ');
-            const emailPart = parts[parts.length - 1];
-            const cleanedEmail = emailPart.replace(/[()]/g, '');
-    
-            try {
-                // Fetch feedback count for the current student
-                const result = await fetchFeedbackCount(cleanedEmail, survey_id);
-                // Update "Feedback view count" in normalizedResults
-                results[i]["Feedback view count"] = countFromAPI;
-            } catch (error) {
-                console.error('Error fetching feedback count:', error);
-                // Handle error if necessary
-            }
-        }
-    
-        // After updating all normalizedResults, set the state with the updated array
-        setNormalizedResults([...results]);
-        console.log("New Normalized Results", results);
-    };
-
    
 
+    //call the fetchFeebackCount for each student and update the normalizedResults arr
+    const callFetchFeedbackCount = (survey_id) => {
+        console.log(" Call Fetch Feedback Count Called");
+        console.log("Normalized Size:");
+        console.log(normalizedResults.length);
+        // Iterate thru each student object in normalizedResults, obtain that student's feedback view count from database
+        for (let i = 0; i < normalizedResults.length; i++) {
 
-
-
-    useEffect(() => {
-        if (normalizedResults.length > 0) {
-            callFetchFeedbackCount(viewingCurrentSurvey.id);
+          //obtains student_id from the username portion of the email
+          const email = normalizedResults[i]["Reviewee name (email)"];
+          const student_id = email.split('(')[1].split('@')[0];
+          
+          const feedbackCount = fetchFeedbackCount(student_id, survey_id);
+         
+          
+          // Add pairing "Feedback View Count": feedbackCount into the student's object
+         normalizedResults[i]["Feedback view count"] = feedbackCount; // Assuming feedbackCount contains the count
+      
         }
-    }, []);
-    
+
+  
+        // After updating all normalizedResults, set the state with the updated array
+        setNormalizedResults([...normalizedResults]);
+        console.log("New Normalized Results");
+        console.log(normalizedResults);
+    }
+
     
 
-
+ 
+  
     return (
         <div className="viewresults-modal">
             <div className="viewresults-modal-content">
@@ -280,9 +254,9 @@ const ViewResults = ({
                                 : "survey-result--option"
                         }
                         onClick={() =>
-                           { handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average");  
-                           console.log("VIEW FEEDBACK CLICKED!!") 
-                        } 
+                           { handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average"); 
+                            //callFetchFeedbackCount(viewingCurrentSurvey.id);
+                        } //updates normalizedResults array with feedback view count info added in for each student
                         }
                     >
                         Normalized Results
@@ -360,14 +334,11 @@ const ViewResults = ({
                             >
                                 Download Results
                             </CSVLink>
-                            {console.log("After 2 normalized results: ", normalizedResults)}
                         </div>
                         <div className="viewresults-modal--barchart-container">
-                        {/* {updateNormalizeFlag === 0 && callFetchFeedbackCount(viewingCurrentSurvey.id)}
-                         */}
+                        {callFetchFeedbackCount(viewingCurrentSurvey.id)}
                             <BarChart survey_data={showNormalizedSurveyResults}/>
-                           
-                          
+                            {/* Table for normalized averages*/}
                             <DataTable
                                 value={normalizedResults}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"

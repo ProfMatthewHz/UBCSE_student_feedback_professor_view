@@ -172,9 +172,9 @@ console.log("Future Surveys")
 console.log(rubricFuture)
 
   //API call to update view count in database for the specified student
-const fetchFeedbackCount = (email, survey_id) => {
+const fetchFeedbackCount = (student_id, survey_id) => {
       // Send student_id and survey_id back to student
-      const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?email=${encodeURIComponent(email)}&survey_id=${survey_id}`;
+      const url = `${process.env.REACT_APP_API_URL}studentSurveyCount.php?survey_id=${survey_id}&student_id=${student_id}`;
 
       return fetch(url, {
           method: "GET",
@@ -194,8 +194,8 @@ const fetchFeedbackCount = (email, survey_id) => {
 
   //When the "View Feedback " button is clicked: update feedback count, then open the feedback modal
   const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
-    const { email, survey_id } = postData; 
-    fetchFeedbackCount(email, survey_id); 
+    const { student_id, survey_id } = postData; 
+    fetchFeedbackCount(student_id, survey_id); 
     console.log("View Feedback Clicked")
     setOpenModal(true);
   };
@@ -350,9 +350,9 @@ const fetchFeedbackCount = (email, survey_id) => {
                                 </td>
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
-                                <td><button>View Submission</button></td>
+                                {/* <td><button>View Submission</button></td> */}
                                 <td></td>
-                               <td><button onClick={() => combinedClickHandler({"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID, "email": item.email})}>View Feedback</button></td>
+                               <td><button onClick={() => combinedClickHandler({"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID})}>View Feedback</button></td>
                                
                               </tr>
                             ))}
