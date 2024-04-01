@@ -14,12 +14,12 @@
     exit();
   }
   $id = $_SESSION['student_id'];
-  
   $con = connectToDatabase();
 
   // Verify that the survey exists
   if (!empty($_GET) && isset($_GET) && isset($_GET['survey'])) {
     $survey = $_GET['survey'];
+    // $survey = '47';
   } else {
     echo "Bad Request: Missing GET parameters";
     http_response_code(400);
@@ -57,6 +57,12 @@
 
   // Now redirect the user to the peer evaluation form
   $loc_string = "Location: ".SITE_HOME."/peerEvalForm.php";
-  header($loc_string);
+  // header($loc_string);
+  $data = array(
+    "topics" => $_SESSION['mc_topics'],
+    "answers" => $_SESSION['mc_answers'],
+    "freeform" => $_SESSION['ff_topics']
+  );
+  echo json_encode($data);
   exit();
 ?>

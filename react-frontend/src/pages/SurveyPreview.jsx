@@ -16,6 +16,7 @@ const SurveyPreview = () => {
                   headers: {
                       'Content-Type': 'application/x-www-form-urlencoded',
                       // Add any additional headers if needed
+                      
                   },
                   body: new URLSearchParams({
                       rubric: location.state.rubric_id, // Example rubric ID, replace with actual data
@@ -38,6 +39,7 @@ const SurveyPreview = () => {
 
       postData();
   }, []);
+
 
   // Render null if rubricData is not set, otherwise render the page content
   if (rubricData === null) {
