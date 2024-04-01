@@ -11,12 +11,14 @@ const RubricModal = ({open,onClose,modalData}) => {
 
     const { student_id, survey_id, survey_name } = modalData; //obtrains the student_id, survey_id,and survey_name from modalData 
     //Fetches data for the feedback form/ viewing results
+   
     const [feedback, setFeedback] = useState([]);
 
 
     //GET request to backend to retrieve the feedback results using survey_id
     const fetchFeedback = () => { 
         const url = `${process.env.REACT_APP_API_URL_STUDENT}resultsEndpoint.php?survey=${survey_id}`;
+        console.log("url: ", url);
   
         fetch(url, {
             method: "GET",
@@ -45,7 +47,9 @@ const RubricModal = ({open,onClose,modalData}) => {
     */
     console.log("FEEDBACK");
     console.log(feedback);
-
+    console.log("feedback length: ", feedback.length)
+    // setFeedback({TEAMWORK : {average: 2.67, median: "Accepts all assigned team roles, always completes assigned work"}, LEADERSHIP: {average: 1.67, median: "Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates"}, PARTICIPATION: {average: 1.33, median: "Occasionally misses/doesn't participate in meeting…ared for meetings, offers unclear/unhelpful ideas"}, PROFESSIONALISM: {average: 1, median: "Often discourteous and/or openly critical of teammates, doesn't listen to alternative perspectives"}, QUALITY: {average: 1.67, median: "Occasionally commits to shared documents, others s…etimes needed to revise, debug, or fix their work"}})
+    
 
 
     if (!open) return null
@@ -72,7 +76,8 @@ const RubricModal = ({open,onClose,modalData}) => {
                                 </tr>
                             </thead>
                             <tbody>
-                            {feedback.length > 0 ? (
+                    
+                            {feedback.length !== 0 ? (
                                 Object.keys(feedback).map((criterion, index) => (
                                         <tr key={index}>
                                             <td>{criterion}</td>

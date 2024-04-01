@@ -165,32 +165,45 @@ console.log("Future Surveys")
 console.log(rubricFuture)
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
-  const postDataToApi = (postData) => {
-    console.log("Feedback Count Updated");
-    const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?type=current`; 
+  const fetchFeedbackCount = (email, survey_id) => {
+            // Send student_id and survey_id back to student
 
-  
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(postData),
-    })
-      .then((response) => response.json())
-      .then((postDataResult) => {
-      
-        console.log('POST Request Result:', postDataResult);
-      })
-      .catch((postErr) => {
-        console.error('Error in POST request:', postErr);
-      });
-  };
+            const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?email=${encodeURIComponent(email)}&survey_id=${survey_id}`;
+          
+
+            return fetch(url, {
+                method: "GET",
+            })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error('HTTP Response error');
+                }
+                return res.json();
+            })
+            .then((result) => {
+
+            })
+            .catch((err) => {
+                console.error('There was a problem with your fetch operation:', err);
+                return "Not Available"; 
+            });
+        };
+
+
+
+
+
+
+
+useEffect(() => {
+    fetchFeedbackCount()
+}, []);
+
 
 
 
   const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
-    // postDataToApi(postData);
+    fetchFeedbackCount(postData["email"],postData["survey_id"])
     console.log("View Feedback Clicked");
     console.log("postData");
     console.log(postData);
@@ -350,7 +363,7 @@ console.log(rubricFuture)
                                 <td>{item.surveyName}</td>
                                 {/* <td><button>View Submission</button></td> */}
                                 <td></td>
-                               <td><button onClick={() => combinedClickHandler({"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID})}>View Feedback</button></td>
+                               <td><button onClick={() => combinedClickHandler({"email":item.email,"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID})}>View Feedback</button></td>
                                
                               </tr>
                             ))}
