@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($id)) {
         $_SESSION['id'] = $id;
         $_SESSION["surveyTypes"] = getSurveyTypes($con);
-        $_SESSION['redirect'] = 0;
+        $_SESSION['redirect'] = 2;
         // redirect the instructor to the next page
         http_response_code(302);
         // header("Location: ".INSTRUCTOR_HOME."surveys.php");
