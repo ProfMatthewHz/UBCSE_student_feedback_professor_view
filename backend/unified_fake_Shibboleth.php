@@ -39,11 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($id)) {
         $_SESSION['id'] = $id;
         $_SESSION["surveyTypes"] = getSurveyTypes($con);
+        $_SESSION['redirect'] = 0;
         // redirect the instructor to the next page
         http_response_code(302);
         // header("Location: ".INSTRUCTOR_HOME."surveys.php");
-        //    header("Location: "."http://localhost/StudentSurvey/react-frontend/build");
-        header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
+            header("Location: "."http://localhost/StudentSurvey/react-frontend/build");
+//        header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
         exit();
     }
 
@@ -52,9 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         session_regenerate_id();
         $_SESSION['student_id'] = $id_and_name[0];
         $_SESSION['ubit'] = $_POST['UBIT'];
+        $_SESSION['redirect'] = 1;
         http_response_code(302);
-        header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
+//        header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
         // http://localhost/StudentSurvey/react-frontend/build //
+        header("Location: "."http://localhost/StudentSurvey/react-frontend/build");
         exit();
     }
 
