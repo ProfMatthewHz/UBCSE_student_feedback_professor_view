@@ -99,16 +99,18 @@ const StudentHome = () => {
 
   const fetchCurrent = () => {
       const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`;
+      console.log("Current Url: ", url);
 
       fetch(url, {
           method: "GET",
       })
           .then((res) => res.json())
           .then((result) => {
+              console.log("Current result: ", result);
               setRubricCurrent(result); 
           })
           .catch((err) => {
-              console.log(err);
+            console.error('There was a problem with your fetch operation:', err);
           });
   };
 
@@ -122,16 +124,17 @@ const StudentHome = () => {
   //past evals
   const fetchPast = () => {
       const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=past`;
-
+      console.log("Past Url: ", url);
       fetch(url, {
           method: "GET",
       })
           .then((res) => res.json())
           .then((result) => {
+            console.log("Past result: ", result);
               setRubricPast(result); 
           })
           .catch((err) => {
-              console.log(err);
+            console.error('There was a problem with your fetch operation:', err);
           });
   };
 
@@ -145,16 +148,17 @@ const StudentHome = () => {
   const fetchFuture = () => {
       // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
       const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=upcoming`;
-
+      console.log("Future Url: ", url);
       fetch(url, {
           method: "GET",
       })
           .then((res) => res.json())
           .then((result) => {
+            console.log("Current Fetch: ", result);
               setRubricFuture(result); 
           })
           .catch((err) => {
-              console.log(err);
+            console.error('There was a problem with your fetch operation:', err);
           });
   };
 
@@ -191,13 +195,14 @@ console.log(rubricFuture)
 
 
 
-  const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
-    // postDataToApi(postData);
-    console.log("View Feedback Clicked")
-    setOpenModal(true);
-  };
-
-
+    const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
+      fetchFeedbackCount(postData["email"],postData["survey_id"])
+      console.log("View Feedback Clicked");
+      console.log("postData");
+      console.log(postData);
+      setOpenModal(true); 
+      setModalData(postData); //sends postData to rubric modal
+    };
  
 
 
@@ -360,7 +365,7 @@ console.log(rubricFuture)
                                 <td>{item.surveyName}</td>
                                 {/* <td><button>View Submission</button></td> */}
                                 <td></td>
-                               <td><button onClick={() => combinedClickHandler({"email":item.email,"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID})}>View Feedback</button></td>
+                               <td><button onClick={() => combinedClickHandler({"email":item.email,"survey_name":item.surveyName,"survey_id":item.surveyID})}>View Feedback</button></td>
                                
                               </tr>
                             ))}
