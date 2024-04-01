@@ -16,6 +16,7 @@ const StudentHome = () => {
   const [rubricPast, setRubricPast] = useState([]);
   const [rubricFuture, setRubricFuture] = useState([]);
   const [openModal,setOpenModal] = useState(false);
+  const [modalData, setModalData] = useState(null); 
   
   const navigate = useNavigate();
 
@@ -97,17 +98,14 @@ const StudentHome = () => {
 
 
   const fetchCurrent = () => {
-      // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
       const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`;
 
       fetch(url, {
           method: "GET",
-          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
       })
           .then((res) => res.json())
           .then((result) => {
-              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-              setRubricCurrent(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+              setRubricCurrent(result); 
           })
           .catch((err) => {
               console.log(err);
@@ -123,17 +121,14 @@ const StudentHome = () => {
 
   //past evals
   const fetchPast = () => {
-      // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
       const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=past`;
 
       fetch(url, {
           method: "GET",
-          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
       })
           .then((res) => res.json())
           .then((result) => {
-              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-              setRubricPast(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+              setRubricPast(result); 
           })
           .catch((err) => {
               console.log(err);
@@ -153,12 +148,10 @@ const StudentHome = () => {
 
       fetch(url, {
           method: "GET",
-          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
       })
           .then((res) => res.json())
           .then((result) => {
-              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-              setRubricFuture(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+              setRubricFuture(result); 
           })
           .catch((err) => {
               console.log(err);
@@ -171,39 +164,54 @@ const StudentHome = () => {
 console.log("Future Surveys")
 console.log(rubricFuture)
 
-  //API call to update view count in database for the specified student
-const fetchFeedbackCount = (student_id, survey_id) => {
-      // Send student_id and survey_id back to student
-      const url = `${process.env.REACT_APP_API_URL}studentSurveyCount.php?survey_id=${survey_id}&student_id=${student_id}`;
+  //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
+  const fetchFeedbackCount = (email, survey_id) => {
+            // Send student_id and survey_id back to student
 
-      return fetch(url, {
-          method: "GET",
-      })
-      .then((res) => {
-          if (!res.ok) {
-              throw new Error('HTTP Response error');
-          }
-          return res.json();
-      })
-      .catch((err) => {
-          console.error('There was a problem with your fetch operation:', err);
-          return "Not Available"; 
-      });
-  };
+            const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?email=${encodeURIComponent(email)}&survey_id=${survey_id}`;
+          
+
+            return fetch(url, {
+                method: "GET",
+            })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error('HTTP Response error');
+                }
+                return res.json();
+            })
+            .then((result) => {
+
+            })
+            .catch((err) => {
+                console.error('There was a problem with your fetch operation:', err);
+                return "Not Available"; 
+            });
+        };
 
 
-  //When the "View Feedback " button is clicked: update feedback count, then open the feedback modal
+
   const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
-    const { student_id, survey_id } = postData; 
-    fetchFeedbackCount(student_id, survey_id); 
+    // postDataToApi(postData);
     console.log("View Feedback Clicked")
     setOpenModal(true);
   };
 
 
+ 
+
+
+
+  
+
+
+
+  /**
+   * The Home component renders a SideBar component and a list of Course components.
+   */
   return (
     <>
-    <Modal open={openModal} onClose={()=>setOpenModal(false)}/>
+    {modalData && <Modal open={openModal} onClose={() => setOpenModal(false)} modalData={modalData} />}
       <StudentSideBar />
       <div className="home--container">
         <div className="containerOfCourses">
@@ -352,7 +360,7 @@ const fetchFeedbackCount = (student_id, survey_id) => {
                                 <td>{item.surveyName}</td>
                                 {/* <td><button>View Submission</button></td> */}
                                 <td></td>
-                               <td><button onClick={() => combinedClickHandler({"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID})}>View Feedback</button></td>
+                               <td><button onClick={() => combinedClickHandler({"email":item.email,"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID})}>View Feedback</button></td>
                                
                               </tr>
                             ))}

@@ -67,7 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     session_regenerate_id();
     $_SESSION['student_id'] = $id_and_name[0];
-    header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
+//    header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
+    header("Location: ". " http://localhost/StudentSurvey/backend/courseSelect.php");
     // http://localhost/StudentSurvey/react-frontend/build //
     exit();
 
