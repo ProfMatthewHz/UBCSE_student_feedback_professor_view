@@ -37,6 +37,7 @@ $response = [];
 
 
 $student_id = $_SESSION['student_id'];
+$ubit = trim($_SESSION['ubit']);
 $past_surveys = getClosedSurveysForTerm($con, $term, $year, $_SESSION['student_id']);
 $current_surveys = getCurrentSurveys($con, $_SESSION['student_id']);
 $upcoming_surveys = getUpcomingSurveys($con, $_SESSION['student_id']);
@@ -52,7 +53,7 @@ if(count($past_surveys) > 0) {
             'surveyName' => $value[1],
             'closingDate' => $value[2],
             'openingDate' => $value[7],
-            'email' => $student_id."buffalo.edu"
+            'email' => $ubit."@buffalo.edu"
         ];
         $pastSurveysResponse[] = $pastSurveyData;
     }
