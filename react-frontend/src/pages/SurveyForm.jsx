@@ -8,15 +8,28 @@ const SurveyForm = () => {
   const [groupMembers, setGroupMembers] = useState(null);
   const [groupMemberIndex, setGroupMemberIndex] = useState(0);
   const [buttonText, setButtonText] = useState('NEXT');
+  const [showPrevious, setShowPrevious] = useState(false)
   const survey_id = location.state.survey_id + "";
   
-  const buttonClickHandler = () => {
+  const nextButtonClickHandler = () => {
     if (buttonText === 'FINISH') {
       return; // Return early if the button text is already 'FINISH'
     }  
     setGroupMemberIndex(groupMemberIndex + 1);
+    setShowPrevious(true);
+    
     if (groupMemberIndex >= groupMembers.length - 2) {
       setButtonText('FINISH');
+    }
+  }
+
+  const previousButtonClickHandler = () => {
+    setButtonText('NEXT');
+    if (groupMemberIndex === 1) {
+      setShowPrevious(false);
+      setGroupMemberIndex(0);
+    } else {
+      setGroupMemberIndex(groupMemberIndex - 1);
     }
   }
   useEffect(() => {
@@ -67,7 +80,11 @@ const SurveyForm = () => {
             x={surveyData}
         />
       </div>
-      <button onClick={buttonClickHandler}>{buttonText}</button>
+      {showPrevious && (
+        <button className="previousButton" onClick={previousButtonClickHandler}>PREVIOUS</button>  
+      )}
+      
+      <button className='nextFinishButton'onClick={nextButtonClickHandler}>{buttonText}</button>
     </div>
   )
 }
