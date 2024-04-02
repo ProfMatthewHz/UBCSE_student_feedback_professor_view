@@ -73,7 +73,7 @@ const SurveyForm = () => {
       {console.log(groupMembers)}
       <div className="Header">
         <h1 className="Survey-Name">{location.state.course} {location.state.survey_name}</h1>
-        <h2 className="Evaluation-Name">{groupMembers[groupMemberIndex]}</h2>
+        <h2 className="Evaluation-Name">Evaluating Team Member {groupMemberIndex+1}/{groupMembers.length}: {groupMembers[groupMemberIndex]}</h2>
       </div>
       <div>
         <SurveyFormRow

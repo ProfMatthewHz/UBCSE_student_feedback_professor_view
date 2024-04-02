@@ -12,7 +12,9 @@ const SurveyFormRow = ({x}) => {
                             return (
                                 <td>
                                     <div className='table-data-container'>
-                                        <div className='table-data-content'>{response}</div>
+                                        <div className='table-data-content'>
+                                            <button>{response}</button>
+                                        </div>
                                     </div>
                                 </td>    
                             )})}
