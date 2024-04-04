@@ -30,9 +30,6 @@ if (!isset($_SESSION['csrf_token'])) {
     exit();
 }
 
-// print($_SESSION['csrf_token']);
-// echo "\r\n";
-
 
 
 $email = isset($_GET['email']) ? urldecode($_GET['email']) : null;
