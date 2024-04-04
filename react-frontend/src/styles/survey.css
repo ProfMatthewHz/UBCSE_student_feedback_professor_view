@@ -1,4 +1,4 @@
-div.row-container {
+/* div.row-container {
     display: flex;
     width: auto;
     flex-direction: column;
@@ -8,9 +8,9 @@ div.row-container {
     padding: 10px;
     box-sizing: border-box;
     border-radius: 5px;
-    /* cursor: pointer; */
-    background-color: #225cb5;
-    /* z-index: 3; */
+    
+    background-color: #22b53b;
+    
     text-align: left;
     color: #fff;
     font-size: 16px;
@@ -26,4 +26,4 @@ div.row-container {
 
 .table-data-points {
     text-align: center;
-}
+} */

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SurveyFormRow from "../Components/SurveyFormRow";
 import { json, useLocation } from "react-router-dom";
+import "../styles/surveyForm.css";
 
 const SurveyForm = () => {
   const location = useLocation();

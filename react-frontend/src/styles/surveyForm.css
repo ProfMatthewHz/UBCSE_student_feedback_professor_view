@@ -1,0 +1,59 @@
+div.vertical-line{
+    border-left: thick solid #DD281D;
+    height: 100%;
+}
+
+div.row-container {
+    padding-top: 10px;
+    height: 70px;
+}
+
+div.survey-table-container {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+button.response-button {
+    padding-left: 10px;
+    height: 100%;
+}
+
+div.table-data-container {
+    padding-left: 10px;
+    height: 100%;
+}
+
+div.Header {
+    padding-top: 10px;
+    padding-left: 10px;
+}
+div.row-topic-question-container {
+    padding-left: 10px;
+    width: 100px;
+    height: 70px;
+    background-color: #225CB5;
+    text-align: center;
+    color: white;
+}
+/* tr {
+    
+} */
+
+button.nextFinishButton {
+    float: right;
+    padding-right: 10px;
+    background-color: #DD281D;
+    text-align: center;
+    color:white;
+    font-weight: bold;
+    
+}
+
+button.previousButton {
+    float: left;
+    padding-left: 10px;
+    background-color: green;
+    color: white;
+    font-weight: bold;
+}
