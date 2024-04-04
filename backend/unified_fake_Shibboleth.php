@@ -22,7 +22,7 @@ if(!empty($_SERVER['uid'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // query information about the requester
+// query information about the requester
     $con = connectToDatabase();
 
     if (empty($_POST["UBIT"])) {
@@ -35,33 +35,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = getInstructorId($con, $email);
     $id_and_name = getStudentInfoFromEmail($con, $email);
 
-    // if it is an instructor //
+// if it is an instructor //
     if (!empty($id)) {
         $_SESSION['id'] = $id;
         $_SESSION["surveyTypes"] = getSurveyTypes($con);
-        $_SESSION['redirect'] = 2;
-        // redirect the instructor to the next page
+// redirect the instructor to the next page
         http_response_code(302);
-        // header("Location: ".INSTRUCTOR_HOME."surveys.php");
-            header("Location: "."http://localhost/StudentSurvey/react-frontend/build");
-//        header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
+// header("Location: ".INSTRUCTOR_HOME."surveys.php");
+        header("Location: "."http://localhost/StudentSurvey/react-frontend/build");
+//header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
         exit();
     }
 
-    // Logic for when it is NOT an instructor BUT a student //
+// Logic for when it is NOT an instructor BUT a student //
     if (!empty($id_and_name)){
         session_regenerate_id();
         $_SESSION['student_id'] = $id_and_name[0];
         $_SESSION['ubit'] = $_POST['UBIT'];
-        $_SESSION['redirect'] = 1;
         http_response_code(302);
-//        header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
-        // http://localhost/StudentSurvey/react-frontend/build //
+//header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
         header("Location: "."http://localhost/StudentSurvey/react-frontend/build");
         exit();
     }
 
-    // not an Instructor OR a student //
+// not an Instructor OR a student //
     http_response_code(403);
     echo 'Unauthorized access attempt, please talk to Professor Hertz if this should NOT be the case';
     exit();
