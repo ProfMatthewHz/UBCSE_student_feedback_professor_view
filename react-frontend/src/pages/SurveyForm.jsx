@@ -82,7 +82,10 @@ const SurveyForm = () => {
         />
       </div>
       {showPrevious && (
-        <button className="previousButton" onClick={previousButtonClickHandler}>PREVIOUS</button>  
+        // <div className="prevButtonContainer">
+        //   <button className="previousButton" onClick={previousButtonClickHandler}>PREVIOUS</button>
+        // </div>
+        <button className="previousButton" onClick={previousButtonClickHandler}>PREVIOUS</button>
       )}
       
       <button className='nextFinishButton'onClick={nextButtonClickHandler}>{buttonText}</button>

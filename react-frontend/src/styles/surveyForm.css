@@ -1,10 +1,11 @@
 div.vertical-line{
     border-left: thick solid #DD281D;
     height: 100%;
+    display: flex;
 }
 
 div.row-container {
-    padding-top: 10px;
+    margin-top: 15px;
     height: 70px;
 }
 
@@ -17,11 +18,25 @@ div.survey-table-container {
 button.response-button {
     padding-left: 10px;
     height: 100%;
+    background-color: #EFEFEF;
+    border: none;
+    box-shadow: 0 5px 6px 0 rgba(0,0,0,0.2);
+    font-size: bold;
+    border-radius: 5px;
+}
+
+button.response-button:hover {
+    cursor: pointer;
+    border: 3px solid #225CB5;
+    /* border-color: #225CB5; */
+    color: #225CB5;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+
 }
 
 div.table-data-container {
     padding-left: 10px;
-    height: 100%;
+    /* box-sizing: border-box; */
 }
 
 div.Header {
@@ -35,25 +50,49 @@ div.row-topic-question-container {
     background-color: #225CB5;
     text-align: center;
     color: white;
+    background-clip: content-box;
 }
 /* tr {
     
 } */
 
 button.nextFinishButton {
-    float: right;
-    padding-right: 10px;
+    position: absolute;
+    left: 90%;
+    bottom: 25px;
     background-color: #DD281D;
     text-align: center;
     color:white;
     font-weight: bold;
-    
+    width: 150px;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
 }
 
 button.previousButton {
+    position: absolute;
+    right: 90%;
+    bottom: 25px;
     float: left;
-    padding-left: 10px;
     background-color: green;
     color: white;
     font-weight: bold;
+    width: 150px;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
 }
+
+button.previousButton:hover {
+    cursor: pointer;
+}
+
+button.nextFinishButton:hover {
+    cursor: pointer;
+}
+/* div.prevButtonContainer {
+    margin-top: 10px;
+    margin-left: 10px;
+    float: left;
+} */

@@ -10,29 +10,22 @@ const SurveyFormRow = ({x}) => {
                 {/* <div className='vertical-line'></div>
                 <h3 className='row-topic-question'>{topic.question}</h3>     */}
                     <div className='vertical-line'>
-                        <tr>
-                            <div className='row-topic-question-container'>
-                                <h3 className='row-topic-question'>{topic.question}</h3>
-                            </div>
-                            
+                        <div className='row-topic-question-container'>
+                            {topic.question}
+                        </div>
                             {Object.values(topic.responses).map((response, index) => {
                                 return (
-                                    <td>
-                                        <div className='table-data-container'>
-                                            <button className='response-button'>{response}</button>
-                                        </div>
-                                    </td>    
+                                    <div className='table-data-container'>
+                                        <button className='response-button'>{response}</button>
+                                    </div>    
                                 )})}
-                        </tr>
                     </div>    
             </div>
     )});
 
     return (
         <div className='survey-table-container'>
-            <table>
-                {topics}
-            </table>
+            {topics}
         </div>
     )
 }
