@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 //import { Link, NavLink } from "react-router-dom";
-import "../styles/sidebar.css";
+import "../styles/student-Sidebar.css";
 
 
 function StudentSideBar() {
