@@ -5,12 +5,15 @@ import About from "./pages/About";
 import History from "./pages/History";
 import Library from "./pages/Library";
 import StudentHome from "./pages/studentHome";
+import ProfStudentHome from "./pages/profStudentHome";
 
 
 function App() {
 
-    const [userFlag, setUserFlag] = useState(1);  // userFlag = 2 -> prof    userFlag = 1 -> student
+    const [userFlag, setUserFlag] = useState(2);  // userFlag = 2 -> prof    userFlag = 1 -> student
     
+    // TODO CALL API
+
   return (
     <Router basename={process.env.REACT_APP_BASE_URL}>
       <div className="app">
@@ -20,9 +23,11 @@ function App() {
             {userFlag === 2 && (
                 <>
                 <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/history" element={<History />} />
                 <Route path="/library" element={<Library />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/student" element={<ProfStudentHome />} /> 
+                <Route path="/about" element={<About />} />
+                
                 </>
             )}
 
