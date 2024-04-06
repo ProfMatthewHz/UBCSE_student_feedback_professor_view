@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 //import { Link, NavLink } from "react-router-dom";
-import "../styles/student-Sidebar.css";
+import "../styles/sidebar.css";
 
 
 function StudentSideBar() {
@@ -55,7 +55,7 @@ function StudentSideBar() {
 
             <div className="sidebar-content" style={{ minHeight: "90%" }}>
                 {/* list of courses */}
-                <div className="sidebar-list">
+                <div className="sidebar-list2">
                 <a href="#Open Surveys">
                     <div
                     

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import History from "./pages/History";
@@ -10,9 +10,27 @@ import ProfStudentHome from "./pages/profStudentHome";
 
 function App() {
 
-    const [userFlag, setUserFlag] = useState(2);  // userFlag = 2 -> prof    userFlag = 1 -> student
+    const [userFlag, setUserFlag] = useState(0);  // userFlag = 1 -> prof    userFlag = 2 -> student
     
-    // TODO CALL API
+    //Find who is logging in and load page accordingly
+    const fetchFlag = () => {
+      const url = `${process.env.REACT_APP_API_URL_STUDENT}redirectEndpoint.php.php?type=current`;
+      console.log("Current Url: ", url);
+
+      fetch(url, {
+          method: "GET",
+      })
+          .then((res) => res.json())
+          .then((result) => {
+              setUserFlag(result); 
+          })
+          .catch((err) => {
+            console.error('There was a problem with your fetch operation:', err);
+          });
+  };
+  useEffect(() => {
+    fetchFlag()
+}, []);
 
   return (
     <Router basename={process.env.REACT_APP_BASE_URL}>
@@ -20,7 +38,7 @@ function App() {
         <div className="background-design"></div>
             <Routes>
             {/* Professor Paths */}
-            {userFlag === 2 && (
+            {userFlag === 1 && (
                 <>
                 <Route path="/" element={<Home />} />
                 <Route path="/library" element={<Library />} />
@@ -32,9 +50,9 @@ function App() {
             )}
 
             {/* Student Paths */}
-            {userFlag === 1 && (
+            {userFlag === 2 && (
                 <>
-                <Route path="/" element={<StudentHome />} /> 
+                  <Route path="/" element={<StudentHome />} /> 
                 </>
             )}
             </Routes>    

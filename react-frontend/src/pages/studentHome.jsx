@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import StudentSideBar from "../Components/studentSidebar";
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
-import "../styles/student-Sidebar.css";
+import "../styles/sidebar.css";
 import Modal from "../Components/RubricModal";
 
 
