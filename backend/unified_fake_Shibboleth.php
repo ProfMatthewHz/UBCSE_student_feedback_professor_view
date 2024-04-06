@@ -54,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($id)) {
         $_SESSION['id'] = $id;
         $_SESSION["surveyTypes"] = getSurveyTypes($con);
+        $_SESSION['redirect'] = 1;
 // Redirect the instructor to the next page
         http_response_code(302);
         header("Location: " . "http://localhost/StudentSurvey/react-frontend/build");
@@ -65,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         session_regenerate_id();
         $_SESSION['student_id'] = $id_and_name[0];
         $_SESSION['ubit'] = $_POST['UBIT'];
+        $_SESSION['redirect'] = 2;
         http_response_code(302);
         header("Location: " . "http://localhost/StudentSurvey/react-frontend/build");
         exit();
