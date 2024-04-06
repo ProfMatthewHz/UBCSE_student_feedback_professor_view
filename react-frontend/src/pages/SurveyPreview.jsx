@@ -55,6 +55,8 @@ const SurveyPreview = () => {
             <div>
                 <SurveyFormRow
                     x={rubricData}
+                    surveyResults={null}
+                    setSurveyResults={null}
                 />
             </div>
         </div>

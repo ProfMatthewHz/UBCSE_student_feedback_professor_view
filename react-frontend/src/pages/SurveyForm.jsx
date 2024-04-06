@@ -10,9 +10,11 @@ const SurveyForm = () => {
   const [groupMemberIndex, setGroupMemberIndex] = useState(0);
   const [buttonText, setButtonText] = useState('NEXT');
   const [showPrevious, setShowPrevious] = useState(false)
+  const [surveyResults, setSurveyResults] = useState("");
   const survey_id = location.state.survey_id + "";
   
   const nextButtonClickHandler = () => {
+    setSurveyResults([]);
     if (buttonText === 'FINISH') {
       return; // Return early if the button text is already 'FINISH'
     }  
@@ -71,7 +73,7 @@ const SurveyForm = () => {
 
   return (
     <div>
-      {console.log(groupMembers)}
+      {console.log(surveyResults)}
       <div className="Header">
         <h1 className="Survey-Name">{location.state.course} {location.state.survey_name}</h1>
         <h2 className="Evaluation-Name">Evaluating Team Member {groupMemberIndex+1}/{groupMembers.length}: {groupMembers[groupMemberIndex]}</h2>
@@ -79,6 +81,9 @@ const SurveyForm = () => {
       <div>
         <SurveyFormRow
             x={surveyData}
+            surveyResults={surveyResults}
+            setSurveyResults={setSurveyResults}
+            student={groupMembers[groupMemberIndex]}
         />
       </div>
       {showPrevious && (

@@ -1,8 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import "../styles/surveyForm.css";
 
-const SurveyFormRow = ({x}) => {
+const SurveyFormRow = ({x, surveyResults, setSurveyResults, student}) => {
+    const [results, setResults] = useState([]);
+    const [answered, setAnswered] = useState(0);
+    
+    useEffect(() => {
+        if (surveyResults != null && setSurveyResults != null && answered === x.topics.length) {
+            setSurveyResults(results);
+            console.log(results);
+        }
+    }, [answered]);
 
+    const click = (response) => {
+        setAnswered(answered+1);
+        setResults([...results,{response: {response}}]);
+
+    }
     const topics = x.topics.map(topic => {
         let count = -1;  
         return (
@@ -16,7 +30,7 @@ const SurveyFormRow = ({x}) => {
                             {Object.values(topic.responses).map((response, index) => {
                                 return (
                                     <div className='table-data-container'>
-                                        <button className='response-button'>{response}</button>
+                                        <button onClick={() => click(response) } className='response-button'>{response}</button>
                                     </div>    
                                 )})}
                     </div>    
