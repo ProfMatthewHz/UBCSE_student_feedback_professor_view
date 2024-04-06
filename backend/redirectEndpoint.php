@@ -16,6 +16,7 @@ if (empty($_SESSION['redirect'])) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $retArray['redirect'] = $_SESSION['redirect'];
+    $retArray['csrf_Token'] = $_SESSION['csrf_token'];
     http_response_code(302);
     echo json_encode($retArray);
     exit();
