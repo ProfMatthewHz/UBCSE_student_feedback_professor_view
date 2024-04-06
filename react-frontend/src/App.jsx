@@ -10,19 +10,21 @@ import ProfStudentHome from "./pages/profStudentHome";
 
 function App() {
 
-    const [userFlag, setUserFlag] = useState(0);  // userFlag = 1 -> prof    userFlag = 2 -> student
+    const [userFlag, setUserFlag] = useState(1);  // userFlag = 1 -> prof    userFlag = 2 -> student
     
     //Find who is logging in and load page accordingly
     const fetchFlag = () => {
-      const url = `${process.env.REACT_APP_API_URL_STUDENT}redirectEndpoint.php.php?type=current`;
-      console.log("Current Url: ", url);
+      const url = `${process.env.REACT_APP_API_URL_STUDENT}redirectEndpoint.php?`;
+      //console.log("Current Url: ", url);
 
       fetch(url, {
           method: "GET",
       })
           .then((res) => res.json())
           .then((result) => {
-              setUserFlag(result); 
+              setUserFlag(result["redirect"]); 
+             // console.log("Result Redirect: ", result["redirect"])
+              //console.log("User Flag: ", userFlag)
           })
           .catch((err) => {
             console.error('There was a problem with your fetch operation:', err);
