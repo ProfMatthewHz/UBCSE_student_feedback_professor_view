@@ -1,18 +1,19 @@
 div.vertical-line{
-    border-left: thick solid #DD281D;
+    border-left: thin solid #DD281D;
     height: 100%;
     display: flex;
 }
 
 div.row-container {
-    margin-top: 15px;
-    height: 70px;
+    margin-top: 25px;
+    height: 90px;
 }
 
 div.survey-table-container {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    margin-right: 40px;
 }
 
 button.response-button {
@@ -23,6 +24,7 @@ button.response-button {
     box-shadow: 0 5px 6px 0 rgba(0,0,0,0.2);
     font-size: bold;
     border-radius: 5px;
+    width: 100%;
 }
 
 button.response-button:hover {
@@ -36,21 +38,30 @@ button.response-button:hover {
 
 div.table-data-container {
     padding-left: 10px;
+    /* max-width: 300px;
+    min-width: 300px; */
     /* box-sizing: border-box; */
 }
 
 div.Header {
-    padding-top: 10px;
-    padding-left: 10px;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+h1.Survey-Name {
+    color: #225CB5;
+    
 }
 div.row-topic-question-container {
-    padding-left: 10px;
-    width: 100px;
-    height: 70px;
+    margin-left: 15px;
+    min-width: 150px;
+    max-width: 150px;
+    height: 100%;
     background-color: #225CB5;
     text-align: center;
     color: white;
     background-clip: content-box;
+    border-radius: 5px;
 }
 /* tr {
     
@@ -58,7 +69,7 @@ div.row-topic-question-container {
 
 button.nextFinishButton {
     position: absolute;
-    left: 90%;
+    left: 89%;
     bottom: 25px;
     background-color: #DD281D;
     text-align: center;
@@ -72,7 +83,7 @@ button.nextFinishButton {
 
 button.previousButton {
     position: absolute;
-    right: 90%;
+    right: 89%;
     bottom: 25px;
     float: left;
     background-color: green;
@@ -96,3 +107,8 @@ button.nextFinishButton:hover {
     margin-left: 10px;
     float: left;
 } */
+
+span.question {
+    color: white;
+
+}
