@@ -23,7 +23,7 @@ function StudentSideBar() {
   };
 
   const scrollToTable3 = () => {
-    const table3Element = document.getElementById('Closed Surveys');
+    const table3Element = document.getElementById('Future Surveys');
     if (table3Element) {
       table3Element.scrollIntoView({ behavior: 'smooth',block: 'start' });
     }
@@ -31,13 +31,13 @@ function StudentSideBar() {
 
 
 
-  const [clicked, setClicked] = useState(false)
+  const [clickedStudent, setClickedStudent] = useState(false)
 
-  const handleClick = () => {
-    setClicked((prev) => !prev)
+  const handleClickStudent = () => {
+    setClickedStudent((prev) => !prev)
   }
 
-  const [activeButton, setActiveButton] = useState(false);
+  const [activeButtonStudent, setActiveButtonStudent] = useState(false);
   
   
   return (
@@ -55,36 +55,36 @@ function StudentSideBar() {
 
             <div className="sidebar-content" style={{ minHeight: "90%" }}>
                 {/* list of courses */}
-                <div className="sidebar-list2">
+                <div className="sidebar-list">
                 <a href="#Open Surveys">
                     <div
                     
                       onClick={() =>{
-                        setActiveButton("Open Surveys-Option");
+                        setActiveButtonStudent("Open Surveys-Option");
                         scrollToTable1();
                       }}
                       id="Open Surveys-Option"
-                      className={activeButton === "Open Surveys-Option" ? "active" : "Open Surveys-Option"}
+                      className={activeButtonStudent === "Open Surveys-Option" ? "active" : "Open Surveys-Option"}
                     >
                       Open Surveys
                     </div>
                   </a>
                 <a href="#Future Surveys">
                   <div
-                    onClick={() => {setActiveButton("Future Surveys-Option");
+                    onClick={() => {setActiveButtonStudent("Future Surveys-Option");
                       scrollToTable2();}}
                     id="Future Surveys-Option"
-                    className={activeButton === "Future Surveys-Option" ? "active" : "Future Surveys-Option"}
+                    className={activeButtonStudent === "Future Surveys-Option" ? "active" : "Future Surveys-Option"}
                   >
                     Future Surveys
                   </div>
                 </a>
                 <a href="#Closed Surveys">
                   <div
-                    onClick={() => {setActiveButton("Closed Surveys-Option");
+                    onClick={() => {setActiveButtonStudent("Closed Surveys-Option");
                   scrollToTable3();}}
                     id="Closed Surveys-Option"
-                    className={activeButton === "Closed Surveys-Option" ? "active" : "Closed Surveys-Option"}
+                    className={activeButtonStudent === "Closed Surveys-Option" ? "active" : "Closed Surveys-Option"}
                   >
                     Closed Surveys
                   </div>
