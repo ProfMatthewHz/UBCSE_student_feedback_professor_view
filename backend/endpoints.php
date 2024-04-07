@@ -20,12 +20,12 @@ if(!isset($_SESSION['student_id'])) {
 }
 
 // Validate CSRF token early in the script, this is for deployement
-if (!isset($_SESSION['csrf_token'])) {
-    http_response_code(403);
-    echo json_encode(["error" => "CSRF token validation failed."]);
-    exit();
-}
-print($_SESSION['csrf_token']);
+// if (!isset($_SESSION['csrf_token'])) {
+//     http_response_code(403);
+//     echo json_encode(["error" => "CSRF token validation failed."]);
+//     exit();
+// }
+// print($_SESSION['csrf_token']);
 
 header('Content-Type: application/json');
 
