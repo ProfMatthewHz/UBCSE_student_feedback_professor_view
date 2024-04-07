@@ -59,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // Redirect the instructor to the next page
         http_response_code(302);
         header("Location: " . "http://localhost/StudentSurvey/react-frontend/build");
+        //header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
         exit();
     }
 
@@ -71,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['redirect'] = 2;
         http_response_code(302);
         header("Location: " . "http://localhost/StudentSurvey/react-frontend/build");
+        // header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
         exit();
     }
 
