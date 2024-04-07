@@ -69,11 +69,20 @@
 }
 
 .sidebar-list { /*List for courses and rubrics*/
-  max-height: 300px;
+  max-height: 200px;
   width: 166px;
   overflow-y: auto;
   padding-left: 25%;
   overflow-x: hidden; 
+}
+
+.sidebar-list2 {
+  max-height: 400px;
+  width: 166px;
+  overflow-y: auto;
+  padding-left: 25%;
+  overflow-x: hidden; 
+
 }
 
 .sidebar-list::-webkit-scrollbar {

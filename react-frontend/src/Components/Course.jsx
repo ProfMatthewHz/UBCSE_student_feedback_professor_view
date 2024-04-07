@@ -14,6 +14,10 @@ import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
 import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
 import PM from "../assets/pairingmodes/PM.png"
 import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
+// import SurveyForm from "./pages/SurveyForm"
+import { Link, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 /**
  * @component
  * @param {Object} course 
@@ -781,7 +785,7 @@ const Course = ({course, page}) => {
 
         return;
     }
-
+    let Navigate = useNavigate();
     const handleActionButtonChange = (e, survey) => {
         setActionsButtonValue(e.target.value);
 
@@ -800,6 +804,12 @@ const Course = ({course, page}) => {
         }
         if (e.target.value == "View Results") {
             handleViewResultsModalChange(survey);
+        }
+        if (e.target.value == "Preview Survey") {
+            Navigate("/SurveyPreview", {state:{survey_name: survey.name, rubric_id: survey.rubric_id, course: course.code}});
+            console.log(survey.name);
+            console.log(survey.rubric_id);
+            console.log(course.code);
         }
         setActionsButtonValue("");
     };
@@ -1900,6 +1910,12 @@ const Course = ({course, page}) => {
                                                 disabled
                                             >
                                                 Actions
+                                            </option>
+                                            <option
+                                                className="surveyactions--option"
+                                                value="Preview Survey"
+                                            >
+                                                Preview Survey
                                             </option>
                                             <option
                                                 className="surveyactions--option"

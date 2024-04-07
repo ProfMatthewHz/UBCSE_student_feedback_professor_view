@@ -81,6 +81,8 @@ function SideBar(props) {
     }
   }, [dropdown_value, props.content_dictionary]);
 
+
+
   return (
     <>
       
@@ -118,7 +120,7 @@ function SideBar(props) {
         </div>
         <AddRubric
         handleAddRubricModal ={handleAddRubricModal}
-        getRubrics={props.getRubrics}
+        getRubrics={props.getRubrics} 
         />
       </Modal>
      
@@ -419,10 +421,15 @@ function SideBar(props) {
                     
               </li>
               <li>
-                <NavLink to="/about">About</NavLink>  
+                <NavLink to="/student">Student View</NavLink>  
+             
+              
               </li>
               <li>
-                <NavLink to="/student">Student Side</NavLink>  
+              <NavLink to="/about">About</NavLink>  
+               
+
+
               </li>
             </ul>
 

@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import StudentSideBar from "../Components/studentSidebar";
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
+import "../styles/sidebar.css";
 import Modal from "../Components/RubricModal";
 
 
 /**
- * The Home component is the main component that users see when they visit the home page.
- * It displays a list of courses for the current semester and year, fetched from an external API.
+ * This will be rendered for students
  */
 const StudentHome = () => {
   // State to store the list of courses
@@ -16,13 +16,15 @@ const StudentHome = () => {
   const [rubricPast, setRubricPast] = useState([]);
   const [rubricFuture, setRubricFuture] = useState([]);
   const [openModal,setOpenModal] = useState(false);
+  const [modalData, setModalData] = useState(null); 
   
   const navigate = useNavigate();
 
   //redirects to temporary page for open action buton
-  const comingSoon = () => {
+  const completeSurveyButtonHandler = (surveyData) => {
     // Navigate to the 'comingsoon' page
-    navigate('/SurveyForm');
+    console.log(surveyData);
+    navigate("/SurveyForm", {state: surveyData});
   };
 
   //reformat time to 00:00:00 PM/AM
@@ -97,20 +99,19 @@ const StudentHome = () => {
 
 
   const fetchCurrent = () => {
-      // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
       const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`;
+      console.log("Current Url: ", url);
 
       fetch(url, {
           method: "GET",
-          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
       })
           .then((res) => res.json())
           .then((result) => {
-              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-              setRubricCurrent(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+              console.log("Current result: ", result);
+              setRubricCurrent(result); 
           })
           .catch((err) => {
-              console.log(err);
+            console.error('There was a problem with your fetch operation:', err);
           });
   };
 
@@ -123,20 +124,18 @@ const StudentHome = () => {
 
   //past evals
   const fetchPast = () => {
-      // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
       const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=past`;
-
+      console.log("Past Url: ", url);
       fetch(url, {
           method: "GET",
-          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
       })
           .then((res) => res.json())
           .then((result) => {
-              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-              setRubricPast(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+            console.log("Past result: ", result);
+              setRubricPast(result); 
           })
           .catch((err) => {
-              console.log(err);
+            console.error('There was a problem with your fetch operation:', err);
           });
   };
 
@@ -150,18 +149,17 @@ const StudentHome = () => {
   const fetchFuture = () => {
       // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
       const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=upcoming`;
-
+      console.log("Future Url: ", url);
       fetch(url, {
           method: "GET",
-          // Note: Removed the 'Content-Type' header and 'body' since it's a GET request
       })
           .then((res) => res.json())
           .then((result) => {
-              // Assuming you have a way to set the surveys in your state or UI, similar to how courses were set
-              setRubricFuture(result); // Consider renaming this function to reflect that it now sets surveys, not courses
+            console.log("Current Fetch: ", result);
+              setRubricFuture(result); 
           })
           .catch((err) => {
-              console.log(err);
+            console.error('There was a problem with your fetch operation:', err);
           });
   };
 
@@ -172,37 +170,40 @@ console.log("Future Surveys")
 console.log(rubricFuture)
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
-  const postDataToApi = (postData) => {
-    console.log("Feedback Count Updated");
-    const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?type=current`; 
+  const fetchFeedbackCount = (email, survey_id) => {
+            // Send student_id and survey_id back to student
 
-    // POST request to send additional data
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(postData),
-    })
-      .then((response) => response.json())
-      .then((postDataResult) => {
-        // Handle the response from the POST request if needed
-        console.log('POST Request Result:', postDataResult);
-      })
-      .catch((postErr) => {
-        console.error('Error in POST request:', postErr);
-      });
-  };
+            const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?email=${encodeURIComponent(email)}&survey_id=${survey_id}`;
+          
 
+            return fetch(url, {
+                method: "GET",
+            })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error('HTTP Response error');
+                }
+                return res.json();
+            })
+            .then((result) => {
 
-
-  const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
-    // postDataToApi(postData);
-    console.log("View Feedback Clicked")
-    setOpenModal(true);
-  };
+            })
+            .catch((err) => {
+                console.error('There was a problem with your fetch operation:', err);
+                return "Not Available"; 
+            });
+        };
 
 
+
+    const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
+      fetchFeedbackCount(postData["email"],postData["survey_id"])
+      console.log("View Feedback Clicked");
+      console.log("postData");
+      console.log(postData);
+      setOpenModal(true); 
+      setModalData(postData); //sends postData to rubric modal
+    };
  
 
 
@@ -216,7 +217,7 @@ console.log(rubricFuture)
    */
   return (
     <>
-    <Modal open={openModal} onClose={()=>setOpenModal(false)}/>
+    {modalData && <Modal open={openModal} onClose={() => setOpenModal(false)} modalData={modalData} />}
       <StudentSideBar />
       <div className="home--container">
         <div className="containerOfCourses">
@@ -265,7 +266,7 @@ console.log(rubricFuture)
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
                                 <td>{item.completionRate*100}% Completed</td>
-                                <td><button onClick={comingSoon}>{openChooseAction(item.completionRate*100)}</button></td>
+                                <td><button onClick={() => completeSurveyButtonHandler({course: item.courseName, survey_name: item.surveyName, survey_id: item.surveyID})}>{openChooseAction(item.completionRate*100)}</button></td>
                               </tr>
                             ))}
                           </tbody>
@@ -365,7 +366,7 @@ console.log(rubricFuture)
                                 <td>{item.surveyName}</td>
                                 {/* <td><button>View Submission</button></td> */}
                                 <td></td>
-                               <td><button onClick={() => combinedClickHandler({"student_id":item.student_id,"survey_name":item.survey_name,"survey_id":item.surveyID})}>View Feedback</button></td>
+                               <td><button onClick={() => combinedClickHandler({"email":item.email,"survey_name":item.surveyName,"survey_id":item.surveyID})}>View Feedback</button></td>
                                
                               </tr>
                             ))}

@@ -19,6 +19,14 @@ if(!isset($_SESSION['student_id'])) {
     exit();
 }
 
+// Validate CSRF token early in the script, this is for deployement
+// if (!isset($_SESSION['csrf_token'])) {
+//     http_response_code(403);
+//     echo json_encode(["error" => "CSRF token validation failed."]);
+//     exit();
+// }
+// print($_SESSION['csrf_token']);
+
 header('Content-Type: application/json');
 
 $con = connectToDatabase();
@@ -37,6 +45,7 @@ $response = [];
 
 
 $student_id = $_SESSION['student_id'];
+$ubit = trim($_SESSION['ubit']);
 $past_surveys = getClosedSurveysForTerm($con, $term, $year, $_SESSION['student_id']);
 $current_surveys = getCurrentSurveys($con, $_SESSION['student_id']);
 $upcoming_surveys = getUpcomingSurveys($con, $_SESSION['student_id']);
@@ -51,7 +60,8 @@ if(count($past_surveys) > 0) {
             'courseName' => $value[0],
             'surveyName' => $value[1],
             'closingDate' => $value[2],
-            'openingDate' => $value[7]
+            'openingDate' => $value[7],
+            'email' => $ubit."@buffalo.edu"
         ];
         $pastSurveysResponse[] = $pastSurveyData;
     }
@@ -102,6 +112,13 @@ if(count($upcoming_surveys) > 0) {
 
 // get users surveys api endpoint //
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+
+//    if (!isset($_GET['csrf_token']) || $_SESSION['csrf_token'] !== $_GET['csrf_token']) {
+//        http_response_code(403);
+//        echo "CSRF token validation failed.";
+//        exit();
+//    }
+
     if (isset($_GET['type'])) {
         $type = $_GET['type'];
         switch ($type) {

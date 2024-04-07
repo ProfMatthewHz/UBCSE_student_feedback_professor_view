@@ -23,7 +23,7 @@ function StudentSideBar() {
   };
 
   const scrollToTable3 = () => {
-    const table3Element = document.getElementById('Future Surveys');
+    const table3Element = document.getElementById('Closed Surveys');
     if (table3Element) {
       table3Element.scrollIntoView({ behavior: 'smooth',block: 'start' });
     }
@@ -55,7 +55,7 @@ function StudentSideBar() {
 
             <div className="sidebar-content" style={{ minHeight: "90%" }}>
                 {/* list of courses */}
-                <div className="sidebar-list">
+                <div className="sidebar-list2">
                 <a href="#Open Surveys">
                     <div
                     
