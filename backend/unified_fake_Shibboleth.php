@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //     http_response_code(403);
     //     echo "CSRF token validation failed.";
     //     exit();
-     }
+    //  }
 
 
     $con = connectToDatabase();
@@ -80,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo 'Unauthorized access attempt, please talk to Professor Hertz if this should NOT be the case';
     exit();
 }
+
 ?>
 <!doctype html>
 <html lang="en">
