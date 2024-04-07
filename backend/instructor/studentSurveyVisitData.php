@@ -1,8 +1,6 @@
-
 <?php
-// this is for the student side meaning once a student logged in it sends it back to this side and gets updated in the db 
-error_reporting(-1); // reports all errors
-ini_set("display_errors", "1"); // shows all errors
+error_reporting(-1);
+ini_set("display_errors", "1");
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
@@ -10,69 +8,78 @@ session_start();
 require_once "../lib/database.php";
 $con = connectToDatabase();
 
-// Check if connection is successful
 if (!$con) {
-    die("Connection failed: " . mysqli_connect_error());
+die("Connection failed: " . mysqli_connect_error());
 }
 
 if (!isset($_SESSION['id'])) {
-    http_response_code(403);
-    echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
-    exit();
+http_response_code(403);
+echo json_encode(["error" => "Forbidden: You must be logged in to access this page."]);
+exit();
 }
 
-// Read the raw JSON data from the request body
-$json_data = file_get_contents('php://input');
+$email = isset($_GET['email']) ? urldecode($_GET['email']) : null;
+$survey_id = isset($_GET['survey_id']) ? (int)$_GET['survey_id'] : null;
 
-// Decode the JSON data into a PHP associative array
-$request_data = json_decode($json_data, true);
-
-// Check if the JSON data is valid
-if ($request_data === null) {
-    // Invalid JSON data
-    http_response_code(400);
-    echo json_encode(array("error" => "Invalid JSON data in request body."));
-    exit();
+if (empty($email) || empty($survey_id)) {
+http_response_code(400);
+echo json_encode(["error" => "Email and survey_id are required."]);
+exit();
 }
 
-// Extract student ID and survey ID from the decoded JSON data
-$student_id_to_check = $request_data['student_id'];
-$survey_id = $request_data['survey_id'];
+// Validate the email format
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+http_response_code(400);
+echo json_encode(["error" => "Invalid email format."]);
+exit();
+}
 
-// Perform the SQL query to check if the student exists
-$sql = "SELECT id FROM students WHERE id = ?";
-$stmt = $con->prepare($sql);
-$stmt->bind_param("i", $student_id_to_check);
+// Lookup the student_id based on the decoded email
+$student_id_query = "SELECT id FROM students WHERE email = ?";
+$stmt = $con->prepare($student_id_query);
+$stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
-
-// Check if query was successful
 if ($result->num_rows > 0) {
-    // Student exists
-    $response = array();
-
-    // Update visit_count and last_visit based on student_id and survey_id
-    $current_timestamp = date('Y-m-d H:i:s');
-    $sql_update = "UPDATE student_visit_data SET visit_count = visit_count + 1, last_visit = ? WHERE student_id = ? AND survey_id = ?";
-    $stmt_update = $con->prepare($sql_update);
-    $stmt_update->bind_param("sii", $current_timestamp, $student_id_to_check, $survey_id);
-    $stmt_update->execute();
-    $affected_rows = $stmt_update->affected_rows;
-
-    if ($affected_rows > 0) {
-        $response["message"] = "Visit count and last visit timestamp updated successfully.";
-    } else {
-        $response["error"] = "Failed to update visit count and last visit timestamp.";
-    }
+$row = $result->fetch_assoc();
+$student_id = $row['id'];
 } else {
-    // Student does not exist
-    $response["error"] = "Student with ID $student_id_to_check does not exist in the database.";
+echo json_encode(["error" => "No student found with the provided email."]);
+exit();
 }
 
-// Close the connection
-mysqli_close($con);
+// Continue with the original functionality using $student_id
+$current_timestamp = date('Y-m-d H:i:s');
+$stmt_check_visit = $con->prepare("SELECT visit_count FROM student_visit_data WHERE reviewer_id = ? AND survey_id = ?");
+$stmt_check_visit->bind_param("ii", $student_id, $survey_id);
+$stmt_check_visit->execute();
+$result_check_visit = $stmt_check_visit->get_result();
 
-// Return response as JSON
+if ($result_check_visit->num_rows > 0) {
+// Entry exists, update it
+$row = $result_check_visit->fetch_assoc();
+$visit_count = $row['visit_count'] + 1;
+
+$stmt_update_visit = $con->prepare("UPDATE student_visit_data SET visit_count = ?, last_visit = ? WHERE reviewer_id = ? AND survey_id = ?");
+$stmt_update_visit->bind_param("isii", $visit_count, $current_timestamp, $student_id, $survey_id);
+$stmt_update_visit->execute();
+} else {
+// No entry exists, insert a new one
+$visit_count = 1;
+
+$stmt_insert_visit = $con->prepare("INSERT INTO student_visit_data (reviewer_id, survey_id, visit_count, last_visit) VALUES (?, ?, ?, ?)");
+$stmt_insert_visit->bind_param("iiis", $student_id, $survey_id, $visit_count, $current_timestamp);
+$stmt_insert_visit->execute();
+}
+
+$response = [
+"student_id" => $student_id,
+"survey_id" => $survey_id,
+"count" => $visit_count,
+"message" => "Student visit data updated successfully."
+];
+
+mysqli_close($con);
 header('Content-Type: application/json');
 echo json_encode($response);
 ?>

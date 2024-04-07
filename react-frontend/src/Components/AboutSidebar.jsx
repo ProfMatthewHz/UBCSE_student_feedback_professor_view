@@ -32,6 +32,14 @@ const AboutSidebar = () => {
           <li>
             <NavLink to="/about">About</NavLink>
           </li>
+
+        
+          <li>
+                <NavLink to="/student">Student View</NavLink>  
+          </li>
+
+
+
         </ul>
 
         {/* Hamburger menu for phone */}

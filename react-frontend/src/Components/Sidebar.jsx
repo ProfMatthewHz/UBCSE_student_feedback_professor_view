@@ -422,7 +422,7 @@ function SideBar(props) {
                 <NavLink to="/about">About</NavLink>  
               </li>
               <li>
-                <NavLink to="/student">Student Side</NavLink>  
+                <NavLink to="/student">Student View</NavLink>  
               </li>
             </ul>
 
