@@ -18,6 +18,7 @@ div.survey-table-container {
 button.response-button {
     padding-left: 10px;
     height: 100%;
+    width: 100%;
     background-color: #EFEFEF;
     border: none;
     box-shadow: 0 5px 6px 0 rgba(0,0,0,0.2);
@@ -35,7 +36,9 @@ button.response-button:hover {
 }
 
 div.table-data-container {
-    padding-left: 10px;
+    margin-left: 10px;
+    min-width: 300px;
+    max-width: 300px;
     /* box-sizing: border-box; */
 }
 
@@ -44,13 +47,15 @@ div.Header {
     padding-left: 10px;
 }
 div.row-topic-question-container {
-    padding-left: 10px;
-    width: 100px;
+    margin-left: 10px;
+    min-width: 150px;
+    max-width: 150px;
     height: 70px;
     background-color: #225CB5;
     text-align: center;
     color: white;
     background-clip: content-box;
+    border-radius: 5px;
 }
 /* tr {
     

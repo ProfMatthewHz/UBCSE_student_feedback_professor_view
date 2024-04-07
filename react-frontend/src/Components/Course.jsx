@@ -1913,6 +1913,12 @@ const Course = ({course, page}) => {
                                             </option>
                                             <option
                                                 className="surveyactions--option"
+                                                value="Preview Survey"
+                                            >
+                                                Preview Survey
+                                            </option>
+                                            <option
+                                                className="surveyactions--option"
                                                 value="View Results"
                                             >
                                                 View Results
@@ -1934,12 +1940,6 @@ const Course = ({course, page}) => {
                                                 value="Delete"
                                             >
                                                 Delete
-                                            </option>
-                                            <option
-                                                className="surveyactions--option"
-                                                value="Preview Survey"
-                                            >
-                                                Preview Survey
                                             </option>
                                         </select>
                                     ) : page === "history" ? (
