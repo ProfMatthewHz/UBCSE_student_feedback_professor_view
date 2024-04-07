@@ -11,9 +11,11 @@ session_start();
 // $_SESSION['csrf_token'] = "testing";
 
 // Deployment CSRF token
+
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+
 
 // Bring in required code
 require_once "lib/random.php";
@@ -30,14 +32,14 @@ if (!empty($_SERVER['uid'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-// Validate CSRF token
-    if (!isset($_POST['csrf_token']) || $_SESSION['csrf_token'] !== $_POST['csrf_token']) {
-        http_response_code(403);
-        echo "CSRF token validation failed.";
-        exit();
-    }
+    // // Validate CSRF token
+    // if (!isset($_POST['csrf_token']) || $_SESSION['csrf_token'] !== $_POST['csrf_token']) {
+    //     http_response_code(403);
+    //     echo "CSRF token validation failed.";
+    //     exit();
+     }
 
-// Query information about the requester
+
     $con = connectToDatabase();
 
     if (empty($_POST["UBIT"])) {
@@ -50,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = getInstructorId($con, $email);
     $id_and_name = getStudentInfoFromEmail($con, $email);
 
+
 // If it is an instructor
     if (!empty($id)) {
         $_SESSION['id'] = $id;
@@ -61,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
+
 // Logic for when it is NOT an instructor BUT a student
     if (!empty($id_and_name)) {
         session_regenerate_id();
@@ -71,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: " . "http://localhost/StudentSurvey/react-frontend/build");
         exit();
     }
+
 
 // Not an Instructor OR a student
     http_response_code(403);
@@ -93,12 +98,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body class="text-center">
-<form class="mt-2 mx-1" id="fake_shibboleth" method="post">
-    <div class="row mx-1 mt-2 justify-content-center">
-        <div class="col-sm-8">
-            <div class="form-floating mt-1 mb-3">
-                <input id="UBIT" type="text" class="form-control" name="UBIT" required value=""></input>
-                <label for="UBIT">UBIT From Shibboleth:</label>
+    <form class="mt-2 mx-1" id="fake_shibboleth" method="post">
+        <div class="row mx-1 mt-2 justify-content-center">
+            <div class="col-sm-8">
+                <div class="form-floating mt-1 mb-3">
+                    <input id="UBIT" type="text" class="form-control" name="UBIT" required value=""></input>
+                    <label for="UBIT">UBIT From Shibboleth:</label>
+                </div>
+            </div>
+        </div>
+        <div class="row mx-1 mt-2 justify-content-center">
+            <div class="col-auto">
+                <!-- Include the CSRF token in a hidden field -->
+                <!-- <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>"> -->
+                <input class="btn btn-success" type="submit" value="Pretend Login"></input>
             </div>
         </div>
     </div>
