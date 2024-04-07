@@ -30,14 +30,14 @@ if (!empty($_SERVER['uid'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-// Validate CSRF token
+    // // Validate CSRF token
     // if (!isset($_POST['csrf_token']) || $_SESSION['csrf_token'] !== $_POST['csrf_token']) {
     //     http_response_code(403);
     //     echo "CSRF token validation failed.";
     //     exit();
-    // }
+     }
 
-// Query information about the requester
+
     $con = connectToDatabase();
 
     if (empty($_POST["UBIT"])) {
@@ -50,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = getInstructorId($con, $email);
     $id_and_name = getStudentInfoFromEmail($con, $email);
 
+
 // If it is an instructor
     if (!empty($id)) {
         $_SESSION['id'] = $id;
@@ -61,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
+
 // Logic for when it is NOT an instructor BUT a student
     if (!empty($id_and_name)) {
         session_regenerate_id();
@@ -71,6 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: " . "http://localhost/StudentSurvey/react-frontend/build");
         exit();
     }
+
 
 // Not an Instructor OR a student
     http_response_code(403);

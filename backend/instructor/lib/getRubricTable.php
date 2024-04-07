@@ -38,11 +38,12 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
 if (!isset($_POST["rubric"]) || !ctype_digit($_POST["rubric"])) {
   http_response_code(400);
   echo "Bad request: parameters provided do not match what is required";
-  exit();
+  exit(); 
 }
 $rubric_id = intval($_POST["rubric"]);
 $data = getRubricData($con, $rubric_id);
 $table_data = emitRubricTable($data["topics"], $data["scores"]);
 $_SESSION['rubric_reviewed'] = $rubric_id;
-echo json_encode($table_data);
+// echo json_encode($table_data);
+echo json_encode($data);
 ?>
