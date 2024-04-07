@@ -21,9 +21,10 @@ const StudentHome = () => {
   const navigate = useNavigate();
 
   //redirects to temporary page for open action buton
-  const comingSoon = () => {
+  const completeSurveyButtonHandler = (surveyData) => {
     // Navigate to the 'comingsoon' page
-    navigate('/SurveyForm');
+    console.log(surveyData);
+    navigate("/SurveyForm", {state: surveyData});
   };
 
   //reformat time to 00:00:00 PM/AM
@@ -265,7 +266,7 @@ console.log(rubricFuture)
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
                                 <td>{item.completionRate*100}% Completed</td>
-                                <td><button onClick={comingSoon}>{openChooseAction(item.completionRate*100)}</button></td>
+                                <td><button onClick={() => completeSurveyButtonHandler({course: item.courseName, survey_name: item.surveyName, survey_id: item.surveyID})}>{openChooseAction(item.completionRate*100)}</button></td>
                               </tr>
                             ))}
                           </tbody>

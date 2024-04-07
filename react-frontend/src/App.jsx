@@ -6,7 +6,8 @@ import History from "./pages/History";
 import Library from "./pages/Library";
 import StudentHome from "./pages/studentHome";
 import ProfStudentHome from "./pages/profStudentHome";
-
+import SurveyForm from "./pages/SurveyForm"
+import SurveyPreview from "./pages/SurveyPreview"
 
 function App() {
 
@@ -50,7 +51,7 @@ function App() {
                 <Route path="/history" element={<History />} />
                 <Route path="/student" element={<ProfStudentHome />} /> 
                 <Route path="/about" element={<About />} />
-                
+                <Route path ="/SurveyPreview" element={<SurveyPreview />} />
                 </>
             )}
 
@@ -58,8 +59,10 @@ function App() {
             {userFlag === 2 && (
                 <>
                   <Route path="/" element={<StudentHome />} /> 
+                  <Route path="/SurveyForm" element={<SurveyForm />} />
                 </>
-            )}
+            )}          
+
             </Routes>    
       </div>
     </Router>

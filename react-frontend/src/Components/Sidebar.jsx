@@ -120,7 +120,7 @@ function SideBar(props) {
         </div>
         <AddRubric
         handleAddRubricModal ={handleAddRubricModal}
-        getRubrics={props.getRubrics}
+        getRubrics={props.getRubrics} 
         />
       </Modal>
      
