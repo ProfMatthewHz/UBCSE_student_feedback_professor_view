@@ -13,9 +13,9 @@ function App() {
 
 
     const [userFlag, setUserFlag] = useState(1);  // userFlag = 1 -> prof    userFlag = 2 -> student
-    const [csrfToken, setCSRFToken] = useState(null);
+    const [csrfToken, setCsrfToken] = useState('');
     
-    //Find who is logging in and load page accordingly
+   //Find who is logging in and load page accordingly
     const fetchFlag = () => {
       const url = `${process.env.REACT_APP_API_URL_STUDENT}redirectEndpoint.php?`;
       //console.log("Current Url: ", url);
@@ -38,10 +38,39 @@ function App() {
     fetchFlag()
 }, []);
 
+//Fetch the randomly generated CSRF token from backend to embed into frontend
+const fetchCsrfToken = () => {
+    
+    const url = `${process.env.REACT_APP_API_URL_STUDENT}unified_fake_Shibboleth.php?`;
+        //console.log("Current Url: ", url);
+    fetch(url, {
+      method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data) {
+        setCsrfToken(data);
+        console.log('CSRF Token fetched:', data);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching CSRF token:', error);
+    });
+  };
+
+
+useEffect(() => {
+  fetchCsrfToken()
+}, []);
+
+
+  
+
   return (
     <Router basename={process.env.REACT_APP_BASE_URL}>
       <div className="app">
         <div className="background-design"></div>
+        <input type="hidden" name="csrfToken" value={csrfToken} />
             <Routes>
             {/* Professor Paths */}
             {userFlag === 1 && (
