@@ -22,7 +22,7 @@ button.response-button {
     background-color: #EFEFEF;
     border: none;
     box-shadow: 0 5px 6px 0 rgba(0,0,0,0.2);
-    font-size: bold;
+    font-weight: bold;
     border-radius: 5px;
     width: 100%;
 }
@@ -36,6 +36,19 @@ button.response-button:hover {
 
 }
 
+button.clicked {
+    padding-left: 10px;
+    height: 100%;
+    background-color: #EFEFEF;
+    font-weight: bold;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    border: 3px solid #225CB5;
+    color: #225CB5;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+
+}
 div.table-data-container {
     padding-left: 10px;
     /* max-width: 300px;
@@ -48,10 +61,13 @@ div.Header {
     margin-left: 20px;
 }
 
-h1.Survey-Name {
+h1.Survey-Name, h2.Evaluation-Name {
     color: #225CB5;
-    
+    margin-bottom: 20px;
+    font-size: 40px;
 }
+
+
 div.row-topic-question-container {
     margin-left: 15px;
     min-width: 150px;
@@ -62,6 +78,7 @@ div.row-topic-question-container {
     color: white;
     background-clip: content-box;
     border-radius: 5px;
+    font-weight: bold;
 }
 /* tr {
     

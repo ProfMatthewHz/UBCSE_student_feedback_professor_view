@@ -6,7 +6,9 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student}) => {
     const [answered, setAnswered] = useState(0);
     const [topicQuestionElements, setTopicQuestionElements] = useState([]);
     const [topicQuestionWidth, setTopicQuestionWidth] = useState(150);
-    
+    const [rowID, setRowID] = useState(0);
+    const [clickedButtons, setClickedButtons] = useState({});
+
     useEffect(() => {
         if (surveyResults != null && setSurveyResults != null && answered === x.topics.length) {
             setSurveyResults(results);
@@ -22,10 +24,26 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student}) => {
       }, [topicQuestionElements]);
 
     const click = (response) => {
+        const btns = document.getElementsByClassName("response-button");
+        console.log(btns);
+        
         setAnswered(answered+1);
         setResults([...results,{response}]);
 
     }
+
+    const clickHandler = (response, rowID) => {
+        // Set the clicked state for the clicked button in the corresponding row
+        setClickedButtons(prevState => ({
+          ...prevState,
+          [rowID]: response
+        }))};
+    
+    const buttonClass = (response, rowID) => {
+        // Determine the class name based on whether the button is clicked or not in the corresponding row
+        return clickedButtons[rowID] === response ? 'clicked' : 'response-button';
+    };
+
     const topics = x.topics.map(topic => {
         let count = -1;
         let width = 150;  
@@ -37,7 +55,7 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student}) => {
 
         } 
         return (
-            <div className='row-container'>
+            <div className='row-container' id={topic.question}>
                 {/* <div className='vertical-line'></div>
                 <h3 className='row-topic-question'>{topic.question}</h3>     */}
                     <div className='vertical-line'>
@@ -49,10 +67,11 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student}) => {
                             {Object.values(topic.responses).map((response, index) => {
                                 return (
                                     <div className='table-data-container' style={{width: 100 / length +'%'}}>
-                                        <button onClick={() => click(response) } className='response-button' style={{'font-size': 100 - (response.length / 4) +'%'}}>{response}</button>
+                                        <button onClick={() => clickHandler(response, topic.question) } className={buttonClass(response, topic.question)} style={{'font-size': 100 - (response.length / 5) +'%'}}>{response}</button>
                                     </div>    
                                 )})}
-                    </div>    
+                    </div>
+                     
             </div>
     )});
 
