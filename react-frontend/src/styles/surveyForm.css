@@ -33,9 +33,6 @@ button.response-button {
 
 button.response-button:hover {
     cursor: pointer;
-    border: 3px solid #225CB5;
-    /* border-color: #225CB5; */
-    color: #225CB5;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 
 }

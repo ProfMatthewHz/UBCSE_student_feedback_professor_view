@@ -33,12 +33,19 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
 
     const clickHandler = (response, rowID) => {
         // Set the clicked state for the clicked button in the corresponding row
+        if (clickedButtons[rowID] === response) {
+            setClickedButtons(prevState => ({
+                ...prevState,
+                [rowID]: null
+            }));
+            
+        } else {
         setClickedButtons(prevState => ({
           ...prevState,
           [rowID]: response
         }))
         setAnswered(answered+1);
-    };
+    }};
     
     const buttonClass = (response, rowID) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
