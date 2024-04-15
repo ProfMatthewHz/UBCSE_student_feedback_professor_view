@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import "../styles/surveyForm.css";
 
-const SurveyFormRow = ({x, surveyResults, setSurveyResults, student}) => {
+const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
     const [results, setResults] = useState([]);
     const [answered, setAnswered] = useState(0);
     const [topicQuestionElements, setTopicQuestionElements] = useState([]);
     const [topicQuestionWidth, setTopicQuestionWidth] = useState(150);
-    const [rowID, setRowID] = useState(0);
     const [clickedButtons, setClickedButtons] = useState({});
 
     useEffect(() => {
         if (surveyResults != null && setSurveyResults != null && answered === x.topics.length) {
-            setSurveyResults(results);
+            setSurveyResults(clickedButtons);
             console.log(results);
         }
     }, [answered]);
@@ -37,7 +36,9 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student}) => {
         setClickedButtons(prevState => ({
           ...prevState,
           [rowID]: response
-        }))};
+        }))
+        setAnswered(answered+1);
+    };
     
     const buttonClass = (response, rowID) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
@@ -56,22 +57,18 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student}) => {
         } 
         return (
             <div className='row-container' id={topic.question}>
-                {/* <div className='vertical-line'></div>
-                <h3 className='row-topic-question'>{topic.question}</h3>     */}
-                    <div className='vertical-line'>
-                        <div className='row-topic-question-container' style={{'min-width': topicQuestionWidth +'px'}}>
-                            
-                            <span className='question' >{topic.question}</span>
-                        </div>
-                        {console.log(Object.keys(topic.responses).length)}
-                            {Object.values(topic.responses).map((response, index) => {
-                                return (
-                                    <div className='table-data-container' style={{width: 100 / length +'%'}}>
-                                        <button onClick={() => clickHandler(response, topic.question) } className={buttonClass(response, topic.question)} style={{'font-size': 100 - (response.length / 5) +'%'}}>{response}</button>
-                                    </div>    
-                                )})}
+                <div className='vertical-line'>
+                    <div className='row-topic-question-container' style={{'min-width': topicQuestionWidth +'px'}}>    
+                        <span className='question' >{topic.question}</span>
                     </div>
-                     
+                    {console.log(Object.keys(topic.responses).length)}
+                    {Object.values(topic.responses).map((response, index) => {
+                        return (
+                            <div className='table-data-container' style={{width: 100 / length +'%'}}>
+                                <button onClick={() => clickHandler(response, topic.question) } className={buttonClass(response, topic.question)} style={{'font-size': 100 - (response.length / 5) +'%'}}>{response}</button>
+                            </div>    
+                        )})}
+                </div>        
             </div>
     )});
 

@@ -12,6 +12,7 @@ const SurveyForm = () => {
   const [showPrevious, setShowPrevious] = useState(false)
   const [surveyResults, setSurveyResults] = useState("");
   const survey_id = location.state.survey_id + "";
+  const [refreshKey, setRefreshKey] = useState(0);
   
   const nextButtonClickHandler = () => {
     setSurveyResults([]);
@@ -24,6 +25,8 @@ const SurveyForm = () => {
     if (groupMemberIndex >= groupMembers.length - 2) {
       setButtonText('FINISH');
     }
+
+    setRefreshKey(prevKey => prevKey + 1);
   }
 
   const previousButtonClickHandler = () => {
@@ -34,6 +37,7 @@ const SurveyForm = () => {
     } else {
       setGroupMemberIndex(groupMemberIndex - 1);
     }
+    setRefreshKey(prevKey => prevKey + 1);
   }
   useEffect(() => {
     // Check if groupMembers has been set
@@ -84,6 +88,7 @@ const SurveyForm = () => {
             surveyResults={surveyResults}
             setSurveyResults={setSurveyResults}
             student={groupMembers[groupMemberIndex]}
+            key={refreshKey}
         />
       </div>
       {showPrevious && (
