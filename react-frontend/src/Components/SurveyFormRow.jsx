@@ -45,6 +45,10 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
         return clickedButtons[rowID] === response ? 'clicked' : 'response-button';
     };
 
+    const verticalLineClass = (rowID) => {
+        return clickedButtons[rowID] != null ? 'green-vertical-line' : 'red-vertical-line';
+    }
+
     const topics = x.topics.map(topic => {
         let count = -1;
         let width = 150;  
@@ -57,7 +61,7 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
         } 
         return (
             <div className='row-container' id={topic.question}>
-                <div className='vertical-line'>
+                <div className={verticalLineClass(topic.question)}>
                     <div className='row-topic-question-container' style={{'min-width': topicQuestionWidth +'px'}}>    
                         <span className='question' >{topic.question}</span>
                     </div>

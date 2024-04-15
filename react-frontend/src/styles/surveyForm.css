@@ -1,9 +1,13 @@
-div.vertical-line{
-    border-left: thin solid #DD281D;
+div.red-vertical-line{
+    border-left: 4px solid #DD281D;
     height: 100%;
     display: flex;
 }
-
+div.green-vertical-line{
+    border-left: 4px solid #6DA04B;
+    height: 100%;
+    display: flex;
+}
 div.row-container {
     margin-top: 25px;
     height: 90px;

@@ -17,6 +17,7 @@ const SurveyForm = () => {
   const nextButtonClickHandler = () => {
     setSurveyResults([]);
     if (buttonText === 'FINISH') {
+      
       return; // Return early if the button text is already 'FINISH'
     }  
     setGroupMemberIndex(groupMemberIndex + 1);
