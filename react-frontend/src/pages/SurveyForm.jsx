@@ -8,11 +8,12 @@ const SurveyForm = () => {
   const [surveyData, setSurveyData] = useState(null);
   const [groupMembers, setGroupMembers] = useState(null);
   const [groupMemberIndex, setGroupMemberIndex] = useState(0);
-  const [buttonText, setButtonText] = useState('NEXT');
+  const [buttonText, setButtonText] = useState('SKIP');
   const [showPrevious, setShowPrevious] = useState(false)
   const [surveyResults, setSurveyResults] = useState("");
   const survey_id = location.state.survey_id + "";
   const [refreshKey, setRefreshKey] = useState(0);
+  
   
   const nextButtonClickHandler = () => {
     setSurveyResults([]);
@@ -31,7 +32,7 @@ const SurveyForm = () => {
   }
 
   const previousButtonClickHandler = () => {
-    setButtonText('NEXT');
+    setButtonText('SKIP');
     if (groupMemberIndex === 1) {
       setShowPrevious(false);
       setGroupMemberIndex(0);

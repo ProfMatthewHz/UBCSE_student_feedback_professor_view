@@ -9,7 +9,7 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
     const [clickedButtons, setClickedButtons] = useState({});
 
     useEffect(() => {
-        if (surveyResults != null && setSurveyResults != null && answered === x.topics.length) {
+        if (surveyResults != null && setSurveyResults != null) {
             setSurveyResults(clickedButtons);
             console.log(results);
         }
@@ -20,31 +20,23 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
         topicQuestionElements.forEach(element => {
           element.style.width = '250px';
         });
-      }, [topicQuestionElements]);
-
-    const click = (response) => {
-        const btns = document.getElementsByClassName("response-button");
-        console.log(btns);
-        
-        setAnswered(answered+1);
-        setResults([...results,{response}]);
-
-    }
+    }, [topicQuestionElements]);
 
     const clickHandler = (response, rowID) => {
         // Set the clicked state for the clicked button in the corresponding row
+        setAnswered(answered+1);
         if (clickedButtons[rowID] === response) {
-            setClickedButtons(prevState => ({
-                ...prevState,
-                [rowID]: null
-            }));
+            setClickedButtons(prevState => {
+                const newState = { ...prevState };
+                delete newState[rowID];
+                return newState;
+            });
             
         } else {
         setClickedButtons(prevState => ({
           ...prevState,
           [rowID]: response
         }))
-        setAnswered(answered+1);
     }};
     
     const buttonClass = (response, rowID) => {
@@ -72,7 +64,6 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
                     <div className='row-topic-question-container' style={{'min-width': topicQuestionWidth +'px'}}>    
                         <span className='question' >{topic.question}</span>
                     </div>
-                    {console.log(Object.keys(topic.responses).length)}
                     {Object.values(topic.responses).map((response, index) => {
                         return (
                             <div className='table-data-container' style={{width: 100 / length +'%'}}>
