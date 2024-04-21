@@ -13,8 +13,7 @@ function App() {
 
 
     const [userFlag, setUserFlag] = useState(1);  // userFlag = 1 -> prof    userFlag = 2 -> student
-    const [csrfToken, setCSRFToken] = useState(null);
-    
+
     //Find who is logging in and load page accordingly
     const fetchFlag = () => {
       const url = `${process.env.REACT_APP_API_URL_STUDENT}redirectEndpoint.php?`;

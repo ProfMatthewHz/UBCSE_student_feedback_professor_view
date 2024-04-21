@@ -210,7 +210,8 @@ const ViewResults = ({
         // Iterate through each student object in normalizedResults and fetch feedback count
         for (let i = 0; i < results.length; i++) {
             const email = results[i]["Reviewee name (email)"];
-            const parts = email.split(' ');
+            const parts = email.split(' (');
+            const name = parts[0];
             const emailPart = parts[parts.length - 1];
             const cleanedEmail = emailPart.replace(/[()]/g, '');
     
@@ -218,7 +219,8 @@ const ViewResults = ({
                 // Fetch feedback count for the current student
                 const result = await fetchFeedbackCount(cleanedEmail, survey_id);
                 // Update "Feedback view count" in normalizedResults
-                results[i]["Feedback view count"] = countFromAPI;
+                const newDict = {"Reviewee name": name, "Email": cleanedEmail, "Average normalized result": results[i]["Average normalized result"], "Feedback view count": countFromAPI}
+                results[i] = newDict;
             } catch (error) {
                 console.error('Error fetching feedback count:', error);
                 // Handle error if necessary
