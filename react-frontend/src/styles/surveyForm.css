@@ -23,6 +23,7 @@ div.survey-table-container {
 button.response-button {
     padding-left: 10px;
     height: 100%;
+    width: 100%;
     background-color: #EFEFEF;
     border: none;
     box-shadow: 0 5px 6px 0 rgba(0,0,0,0.2);

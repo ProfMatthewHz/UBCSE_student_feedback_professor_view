@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
-import StudentSideBar from "../Components/studentSidebar";
+import AboutSidebar from "../Components/AboutSidebar";
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
 import "../styles/sidebar.css";
@@ -8,7 +8,7 @@ import Modal from "../Components/RubricModal";
 
 
 /**
- * This will be rendered for students
+ * This will be rendered for profs when they click on Student View in side bar
  */
 const StudentHome = () => {
   // State to store the list of courses
@@ -21,10 +21,9 @@ const StudentHome = () => {
   const navigate = useNavigate();
 
   //redirects to temporary page for open action buton
-  const completeSurveyButtonHandler = (surveyData) => {
+  const comingSoon = () => {
     // Navigate to the 'comingsoon' page
-    console.log(surveyData);
-    navigate("/SurveyForm", {state: surveyData});
+    navigate('/SurveyForm');
   };
 
   //reformat time to 00:00:00 PM/AM
@@ -120,7 +119,7 @@ const StudentHome = () => {
   }, []);
 
   console.log("CURRENT");
-  console.log(rubricCurrent);
+  //console.log(rubricCurrent);
 
   //past evals
   const fetchPast = () => {
@@ -143,7 +142,7 @@ const StudentHome = () => {
       fetchPast()
   }, []);
   console.log("PAST");
-  console.log(rubricPast);
+  //console.log(rubricPast);
 
 
   const fetchFuture = () => {
@@ -155,7 +154,7 @@ const StudentHome = () => {
       })
           .then((res) => res.json())
           .then((result) => {
-            console.log("Current Fetch: ", result);
+           // console.log("Current Fetch: ", result);
               setRubricFuture(result); 
           })
           .catch((err) => {
@@ -167,7 +166,7 @@ const StudentHome = () => {
       fetchFuture()
   }, []);
 console.log("Future Surveys")
-console.log(rubricFuture)
+//console.log(rubricFuture)
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
   const fetchFeedbackCount = (email, survey_id) => {
@@ -207,18 +206,13 @@ console.log(rubricFuture)
  
 
 
-
-  
-
-
-
   /**
    * The Home component renders a SideBar component and a list of Course components.
    */
   return (
     <>
     {modalData && <Modal open={openModal} onClose={() => setOpenModal(false)} modalData={modalData} />}
-      <StudentSideBar />
+    <AboutSidebar />
       <div className="home--container">
         <div className="containerOfCourses">
           <div id="Open Surveys" class="courseContainer">
@@ -266,7 +260,7 @@ console.log(rubricFuture)
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
                                 <td>{item.completionRate*100}% Completed</td>
-                                <td><button onClick={() => completeSurveyButtonHandler({course: item.courseName, survey_name: item.surveyName, survey_id: item.surveyID})}>{openChooseAction(item.completionRate*100)}</button></td>
+                                <td><button onClick={comingSoon}>{openChooseAction(item.completionRate*100)}</button></td>
                               </tr>
                             ))}
                           </tbody>

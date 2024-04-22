@@ -30,8 +30,17 @@ const AboutSidebar = () => {
             <NavLink to="/library">Library</NavLink>
           </li>
           <li>
-            <NavLink to="/about">About</NavLink>
+              <NavLink to="/student">Student View</NavLink>  
+            
           </li>
+
+          <li>
+               
+                <NavLink to="/about">About</NavLink>
+          </li>
+
+
+
         </ul>
 
         {/* Hamburger menu for phone */}
