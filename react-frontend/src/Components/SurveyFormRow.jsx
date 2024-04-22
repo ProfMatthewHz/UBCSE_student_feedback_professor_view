@@ -7,6 +7,7 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
     const [topicQuestionElements, setTopicQuestionElements] = useState([]);
     const [topicQuestionWidth, setTopicQuestionWidth] = useState(150);
     const [clickedButtons, setClickedButtons] = useState({});
+    
 
     useEffect(() => {
         if (surveyResults != null && setSurveyResults != null) {
@@ -67,7 +68,7 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
                     {Object.values(topic.responses).map((response, index) => {
                         return (
                             <div className='table-data-container' style={{width: 100 / length +'%'}}>
-                                <button onClick={() => clickHandler(response, topic.question) } className={buttonClass(response, topic.question)} style={{'font-size': 100 - (response.length / 5) +'%'}}>{response}</button>
+                                <button onClick={() => clickHandler(response, topic.topic_id) } className={buttonClass(response, topic.topic_id)} style={{'font-size': 100 - (response.length / 5) +'%'}}>{response}</button>
                             </div>    
                         )})}
                 </div>        
