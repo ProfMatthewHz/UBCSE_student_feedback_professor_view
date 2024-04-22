@@ -73,7 +73,7 @@ const ViewResults = ({
                     setShowRawSurveyResults(result.slice(1));
                     setRawResultsHeaders(result[0]);
                     const mappedResults = mapHeadersToValues(result[0], result.slice(1));
-                    console.log(mappedResults);
+                    //console.log(mappedResults);
                     setRawResults(mappedResults);
                     if (result.length > 1) {
                         setCurrentCSVData(result);
@@ -122,8 +122,8 @@ const ViewResults = ({
                         labels = Object.entries(labels);
                         labels.unshift(["Normalized Averages", "Number of Students"]);
                        
-                        console.log(labels);
-                        console.log(result);
+                       // console.log(labels);
+                       // console.log(result);
                         
                         const mappedNormalizedResults = mapHeadersToValues(
                             result[0],
@@ -133,14 +133,16 @@ const ViewResults = ({
                         setShowNormalizedSurveyResults(labels);
                       
                         setNormalizedResults(mappedNormalizedResults);
+                 
 
                         if (mappedNormalizedResults.length > 0){ //update the normalizedResults map to include feedback count for each student
                             callFetchFeedbackCount(surveyid,mappedNormalizedResults);
                         }
-
-                        console.log("mapped normalized results: ", mappedNormalizedResults)
-                        setNormalizedTableHeaders(result[0]);
-                      
+                        
+                            setNormalizedTableHeaders(result[0]);
+                   
+                       
+                     
                     } else {
                         setCurrentCSVData(null);
                         setShowNormalizedSurveyResults(true);
@@ -200,8 +202,8 @@ const ViewResults = ({
         });
     };
   
-    console.log("Normalized results");
-    console.log(normalizedResults);
+    // console.log("Normalized results");
+    // console.log(normalizedResults);
 
     
 
@@ -229,11 +231,20 @@ const ViewResults = ({
     
         // After updating all normalizedResults, set the state with the updated array
         setNormalizedResults([...results]);
-        console.log("New Normalized Results", results);
+       // console.log("New Normalized Results", results);
+
+
+        //Update csv to include fields: name, email, normalized result, feedback view count
+        const newResults = [Object.keys(results[0])]
+        for (let i in results){
+            newResults.push(Object.values(results[i]))
+        }
+        setCurrentCSVData(newResults)
+        
     };
 
    
-
+  
 
 
 
@@ -364,7 +375,7 @@ const ViewResults = ({
                             >
                                 Download Results
                             </CSVLink>
-                            {console.log("After 2 normalized results: ", normalizedResults)}
+                          
                         </div>
                         <div className="viewresults-modal--barchart-container">
                         {/* {updateNormalizeFlag === 0 && callFetchFeedbackCount(viewingCurrentSurvey.id)}
