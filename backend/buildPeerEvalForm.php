@@ -33,31 +33,40 @@ review_id -> x,
 */
 
 //When submit button is pressed
-if (!empty($_POST)) {
+$postData = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($_POST['review_id'], $_POST['responses'])) {
+if (!empty($postData)) {
+    echo 'Recieved Data';
+    if (!isset($postData['review_id'], $postData['responses'])) {
         http_response_code(400);
+        echo 'bad';
         $responseArray[] = "Bad Request: Missing POST parameters";
         exit();
     }
 
-    $review_id = $_POST('review_id');
+    $review_id = $postData['review_id'];
     $review_id = filter_var($review_id, FILTER_SANITIZE_NUMBER_INT);
     $eval_id = getEvalForReview($con, $review_id);
+    echo 'eval_id: ';
+    echo $eval_id;
+    
 
     if (empty($eval_id)) {
         $student_scores=array();
+        $eval_id = addNewEvaluation($con, $review_id);
     } else {
         // Get any existing scores
         $student_scores=getEvalScores($con, $eval_id);
     }
 
     // response array //
-    $response = $_POST('responses');
-    // for reach response, update or add score //
+    $response = $postData['responses'];
+    // for each response, update or add score //
     foreach ($response as $topic_id => $score) {
+        $score_data = json_decode($score, true);
         $topic_id = filter_var($topic_id, FILTER_SANITIZE_NUMBER_INT);
         $score_id = filter_var($score, FILTER_SANITIZE_NUMBER_INT);
+        echo $score_id;
         if (array_key_exists($topic_id, $student_scores)) {
             // Update the existing score if it exists
             updateExistingScore($con, $eval_id, $topic_id, $score_id);
@@ -68,6 +77,8 @@ if (!empty($_POST)) {
     }
 
 
+} else {
+    echo 'empty';
 }
 
 

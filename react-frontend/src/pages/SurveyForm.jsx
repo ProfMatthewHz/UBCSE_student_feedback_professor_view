@@ -15,7 +15,7 @@ const SurveyForm = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   
   
-  const nextButtonClickHandler = () => {
+  const nextButtonClickHandler = async () => {
     setSurveyResults([]);
     if (buttonText === 'FINISH') {
       
@@ -29,6 +29,43 @@ const SurveyForm = () => {
     }
 
     setRefreshKey(prevKey => prevKey + 1);
+
+    const requestData = {
+      review_id: 313, // Replace 'your_review_id' with the actual review ID
+      responses: surveyResults // Assuming surveyResults is an object containing topic IDs and scores
+    };
+    const postData = {
+      review_id: 312, // Replace with the actual review ID
+      responses: {
+        1: 2, // Replace with actual topic IDs and scores
+        2: 1,
+        3: 1,
+        4: 1,
+        5: 1
+      },
+    };
+    const formData = new FormData();
+    formData.append('review_id', '312');
+    formData.append('responses', surveyResults);
+    try {
+      const response = await fetch(process.env.REACT_APP_API_URL_STUDENT +'buildPeerEvalForm.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      // Handle successful response here if needed
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    
   }
 
   const previousButtonClickHandler = () => {
