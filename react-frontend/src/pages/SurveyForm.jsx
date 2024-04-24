@@ -121,7 +121,7 @@ const SurveyForm = () => {
             x={surveyData}
             surveyResults={surveyResults}
             setSurveyResults={setSurveyResults}
-            student={groupMembers[groupMemberIndex]}
+            survey_id={reviewIDs[groupMemberIndex]}
             key={refreshKey}
         />
       </div>

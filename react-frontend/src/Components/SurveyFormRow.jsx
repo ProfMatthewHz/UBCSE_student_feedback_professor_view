@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import "../styles/surveyForm.css";
 
-const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
+const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => {
     const [results, setResults] = useState([]);
     const [answered, setAnswered] = useState(0);
     const [topicQuestionElements, setTopicQuestionElements] = useState([]);
     const [topicQuestionWidth, setTopicQuestionWidth] = useState(150);
     const [clickedButtons, setClickedButtons] = useState({});
+    const [oldReviewSelections, setOldReviewSelections] = useState(null);
     
+    
+    useEffect(() => {
+        console.log(oldReviewSelections);
+        if (oldReviewSelections != null) {
+            setClickedButtons(oldReviewSelections);
+            console.log(oldReviewSelections);
+        }
 
+    }, [oldReviewSelections])
     useEffect(() => {
         if (surveyResults != null && setSurveyResults != null) {
             setSurveyResults(clickedButtons);
@@ -42,12 +51,40 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, student, key}) => {
     
     const buttonClass = (response, rowID) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
+        console.log(clickedButtons);
         return clickedButtons[rowID] === response ? 'clicked' : 'response-button';
     };
 
     const verticalLineClass = (rowID) => {
         return clickedButtons[rowID] != null ? 'green-vertical-line' : 'red-vertical-line';
     }
+
+    useEffect(() => {
+        console.log(survey_id);
+        console.log(process.env.REACT_APP_API_URL+ 'startReview.php?survey=' +survey_id);
+        const fetchData = async () => {
+            // ?survey=' +survey_id
+            try {
+                const response = await fetch(process.env.REACT_APP_API_URL_STUDENT + 'getEvalResults.php?reviewed=' +survey_id, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                const jsonData = await response.json();
+                console.log(jsonData); // Handle the response data here
+                setOldReviewSelections(jsonData);
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+    
+        fetchData();
+    }, []);
 
     const topics = x.topics.map(topic => {
         let count = -1;
