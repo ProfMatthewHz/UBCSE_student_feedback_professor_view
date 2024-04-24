@@ -19,32 +19,41 @@ $currentMonth = date('n');
 $currentSemesterNumber = MONTH_MAP_SEMESTER[$currentMonth];
 $mysqli = connectToDatabase();
 
-// Using SQL CASE to determine the semester based on the month
-$sql = "SELECT s.id AS student_id, s.email, su.start_date, COUNT(r.reviewer_id) AS reviews_count
+$sql = "SELECT s.id AS student_id, s.name, s.email, su.name AS survey_name, COUNT(r.reviewer_id) AS reviews_count
         FROM students s
-        LEFT JOIN reviews r ON s.id = r.reviewer_id
-        LEFT JOIN surveys su ON r.survey_id = su.id
-        GROUP BY s.id
-        HAVING COALESCE(
-          CASE
-            WHEN MONTH(su.start_date) IN (1, 12) THEN 1
-            WHEN MONTH(su.start_date) IN (2, 3, 4) THEN 2
-            WHEN MONTH(su.start_date) IN (5, 6, 7) THEN 3
-            WHEN MONTH(su.start_date) IN (8, 9, 10, 11) THEN 4
-            ELSE NULL
-          END, 0) = ?";
+        INNER JOIN reviews r ON s.id = r.reviewer_id
+        INNER JOIN surveys su ON r.survey_id = su.id
+        WHERE
+          COALESCE(
+            CASE
+              WHEN MONTH(su.start_date) IN (1, 12) THEN 1
+              WHEN MONTH(su.start_date) IN (2, 3, 4) THEN 2
+              WHEN MONTH(su.start_date) IN (5, 6, 7) THEN 3
+              WHEN MONTH(su.start_date) IN (8, 9, 10, 11) THEN 4
+              ELSE NULL
+            END, 0) = ? AND
+          COALESCE(
+            CASE
+              WHEN MONTH(su.end_date) IN (1, 12) THEN 1
+              WHEN MONTH(su.end_date) IN (2, 3, 4) THEN 2
+              WHEN MONTH(su.end_date) IN (5, 6, 7) THEN 3
+              WHEN MONTH(su.end_date) IN (8, 9, 10, 11) THEN 4
+              ELSE NULL
+            END, 0) = ?
+        GROUP BY s.id, su.name";
 
 if ($stmt = $mysqli->prepare($sql)) {
-    $stmt->bind_param("i", $currentSemesterNumber);
+    $stmt->bind_param("ii", $currentSemesterNumber, $currentSemesterNumber);
     $stmt->execute();
     $result = $stmt->get_result();
     $output = [];
 
     while ($row = $result->fetch_assoc()) {
-        $completed = ($row['reviews_count'] > 0) ? 1 : 0;  // Simplified completed logic
+        $completed = ($row['reviews_count'] > 0) ? 1 : 0;
 
-        $output[] = [
+        $output[$row['survey_name']][] = [
             "student_id" => $row['student_id'],
+            "name" => $row['name'],
             "email" => $row['email'],
             "completed" => $completed
         ];
