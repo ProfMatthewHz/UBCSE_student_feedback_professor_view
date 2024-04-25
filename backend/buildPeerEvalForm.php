@@ -97,7 +97,8 @@ if (!empty($postData)) {
 
     }
 
-
+    http_response_code(201);
+    exit();
 }
 
 
