@@ -8,17 +8,43 @@ const SurveyForm = () => {
   const [surveyData, setSurveyData] = useState(null);
   const [groupMembers, setGroupMembers] = useState(null);
   const [groupMemberIndex, setGroupMemberIndex] = useState(0);
+  const [reviewIDs, setReviewIDs] = useState(null);
   const [buttonText, setButtonText] = useState('SKIP');
   const [showPrevious, setShowPrevious] = useState(false)
   const [surveyResults, setSurveyResults] = useState("");
   const survey_id = location.state.survey_id + "";
   const [refreshKey, setRefreshKey] = useState(0);
   
+  const sendSurveyDataToBackend = async () => {
+    const requestData = {
+      review_id: reviewIDs[groupMemberIndex],
+      responses: surveyResults
+    };
+    
+    try {
+      const response = await fetch(process.env.REACT_APP_API_URL_STUDENT + 'buildPeerEvalForm.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      });
   
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      // Handle successful response here if needed
+  
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   const nextButtonClickHandler = async () => {
     setSurveyResults([]);
     if (buttonText === 'FINISH') {
-      
+      await sendSurveyDataToBackend();
       return; // Return early if the button text is already 'FINISH'
     }  
     setGroupMemberIndex(groupMemberIndex + 1);
@@ -29,42 +55,8 @@ const SurveyForm = () => {
     }
 
     setRefreshKey(prevKey => prevKey + 1);
-
-    const requestData = {
-      review_id: 313, // Replace 'your_review_id' with the actual review ID
-      responses: surveyResults // Assuming surveyResults is an object containing topic IDs and scores
-    };
-    const postData = {
-      review_id: 312, // Replace with the actual review ID
-      responses: {
-        1: 2, // Replace with actual topic IDs and scores
-        2: 1,
-        3: 1,
-        4: 1,
-        5: 1
-      },
-    };
-    const formData = new FormData();
-    formData.append('review_id', '312');
-    formData.append('responses', surveyResults);
-    try {
-      const response = await fetch(process.env.REACT_APP_API_URL_STUDENT +'buildPeerEvalForm.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(postData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      // Handle successful response here if needed
-
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    
+    await sendSurveyDataToBackend();
     
   }
 
@@ -101,6 +93,9 @@ const SurveyForm = () => {
             console.log(jsonData); // Handle the response data here
             setSurveyData(jsonData);
             setGroupMembers(Object.values(jsonData.group_members));
+            //setGroupMembers(jsonData.group_members);
+            setReviewIDs(Object.keys(jsonData.group_members));
+            console.log(Object.keys(jsonData.group_members));
         } catch (error) {
             console.error('Error:', error);
         }
@@ -126,7 +121,7 @@ const SurveyForm = () => {
             x={surveyData}
             surveyResults={surveyResults}
             setSurveyResults={setSurveyResults}
-            student={groupMembers[groupMemberIndex]}
+            survey_id={reviewIDs[groupMemberIndex]}
             key={refreshKey}
         />
       </div>
