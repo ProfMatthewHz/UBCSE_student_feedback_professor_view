@@ -279,15 +279,21 @@ const ViewResults = ({
                                 ? "survey-result--option-active"
                                 : "survey-result--option"
                         }
-                        onClick={() =>
+                        onClick={() =>{
                             handleSelectedSurveyResultsModalChange(
                                 viewingCurrentSurvey.id,
                                 "raw-full"
-                            )
+                            );
+                            console.log("Raw Results Clicked")
+
+                        }
                         }
                     >
                         Raw Results
                     </button>
+                   
+                   
+                   
                     <button
                         className={
                             showNormalizedSurveyResults
@@ -296,12 +302,16 @@ const ViewResults = ({
                         }
                         onClick={() =>
                            { handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average");  
-                           console.log("VIEW FEEDBACK CLICKED!!") 
+                           console.log("VIEW FEEDBACK CLICKED!!") ;
                         } 
                         }
                     >
                         Normalized Results
                     </button>
+
+
+
+
                 </div>
                 {!showRawSurveyResults && !showNormalizedSurveyResults ? (
                     <div className="viewresults-modal--no-options-selected-text">
