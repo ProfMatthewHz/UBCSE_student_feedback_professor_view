@@ -23,12 +23,12 @@ if (!isset($_SESSION['id'])) {
 // Validate CSRF token early in the script
 
 // Validate CSRF token early in the script, this is for deployement 
-if (!isset($_SESSION['csrf_token'])) {
-    print ($csrf_token);
-    http_response_code(403);
-    echo json_encode(["error" => "CSRF token validation failed."]);
-    exit();
-}
+// if (!isset($_SESSION['csrf_token'])) {
+//     print ($csrf_token);
+//     http_response_code(403);
+//     echo json_encode(["error" => "CSRF token validation failed."]);
+//     exit();
+// }
 
 
 
