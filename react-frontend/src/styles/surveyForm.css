@@ -1,18 +1,23 @@
-div.vertical-line{
-    border-left: thick solid #DD281D;
+div.red-vertical-line{
+    border-left: 4px solid #DD281D;
     height: 100%;
     display: flex;
 }
-
+div.green-vertical-line{
+    border-left: 4px solid #6DA04B;
+    height: 100%;
+    display: flex;
+}
 div.row-container {
-    margin-top: 15px;
-    height: 70px;
+    margin-top: 25px;
+    height: 90px;
 }
 
 div.survey-table-container {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    margin-right: 40px;
 }
 
 button.response-button {
@@ -22,48 +27,68 @@ button.response-button {
     background-color: #EFEFEF;
     border: none;
     box-shadow: 0 5px 6px 0 rgba(0,0,0,0.2);
-    font-size: bold;
+    font-weight: bold;
     border-radius: 5px;
+    width: 100%;
 }
 
 button.response-button:hover {
     cursor: pointer;
-    border: 3px solid #225CB5;
-    /* border-color: #225CB5; */
-    color: #225CB5;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 
 }
 
+button.clicked {
+    padding-left: 10px;
+    height: 100%;
+    background-color: #EFEFEF;
+    font-weight: bold;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    border: 3px solid #225CB5;
+    color: #225CB5;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+
+}
 div.table-data-container {
-    margin-left: 10px;
-    min-width: 300px;
-    max-width: 300px;
+    padding-left: 10px;
+    /* max-width: 300px;
+    min-width: 300px; */
     /* box-sizing: border-box; */
 }
 
 div.Header {
-    padding-top: 10px;
-    padding-left: 10px;
+    margin-top: 10px;
+    margin-left: 20px;
 }
+
+h1.Survey-Name, h2.Evaluation-Name {
+    color: #225CB5;
+    margin-bottom: 20px;
+    font-size: 40px;
+}
+
+
 div.row-topic-question-container {
-    margin-left: 10px;
+    margin-left: 15px;
     min-width: 150px;
     max-width: 150px;
-    height: 70px;
+    height: 100%;
     background-color: #225CB5;
     text-align: center;
     color: white;
     background-clip: content-box;
     border-radius: 5px;
+    font-weight: bold;
 }
 /* tr {
     
 } */
 
-button.nextFinishButton {
+button.nextFinishButtonRed {
     position: absolute;
-    left: 90%;
+    left: 92%;
     bottom: 25px;
     background-color: #DD281D;
     text-align: center;
@@ -75,9 +100,23 @@ button.nextFinishButton {
     border: none;
 }
 
+button.nextFinishButtonGreen {
+    position: absolute;
+    left: 92%;
+    bottom: 25px;
+    background-color: green;
+    text-align: center;
+    color:white;
+    font-weight: bold;
+    width: 150px;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+}
+
 button.previousButton {
     position: absolute;
-    right: 90%;
+    right: 92%;
     bottom: 25px;
     float: left;
     background-color: green;
@@ -89,11 +128,11 @@ button.previousButton {
     border: none;
 }
 
-button.previousButton:hover {
+button.previousButton:hover, button.nextFinishButtonRed:hover, button.nextFinishButtonGreen:hover {
     cursor: pointer;
 }
 
-button.nextFinishButton:hover {
+button.nextFinishButtonRe:hover {
     cursor: pointer;
 }
 /* div.prevButtonContainer {
@@ -101,3 +140,8 @@ button.nextFinishButton:hover {
     margin-left: 10px;
     float: left;
 } */
+
+span.question {
+    color: white;
+
+}
