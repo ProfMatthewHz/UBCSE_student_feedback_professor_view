@@ -88,7 +88,7 @@ div.row-topic-question-container {
 
 button.nextFinishButtonRed {
     position: absolute;
-    left: 89%;
+    left: 92%;
     bottom: 25px;
     background-color: #DD281D;
     text-align: center;
@@ -102,7 +102,7 @@ button.nextFinishButtonRed {
 
 button.nextFinishButtonGreen {
     position: absolute;
-    left: 89%;
+    left: 92%;
     bottom: 25px;
     background-color: green;
     text-align: center;
@@ -116,7 +116,7 @@ button.nextFinishButtonGreen {
 
 button.previousButton {
     position: absolute;
-    right: 89%;
+    right: 92%;
     bottom: 25px;
     float: left;
     background-color: green;
