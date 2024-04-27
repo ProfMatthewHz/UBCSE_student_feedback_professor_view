@@ -32,8 +32,6 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
 
     const clickHandler = (response, topic) => {
         const rowID = topic.topic_id != undefined ? topic.topic_id: topic.question;
-        console.log(clickedButtons);
-        console.log(rowID);
         // Set the clicked state for the clicked button in the corresponding row
         setAnswered(answered+1);
         if (clickedButtons[rowID] === response) {
@@ -66,7 +64,6 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
         if (survey_id === null) {
             return;
         } 
-        console.log('helooo');
         const fetchData = async () => {
             try {
                 const response = await fetch(process.env.REACT_APP_API_URL_STUDENT + 'getEvalResults.php?reviewed=' +survey_id, {

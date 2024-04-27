@@ -62,7 +62,9 @@ const SurveyForm = () => {
     await sendSurveyDataToBackend();
   }
 
-  const previousButtonClickHandler = () => {
+  const previousButtonClickHandler = async () => {
+    await sendSurveyDataToBackend();
+
     setButtonText('NEXT');
     if (groupMemberIndex === 1) {
       setShowPrevious(false);
@@ -93,7 +95,6 @@ const SurveyForm = () => {
             }
 
             const jsonData = await response.json();
-            console.log(jsonData);
             setSurveyData(jsonData);
             setGroupMembers(Object.values(jsonData.group_members));
             setReviewIDs(Object.keys(jsonData.group_members));

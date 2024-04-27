@@ -128,11 +128,11 @@ button.previousButton {
     border: none;
 }
 
-button.previousButton:hover {
+button.previousButton:hover, button.nextFinishButtonRed:hover, button.nextFinishButtonGreen:hover {
     cursor: pointer;
 }
 
-button.nextFinishButton:hover {
+button.nextFinishButtonRe:hover {
     cursor: pointer;
 }
 /* div.prevButtonContainer {
