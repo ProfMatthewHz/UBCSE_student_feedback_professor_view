@@ -23,7 +23,7 @@ const ViewResults = ({
     const [normalizedTableHeaders, setNormalizedTableHeaders] = useState(null); // For Normalized Results
     const [normalizedResults, setNormalizedResults] = useState([]); // For Normalized Results
     const [currentCSVData, setCurrentCSVData] = useState(null); // For CSV Download
-    const [completionCSVData, setCompletionCSVData] = useState(null); // For CSV Download for Completion Results
+    const [completionCSVData, setCompletionCSVData] = useState([]); // For CSV Download for Completion Results
     const [completionData, setCompletionData] = useState(null); // THe data we get from api call that tells us who completed which surveys
 
     var countFromAPI = 0;
@@ -53,9 +53,9 @@ const ViewResults = ({
 
 
 //Fetches the data that tells use who completed surveys
-const fetchCompleted = () => {
+const fetchCompleted = (surveyid,mappedResults) => {
     const url = `${process.env.REACT_APP_API_URL}studentFillOutData.php`;
-    console.log("Completed Url: ",url);
+   // console.log("Completed Url: ",url);
   
 
     fetch(url, {
@@ -63,22 +63,65 @@ const fetchCompleted = () => {
     })
         .then((res) => res.json())
         .then((result) => {
-            console.log("Current result: ", result);
+          //  console.log("Current result: ", result);
             setCompletionData(result); 
+           //  console.log("Completion Data IN: ", result);
+             //   console.log("surveyid: ", surveyid)
+                var infoList = result[surveyid]  // retrieve the list pair with the survey_id key
+              //  console.log("Info List Data: ", infoList);
+                var completedStudents = []      // holds list of students that have completed the survey
+
+                // builds list of students that have completed the survey
+                for (let dict of infoList){
+                    completedStudents.push(dict["name"]);
+                }
+         
+
+                
+                 var completedCSVLines = [];
+                 var currentReviewers = [];
+                
+                 if ( (mappedResults.length > 0) && (infoList!=null)){ //compute the csv file for completion results
+               //  console.log("Mapped Data Results: ", mappedResults)
+                    for (let dict of mappedResults){
+                    //console.log("Current Dict: ", dict);
+                     const email = dict["Reviewer name (email)"];
+                     const parts = email.split(' (');
+                     const name = parts[0].trim();
+                     
+                     const emailPart = parts[parts.length - 1];
+                     const cleanedEmail = emailPart.replace(/[()]/g, '');
+                    
+                     if (!currentReviewers.includes(name)){
+                        if (completedStudents.includes(name)){
+                            const row = [name,cleanedEmail, "Completed"];
+                            completedCSVLines.push(row);
+                        }
+                        else{
+                            const row = [name,cleanedEmail, "Incompleted"];
+                            completedCSVLines.push(row);
+                        }
+                        currentReviewers.push(name)
+                 }
+
+                }
+
+                 completedCSVLines.unshift(["Name", "Email", "Completion Status"]) ;// add in header row
+
+                 setCompletionCSVData(completedCSVLines);
+                // console.log("Completed CSV Lines: ", completedCSVLines);
+                 //console.log("Completed Students: ", completedStudents);
+                 }
+            
+
         })
+
         .catch((err) => {
             console.error('There was a problem with your fetch operation:', err);
         });
+
+    
 };
-
-useEffect(() => {
-    fetchCompleted()
-}, []);
-
-
-
-
-
 
 
 
@@ -110,6 +153,7 @@ useEffect(() => {
                     setRawResults(mappedResults);
                     if (result.length > 1) {
                         setCurrentCSVData(result);
+                        fetchCompleted(surveyid,mappedResults);
                     } else {
                         setCurrentCSVData(null);
                     }
@@ -122,42 +166,9 @@ useEffect(() => {
                     // FAKE DATA USED FOR TESTING
                  
 
-
-                    const infoList = completionData[surveyid] !== undefined ? completionData[surveyid] : null;  // retrieve the list pair with the survey_id key
-                    var completedStudents = []      // holds list of students that have completed the survey
-
-                    if (infoList != null){          // builds list of students that have completed the survey
-                        for (let dict of infoList){
-                            completedStudents.push(dict["name"])
-                        }
-                    }
-
+                    console.log("Completion Data: ", completionData);
+                    
                    
-                    var completedCSVLines = []
-
-                    if ((mappedResults != null) && (mappedResults.length > 0) && (infoList!=null)){ //compute the csv file for completion results
-                    for (let dict of mappedResults){
-                        const email = dict["Reviewer name (email)"];
-                        const parts = email.split(' (');
-                        const name = parts[0].trim();
-                        
-                        const emailPart = parts[parts.length - 1];
-                        const cleanedEmail = emailPart.replace(/[()]/g, '');
-                    
-                        if (completedStudents.includes(name)){
-                        const row = [name,cleanedEmail, "Completed"]
-                        completedCSVLines.push(row);
-                        }
-                        else{
-                        const row = [name,cleanedEmail, "Incompleted"]
-                        completedCSVLines.push(row);
-                        }
-                    }
-                    }
-                    completedCSVLines.unshift(["Name", "Email", "Completion Status"]) // add in header row
-
-                    setCompletionCSVData(completedCSVLines);
-                    
                     
 
 
@@ -236,7 +247,7 @@ useEffect(() => {
             });
     };
 
-    useEffect(() => {
+useEffect(() => {
         if (viewingCurrentSurvey) {
             handleSelectedSurveyResultsModalChange(
                 viewingCurrentSurvey.id,
@@ -389,6 +400,8 @@ useEffect(() => {
                     >
                         Normalized Results
                     </button>
+
+                    
 
 
 
