@@ -100,7 +100,7 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
         } 
         return (
             <div className='row-container' id={topic.question}>
-                <div className={verticalLineClass(topic.question)}>
+                <div className={verticalLineClass(topic.topic_id)}>
                     <div className='row-topic-question-container' style={{'min-width': topicQuestionWidth +'px'}}>    
                         <span className='question' >{topic.question}</span>
                     </div>
