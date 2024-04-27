@@ -9,11 +9,12 @@ const SurveyForm = () => {
   const [groupMembers, setGroupMembers] = useState(null);
   const [groupMemberIndex, setGroupMemberIndex] = useState(0);
   const [reviewIDs, setReviewIDs] = useState(null);
-  const [buttonText, setButtonText] = useState('SKIP');
+  const [buttonText, setButtonText] = useState('NEXT');
   const [showPrevious, setShowPrevious] = useState(false)
   const [surveyResults, setSurveyResults] = useState("");
   const survey_id = location.state.survey_id + "";
   const [refreshKey, setRefreshKey] = useState(0);
+  const [surveyLengthPerTopic, setSurveyLengthPerTopic] = useState(null);
   
   const sendSurveyDataToBackend = async () => {
     const requestData = {
@@ -53,7 +54,7 @@ const SurveyForm = () => {
     if (groupMemberIndex >= groupMembers.length - 2) {
       setButtonText('FINISH');
     }
-
+    console.log(surveyLengthPerTopic);
     setRefreshKey(prevKey => prevKey + 1);
     
     await sendSurveyDataToBackend();
@@ -61,7 +62,7 @@ const SurveyForm = () => {
   }
 
   const previousButtonClickHandler = () => {
-    setButtonText('SKIP');
+    setButtonText('NEXT');
     if (groupMemberIndex === 1) {
       setShowPrevious(false);
       setGroupMemberIndex(0);
@@ -95,6 +96,8 @@ const SurveyForm = () => {
             setGroupMembers(Object.values(jsonData.group_members));
             //setGroupMembers(jsonData.group_members);
             setReviewIDs(Object.keys(jsonData.group_members));
+            console.log((jsonData.topics.responses).length);
+            setSurveyLengthPerTopic(Object.keys(jsonData.topics.responses));
             console.log(Object.keys(jsonData.group_members));
         } catch (error) {
             console.error('Error:', error);
@@ -132,7 +135,11 @@ const SurveyForm = () => {
         <button className="previousButton" onClick={previousButtonClickHandler}>PREVIOUS</button>
       )}
       
-      <button className='nextFinishButton'onClick={nextButtonClickHandler}>{buttonText}</button>
+      <button 
+      className={Object.keys(surveyResults).length === Object.keys(surveyData.topics).length ? 'nextFinishButtonGreen': 'nextFinishButtonRed' }
+      onClick={nextButtonClickHandler}>
+        {Object.keys(surveyResults).length === Object.keys(surveyData.topics).length ? buttonText: buttonText === 'FINISH' ? 'FINISH' : 'SKIP'}
+        </button>
     </div>
   )
 }

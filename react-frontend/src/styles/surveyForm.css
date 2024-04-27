@@ -86,11 +86,25 @@ div.row-topic-question-container {
     
 } */
 
-button.nextFinishButton {
+button.nextFinishButtonRed {
     position: absolute;
     left: 89%;
     bottom: 25px;
     background-color: #DD281D;
+    text-align: center;
+    color:white;
+    font-weight: bold;
+    width: 150px;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+}
+
+button.nextFinishButtonGreen {
+    position: absolute;
+    left: 89%;
+    bottom: 25px;
+    background-color: green;
     text-align: center;
     color:white;
     font-weight: bold;

@@ -14,7 +14,9 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
         console.log(oldReviewSelections);
         if (oldReviewSelections != null) {
             setClickedButtons(oldReviewSelections);
-            console.log(oldReviewSelections);
+            console.log(Object.keys(oldReviewSelections).length);
+
+            setSurveyResults(oldReviewSelections);
         }
 
     }, [oldReviewSelections])
@@ -51,7 +53,7 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
     
     const buttonClass = (response, rowID) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
-        console.log(clickedButtons);
+        // console.log(clickedButtons);
         return clickedButtons[rowID] === response ? 'clicked' : 'response-button';
     };
 
