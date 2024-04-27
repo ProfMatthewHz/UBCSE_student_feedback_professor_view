@@ -9,21 +9,16 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
     const [clickedButtons, setClickedButtons] = useState({});
     const [oldReviewSelections, setOldReviewSelections] = useState(null);
     
-    
     useEffect(() => {
-        console.log(oldReviewSelections);
         if (oldReviewSelections != null) {
             setClickedButtons(oldReviewSelections);
-            console.log(Object.keys(oldReviewSelections).length);
-
             setSurveyResults(oldReviewSelections);
         }
-
     }, [oldReviewSelections])
+
     useEffect(() => {
         if (surveyResults != null && setSurveyResults != null) {
             setSurveyResults(clickedButtons);
-            console.log(results);
         }
     }, [answered]);
 
@@ -53,19 +48,16 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
     
     const buttonClass = (response, rowID) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
-        // console.log(clickedButtons);
         return clickedButtons[rowID] === response ? 'clicked' : 'response-button';
     };
 
     const verticalLineClass = (rowID) => {
+        // Determine the class name based on whether the button is clicked or not in the corresponding row
         return clickedButtons[rowID] != null ? 'green-vertical-line' : 'red-vertical-line';
     }
 
     useEffect(() => {
-        console.log(survey_id);
-        console.log(process.env.REACT_APP_API_URL+ 'startReview.php?survey=' +survey_id);
         const fetchData = async () => {
-            // ?survey=' +survey_id
             try {
                 const response = await fetch(process.env.REACT_APP_API_URL_STUDENT + 'getEvalResults.php?reviewed=' +survey_id, {
                     method: 'GET',
@@ -76,8 +68,7 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
                     throw new Error('Network response was not ok');
                 }
     
-                const jsonData = await response.json();
-                console.log(jsonData); // Handle the response data here
+                const jsonData = await response.json(); 
                 setOldReviewSelections(jsonData);
                 
             } catch (error) {
@@ -107,7 +98,7 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
                     {Object.values(topic.responses).map((response, index) => {
                         return (
                             <div className='table-data-container' style={{width: 100 / length +'%'}}>
-                                <button onClick={() => clickHandler(response, topic.topic_id) } className={buttonClass(response, topic.topic_id)} style={{'font-size': 100 - (response.length / 5) +'%'}}>{response}</button>
+                                <button onClick={() => clickHandler(response, topic.topic_id) } className={buttonClass(response, topic.topic_id)} style={{'font-size': 100 - (length / 5) +'%'}}>{response}</button>
                             </div>    
                         )})}
                 </div>        
