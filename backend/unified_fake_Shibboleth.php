@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="row mx-1 mt-2 justify-content-center">
         <div class="col-auto">
             <!-- Include the CSRF token in a hidden field -->
-            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>"> 
+<!--            <input type="hidden" name="csrf_token" value="--><?php //echo $_SESSION['csrf_token']; ?><!--"> -->
             <input class="btn btn-success" type="submit" value="Pretend Login"></input>
         </div>
     </div>

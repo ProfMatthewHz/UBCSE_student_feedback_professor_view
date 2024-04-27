@@ -13,6 +13,9 @@ require "lib/constants.php";
 require "lib/studentQueries.php";
 require "lib/database.php";
 require "lib/surveyQueries.php";
+date_default_timezone_set('America/New_York');
+
+
 
 if(!isset($_SESSION['student_id'])) {
     header("Location: ".SITE_HOME."fake_shibboleth.php");
