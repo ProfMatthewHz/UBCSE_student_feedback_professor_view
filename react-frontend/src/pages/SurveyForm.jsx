@@ -93,6 +93,7 @@ const SurveyForm = () => {
             }
 
             const jsonData = await response.json();
+            console.log(jsonData);
             setSurveyData(jsonData);
             setGroupMembers(Object.values(jsonData.group_members));
             setReviewIDs(Object.keys(jsonData.group_members));

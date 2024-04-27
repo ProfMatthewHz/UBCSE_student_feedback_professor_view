@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import "../styles/surveyForm.css";
+import { json } from 'react-router-dom';
 
 const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => {
     const [results, setResults] = useState([]);
@@ -29,7 +30,10 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
         });
     }, [topicQuestionElements]);
 
-    const clickHandler = (response, rowID) => {
+    const clickHandler = (response, topic) => {
+        const rowID = topic.topic_id != undefined ? topic.topic_id: topic.question;
+        console.log(clickedButtons);
+        console.log(rowID);
         // Set the clicked state for the clicked button in the corresponding row
         setAnswered(answered+1);
         if (clickedButtons[rowID] === response) {
@@ -46,17 +50,23 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
         }))
     }};
     
-    const buttonClass = (response, rowID) => {
+    const buttonClass = (response, topic) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
+        const rowID = topic.topic_id != undefined ? topic.topic_id: topic.question;
         return clickedButtons[rowID] === response ? 'clicked' : 'response-button';
     };
 
-    const verticalLineClass = (rowID) => {
+    const verticalLineClass = (topic) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
+        const rowID = topic.topic_id != undefined ? topic.topic_id: topic.question;
         return clickedButtons[rowID] != null ? 'green-vertical-line' : 'red-vertical-line';
     }
 
     useEffect(() => {
+        if (survey_id === null) {
+            return;
+        } 
+        console.log('helooo');
         const fetchData = async () => {
             try {
                 const response = await fetch(process.env.REACT_APP_API_URL_STUDENT + 'getEvalResults.php?reviewed=' +survey_id, {
@@ -91,14 +101,14 @@ const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => 
         } 
         return (
             <div className='row-container' id={topic.question}>
-                <div className={verticalLineClass(topic.topic_id)}>
+                <div className={verticalLineClass(topic)}>
                     <div className='row-topic-question-container' style={{'min-width': topicQuestionWidth +'px'}}>    
                         <span className='question' >{topic.question}</span>
                     </div>
                     {Object.values(topic.responses).map((response, index) => {
                         return (
                             <div className='table-data-container' style={{width: 100 / length +'%'}}>
-                                <button onClick={() => clickHandler(response, topic.topic_id) } className={buttonClass(response, topic.topic_id)} style={{'font-size': 100 - (length / 5) +'%'}}>{response}</button>
+                                <button onClick={() => clickHandler(response, topic) } className={buttonClass(response, topic)} style={{'font-size': 100 - (length / 5) +'%'}}>{response}</button>
                             </div>    
                         )})}
                 </div>        

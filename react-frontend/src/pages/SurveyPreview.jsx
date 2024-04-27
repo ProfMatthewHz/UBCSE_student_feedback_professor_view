@@ -57,6 +57,7 @@ const SurveyPreview = () => {
                     x={rubricData}
                     surveyResults={null}
                     setSurveyResults={null}
+                    survey_id={null}
                 />
             </div>
         </div>
