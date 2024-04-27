@@ -24,6 +24,8 @@ const ViewResults = ({
     const [normalizedResults, setNormalizedResults] = useState([]); // For Normalized Results
     const [currentCSVData, setCurrentCSVData] = useState(null); // For CSV Download
     const [completionCSVData, setCompletionCSVData] = useState(null); // For CSV Download for Completion Results
+    const [completionData, setCompletionData] = useState(null); // THe data we get from api call that tells us who completed which surveys
+
     var countFromAPI = 0;
     
    
@@ -47,6 +49,36 @@ const ViewResults = ({
             }, {});
         });
     };
+
+
+
+//Fetches the data that tells use who completed surveys
+const fetchCompleted = () => {
+    const url = `${process.env.REACT_APP_API_URL}studentFillOutData.php`;
+    console.log("Completed Url: ",url);
+  
+
+    fetch(url, {
+        method: "GET",
+    })
+        .then((res) => res.json())
+        .then((result) => {
+            console.log("Current result: ", result);
+            setCompletionData(result); 
+        })
+        .catch((err) => {
+            console.error('There was a problem with your fetch operation:', err);
+        });
+};
+
+useEffect(() => {
+    fetchCompleted()
+}, []);
+
+
+
+
+
 
 
 
@@ -81,26 +113,17 @@ const ViewResults = ({
                     } else {
                         setCurrentCSVData(null);
                     }
-                    console.log("Mapped Results: ", mappedResults);
-                    console.log("Raw Results: ", rawResults);
-                    console.log("Survey ID: ", surveyid);
-                    console.log("Result: ", result)
+                    // console.log("Mapped Results: ", mappedResults);
+                    // console.log("Raw Results: ", rawResults);
+                    // console.log("Survey ID: ", surveyid);
+                    // console.log("Result: ", result)
 
 
                     // FAKE DATA USED FOR TESTING
-                    const survey_id = 27
-
-                    const fakeData = {27:[{"student_id":50243535,"name":"Student One","email":"s1@buffalo.edu","completed":1},{"student_id":50243536,"name":"Student Two","email":"s2@buffalo.edu","completed":1},{"student_id":50243537,"name":"Student Three","email":"s3@buffalo.edu","completed":1},{"student_id":50243538,"name":"Student Four","email":"s4@buffalo.edu","completed":1}],"CSE 404":[{"student_id":50243535,"name":"Student One","email":"s1@buffalo.edu","completed":1},{"student_id":50243536,"name":"Student Two","email":"s2@buffalo.edu","completed":1},{"student_id":50243537,"name":"Student Three","email":"s3@buffalo.edu","completed":1},{"student_id":50243538,"name":"Student Four","email":"s4@buffalo.edu","completed":1}],"CSE 404 #2":[{"student_id":50243535,"name":"Student One","email":"s1@buffalo.edu","completed":1},{"student_id":50243536,"name":"Student Two","email":"s2@buffalo.edu","completed":1},{"student_id":50243537,"name":"Student Three","email":"s3@buffalo.edu","completed":1},{"student_id":50243538,"name":"Student Four","email":"s4@buffalo.edu","completed":1}],"Dummy Name 1":[{"student_id":50243535,"name":"Student One","email":"s1@buffalo.edu","completed":1},{"student_id":50243536,"name":"Student Two","email":"s2@buffalo.edu","completed":1},{"student_id":50243537,"name":"Student Three","email":"s3@buffalo.edu","completed":1}]}
+                 
 
 
-                    const mappedResults2 = [
-                                  {"Reviewee name (email)": "Student One (s1@buffalo.edu)", "Reviewer name (email)": "Student One (s1@buffalo.edu)", "Teamwork" : 3, "Leadership": 3, "Participation": 2},
-                                    {"Reviewee name (email)": "Student One (s1@buffalo.edu)", "Reviewer name (email)": "Student Two (s2@buffalo.edu)", "Teamwork" : 1, "Leadership": 3, "Participation": 2}
-                  
-]
-
-
-                    const infoList = fakeData[survey_id] !== undefined ? fakeData[survey_id] : null;  // retrieve the list pair with the survey_id key
+                    const infoList = completionData[surveyid] !== undefined ? completionData[surveyid] : null;  // retrieve the list pair with the survey_id key
                     var completedStudents = []      // holds list of students that have completed the survey
 
                     if (infoList != null){          // builds list of students that have completed the survey
@@ -112,8 +135,8 @@ const ViewResults = ({
                    
                     var completedCSVLines = []
 
-                    if ((mappedResults2 != null) && (mappedResults2.length > 0) && (infoList!=null)){ //compute the csv file for completion results
-                    for (let dict of mappedResults2){
+                    if ((mappedResults != null) && (mappedResults.length > 0) && (infoList!=null)){ //compute the csv file for completion results
+                    for (let dict of mappedResults){
                         const email = dict["Reviewer name (email)"];
                         const parts = email.split(' (');
                         const name = parts[0].trim();
