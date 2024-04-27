@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import SurveyFormRow from "../Components/SurveyFormRow";
 import { json, useLocation } from "react-router-dom";
 import "../styles/surveyForm.css";
+import { useNavigate } from "react-router-dom";
 
 const SurveyForm = () => {
   const location = useLocation();
@@ -15,7 +16,7 @@ const SurveyForm = () => {
   const survey_id = location.state.survey_id + "";
   const [refreshKey, setRefreshKey] = useState(0);
   const [surveyLengthPerTopic, setSurveyLengthPerTopic] = useState(null);
-  
+  let Navigate = useNavigate();
   const sendSurveyDataToBackend = async () => {
     const requestData = {
       review_id: reviewIDs[groupMemberIndex],
@@ -46,6 +47,8 @@ const SurveyForm = () => {
     setSurveyResults([]);
     if (buttonText === 'FINISH') {
       await sendSurveyDataToBackend();
+      
+      Navigate("../");
       return; // Return early if the button text is already 'FINISH'
     }  
     setGroupMemberIndex(groupMemberIndex + 1);
