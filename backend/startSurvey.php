@@ -72,10 +72,11 @@
   }
   
   $data = array(
-    'topics' => $topics,
-    'freeform' => $_SESSION['ff_topics'],
-    'group_members' => $_SESSION['group_members']
+//    'topics' => $_SESSION['mc_topics'],
+////    'freeform' => $_SESSION['ff_topics'],
+//    'group_members' => $_SESSION['group_members'],
+    'mc answers' => $_SESSION['mc_answers']
   );
   echo json_encode($data);
-  exit();
+//  exit();
 ?>

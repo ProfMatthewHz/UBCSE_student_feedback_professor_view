@@ -49,7 +49,9 @@ if (!empty($postData)) {
     }
 
     $review_id = $postData['review_id'];
+    $_SESSION['testReview_id'] = $review_id;
     $review_id = filter_var($review_id, FILTER_SANITIZE_NUMBER_INT);
+    $_SESSION['testReview_id'] = $review_id;
     $eval_id = getEvalForReview($con, $review_id);
 
     if (empty($eval_id)) {
@@ -64,6 +66,7 @@ if (!empty($postData)) {
 
     // response array //
     $response = $postData['responses'];
+    echo json_encode($response);
     // for each response, update or add score //
     foreach ($response as $topic_id => $score) {
 
