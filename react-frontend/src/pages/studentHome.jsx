@@ -349,7 +349,7 @@ console.log(rubricFuture)
                                 <th>Survey Closed</th>
                                 <th>Course Name</th>
                                 <th>Survey Name</th>
-                                <th>Submission</th>
+                                {/* <th>Submission</th> */}
                                 <th>Feedback</th>
                             </tr>
                           </thead>
@@ -365,7 +365,7 @@ console.log(rubricFuture)
                                 <td>{item.courseName}</td>
                                 <td>{item.surveyName}</td>
                                 {/* <td><button>View Submission</button></td> */}
-                                <td></td>
+                                {/* <td></td> */}
                                <td><button onClick={() => combinedClickHandler({"email":item.email,"survey_name":item.surveyName,"survey_id":item.surveyID})}>View Feedback</button></td>
                                
                               </tr>

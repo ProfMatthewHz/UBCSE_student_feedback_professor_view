@@ -48,9 +48,11 @@
   // Get the questions and responses for this survey. For now, this will be hard coded.
   $_SESSION['mc_topics'] = getSurveyMultipleChoiceTopics($con, $survey);
 	$_SESSION['mc_answers'] = array();
+  $_SESSION['mc_topics_id'] = array();
   foreach ($_SESSION['mc_topics'] as $topic_id => $topic) {
     // $_SESSION['mc_answers'][$topic_id] = getSurveyMultipleChoiceResponses($con, $topic_id, false);
     $_SESSION['mc_answers'][$topic_id] = getSurveyMultipleChoiceResponses($con, $topic_id, false);
+    $_SESSION['mc_topics_id'][$topic_id] = $topic_id;
   }
 
   // Get the freeform questions and responses for this survey.
@@ -62,6 +64,7 @@
   $topics = array();
   foreach ($_SESSION['mc_topics'] as $index => $topic) {
     $topic_data = array(
+      'topic_id' => $_SESSION['mc_topics_id'][$index],
       'question' => $topic,
       'responses' => $_SESSION['mc_answers'][$index]
     );

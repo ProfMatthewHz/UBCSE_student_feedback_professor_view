@@ -23,6 +23,9 @@ const ViewResults = ({
     const [normalizedTableHeaders, setNormalizedTableHeaders] = useState(null); // For Normalized Results
     const [normalizedResults, setNormalizedResults] = useState([]); // For Normalized Results
     const [currentCSVData, setCurrentCSVData] = useState(null); // For CSV Download
+    const [completionCSVData, setCompletionCSVData] = useState([]); // For CSV Download for Completion Results
+    const [completionData, setCompletionData] = useState(null); // THe data we get from api call that tells us who completed which surveys
+
     var countFromAPI = 0;
     
    
@@ -46,6 +49,79 @@ const ViewResults = ({
             }, {});
         });
     };
+
+
+
+//Fetches the data that tells use who completed surveys
+const fetchCompleted = (surveyid,mappedResults) => {
+    const url = `${process.env.REACT_APP_API_URL}studentFillOutData.php`;
+   // console.log("Completed Url: ",url);
+  
+
+    fetch(url, {
+        method: "GET",
+    })
+        .then((res) => res.json())
+        .then((result) => {
+          //  console.log("Current result: ", result);
+            setCompletionData(result); 
+           //  console.log("Completion Data IN: ", result);
+             //   console.log("surveyid: ", surveyid)
+                var infoList = result[surveyid]  // retrieve the list pair with the survey_id key
+              //  console.log("Info List Data: ", infoList);
+                var completedStudents = []      // holds list of students that have completed the survey
+
+                // builds list of students that have completed the survey
+                for (let dict of infoList){
+                    completedStudents.push(dict["name"]);
+                }
+         
+
+                
+                 var completedCSVLines = [];
+                 var currentReviewers = [];
+                
+                 if ( (mappedResults.length > 0) && (infoList!=null)){ //compute the csv file for completion results
+               //  console.log("Mapped Data Results: ", mappedResults)
+                    for (let dict of mappedResults){
+                    //console.log("Current Dict: ", dict);
+                     const email = dict["Reviewer name (email)"];
+                     const parts = email.split(' (');
+                     const name = parts[0].trim();
+                     
+                     const emailPart = parts[parts.length - 1];
+                     const cleanedEmail = emailPart.replace(/[()]/g, '');
+                    
+                     if (!currentReviewers.includes(name)){
+                        if (completedStudents.includes(name)){
+                            const row = [name,cleanedEmail, "Completed"];
+                            completedCSVLines.push(row);
+                        }
+                        else{
+                            const row = [name,cleanedEmail, "Incompleted"];
+                            completedCSVLines.push(row);
+                        }
+                        currentReviewers.push(name)
+                 }
+
+                }
+
+                 completedCSVLines.unshift(["Name", "Email", "Completion Status"]) ;// add in header row
+
+                 setCompletionCSVData(completedCSVLines);
+                // console.log("Completed CSV Lines: ", completedCSVLines);
+                 //console.log("Completed Students: ", completedStudents);
+                 }
+            
+
+        })
+
+        .catch((err) => {
+            console.error('There was a problem with your fetch operation:', err);
+        });
+
+    
+};
 
 
 
@@ -73,13 +149,29 @@ const ViewResults = ({
                     setShowRawSurveyResults(result.slice(1));
                     setRawResultsHeaders(result[0]);
                     const mappedResults = mapHeadersToValues(result[0], result.slice(1));
-                    console.log(mappedResults);
+                    //console.log(mappedResults);
                     setRawResults(mappedResults);
                     if (result.length > 1) {
                         setCurrentCSVData(result);
+                        fetchCompleted(surveyid,mappedResults);
                     } else {
                         setCurrentCSVData(null);
                     }
+                    // console.log("Mapped Results: ", mappedResults);
+                    // console.log("Raw Results: ", rawResults);
+                    // console.log("Survey ID: ", surveyid);
+                    // console.log("Result: ", result)
+
+
+                    // FAKE DATA USED FOR TESTING
+                 
+
+                    console.log("Completion Data: ", completionData);
+                    
+                   
+                    
+
+
                 } else {
                     // else if surveytype == "average" (For Normalized Results)
                     setShowRawSurveyResults(null);
@@ -122,8 +214,8 @@ const ViewResults = ({
                         labels = Object.entries(labels);
                         labels.unshift(["Normalized Averages", "Number of Students"]);
                        
-                        console.log(labels);
-                        console.log(result);
+                       // console.log(labels);
+                       // console.log(result);
                         
                         const mappedNormalizedResults = mapHeadersToValues(
                             result[0],
@@ -133,14 +225,16 @@ const ViewResults = ({
                         setShowNormalizedSurveyResults(labels);
                       
                         setNormalizedResults(mappedNormalizedResults);
+                 
 
                         if (mappedNormalizedResults.length > 0){ //update the normalizedResults map to include feedback count for each student
                             callFetchFeedbackCount(surveyid,mappedNormalizedResults);
                         }
-
-                        console.log("mapped normalized results: ", mappedNormalizedResults)
-                        setNormalizedTableHeaders(result[0]);
-                      
+                        
+                            setNormalizedTableHeaders(result[0]);
+                   
+                       
+                     
                     } else {
                         setCurrentCSVData(null);
                         setShowNormalizedSurveyResults(true);
@@ -153,7 +247,7 @@ const ViewResults = ({
             });
     };
 
-    useEffect(() => {
+useEffect(() => {
         if (viewingCurrentSurvey) {
             handleSelectedSurveyResultsModalChange(
                 viewingCurrentSurvey.id,
@@ -200,8 +294,8 @@ const ViewResults = ({
         });
     };
   
-    console.log("Normalized results");
-    console.log(normalizedResults);
+    // console.log("Normalized results");
+    // console.log(normalizedResults);
 
     
 
@@ -210,7 +304,8 @@ const ViewResults = ({
         // Iterate through each student object in normalizedResults and fetch feedback count
         for (let i = 0; i < results.length; i++) {
             const email = results[i]["Reviewee name (email)"];
-            const parts = email.split(' ');
+            const parts = email.split(' (');
+            const name = parts[0];
             const emailPart = parts[parts.length - 1];
             const cleanedEmail = emailPart.replace(/[()]/g, '');
     
@@ -218,7 +313,8 @@ const ViewResults = ({
                 // Fetch feedback count for the current student
                 const result = await fetchFeedbackCount(cleanedEmail, survey_id);
                 // Update "Feedback view count" in normalizedResults
-                results[i]["Feedback view count"] = countFromAPI;
+                const newDict = {"Reviewee name": name, "Email": cleanedEmail, "Average normalized result": results[i]["Average normalized result"], "Feedback view count": countFromAPI}
+                results[i] = newDict;
             } catch (error) {
                 console.error('Error fetching feedback count:', error);
                 // Handle error if necessary
@@ -227,11 +323,20 @@ const ViewResults = ({
     
         // After updating all normalizedResults, set the state with the updated array
         setNormalizedResults([...results]);
-        console.log("New Normalized Results", results);
+       // console.log("New Normalized Results", results);
+
+
+        //Update csv to include fields: name, email, normalized result, feedback view count
+        const newResults = [Object.keys(results[0])]
+        for (let i in results){
+            newResults.push(Object.values(results[i]))
+        }
+        setCurrentCSVData(newResults)
+        
     };
 
    
-
+  
 
 
 
@@ -266,15 +371,21 @@ const ViewResults = ({
                                 ? "survey-result--option-active"
                                 : "survey-result--option"
                         }
-                        onClick={() =>
+                        onClick={() =>{
                             handleSelectedSurveyResultsModalChange(
                                 viewingCurrentSurvey.id,
                                 "raw-full"
-                            )
+                            );
+                            console.log("Raw Results Clicked")
+
+                        }
                         }
                     >
                         Raw Results
                     </button>
+                   
+                   
+                   
                     <button
                         className={
                             showNormalizedSurveyResults
@@ -283,12 +394,18 @@ const ViewResults = ({
                         }
                         onClick={() =>
                            { handleSelectedSurveyResultsModalChange(viewingCurrentSurvey.id, "average");  
-                           console.log("VIEW FEEDBACK CLICKED!!") 
+                           console.log("VIEW FEEDBACK CLICKED!!") ;
                         } 
                         }
                     >
                         Normalized Results
                     </button>
+
+                    
+
+
+
+
                 </div>
                 {!showRawSurveyResults && !showNormalizedSurveyResults ? (
                     <div className="viewresults-modal--no-options-selected-text">
@@ -308,6 +425,24 @@ const ViewResults = ({
                                 Download Results
                             </CSVLink>
                         </div>
+                        
+                        {/* Button to view who completed the survey */}
+                        <div className="viewresults-modal--other-button-container">
+                            <CSVLink
+                                className="downloadbtn"
+                                filename={
+                                    "survey-" + viewingCurrentSurvey.id + "-completion-results.csv"
+                                }
+                                data={completionCSVData}
+                            >
+                                Download Completion Results
+                            </CSVLink>
+                        </div>
+
+
+
+
+
                         <div className="rawresults--table-container">
                             {/* Table for Raw Results */}
                             <DataTable
@@ -362,7 +497,7 @@ const ViewResults = ({
                             >
                                 Download Results
                             </CSVLink>
-                            {console.log("After 2 normalized results: ", normalizedResults)}
+                          
                         </div>
                         <div className="viewresults-modal--barchart-container">
                         {/* {updateNormalizeFlag === 0 && callFetchFeedbackCount(viewingCurrentSurvey.id)}

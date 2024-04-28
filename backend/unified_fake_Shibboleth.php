@@ -7,13 +7,13 @@ ini_set("error_log", "~/php-error.log");
 
 session_start();
 
-// Generate fixed CSRF token for testing remove for deployment, replace with commented out code underneath Deployment CSRF token
+// // Generate fixed CSRF token for testing remove for deployment, replace with commented out code underneath Deployment CSRF token
 // $_SESSION['csrf_token'] = "testing";
 
-// Deployment CSRF token
-// if (empty($_SESSION['csrf_token'])) {
-//     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-// }
+// // // Deployment CSRF token
+// // if (empty($_SESSION['csrf_token'])) {
+// //     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+// // }
 
 // Bring in required code
 require_once "lib/random.php";
@@ -30,7 +30,7 @@ if (!empty($_SERVER['uid'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // // Validate CSRF token
+    // Validate CSRF token
     // if (!isset($_POST['csrf_token']) || $_SESSION['csrf_token'] !== $_POST['csrf_token']) {
     //     http_response_code(403);
     //     echo "CSRF token validation failed.";
@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="row mx-1 mt-2 justify-content-center">
         <div class="col-auto">
             <!-- Include the CSRF token in a hidden field -->
-            <!-- <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>"> -->
+<!--            <input type="hidden" name="csrf_token" value="--><?php //echo $_SESSION['csrf_token']; ?><!--"> -->
             <input class="btn btn-success" type="submit" value="Pretend Login"></input>
         </div>
     </div>

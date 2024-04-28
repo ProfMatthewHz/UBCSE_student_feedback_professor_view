@@ -29,9 +29,8 @@ const SurveyPreview = () => {
               }
 
               const jsonData = await response.json();
-              console.log(jsonData); // Handle the response data here
-        
               setRubricData(jsonData);
+              
           } catch (error) {
               console.error('Error:', error);
           }
@@ -57,6 +56,7 @@ const SurveyPreview = () => {
                     x={rubricData}
                     surveyResults={null}
                     setSurveyResults={null}
+                    survey_id={null}
                 />
             </div>
         </div>
