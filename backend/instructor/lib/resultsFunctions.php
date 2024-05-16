@@ -121,7 +121,7 @@ function getReviewerReviewResults($reviewers, $scores, $topics, $team_data) {
       $count = 0;
       $total = 0;
       foreach ($invert_normals[$id] as $reviewee => $normal) {
-        if ($normal != NO_SCORE_MARKER) {
+        if ($normal !== NO_SCORE_MARKER) {
           $count++;
           $total = $total + (pow($normal - $avg_normal[$reviewee], 2));
         }

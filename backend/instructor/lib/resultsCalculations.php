@@ -86,12 +86,12 @@ function calculateOverallResults($students, $scores, $normalized) {
     foreach ($scores[$student_id] as $reviewer_id => $responses) {
       $weight = $responses["weight"];
       // Check that the student completed all of the surveys and that this review "counts"
-      if ($normalized[$student_id][$reviewer_id] != NO_SCORE_MARKER) {
+      if ($normalized[$student_id][$reviewer_id] !== NO_SCORE_MARKER) {
         $sum = $sum + ($normalized[$student_id][$reviewer_id] * $weight);
         $sum_weights = $sum_weights + $weight;
       }
     }
-    if ($sum == 0) {
+    if ($sum_weights == 0) {
       $ret_val[$student_id] = NO_SCORE_MARKER;
     } else {
       $ret_val[$student_id] = $sum / $sum_weights;
