@@ -1,6 +1,9 @@
 <?php
-define("SITE_HOME","http://localhost/StudentSurvey/backend/");
-define("INSTRUCTOR_HOME","http://localhost/teamwork/instructor/");
+# Local testing mode 
+#define("SITE_HOME","http://localhost/StudentSurvey/backend/");
+#define("INSTRUCTOR_HOME","http://localhost/teamwork/instructor/");
+define("SITE_HOME","https://cse.buffalo.edu/teamwork/backend/");
+define("INSTRUCTOR_HOME","https://cse.buffalo.edu/teamwork/backend/instructor/");
 define("SESSIONS_SALT", "session-salt");
 define("PBKDF2_ITERS", 50000);
 define("TOKEN_SIZE", 32);
