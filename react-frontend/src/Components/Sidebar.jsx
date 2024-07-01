@@ -1,7 +1,6 @@
 import "../styles/sidebar.css";
 import React, { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-
+import { NavLink } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import Modal from "./Modal";
 import AddCourse from "../pages/AddCourse";
@@ -13,11 +12,7 @@ import AddRubric from "./AddRubric";
 
 function SideBar(props) {
 
-  const [clicked, setClicked] = useState(false)
-
-  const handleClick = () => {
-    setClicked((prev) => !prev)
-  }
+  const [clicked, setClicked] = useState(false);
 
   const [activeButton, setActiveButton] = useState(false);
   const [dropdown_value, setDropDownValue] = useState("");
@@ -46,11 +41,14 @@ function SideBar(props) {
         const connected_course = document.getElementById(item);
         if (connected_course) {
           return document.getElementById(item).offsetTop - 366;
+        } else {
+          return null;
         }
       });
 
       for (let i = sidebar_items.length - 1; i >= 0; i--) {
         if (scrollPosition >= sidebar_items_positions[i]) {
+          document.getElementById(sidebar_items[i]+"-Option").scrollIntoView();
           setActiveButton(sidebar_items[i] + "-Option");
           break;
         }
@@ -79,14 +77,10 @@ function SideBar(props) {
         setTermContents([]);
       }
     }
-  }, [dropdown_value, props.content_dictionary]);
-
-
+  }, [dropdown_value, props, props.content_dictionary]);
 
   return (
     <>
-      
-
       {/* Add Course Modal Below */}
       <Modal
         open={showAddCourseModal}

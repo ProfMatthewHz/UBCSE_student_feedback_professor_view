@@ -292,6 +292,7 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
         process.env.REACT_APP_API_URL + filename,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -321,6 +322,7 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
         process.env.REACT_APP_API_URL + "rubricConfirm.php",
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },

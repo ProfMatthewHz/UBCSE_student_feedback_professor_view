@@ -33,6 +33,7 @@ const Course = ({course, page}) => {
     function updateAllSurveys() {
         fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
@@ -66,7 +67,6 @@ const Course = ({course, page}) => {
     }
 
     // MODAL CODE
-
     const [actionsButtonValue, setActionsButtonValue] = useState("");
     const [currentSurveyEndDate, setCurrentSurveyEndDate] = useState("");
 
@@ -136,6 +136,7 @@ const Course = ({course, page}) => {
     const fetchRubrics = () => {
         fetch(process.env.REACT_APP_API_URL + "rubricsGet.php", {
             method: "GET",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
@@ -159,6 +160,7 @@ const Course = ({course, page}) => {
     const fetchPairingModes = () => {
         fetch(process.env.REACT_APP_API_URL + "surveyTypesGet.php", {
             method: "GET",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
@@ -284,10 +286,10 @@ const Course = ({course, page}) => {
     async function fetchRosterNonRoster() {
         let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
         console.log(fetchHTTP);
-        //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
         try {
             const response = await fetch(fetchHTTP, {
                 method: "GET",
+                credentials: "include",
             });
             const result = await response.json();
 
@@ -302,10 +304,10 @@ const Course = ({course, page}) => {
     async function fetchAddSurveyToDatabaseComplete(data) {
         console.log(data);
         let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
-        //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
         try {
             const response = await fetch(fetchHTTP, {
                 method: "POST",
+                credentials: "include",
                 body: data,
             });
             const result = await response.json();
@@ -332,10 +334,10 @@ const Course = ({course, page}) => {
             process.env.REACT_APP_API_URL +
             "addSurveyToCourse.php?course=" +
             course.id;
-        //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
         try {
             const response = await fetch(fetchHTTP, {
                 method: "POST",
+                credentials: "include",
                 body: formData,
             });
             const result = await response.json();
@@ -352,10 +354,10 @@ const Course = ({course, page}) => {
             process.env.REACT_APP_API_URL +
             "duplicateExistingSurvey.php?survey=" +
             currentSurvey.id;
-        //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
         try {
             const response = await fetch(fetchHTTP, {
                 method: "POST",
+                credentials: "include",
                 body: formdata,
             });
             const result = await response.text();
@@ -429,9 +431,6 @@ const Course = ({course, page}) => {
         }
 
         //date and time keyboard typing bound checks.
-
-       // let minDateObject = new Date("2023-08-31T00:00:00"); //first day of class
-       // let maxDateObject = new Date("2023-12-31T00:00:00"); //last day of class
         let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
         let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
         // if (startDateObject < minDateObject) {
@@ -603,9 +602,6 @@ const Course = ({course, page}) => {
         }
 
         //date and time keyboard typing bound checks.
-
-        // let minDateObject = new Date("2023-08-31T00:00:00"); //first day of class
-        // let maxDateObject = new Date("2023-12-31T00:00:00"); //last day of class
         let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
         let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
         // if (startDateObject < minDateObject) {
@@ -836,6 +832,7 @@ const Course = ({course, page}) => {
 
         fetch(process.env.REACT_APP_API_URL + "rosterUpdate.php", {
             method: "POST",
+            credentials: "include",
             body: updateRosterformData,
         })
             .then((res) => res.text())
@@ -876,6 +873,7 @@ const Course = ({course, page}) => {
     useEffect(() => {
         fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
@@ -929,10 +927,10 @@ const Course = ({course, page}) => {
     async function verifyDeleteBackendGet(id) {
         let fetchHTTP =
             process.env.REACT_APP_API_URL + "deleteSurvey.php?survey=" + id;
-        //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
         try {
             const response = await fetch(fetchHTTP, {
                 method: "GET",
+                credentials: "include",
             });
             const result = await response.json();
             console.log(result);
@@ -945,11 +943,11 @@ const Course = ({course, page}) => {
     async function verifyDeleteBackend(formdata, id) {
         let fetchHTTP =
             process.env.REACT_APP_API_URL + "deleteSurvey.php?survey=" + id;
-        //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
         try {
             const response = await fetch(fetchHTTP, {
                 method: "POST",
                 body: formdata,
+                credentials: "include",
             });
             const result = await response.json();
             console.log(result);
@@ -962,10 +960,10 @@ const Course = ({course, page}) => {
     async function extendSurveyBackendGet(id) {
         let fetchHTTP =
             process.env.REACT_APP_API_URL + "extendSurvey.php?survey=" + id;
-        //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
         try {
             const response = await fetch(fetchHTTP, {
                 method: "GET",
+                credentials: "include",
             });
             const result = await response.text();
             console.log(result);
@@ -978,10 +976,10 @@ const Course = ({course, page}) => {
     async function extendSurveyBackendPost(id, formdata) {
         let fetchHTTP =
             process.env.REACT_APP_API_URL + "extendSurvey.php?survey=" + id;
-        //let response = await fetch(fetchHTTP,{method: "POST", body: formData});
         try {
             const response = await fetch(fetchHTTP, {
                 method: "POST",
+                credentials: "include",
                 body: formdata,
             });
             const result = await response.json();

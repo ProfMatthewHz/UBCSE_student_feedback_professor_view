@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SurveyFormRow from "../Components/SurveyFormRow";
-import { json, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "../styles/surveyForm.css";
 import { useNavigate } from "react-router-dom";
 
@@ -27,6 +27,7 @@ const SurveyForm = () => {
     try {
       const response = await fetch(process.env.REACT_APP_API_URL_STUDENT + 'buildPeerEvalForm.php', {
         method: 'POST',
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json'
         },
@@ -105,7 +106,7 @@ const SurveyForm = () => {
     };
 
     fetchData();
-}, []);
+  }, [survey_id]);
 
   // Render null if rubricData is not set, otherwise render the page content
   if (surveyData === null && groupMembers === null) {

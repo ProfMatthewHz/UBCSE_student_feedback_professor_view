@@ -5,8 +5,6 @@ import { BarElement, LinearScale, CategoryScale, Chart } from 'chart.js';
 Chart.register(BarElement, LinearScale, CategoryScale);
 
 const BarChart = (results) => {
-
-
   const results_without_headers = results["survey_data"].slice(1); // Remove the headers
   const result_labels = results_without_headers.map(item => item[0]); // Get the labels
   const result_data = results_without_headers.map(item => item[1]); // Get the data

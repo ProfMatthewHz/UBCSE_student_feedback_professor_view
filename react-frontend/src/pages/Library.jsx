@@ -16,6 +16,7 @@ const Library = () => {
             process.env.REACT_APP_API_URL + "getInstructorRubrics.php",
             {
                 method: "GET",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },

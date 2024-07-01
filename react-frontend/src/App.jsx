@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, {useState, useEffect} from "react";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -10,24 +10,20 @@ import SurveyForm from "./pages/SurveyForm"
 import SurveyPreview from "./pages/SurveyPreview"
 
 function App() {
-
-
     const [userFlag, setUserFlag] = useState(1);  // userFlag = 1 -> prof    userFlag = 2 -> student
 
     //Find who is logging in and load page accordingly
     const fetchFlag = () => {
-      const url = `${process.env.REACT_APP_API_URL_STUDENT}redirectEndpoint.php?`;
-      //console.log("Current Url: ", url);
+      const url = `${process.env.REACT_APP_API_URL_STUDENT}redirectEndpoint.php`;
     
       fetch(url, {
           method: "GET",
+          credentials: "include",
       })
           .then((res) => res.json())
           .then((result) => {
-              setUserFlag(result["redirect"]); 
-              
-             // console.log("Result Redirect: ", result["redirect"])
-              //console.log("User Flag: ", userFlag)
+              setUserFlag(result["redirect"]);
+              console.log(result["redirect"]);
           })
           .catch((err) => {
             console.error('There was a problem with your fetch operation:', err);
@@ -38,7 +34,7 @@ function App() {
 }, []);
 
   return (
-    <Router basename={process.env.REACT_APP_BASE_URL}>
+    <BrowserRouter basename={process.env.REACT_APP_BASE_URL}>
       <div className="app">
         <div className="background-design"></div>
             <Routes>
@@ -50,21 +46,19 @@ function App() {
                 <Route path="/history" element={<History />} />
                 <Route path="/student" element={<ProfStudentHome />} /> 
                 <Route path="/about" element={<About />} />
-                <Route path ="/SurveyPreview" element={<SurveyPreview />} />
+                <Route path ="/surveyPreview" element={<SurveyPreview />} />
                 </>
             )}
-
             {/* Student Paths */}
             {userFlag === 2 && (
-                <>
-                  <Route path="/" element={<StudentHome />} /> 
-                  <Route path="/SurveyForm" element={<SurveyForm />} />
-                </>
-            )}          
-
+              <>
+                <Route path="/" element={<StudentHome />} /> 
+                <Route path="/SurveyForm" element={<SurveyForm />} />
+              </>
+            )}
             </Routes>    
       </div>
-    </Router>
+    </BrowserRouter>
 
   );
 }

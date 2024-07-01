@@ -6,14 +6,9 @@ ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
 session_start();
-
-// // Generate fixed CSRF token for testing remove for deployment, replace with commented out code underneath Deployment CSRF token
-// $_SESSION['csrf_token'] = "testing";
-
-// // // Deployment CSRF token
-// // if (empty($_SESSION['csrf_token'])) {
-// //     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-// // }
+header("Access-Control-Allow-Origin: http://localhost:3000");
+header('Access-Control-Allow-Headers: Content-Type');
+header("Access-Control-Allow-Credentials: true");
 
 // Bring in required code
 require_once "lib/random.php";
@@ -21,25 +16,19 @@ require_once "lib/database.php";
 require_once "lib/constants.php";
 require_once "instructor/lib/pairingFunctions.php";
 require_once "instructor/lib/instructorQueries.php";
-require "lib/studentQueries.php";
+require_once "lib/studentQueries.php";
 
 // Sanity check that prevents this from being used on the production server
 if (!empty($_SERVER['uid'])) {
-    header("Location: " . SITE_HOME);
+    http_response_code(400);
+    $response['error'] = "Bad Request: This page is not meant to be used in production.";
+    header('Content-Type: application/json');
+    echo json_encode($response);
     exit();
-}
+  }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validate CSRF token
-    // if (!isset($_POST['csrf_token']) || $_SESSION['csrf_token'] !== $_POST['csrf_token']) {
-    //     http_response_code(403);
-    //     echo "CSRF token validation failed.";
-    //     exit();
-    //  }
-
-
     $con = connectToDatabase();
-
     if (empty($_POST["UBIT"])) {
         http_response_code(400);
         echo "Bad Request: Missing parameters.";
@@ -49,35 +38,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['UBIT'] . "@buffalo.edu";
     $id = getInstructorId($con, $email);
     $id_and_name = getStudentInfoFromEmail($con, $email);
-
-
-// If it is an instructor
     if (!empty($id)) {
         $_SESSION['id'] = $id;
         $_SESSION["surveyTypes"] = getSurveyTypes($con);
         $_SESSION['redirect'] = 1;
-// Redirect the instructor to the next page
         http_response_code(302);
-        header("Location: " . "http://localhost/StudentSurvey/react-frontend/build");
-        //header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
+        header("Location: " . FRONTEND_HOME);
         exit();
     }
 
-
-// Logic for when it is NOT an instructor BUT a student
+    // Logic for when it is NOT an instructor BUT a student
     if (!empty($id_and_name)) {
         session_regenerate_id();
         $_SESSION['student_id'] = $id_and_name[0];
         $_SESSION['ubit'] = $_POST['UBIT'];
         $_SESSION['redirect'] = 2;
         http_response_code(302);
-        header("Location: " . "http://localhost/StudentSurvey/react-frontend/build");
-        // header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
+        header("Location: " . FRONTEND_HOME);
+        echo implode(',',$_SESSION);
         exit();
     }
 
-
-// Not an Instructor OR a student
+    // Not an Instructor OR a student
     http_response_code(403);
     echo 'Unauthorized access attempt, please talk to Professor Hertz if this should NOT be the case';
     exit();
@@ -110,8 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
     <div class="row mx-1 mt-2 justify-content-center">
         <div class="col-auto">
-            <!-- Include the CSRF token in a hidden field -->
-<!--            <input type="hidden" name="csrf_token" value="--><?php //echo $_SESSION['csrf_token']; ?><!--"> -->
             <input class="btn btn-success" type="submit" value="Pretend Login"></input>
         </div>
     </div>

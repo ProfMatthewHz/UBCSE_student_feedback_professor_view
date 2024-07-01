@@ -15,13 +15,8 @@ $responseArray = [];
 $id = $_SESSION['student_id'];
 $con = connectToDatabase();
 
-if(!isset($_SESSION['student_id'])) {
-    header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/backend/unified_fake_Shibboleth.php");
-    exit();
-}
-
-if(!isset($_SESSION['mc_answers'])) {
-    header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/backend/unified_fake_Shibboleth.php");
+if(!isset($_SESSION['student_id']) || !isset($_SESSION['mc_answers'])) {
+    header("Location: ". SITE_HOME."unified_fake_Shibboleth.php");
     exit();
 }
 

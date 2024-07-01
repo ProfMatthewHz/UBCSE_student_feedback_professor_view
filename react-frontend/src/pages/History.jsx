@@ -91,6 +91,7 @@ const History = () => {
             process.env.REACT_APP_API_URL + "instructorTermsPost.php",
             {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
@@ -114,6 +115,7 @@ const History = () => {
                         process.env.REACT_APP_API_URL + "instructorCoursesInTerm.php",
                         {
                             method: "POST",
+                            credentials: "include",
                             headers: {
                                 "Content-Type": "application/x-www-form-urlencoded",
                             },

@@ -22,7 +22,7 @@ const RubricModal = ({open,onClose,modalData}) => {
   
         fetch(url, {
             method: "GET",
-           
+            credentials: "include",
         })
             .then((res) => res.json())
             .then((result) => {

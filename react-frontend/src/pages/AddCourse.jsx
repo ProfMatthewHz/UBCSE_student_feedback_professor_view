@@ -138,6 +138,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
         // Fetch all instructors
         fetch(process.env.REACT_APP_API_URL + "getInstructors.php", {
             method: "GET",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
@@ -214,6 +215,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
         // Send the form data to the API
         fetch(process.env.REACT_APP_API_URL + "courseAdd.php", {
             method: "POST",
+            credentials: "include",
             body: formData,
         })
             // Parse the response to JSON format

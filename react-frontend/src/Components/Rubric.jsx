@@ -30,6 +30,7 @@ const Rubric = ({rubric_id, getRubrics}) => {
             process.env.REACT_APP_API_URL + filename,
             {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
@@ -40,7 +41,6 @@ const Rubric = ({rubric_id, getRubrics}) => {
         )
             .then((res) => res.json())
             .then((result) => {
-
                 if (filename === "getInstructorRubrics.php") { // Initial Rubric Info
                     setRubricName(result.data.name)
                     setLevels(Object.values(result.data.levels))

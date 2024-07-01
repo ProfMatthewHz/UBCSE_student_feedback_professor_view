@@ -18,8 +18,7 @@ const ViewResults = ({
     const [showRawSurveyResults, setShowRawSurveyResults] = useState(null); // For Raw Results
     const [rawResultsHeaders, setRawResultsHeaders] = useState(null); // For Raw Results
     const [rawResults, setRawResults] = useState([]); // For Raw Results
-    const [showNormalizedSurveyResults, setShowNormalizedSurveyResults] =
-        useState(null); // For Normalized Results
+    const [showNormalizedSurveyResults, setShowNormalizedSurveyResults] = useState(null); // For Normalized Results
     const [normalizedTableHeaders, setNormalizedTableHeaders] = useState(null); // For Normalized Results
     const [normalizedResults, setNormalizedResults] = useState([]); // For Normalized Results
     const [currentCSVData, setCurrentCSVData] = useState(null); // For CSV Download
@@ -60,6 +59,7 @@ const fetchCompleted = (surveyid,mappedResults) => {
 
     fetch(url, {
         method: "GET",
+        credentials: "include",
     })
         .then((res) => res.json())
         .then((result) => {
@@ -133,6 +133,7 @@ const fetchCompleted = (surveyid,mappedResults) => {
     const handleSelectedSurveyResultsModalChange = (surveyid, surveytype) => {
         fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
@@ -144,7 +145,6 @@ const fetchCompleted = (surveyid,mappedResults) => {
             .then((res) => res.json())
             .then((result) => {
                 if (surveytype === "raw-full") {
-                   
                     setShowNormalizedSurveyResults(null);
                     setShowRawSurveyResults(result.slice(1));
                     setRawResultsHeaders(result[0]);
@@ -173,34 +173,27 @@ const fetchCompleted = (surveyid,mappedResults) => {
 
 
                 } else {
-                    // else if surveytype == "average" (For Normalized Results)
                     setShowRawSurveyResults(null);
-              
                     if (result.length > 1) {
                         const results_without_headers = result.slice(1);
+                        console.log(results_without_headers)
                         const maxValue = Math.max(
-                            ...results_without_headers.map((result) => result[1])
+                            ...results_without_headers.map((result) => isNaN(result[1])? 0 : result[1])
                         );
-
-                        let labels = {};
-                        let startLabel = 0.0;
+                        let labels = {'0.0-0.2' : 0};
+                        let startLabel = 0.01;
                         let endLabel = 0.2;
-                        labels[`${startLabel.toFixed(1)}-${endLabel.toFixed(1)}`] = 0;
-
-                        startLabel = 0.01;
                         while (endLabel < maxValue) {
                             startLabel += 0.2;
                             endLabel += 0.2;
                             labels[`${startLabel.toFixed(2)}-${endLabel.toFixed(1)}`] = 0;
                         }
-
                         for (let individual_data of results_without_headers) {
                             for (let key of Object.keys(labels)) {
                                 const label_split = key.split("-");
                                 const current_min = parseFloat(label_split[0]);
                                 const current_max = parseFloat(label_split[1]);
-                                const current_normalized_average =
-                                    individual_data[1].toFixed(1);
+                                const current_normalized_average = individual_data[1];
 
                                 if (
                                     current_normalized_average >= current_min &&
@@ -270,10 +263,10 @@ useEffect(() => {
         // Send student_id and survey_id back to student
 
         const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?email=${encodeURIComponent(email)}&survey_id=${survey_id}`;
-       
 
         return fetch(url, {
             method: "GET",
+            credentials: "include",
         })
         .then((res) => {
             if (!res.ok) {
@@ -293,12 +286,6 @@ useEffect(() => {
             return "Not Available"; 
         });
     };
-  
-    // console.log("Normalized results");
-    // console.log(normalizedResults);
-
-    
-
 
     const callFetchFeedbackCount = async (survey_id,results) => {
         // Iterate through each student object in normalizedResults and fetch feedback count

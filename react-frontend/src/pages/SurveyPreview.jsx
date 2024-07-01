@@ -13,14 +13,12 @@ const SurveyPreview = () => {
           try {
               const response = await fetch(process.env.REACT_APP_API_URL + "lib/getRubricTable.php", {
                   method: 'POST',
+                  credentials: "include",
                   headers: {
                       'Content-Type': 'application/x-www-form-urlencoded',
-                      // Add any additional headers if needed
-                      
                   },
                   body: new URLSearchParams({
                       rubric: location.state.rubric_id, // Example rubric ID, replace with actual data
-                      // Add any other POST data required by the PHP file
                   }),
               });
 
@@ -37,13 +35,13 @@ const SurveyPreview = () => {
       };
 
       postData();
-  }, []);
+    }, [location.state.rubric_id]);
 
 
-  // Render null if rubricData is not set, otherwise render the page content
-  if (rubricData === null) {
-      return null;
-  }
+    // Render null if rubricData is not set, otherwise render the page content
+    if (rubricData === null) {
+        return null;
+    }
 
     return (
         <div>

@@ -1,9 +1,4 @@
   <?php
-//  // JWT //
-//  require_once __DIR__ . '/../vendor/autoload.php';
-//  use Firebase\JWT\JWT;
-//  use Firebase\JWT\Key;
-
   //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
@@ -15,12 +10,17 @@ require "lib/constants.php";
 require "lib/database.php";
 require "lib/studentQueries.php";
 
-  $response = [];
+$response = [];
 
+echo 'huh?';
+exit();
 // Sanity check that prevents this from being used on the production server
 if(!empty($_SERVER['uid'])) {
- 	header("Location: ".SITE_HOME);
- 	exit();
+  http_response_code(400);
+  $response['error'] = "Bad Request: This page is not meant to be used in production.";
+  header('Content-Type: application/json');
+  echo json_encode($response);
+  exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -28,62 +28,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $con = connectToDatabase();
   if (empty($_POST["UBIT"])) {
     http_response_code(400);
-//    echo "Bad Request: Missing parameters.";
-//    exit();
-      $response['error'] = "Bad Request: Missing parameters.";
-
-      header('Content-Type: application/json');
-      echo json_encode($response);
-      exit();
+    $response['error'] = "Bad Request: Missing parameters.";
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
   }
   $email = $_POST['UBIT']."@buffalo.edu";
   $id_and_name = getStudentInfoFromEmail($con, $email);
   if (empty($id_and_name)) {
-     http_response_code(400);
-//     echo 'Double-check UBIT: ' . $email . ' is not in the system.';
-//     exit();
+    http_response_code(400);
+    $response['error'] = 'Double-check UBIT: ' . $email . ' is not in the system.';
 
-      $response['error'] = 'Double-check UBIT: ' . $email . ' is not in the system.';
-
-      header('Content-Type: application/json');
-      echo json_encode($response);
-      exit();
-  }
-
-//    // replacement //
-//    $secretKey = "myAppJWTKey2024!#$";
-//    $payload = [
-//        "data" => [
-//            "student_id" => $id_and_name[0] // Custom data
-//        ]
-//    ];
-//    $jwt_studentId = JWT::encode($payload, $secretKey, 'HS256');
-//
-//    // sending this shit as a cookie //
-//    http_response_code(200);
-//    setcookie('student_id', $jwt_studentId);
-//    $student_id = $id_and_name[0];
-//    $_SERVER['student_id'] = $student_id;
-
-    session_regenerate_id();
-    $_SESSION['student_id'] = $id_and_name[0];
-
-    $_SESSION['ubit'] = $_POST['UBIT'];
-    $_SESSION['redirect'] = 1;
-//    http_response_code(302);
-//        header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
-
-    // http://localhost/StudentSurvey/react-frontend/build //
-    header("Location: "."http://localhost/StudentSurvey/react-frontend/build");
-//    header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build");
-//    // http://localhost/StudentSurvey/react-frontend/build //
+    header('Content-Type: application/json');
+    echo json_encode($response);
     exit();
+  }
+  session_regenerate_id();
+  $_SESSION['student_id'] = $id_and_name[0];
 
-//    http_response_code(200);
-//    $student_id = $id_and_name[0];
-//    $_SERVER['student_id'] = $student_id;
-//    header("Location: ".SITE_HOME."courseSelect.php");
-//    exit();
+  $_SESSION['ubit'] = $_POST['UBIT'];
+  $_SESSION['redirect'] = 1;
+
+  header("Location: ".FRONTEND_HOME);
+  exit();
 }
 ?>
 <!doctype html>
