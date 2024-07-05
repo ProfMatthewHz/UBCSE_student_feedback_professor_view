@@ -1,9 +1,4 @@
 <?php
-//require_once __DIR__ . '/../vendor/autoload.php';
-//use Firebase\JWT\JWT;
-//use Firebase\JWT\Key;
-
-
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
@@ -18,17 +13,9 @@ date_default_timezone_set('America/New_York');
 
 
 if(!isset($_SESSION['student_id'])) {
-    header("Location: ".SITE_HOME."fake_shibboleth.php");
+    header("Location: ".SITE_HOME."unified_fake_shibboleth.php");
     exit();
 }
-
-// Validate CSRF token early in the script, this is for deployement
-// if (!isset($_SESSION['csrf_token'])) {
-//     http_response_code(403);
-//     echo json_encode(["error" => "CSRF token validation failed."]);
-//     exit();
-// }
-// print($_SESSION['csrf_token']);
 
 header('Content-Type: application/json');
 
@@ -38,13 +25,6 @@ $term = MONTH_MAP_SEMESTER[$month];
 $year = idate('Y');
 
 $response = [];
-
-
-//$secretKey = "myAppJWTKey2024!#$";
-//$jwt = $_COOKIE['student_id'];
-//$alg = 'HS256';
-//$decoded = JWT::decode($jwt, new Key($secretKey, $alg));
-//$student_id = $decoded->data->student_id;
 
 
 $student_id = $_SESSION['student_id'];
@@ -69,9 +49,6 @@ if(count($past_surveys) > 0) {
         $pastSurveysResponse[] = $pastSurveyData;
     }
 }
-//else {
-//    $pastSurveysResponse[] = 'No closed surveys for this term';
-//}
 
 // grab all the current surveys //
 $currentSurveysResponse = [];

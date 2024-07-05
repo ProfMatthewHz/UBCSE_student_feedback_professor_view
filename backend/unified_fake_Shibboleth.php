@@ -6,9 +6,6 @@ ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
 session_start();
-header("Access-Control-Allow-Origin: http://localhost:3000");
-header('Access-Control-Allow-Headers: Content-Type');
-header("Access-Control-Allow-Credentials: true");
 
 // Bring in required code
 require_once "lib/random.php";
