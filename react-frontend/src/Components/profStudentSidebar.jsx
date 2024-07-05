@@ -6,8 +6,6 @@ import "../styles/sidebar.css";
 
 function StudentSideBar() {
 
- 
-
   const scrollToTable1 = () => {
     const table1Element = document.getElementById('Open Surveys');
     if (table1Element) {

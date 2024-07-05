@@ -7,9 +7,6 @@ import "../styles/modal.css";
  */
 
 export default function Modal({open,children,width,maxWidth}) {
-
-
-
     if (!open) return null
 
     else{

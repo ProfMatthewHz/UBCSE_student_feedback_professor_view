@@ -604,23 +604,6 @@ const Course = ({course, page}) => {
         //date and time keyboard typing bound checks.
         let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
         let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
-        // if (startDateObject < minDateObject) {
-        //     setStartDateBoundError(true);
-        //     return;
-        // }
-        // if (startDateObject > maxDateObject) {
-        //     setStartDateBound1Error(true);
-        //     return;
-        // }
-        // if (endDateObject < minDateObject) {
-        //     setEndDateBoundError(true);
-        //     return;
-        // }
-        // if (endDateObject > maxDateObject) {
-        //     setStartDateBound1Error(true);
-        //     return;
-        // }
-        //END:date and time keyboard typing bound checks.
 
         //special startdate case. Startdate cannot be before the current day.
         let timestamp = new Date(Date.now());
