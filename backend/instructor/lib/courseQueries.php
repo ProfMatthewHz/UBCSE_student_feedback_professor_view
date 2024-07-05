@@ -145,7 +145,7 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
                          FROM courses
                          INNER JOIN course_instructors ON courses.id=course_instructors.course_id
                          WHERE instructor_id=? AND semester=? AND year=?
-                         ORDER BY code DESC');
+                         ORDER BY code');
   $stmt->bind_param('iii', $instructor_id, $semester, $year);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -174,7 +174,6 @@ function getSurveysFromSingleCourse($con, $course_id){
                          WHERE course_id=?
                          GROUP BY name, start_date, end_date, rubric_id
                          ORDER BY start_date DESC, end_date DESC');
-
   $stmt->bind_param('i', $course_id);
   $stmt->execute();
 
