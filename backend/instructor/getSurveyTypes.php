@@ -26,24 +26,19 @@ if (!isset($_SESSION['id'])) {
 $instructor_id = $_SESSION['id'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-
     // Get the course id of the course that is being queried for surveys
-
     $retVal = array("error" => "");
     $retVal["survey_types"] = array();
     $retVal["survey_types"]["mult"] = array();
     $retVal["survey_types"]["no_mult"] = array();
 
 
-    $allSurveyTypes = getSurveyTypes($con);
+    $allSurveyTypes = getSurveyTypes($con, $instructor_id);
 
     if (count($allSurveyTypes) == 0) {
-        $retVal["error"] = "There are no survey types available! :(";
+        $retVal["error"] = "There are no survey types available!";
     } else {
-
-
         foreach ($allSurveyTypes as $surveyTypeId => $surveyTypeInfo) {
-
             $desc = $surveyTypeInfo[0];
             $file_org = $surveyTypeInfo[1];
             $display_mult = $surveyTypeInfo[2];
@@ -60,10 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 $retVal["survey_types"]["no_mult"][] = $survey_type;
             }
         }
-
-        unset($surveyTypeId, $surveyTypeInfo);
     }
-
     header("Content-Type: application/json; charset=UTF-8");
 
     // Now lets dump the data we found

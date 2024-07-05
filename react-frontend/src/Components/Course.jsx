@@ -63,8 +63,6 @@ const Course = ({course, page}) => {
 
     // MODAL CODE
     const [actionsButtonValue, setActionsButtonValue] = useState("");
-    const [currentSurveyEndDate, setCurrentSurveyEndDate] = useState("");
-
     const [extendModal, setExtendModal] = useState(false);
     const [duplicateModal, setDuplicateModel] = useState(false);
     const [emptyOrWrongDeleteNameError, setEmptyOrWrongDeleteNameError] =
@@ -96,7 +94,6 @@ const Course = ({course, page}) => {
     const [NonRosterArray, setNonRosterArray] = useState([]);
 
     //START:Error codes for modal frontend
-
     const [emptySurveyNameError, setEmptyNameError] = useState(false);
     const [emptyStartTimeError, setEmptyStartTimeError] = useState(false);
     const [emptyEndTimeError, setEmptyEndTimeError] = useState(false);
@@ -153,12 +150,9 @@ const Course = ({course, page}) => {
      * Perform a GET call to surveryTypesGet.php to fetch pairing modes for each surver, stored in pairingModesFull and pairingModesNames 
      */
     const fetchPairingModes = () => {
-        fetch(process.env.REACT_APP_API_URL + "surveyTypesGet.php", {
+        fetch(process.env.REACT_APP_API_URL + "getSurveyTypes.php", {
             method: "GET",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
+            credentials: "include"
         })
         .then((res) => res.json())
         .then((result) => {
@@ -323,8 +317,6 @@ const Course = ({course, page}) => {
     }
 
     async function getAddSurveyResponse(formData) {
-        console.log("this is before the addsurveyResponse function fetch call");
-
         let fetchHTTP =
             process.env.REACT_APP_API_URL + "addSurveyToCourse.php?course=" +
             course.id;

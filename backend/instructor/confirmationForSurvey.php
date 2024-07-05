@@ -40,8 +40,7 @@ if (!isset($_SESSION["survey_data"]) || !isset($_SESSION["survey_course_id"]) ||
     echo "Missing parameters, Survey Roster contains errors!";
     exit();
 }
-
-
+// Get the data we previously created
 $file_data = $_SESSION["survey_file"];
 // Get the survey data we will work with
 $survey_data = $_SESSION["survey_data"];
@@ -67,8 +66,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   $response['errors'] = array();
 
   $errorMsg = array();
-
-  if (!array_key_exists($survey_type, $_SESSION["surveyTypes"])) {
+  $surveyTypes = getSurveyTypes($con, $id);
+  if (!array_key_exists($survey_type, $surveyTypes)) {
     $errorMsg['survey'] = "Request uses an incorrect survey type"; 
 
   }

@@ -1,5 +1,5 @@
 <?php
-function getSurveyTypes($con) {
+function getSurveyTypes($con, $instructor_id) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT id, description, file_organization, display_multiplier
                          FROM survey_types

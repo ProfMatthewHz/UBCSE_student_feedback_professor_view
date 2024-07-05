@@ -1,7 +1,6 @@
 import React from 'react';
 import "../styles/modal.css";
 
-
 /**
  * The Modal component is a reusable component that displays a modal window.
  */

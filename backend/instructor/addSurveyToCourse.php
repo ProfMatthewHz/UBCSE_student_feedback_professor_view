@@ -193,7 +193,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 
   // check the pairing mode
   $pairing_mode = intval($_POST['pairing-mode']);
-  if (!array_key_exists($pairing_mode, $_SESSION["surveyTypes"])) {
+  $surveyTypes = getSurveyTypes($con, $id);
+  if (!array_key_exists($pairing_mode, $surveyTypes)) {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
   }
   

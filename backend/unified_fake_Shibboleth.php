@@ -37,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id_and_name = getStudentInfoFromEmail($con, $email);
     if (!empty($id)) {
         $_SESSION['id'] = $id;
-        $_SESSION["surveyTypes"] = getSurveyTypes($con);
         $_SESSION['redirect'] = 1;
         http_response_code(302);
         header("Location: " . FRONTEND_HOME);
