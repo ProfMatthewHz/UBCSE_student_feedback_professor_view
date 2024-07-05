@@ -68,9 +68,7 @@ $pm_mult = 1;
 if($_SERVER['REQUEST_METHOD'] == 'GET') {
   // respond not found on no query string parameter
   if (isset($_GET['course'])) {
-
     $course_id = intval($_GET['course']);
-    
     if (!isCourseInstructor($con, $course_id, $instructor_id)){
       http_response_code(400);
       echo "You do not teach this course!";
@@ -85,10 +83,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   }
 
   echo "Success! This is the page to add a survey to course " . $course_id . "<br>";
-}
-
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
-
+} else if($_SERVER['REQUEST_METHOD'] == 'POST') {
   // make sure values exist
   if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || 
       !isset($_POST['start-date']) || !isset($_POST['start-time']) || 
@@ -215,9 +210,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     // start parsing the file
     $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
 
-    // catch errors or continue parsing the file
-
-
+    // Catch errors when the file cannot be opened
     if (!$file_handle) {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
@@ -233,13 +226,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       } 
       
       if (!empty($errorMsg)){
-        
         $response['errors'] = $errorMsg;
-
-      } else if (empty($errorMsg)) {
-
+      } else {
         $surveyInfo = array();
-
         $surveyInfo["survey_course_id"] = $course_id;
         $surveyInfo["survey_file"] = $file_data['rows'];
         $surveyInfo['survey_students'] = $file_data['individuals'];
@@ -264,14 +253,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   header("Content-Type: application/json; charset=UTF-8");
-
-  // $response['errors'] = $errorMsg;
   $responseJSON = json_encode($response);
-
   echo $responseJSON;
   
-}
-if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
-  $rubric_id = array_key_first($rubrics);
 }
 ?>

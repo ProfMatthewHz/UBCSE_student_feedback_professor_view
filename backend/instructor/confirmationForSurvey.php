@@ -69,31 +69,18 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   $errorMsg = array();
 
   if (!array_key_exists($survey_type, $_SESSION["surveyTypes"])) {
-    // http_response_code(400);
-    // echo "400: Request uses an incorrect survey type";
-    // exit();
     $errorMsg['survey'] = "Request uses an incorrect survey type"; 
 
   }
   $rubric_name = getRubricName($con, $rubric_id);
   if (empty($rubric_name)) {
-    // http_response_code(400);
-    // echo "400: Request specifies an incorrect rubric";
-    // exit();
-    
     $errorMsg['rubric'] = "Request specifies an incorrect rubric";
-
   }
 
   // make sure the survey is for a course the current instructor actually teaches
   if (!isCourseInstructor($con, $course_id, $instructor_id)) {
-    // http_response_code(403);
-    // echo "403: Forbidden. You do not teach this course.";
-    // exit();
-
-    $errorMsg['course'] = "Forbidden. You do not teach this course.";
+    $errorMsg['course'] = "Request specifies an incorrect course.";
   }
-
 
   if (empty($errorMsg)){
     $course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
@@ -167,18 +154,14 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   $responseJSON = json_encode($response);
 
   echo $responseJSON;
-
+  exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
   $response = array('data' => array(), 'errors' => array());
 
   if (isset($_POST["cancel-survey"]) || isset($_POST["return-survey"])) {
-    // do nothing, frontend will redirect
-
     $response['data']['message'] = "Survey submission cancelled!";
-
     http_response_code(200);
 
   } elseif (isset($_POST['save-survey'])) {
@@ -200,15 +183,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   unset($_SESSION["survey_course_id"]);
   unset($_SESSION["survey_students"]);
   unset($_SESSION["pairings"]);
-
-  
   header("Content-Type: application/json; charset=UTF-8");
-
   $responseJSON = json_encode($response);
-
   echo $responseJSON;
-
-
-
 }
 

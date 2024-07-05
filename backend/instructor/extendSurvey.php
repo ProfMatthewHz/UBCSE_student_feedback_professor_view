@@ -69,25 +69,10 @@ $new_end_time = NULL;
 
 
 // check for the query string or post parameter
-if($_SERVER['REQUEST_METHOD'] == 'GET') {
-  // respond not found on no query string parameter
-  if (isset($_GET['survey'])) {
-
-    $survey_id = intval($_GET['survey']);
-    
-    if (!isSurveyInstructor($con, $survey_id, $instructor_id)){
-      http_response_code(400);
-      echo "You cannot modify this survey!";
-      exit();
-    }
-
-  } else {
-    http_response_code(400);
-    echo "Bad Request: Missing parameters.";
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    http_response_code(405);
+    echo "Bad request type!";
     exit();
-  }
-
-  // echo "Success! This is the page to extend survey " . $survey_id . "<br>";
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -95,14 +80,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   // make sure values exist
   if (!isset($_POST['survey-id']) || !isset($_POST['end-date']) || !isset($_POST['end-time'])
       // || !isset($_POST['csrf-token'])
-      )
-  {
+      ) {
     http_response_code(400);
     echo "Bad Request: Missing parameters.";
     exit();
   }
-
   $survey_id = $_POST['survey-id'];
+
+
   $survey_info = getSurveyData($con, $survey_id);
   if (empty($survey_info)) {
     http_response_code(403);
@@ -110,7 +95,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
   $course_id = $survey_info['course_id'];
-  
   // Get the info for the course that this instructor teaches 
   $course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
   if (empty($course_info)) {
@@ -135,19 +119,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $current_start_time = $s->format('H:i');
   $current_end_date = $e->format('Y-m-d');
   $current_end_time = $e->format('H:i');
-  $full_perms = $now < $s;
 
   // assume start date is not modified
   $new_start_date = $current_start_date;
   $new_start_time = $current_start_time;
-
-
-  // check survey
-  if ((!isSurveyInstructor($con, $survey_id, $instructor_id)) ||
-      (getSurveyCourse($con,$survey_id) !== $course_id)) {
-    $errorMsg["survey-id"] = "Please choose a valid survey";
-  }
-
 
   $new_end_date = trim($_POST['end-date']);
   if (empty($new_end_date)) {
@@ -174,86 +149,39 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   }
 
+  // This will be used when we are updating a survey that has already started
+  if (!isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
+    $orig_end = $e;
+    $e = new DateTime($new_end_date . ' ' . $new_end_time);
+    $today = new DateTime();
+    if ($orig_end > $e) {
+      $errorMsg['end-date'] = "Survey end date and time cannot be moved earlier.";
+      $errorMsg['end-time'] = "Survey end date and time cannot be moved earlier.";
+      $end_date = $orig_end->format('Y-m-d');
+      $end_time = $orig_end->format('H:i');
+    } else if (($e > $orig_end) && ($e < $today)) {
+      $errorMsg['end-date'] = "End date and time must occur in the future.";
+      $errorMsg['end-time'] = "End date and time must occur in the future.";
+    }
+  }
+
   // check dates and times
-  if (!$full_perms) {
-    // This will be used when we are updating a survey that has already started
-    if (!isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
-      $orig_end = $e;
-      $e = new DateTime($new_end_date . ' ' . $new_end_time);
-      $today = new DateTime();
-      if ($orig_end > $e) {
-        $errorMsg['end-date'] = "Survey end date and time cannot be moved earlier.";
-        $errorMsg['end-time'] = "Survey end date and time cannot be moved earlier.";
-        $end_date = $orig_end->format('Y-m-d');
-        $end_time = $orig_end->format('H:i');
-      } else if (($e > $orig_end) && ($e < $today)) {
-        $errorMsg['end-date'] = "End date and time must occur in the future.";
-        $errorMsg['end-time'] = "End date and time must occur in the future.";
-      }
-    }
-    # set data for survey that has not started
-
-  } else { # not full_perms
-    // Now check for the data that can only be updated when the survey has not started
-    // check rubric is not empty
-    
-    if (!isset($_POST['rubric-id']) || !isset($_POST['start-date']) || !isset($_POST['start-time'])){
-      http_response_code(400);
-      echo "Bad Request: Missing parameters.";
-      exit();
-    }
-
-    $rubric_id = $_POST['rubric-id'];
-    $rubric_id = intval($rubric_id);
-    if (!array_key_exists($rubric_id, $rubrics)) {
-      $errorMsg['rubric-id'] = "Please choose a valid rubric.";
-    }
-    
-
-    $new_start_date = trim($_POST['start-date']);
-    if (empty($new_start_date)) {
-      $errorMsg['start-date'] = "Please choose a start date.";
-    } else {
-      $start = DateTime::createFromFormat('Y-m-d', $new_start_date);
-      if (!$start) {
-        $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
-      } else if ($start->format('Y-m-d') != $new_start_date) {
-        $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
-      }
-    }
-    
-    $new_start_time = trim($_POST['start-time']);
-    if (empty($new_start_time)) {
-      $errorMsg['start-time'] = "Please choose a start time.";
-    } else {
-      $start = DateTime::createFromFormat('H:i', $new_start_time);
-      if (!$start) {
-        $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
-      } else if ($start->format('H:i') != $new_start_time) {
-        $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
-      }
-    }
-
-
-    // check dates and times
-    if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
-      $s = new DateTime($new_start_date . ' ' . $new_start_time);
-      $e = new DateTime($new_end_date . ' ' . $new_end_time);
-      $today = new DateTime();
-
-      if ($e < $s) {
-        $errorMsg['end-date'] = "End date and time cannot be before start date and time.";
-        $errorMsg['end-time'] = "End date and time cannot be before start date and time.";
-        $errorMsg['start-date'] = "End date and time cannot be before start date and time.";
-        $errorMsg['start-time'] = "End date and time cannot be before start date and time.";
-      } else if ($e < $today) {
-        $errorMsg['end-date'] = "End date and time must occur in the future.";
-        $errorMsg['end-time'] = "End date and time must occur in the future.";
-      }
+  if (!isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
+    $s = new DateTime($new_start_date . ' ' . $new_start_time);
+    $e = new DateTime($new_end_date . ' ' . $new_end_time);
+    $today = new DateTime();
+    if ($e < $s) {
+      $errorMsg['end-date'] = "End date and time cannot be before start date and time.";
+      $errorMsg['end-time'] = "End date and time cannot be before start date and time.";
+      $errorMsg['start-date'] = "End date and time cannot be before start date and time.";
+      $errorMsg['start-time'] = "End date and time cannot be before start date and time.";
+    } else if ($e < $today) {
+      $errorMsg['end-date'] = "End date and time must occur in the future.";
+      $errorMsg['end-time'] = "End date and time must occur in the future.";
     }
   }
   if (empty($errorMsg)){
-        
+    // update the survey
     $start_date = new DateTime($new_start_date);
     $start_time = new DateTime($new_start_time);
     $new_start = $start_date->format('Y-m-d') . ' ' . $start_time->format('H:i');
@@ -261,7 +189,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $end_date = new DateTime($new_end_date);
     $end_time = new DateTime($new_end_time);
     $new_end = $end_date->format('Y-m-d') . ' ' . $end_time->format('H:i');
-
 
     $update_success = updateSurvey($con, $survey_id, $survey_name, $new_start, $new_end, $rubric_id);
     if (!$update_success) {
@@ -281,10 +208,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   header("Content-Type: application/json; charset=UTF-8");
   $responseJSON = json_encode($response);
-  echo $responseJSON;
-  
-}
-if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
-  $rubric_id = array_key_first($rubrics);
+  echo $responseJSON; 
 }
 ?>

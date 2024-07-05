@@ -60,12 +60,6 @@ label.add-survey--label-pairing div.pairing-mode-img-wrapper {
   margin-left: auto;
 }
 
-/* label.add-survey--label-pairing div.drop-down-wrapper {
-  display: flex;
-  flex-direction: column;
-} */
-
-
 
 label.add-survey--label input,
 label.add-survey--file-label input {
@@ -120,7 +114,6 @@ label.add-survey--label-pairing div.drop-down-wrapper select.pairing {
   font-size: 16px;
   font-weight: 600;
   padding: 10px;
-  width: 330px;
   display: flex;
   /* position: absolute; */
 }

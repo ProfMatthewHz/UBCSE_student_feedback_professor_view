@@ -15,7 +15,6 @@ import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
 import PM from "../assets/pairingmodes/PM.png"
 import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 // import SurveyForm from "./pages/SurveyForm"
-import { Link, NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 /**
@@ -41,29 +40,25 @@ const Course = ({course, page}) => {
                 "course-id": course.id,
             }),
         })
-            .then((res) => res.json())
-            .then((result) => {
-                console.log(result);
-                const activeSurveys = result.active.map((survey_info) => ({
-                    ...survey_info,
-                    expired: false,
-                }));
-                console.log(result);
-                const expiredSurveys = result.expired.map((survey_info) => ({
-                    ...survey_info,
-                    expired: true,
-                }));
-                const upcomingSurveys = result.upcoming.map((survey_info) => ({
-                    ...survey_info,
-                    expired: false,
-                }));
-                console.log(result);
-
-                setSurveys([...activeSurveys, ...expiredSurveys, ...upcomingSurveys]);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        .then((res) => res.json())
+        .then((result) => {
+            const activeSurveys = result.active.map((survey_info) => ({
+                ...survey_info,
+                expired: false,
+            }));
+            const expiredSurveys = result.expired.map((survey_info) => ({
+                ...survey_info,
+                expired: true,
+            }));
+            const upcomingSurveys = result.upcoming.map((survey_info) => ({
+                ...survey_info,
+                expired: false,
+            }));
+            setSurveys([...activeSurveys, ...expiredSurveys, ...upcomingSurveys]);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     }
 
     // MODAL CODE
@@ -72,7 +67,7 @@ const Course = ({course, page}) => {
 
     const [extendModal, setExtendModal] = useState(false);
     const [duplicateModal, setDuplicateModel] = useState(false);
-    const [emptyOrWrongDeleteNameError, setemptyOrWrongDeleteNameError] =
+    const [emptyOrWrongDeleteNameError, setEmptyOrWrongDeleteNameError] =
         useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -141,18 +136,18 @@ const Course = ({course, page}) => {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
         })
-            .then((res) => res.json())
-            .then((result) => {
-                //this is an array of objects of example elements {rubricId: 1, rubricDesc: 'exampleDescription'}
-                let rubricIDandDescriptions = result.rubrics.map((element) => element);
-                //An array of just the rubricDesc
-                let rubricNames = result.rubrics.map((element) => element.rubricDesc);
-                setNames(rubricNames);
-                setIDandDescriptions(rubricIDandDescriptions);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        .then((res) => res.json())
+        .then((result) => {
+            //this is an array of objects of example elements {rubricId: 1, rubricDesc: 'exampleDescription'}
+            let rubricIDandDescriptions = result.rubrics.map((element) => element);
+            //An array of just the rubricDesc
+            let rubricNames = result.rubrics.map((element) => element.rubricDesc);
+            setNames(rubricNames);
+            setIDandDescriptions(rubricIDandDescriptions);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     }; 
     /**
      * Perform a GET call to surveryTypesGet.php to fetch pairing modes for each surver, stored in pairingModesFull and pairingModesNames 
@@ -165,22 +160,22 @@ const Course = ({course, page}) => {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
         })
-            .then((res) => res.json())
-            .then((result) => {
-                let allPairingModeArray = result.survey_types.mult.concat(
-                    result.survey_types.no_mult
-                );
+        .then((res) => res.json())
+        .then((result) => {
+            let allPairingModeArray = result.survey_types.mult.concat(
+                result.survey_types.no_mult
+            );
 
-                let pairingModeNames = allPairingModeArray.map(
-                    (element) => element.description
-                );
-                let pairingModeFull1 = result.survey_types;
-                setPairingModesFull(pairingModeFull1);
-                setPairingModesNames(pairingModeNames);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+            let pairingModeNames = allPairingModeArray.map(
+                (element) => element.description
+            );
+            let pairingModeFull1 = result.survey_types;
+            setPairingModesFull(pairingModeFull1);
+            setPairingModesNames(pairingModeNames);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     };
 
     const openModal = () => {
@@ -331,8 +326,7 @@ const Course = ({course, page}) => {
         console.log("this is before the addsurveyResponse function fetch call");
 
         let fetchHTTP =
-            process.env.REACT_APP_API_URL +
-            "addSurveyToCourse.php?course=" +
+            process.env.REACT_APP_API_URL + "addSurveyToCourse.php?course=" +
             course.id;
         try {
             const response = await fetch(fetchHTTP, {
@@ -513,8 +507,6 @@ const Course = ({course, page}) => {
 
         let formData3 = new FormData();
         let rubricId;
-        let pairingId;
-        let multiplier;
 
         for (const element of rubricIDandDescriptions) {
             if (element.rubricDesc === rubric) {
@@ -666,7 +658,6 @@ const Course = ({course, page}) => {
         }
 
         //Now it's time to send data to the backend
-
         let formData = new FormData();
         let rubricId;
         let pairingId;
@@ -679,24 +670,17 @@ const Course = ({course, page}) => {
         }
 
         for (const element in pairingModesFull.no_mult) {
-            if (
-                pairingModesFull.no_mult[element].description ===
-                document.getElementById("pairing-mode").value
-            ) {
+            if (pairingModesFull.no_mult[element].description === document.getElementById("pairing-mode").value) {
                 pairingId = pairingModesFull.no_mult[element].id;
-                console.log(pairingId);
                 multiplier = 1;
             }
         }
+        console.log(document.getElementById("pairing-mode").value);
+        console.log(pairingModesFull);
         for (const element in pairingModesFull.mult) {
-            if (
-                pairingModesFull.mult[element].description ===
-                document.getElementById("pairing-mode").value
-            ) {
+            if (pairingModesFull.mult[element].description === document.getElementById("pairing-mode").value) {
                 pairingId = pairingModesFull.mult[element].id;
                 multiplier = document.getElementById("multiplier-type").value;
-                console.log("This is the multipler underneath");
-                console.log(multiplier);
             }
         }
 
@@ -781,10 +765,10 @@ const Course = ({course, page}) => {
             setCurrentSurvey(survey);
             setExtendModal(true);
         }
-        if (e.target.value == "View Results") {
+        if (e.target.value === "View Results") {
             handleViewResultsModalChange(survey);
         }
-        if (e.target.value == "Preview Survey") {
+        if (e.target.value === "Preview Survey") {
             Navigate("/SurveyPreview", {state:{survey_name: survey.name, rubric_id: survey.rubric_id, course: course.code}});
             console.log(survey.name);
             console.log(survey.rubric_id);
@@ -940,25 +924,9 @@ const Course = ({course, page}) => {
         }
     }
 
-    async function extendSurveyBackendGet(id) {
+    async function extendSurveyBackendPost(formdata) {
         let fetchHTTP =
-            process.env.REACT_APP_API_URL + "extendSurvey.php?survey=" + id;
-        try {
-            const response = await fetch(fetchHTTP, {
-                method: "GET",
-                credentials: "include",
-            });
-            const result = await response.text();
-            console.log(result);
-            return result; // Return the result directly
-        } catch (err) {
-            throw err; // Re-throw to be handled by the caller
-        }
-    }
-
-    async function extendSurveyBackendPost(id, formdata) {
-        let fetchHTTP =
-            process.env.REACT_APP_API_URL + "extendSurvey.php?survey=" + id;
+            process.env.REACT_APP_API_URL + "extendSurvey.php";
         try {
             const response = await fetch(fetchHTTP, {
                 method: "POST",
@@ -977,15 +945,16 @@ const Course = ({course, page}) => {
     const [extendStartDateGreater, setExtendStartDateGreater] = useState(false);
     const [extendStartHourIsGreater, setExtendStartHourIsGreater] = useState(false);
     const [extendMustBeAfterCurrentTime, setExtendMustBeAfterCurrentTime] = useState(false);
-    const [extendNewEndMustComeAfterOldEnd, setExtendNewEndMustComeAfterOldEnd] = useState(false);
-
+    const [extendNewEndMustComeAfterOldEndDay, setExtendNewEndMustComeAfterOldEndDay] = useState(false);
+    const [extendNewEndMustComeAfterOldEndHour, setExtendNewEndMustComeAfterOldEndHour] = useState(false);
 
     async function verifyExtendModal() {
         setExtendEmptyFieldsError(false);
         setExtendStartDateGreater(false);
         setExtendStartHourIsGreater(false);
         setExtendMustBeAfterCurrentTime(false);
-        setExtendNewEndMustComeAfterOldEnd(false);
+        setExtendNewEndMustComeAfterOldEndDay(false);
+        setExtendNewEndMustComeAfterOldEndHour(false);
         let newEndDate = document.getElementById("new-endDate").value;
         let newEndTime = document.getElementById("new-endTime").value;
 
@@ -998,7 +967,6 @@ const Course = ({course, page}) => {
             setExtendEmptyFieldsError(true);
             return;
         }
-
 
         let startDate = currentSurvey.sort_start_date.split(' ')[0]
         let currentTime = currentSurvey.sort_start_date.split(' ')[1]
@@ -1016,7 +984,6 @@ const Course = ({course, page}) => {
             return;
         }
 
-
         //new end date must come after old end date
         let oldEndDate = currentSurvey.sort_expiration_date.split(' ')[0]
         let oldEndTimeHours = currentSurvey.sort_expiration_date.split(' ')[1]
@@ -1025,25 +992,22 @@ const Course = ({course, page}) => {
         let oldEndDateTimeObject = new Date(oldEndDate + "T00:00:00")
         //conditional to check if old end calendar date isnt ahead of the new one
         if (oldEndDateTimeObject > endDateTimeObject) {
-            setExtendNewEndMustComeAfterOldEnd(true);
+            setExtendNewEndMustComeAfterOldEndDay(true);
             return;
         }
         //conditional to check if new end time hours is greater than old
         if (oldEndDateTimeObject.getDate(oldEndDateTimeObject) === endDateTimeObject.getDate(endDateTimeObject)) { //same date new hours should be ahead of old
             if (oldEndDateTimeObject.getMonth(oldEndDateTimeObject) === endDateTimeObject.getMonth(endDateTimeObject)) {
-
                 if (parseInt(oldEndTimeHours.split(':')[0]) >= parseInt(newEndTime.split(':')[0])) {
-                    console.log('goes through here')
-                    setExtendNewEndMustComeAfterOldEnd(true);
+                    setExtendNewEndMustComeAfterOldEndHour(true);
                     return;
                 }
             }
         }
-        //selected end date is in the current day. Hours and minutes must be after current h/m
 
+        //selected end date is in the current day. Hours and minutes must be after current h/m
         if (endDateTimeObject.getDate(endDateTimeObject) === timestamp.getDate(timestamp)) {
             if (endDateTimeObject.getMonth(endDateTimeObject) === timestamp.getMonth(timestamp)) {
-                console.log('goes through here')
                 let timestampWithHour = new Date(Date.now());
                 console.log(timestampWithHour)
                 let currentHour = timestampWithHour.getHours(timestampWithHour);
@@ -1075,18 +1039,13 @@ const Course = ({course, page}) => {
         }
         // same date. End date hours must be ahead
         if (startDateTimeObject === endDateTimeObject) {
-            console.log('goes through hour check');
-            console.log(currentTime);
-            console.log(newEndTime);
             //hour check. Start date hour must be less than end date hour
             if (parseInt(currentTime.split(':')[0]) >= parseInt(newEndTime.split(':')[0])) {
                 setExtendStartHourIsGreater(true);
                 return;
-
             }
 
         }
-
 
         let surveyId = currentSurvey.id;
         let formData5 = new FormData();
@@ -1094,13 +1053,7 @@ const Course = ({course, page}) => {
         formData5.append('survey-id', surveyId);
         formData5.append('end-date', newEndDate);
         formData5.append('end-time', newEndTime);
-        formData5.append('rubric-id', currentSurvey.rubric_id)
-        formData5.append('start-date', currentSurvey.sort_start_date.split(' ')[0]);
-
-
-        formData5.append("start-time", currentTime);
-        let pre = await extendSurveyBackendGet(surveyId);
-        let post = await extendSurveyBackendPost(surveyId, formData5);
+        let post = await extendSurveyBackendPost(formData5);
         if (
             post.errors["end-date"] ||
             post.errors["end-time"] ||
@@ -1132,10 +1085,10 @@ const Course = ({course, page}) => {
     }
 
     async function verifyDelete() {
-        setemptyOrWrongDeleteNameError(false);
+        setEmptyOrWrongDeleteNameError(false);
         let inputtedText = document.getElementById("delete-name").value;
         if (inputtedText !== currentSurvey.name) {
-            setemptyOrWrongDeleteNameError(true);
+            setEmptyOrWrongDeleteNameError(true);
         } else {
             let form = new FormData();
             form.append("agreement", 1);
@@ -1153,11 +1106,12 @@ const Course = ({course, page}) => {
         setExtendStartDateGreater(false);
         setExtendStartHourIsGreater(false);
         setExtendMustBeAfterCurrentTime(false);
-        setExtendNewEndMustComeAfterOldEnd(false);
+        setExtendNewEndMustComeAfterOldEndDay(false);
+        setExtendNewEndMustComeAfterOldEndHour(false);
     }
 
     function deleteModalClose() {
-        setemptyOrWrongDeleteNameError(false);
+        setEmptyOrWrongDeleteNameError(false);
         setDeleteModal(false);
     }
 
@@ -1199,10 +1153,8 @@ const Course = ({course, page}) => {
                                     New Date
                                     <input
                                         id="new-endDate"
-                                        className={(extendEmptyFieldsError || extendStartDateGreater || extendMustBeAfterCurrentTime || extendNewEndMustComeAfterOldEnd) ? "extend-survey--error-input" : null}
+                                        className={(extendEmptyFieldsError || extendStartDateGreater || extendMustBeAfterCurrentTime || extendNewEndMustComeAfterOldEndDay) ? "extend-survey--error-input" : null}
                                         type="date"
-                                        min="2023-08-31"
-                                        max="2023-12-31"
                                         placeholder="New End Date"
                                     />
                                 </label>
@@ -1210,7 +1162,7 @@ const Course = ({course, page}) => {
                                     New Time
                                     <input
                                         id="new-endTime"
-                                        className={(extendEmptyFieldsError || extendStartHourIsGreater) ? "extend-survey--error-input" : null}
+                                        className={(extendEmptyFieldsError || extendStartHourIsGreater || extendNewEndMustComeAfterOldEndHour) ? "extend-survey--error-input" : null}
                                         type="time"
                                         placeholder="New End Time"
                                     />
@@ -1218,19 +1170,22 @@ const Course = ({course, page}) => {
                             </div>
                             {extendEmptyFieldsError ? <label className="extend-survey--error-label">
                                 <div className="extend-survey--red-warning-sign"/>
-                                Date and time cannot be empty</label> : null}
+                                New date and time must be entered</label> : null}
                             {extendStartDateGreater ? <label className="extend-survey--error-label">
                                 <div className="extend-survey--red-warning-sign"/>
-                                Start date cannot be after end date</label> : null}
+                                End date must be later than start date</label> : null}
                             {extendStartHourIsGreater ? <label className="extend-survey--error-label">
                                 <div className="extend-survey--red-warning-sign"/>
-                                If on the same date, end time must be after start time</label> : null}
+                                New end time must be later than starting time</label> : null}
                             {extendMustBeAfterCurrentTime ? <label className="extend-survey--error-label">
                                 <div className="extend-survey--red-warning-sign"/>
                                 End date cannot be in the past</label> : null}
-                            {extendNewEndMustComeAfterOldEnd ? <label className="extend-survey--error-label">
+                            {extendNewEndMustComeAfterOldEndDay ? <label className="extend-survey--error-label">
                                 <div className="extend-survey--red-warning-sign"/>
-                                End date must be after old end date</label> : null}
+                                New end date must be later than current end date</label> : null}
+                            {extendNewEndMustComeAfterOldEndHour ? <label className="extend-survey--error-label">
+                                <div className="extend-survey--red-warning-sign"/>
+                                New end time must be later than current end time</label> : null}
                         </div>
                     </div>
                     <button
@@ -1285,7 +1240,6 @@ const Course = ({course, page}) => {
             <Modal
                 open={duplicateModal}
                 onRequestClose={closeModalDuplicate}
-                width={"700px"}
                 maxWidth={"90%"}
             >
                 <div className="CancelContainer">
@@ -1336,8 +1290,6 @@ const Course = ({course, page}) => {
                                             className={(StartDateGreaterError || StartAfterCurrentError || emptyStartDateError || startDateBoundError || startDateBound1Error) ? "duplicate-survey--error-input" : null}
                                             id="start-date"
                                             type="date"
-                                            min="2023-08-31"
-                                            max="2023-12-31"
                                             placeholder="Enter New Start Date"
                                         />
                                     </label>
@@ -1395,8 +1347,6 @@ const Course = ({course, page}) => {
                                             className={(emptyEndDateError || endDateBoundError || endDateBound1Error) ? "duplicate-survey--error-input" : null}
                                             id="end-date"
                                             type="date"
-                                            min="2023-08-31"
-                                            max="2023-12-31"
                                             placeholder="Enter New End Date"
                                         />
                                     </label>
@@ -1441,6 +1391,7 @@ const Course = ({course, page}) => {
                 open={modalIsOpenSurveyConfirm}
                 onRequestClose={closeModalSurveyConfirm}
                 width={"1200px"}
+                maxWidth={"90%"}
             >
                 <div
                     style={{
@@ -1634,7 +1585,7 @@ const Course = ({course, page}) => {
             <Modal
                 open={modalIsOpen}
                 onRequestClose={closeModal}
-                width={"700px"}
+                width={"800px"}
                 maxWidth={"90%"}
             >
                 <div className="CancelContainer">
@@ -1672,8 +1623,6 @@ const Course = ({course, page}) => {
                                             className={(StartDateGreaterError || StartAfterCurrentError || emptyStartDateError || startDateBoundError || startDateBound1Error) ? "add-survey-input-error" : null}
                                             id="start-date"
                                             type="date"
-                                            min="2024-03-09"
-                                            max="2024-12-31"
                                             placeholder="Enter Start Date"
                                         />
                                     </label>
@@ -1734,8 +1683,6 @@ const Course = ({course, page}) => {
                                             className={(emptyEndDateError || endDateBoundError || endDateBound1Error) ? "add-survey-input-error" : null}
                                             id="end-date"
                                             type="date"
-                                            min="2024-03-09"
-                                            max="2024-12-31"
                                             placeholder="Enter End Date"
                                         />
                                     </label>

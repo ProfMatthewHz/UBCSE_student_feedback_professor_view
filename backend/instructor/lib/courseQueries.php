@@ -88,9 +88,7 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
 } 
 
 function getSurveysFromSingleCourse($con, $course_id){
-
   $retVal = array();
-
   // Set expected key-value pairs (survey availability)  and error if there is one.
   $retVal["error"] = "";
   $retVal["upcoming"] = array();
@@ -102,7 +100,7 @@ function getSurveysFromSingleCourse($con, $course_id){
                          LEFT JOIN reviews ON reviews.survey_id=surveys.id
                          LEFT JOIN evals ON evals.review_id=reviews.id
                          WHERE course_id=?
-                         GROUP BY name, start_date, end_date, rubric_id
+                         GROUP BY name, start_date, end_date, rubric_id, surveys.id
                          ORDER BY start_date DESC, end_date DESC');
   $stmt->bind_param('i', $course_id);
   $stmt->execute();

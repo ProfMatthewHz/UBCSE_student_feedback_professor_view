@@ -35,13 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (!isCourseInstructor($con, $course_id, $instructor_id)) {
         http_response_code(403);
-        echo "403: Forbidden.";
-        $error_msg = "Instructor [" . $instructor_id . "] does not teach Course: [" . $course_id . "]";
-        $retVal["error"] = $error_msg;
+        $error_msg = 
+        $retVal["error"] = "Invalid course id provided.";
     } else {
-        $con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));");
         $courseSurveys = getSurveysFromSingleCourse($con, $course_id);
-
         $retVal["error"] = $courseSurveys["error"];
         $retVal["upcoming"] = $courseSurveys["upcoming"];
         $retVal["active"] = $courseSurveys["active"];

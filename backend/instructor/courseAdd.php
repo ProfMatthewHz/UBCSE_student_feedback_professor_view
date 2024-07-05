@@ -18,9 +18,6 @@ require_once "lib/fileParse.php";
 require_once "lib/enrollmentFunctions.php";
 require_once "lib/courseQueries.php";
 
-
-
-
 //query information about the requester
 $con = connectToDatabase();
 
@@ -31,12 +28,7 @@ if (!isset($_SESSION['id'])) {
   exit();
 }
 
-$query = "SELECT * FROM instructors";
-$result = mysqli_query($con, $query);
-$instructor_ids = array();
-while ($row = mysqli_fetch_assoc($result)) {
-  $instructor_ids[] = $row['id'];
-}
+$instructor_ids = getAllInstructors($con);
 
 $instructor_id = $_SESSION['id'];
 //stores error messages corresponding to form fields
@@ -49,7 +41,6 @@ $semester = NULL;
 $course_year = NULL;
 $roster_file = NULL;
 $additional_instructors = NULL;
-
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -98,39 +89,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   if(!empty($_POST['additional-instructors'])) {
     $additional_instructors = explode(',', $_POST['additional-instructors']);
-    // $additional_instructors = $instructorSplit;
-  }else {
+  } else {
     $additional_instructors = [];
   }
 
- 
-   
-   // have to take a comma seperated string and split them. 
-
-
   $currentYear = date('Y');
-  //$currentMonthA = date('n');
-  //$currentMonth = MONTH_MAP_SEMESTER[$currentMonth];
-  //$currentSemesterMonth = SEMESTER_MAP[$currentMonth];
-
-  //print_r($currentYear . " = Current Year.        ");
   $month = idate('m');
   $ActualMonth = MONTH_MAP_SEMESTER[$month];
   $currentActualMonth = SEMESTER_MAP_REVERSE[$ActualMonth];
   
   // accounts for the current year and current semester 
-// so a previous course can not be added. 
+  // so courses cannot be created for past terms
   if ($course_year < $currentYear) {
     $errorMsg['course-year'] = 'Course year cannot be in the past.';
-    //print_r("Course year cannot be in the past");
-  } else if ($course_year == $currentYear) {
-    if ($semester != $ActualMonth) {
-      //print_r($semester. " and " . $ActualMonth);
-      $errorMsg['semester'] = 'incorrect semester';
-      //print_r("Erorr Wrong semester");
-    }
+  } else if  (($course_year == $currentYear) && ($semester != $ActualMonth) ) {
+    $errorMsg['semester'] = 'Course term cannot be in the past.';
   }
 
+  if (courseExists($con, $course_code, $course_name, $semester, $course_year, $_SESSION['id'])) {
+    $errorMsg['duplicate'] = 'Error: The entered course already exists.';
+  }
 
   // now validate the roster file
   if ($_FILES['roster-file']['error'] == UPLOAD_ERR_INI_SIZE) {
@@ -152,55 +130,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
       $names_emails = parse_roster_file($file_handle);
 
-
       // Clean up our file handling
       fclose($file_handle);
 
-      if (!empty(($names_emails['error'])) || !(empty($differences))) {
-        //$errorMsg['additional-instructors'] = "unkown intstructors found";
+      if (!empty($names_emails['error'])) {
        $errorMsg['roster-file'] = $names_emails['error'];
-      } else {
+      } else if (empty($errorMsg)) {
         // now add the roster to the database if no other errors were set after adding the course to the database
-        if (empty($errorMsg)) {
-          // Verify this course does not already exist
-          if (!courseExists($con, $course_code, $course_name, $semester, $course_year, $_SESSION['id'])) {
-
-
-            // Create the course in the database
-            $course_id = addCourse($con, $course_code, $course_name, $semester, $course_year);
-
-
-           
-            //loop through additional instructors and add them to the course
-            if (!empty($additional_instructors) && empty($differences)) {
-              foreach ($additional_instructors as $instructor) {
-                addInstructor($con, $course_id, $instructor);
-              }
-              //echo "Instructors added successfully\n";
-            }
-            
-            addInstructor($con, $course_id, $instructor_id);
-
-
-            // Upload the course roster for later use
-            addStudents($con, $course_id, $names_emails['ids']);
-
-            exit();
-
-          } else {
-            $errorMsg['duplicate'] = 'Error: The entered course already exists.';
+        $course_id = addCourse($con, $course_code, $course_name, $semester, $course_year);
+        
+        //loop through additional instructors and add them to the course
+        if (!empty($additional_instructors)) {
+          foreach ($additional_instructors as $instructor) {
+            addInstructor($con, $course_id, $instructor);
           }
-        }
+        }            
+        addInstructor($con, $course_id, $instructor_id);
+        // Upload the course roster for later use
+        addStudents($con, $course_id, $names_emails['ids']);
+        exit();
       }
     }
   }
   header("Content-Type: application/json; charset=UTF-8");
-
   // Now lets dump the data we found
   $myJSON = json_encode($errorMsg);
-
   echo $myJSON;
-
 }
 
 ?>

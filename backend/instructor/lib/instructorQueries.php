@@ -1,4 +1,13 @@
 <?php
+function getAllInstructors($con) {
+  $ret_val = array();
+  $result = mysqli_query($con, "SELECT * FROM instructors");
+  while ($row = mysqli_fetch_assoc($result)) {
+    $ret_val[] = $row['id'];
+  }
+  return $ret_val;
+}
+
 function getInstructorId($con, $email) {
   // Pessimistically assume that this fails
   $retVal = 0;
