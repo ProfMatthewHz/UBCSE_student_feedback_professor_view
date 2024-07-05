@@ -1,7 +1,4 @@
 <?php
-
-
-
 function addCourse($con, $course_code, $course_name, $semester, $course_year) {
   $stmt = $con->prepare('INSERT INTO courses (code, name, semester, year) VALUES (?, ?, ?, ?)');
   $stmt->bind_param('ssii', $course_code, $course_name, $semester, $course_year);
@@ -142,14 +139,13 @@ function getSingleCourseInfo($con, $course_id, $instructor_id) {
 
 //Korey wrote this 
 function getInstructorTermCourses($con, $instructor_id, $semester, $year){
-
   $retVal = array();
 
   $stmt = $con->prepare('SELECT id, code, name, semester, year 
                          FROM courses
                          INNER JOIN course_instructors ON courses.id=course_instructors.course_id
                          WHERE instructor_id=? AND semester=? AND year=?
-                         ORDER BY year DESC, semester DESC, code DESC');
+                         ORDER BY code DESC');
   $stmt->bind_param('iii', $instructor_id, $semester, $year);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -158,7 +154,6 @@ function getInstructorTermCourses($con, $instructor_id, $semester, $year){
     $retVal = $courses_info;
   }
   $stmt->close();
-
   return $retVal;
 } 
 // korey wrote this 
@@ -172,7 +167,6 @@ function getSurveysFromSingleCourse($con, $course_id){
   $retVal["active"] = array();
   $retVal["expired"] = array();
   
-
   $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
                          FROM surveys
                          LEFT JOIN reviews ON reviews.survey_id=surveys.id
@@ -236,16 +230,8 @@ function getSurveysFromSingleCourse($con, $course_id){
 }
 
 
-
+require_once '../lib/constants.php';
 function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
-  // Semester mapping
-  $semesterNames = [
-    1 => 'winter',
-    2 => 'spring',
-    3 => 'summer',
-    4 => 'fall',
-  ];
-  
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
                          INNER JOIN course_instructors ON courses.id = course_instructors.course_id
@@ -264,29 +250,9 @@ function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear
 
   // Map numeric semesters to string values
   foreach ($terms as &$term) {
-    $term['semester'] = $semesterNames[$term['semester']];
+    $term['semester'] = SEMESTER_MAP_REVERSE[$term['semester']];
   }
 
   return $terms;
 }
-
-
-function instructorData($con, $instructor_id,$currentSemester,$currentYear,$course_id){
-  //function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear)
-  //function getInstructorTermCourses($con, $instructor_id, $semester, $year)
-  //function getSurveysFromSingleCourse($con, $course_id)
-
-  $outPutAray = [
-    'previous Instructor Terms' => getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) ,
-    'instructor current Term Courses' => getInstructorTermCourses($con, $instructor_id, $currentSemester, $currentYear),
-    'Instructor surveys from single Course' => getSurveysFromSingleCourse($con, $course_id)
-  ];
- 
-
-  return $outPutAray;
-  
-}
-
-
-
 ?>

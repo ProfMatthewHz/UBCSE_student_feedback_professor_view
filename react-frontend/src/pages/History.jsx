@@ -69,12 +69,12 @@ const History = () => {
      * @param {string} semester The name of the semester.
      * @returns {number} The integer code of the semester.
      */
-    const getSemestermAsInt = (semester) => {
-        if (semester === 'fall') {
+    const getSemesterAsInt = (semester) => {
+        if (semester === 'Fall') {
             return 4;
-        } else if (semester === 'summer') {
+        } else if (semester === 'Summer') {
             return 3;
-        } else if (semester === 'spring') {
+        } else if (semester === 'Spring') {
             return 2;
         } else {
             return 1; // winter
@@ -107,9 +107,8 @@ const History = () => {
 
                 // Mapping through each term received from the first API call to fetch courses for those terms.
                 const fetchCourses = result.map((term) => {
-
                     // Constructing a key for each term combining its name and year for easy identification and storage.
-                    const term_key = term.semester.charAt(0).toUpperCase() + term.semester.slice(1) + " " + term.year
+                    const term_key = term.semester + " " + term.year
                     all_courses[term_key] = []
                     return fetch(
                         process.env.REACT_APP_API_URL + "instructorCoursesInTerm.php",
@@ -120,7 +119,7 @@ const History = () => {
                                 "Content-Type": "application/x-www-form-urlencoded",
                             },
                             body: new URLSearchParams({
-                                semester: getSemestermAsInt(term.semester),
+                                semester: getSemesterAsInt(term.semester),
                                 year: parseInt(term.year),
                             }),
                         }
@@ -137,7 +136,6 @@ const History = () => {
 
                 Promise.all(fetchCourses)
                     .then(() => {
-
                         const courses_only = Object.values(all_courses).flat(); // Update the terms state with all terms and courses
                         setTerms(all_courses)
                         setCourses(courses_only); // Update the courses state with all courses
