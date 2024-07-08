@@ -50,7 +50,7 @@ function insertRubricResponse($con, $topic_id, $level_id, $response) {
   return $ret_val;
 }
 
-function getRubrics($con) {
+function getRubrics($con, $instructor_id) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT id, description FROM rubrics');
   $stmt->execute();

@@ -3,3 +3,4 @@ backend/instructor/test.php
 lib/database.php
 .DS_Store
 react-frontend/yarn.lock
+.idea/

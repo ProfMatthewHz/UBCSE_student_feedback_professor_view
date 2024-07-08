@@ -42,7 +42,7 @@ $term = MONTH_MAP_SEMESTER[$month];
 $year = idate('Y');
 
 // store information about rubrics as array of array
-$rubrics = getRubrics($con);
+$rubrics = getRubrics($con, $instructor_id);
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
@@ -64,26 +64,7 @@ $pairing_mode = NULL;
 $survey_name = NULL;
 $pm_mult = 1;
 
-// check for the query string or post parameter
-if($_SERVER['REQUEST_METHOD'] == 'GET') {
-  // respond not found on no query string parameter
-  if (isset($_GET['course'])) {
-    $course_id = intval($_GET['course']);
-    if (!isCourseInstructor($con, $course_id, $instructor_id)){
-      http_response_code(400);
-      echo "You do not teach this course!";
-      exit();
-    }
-
-
-  } else {
-    http_response_code(400);
-    echo "Bad Request: Missing parameters.";
-    exit();
-  }
-
-  echo "Success! This is the page to add a survey to course " . $course_id . "<br>";
-} else if($_SERVER['REQUEST_METHOD'] == 'POST') {
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
   // make sure values exist
   if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || 
       !isset($_POST['start-date']) || !isset($_POST['start-time']) || 
@@ -193,7 +174,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
 
   // check the pairing mode
   $pairing_mode = intval($_POST['pairing-mode']);
-  $surveyTypes = getSurveyTypes($con, $id);
+  $surveyTypes = getSurveyTypes($con);
   if (!array_key_exists($pairing_mode, $surveyTypes)) {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
   }

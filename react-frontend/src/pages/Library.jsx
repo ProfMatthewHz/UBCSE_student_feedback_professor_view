@@ -12,23 +12,17 @@ const Library = () => {
      * Fetches the list of rubrics from the API.
      */
     const fetchRubrics = () => {
-        fetch(
-            process.env.REACT_APP_API_URL + "getInstructorRubrics.php",
-            {
+        fetch(process.env.REACT_APP_API_URL + "getInstructorRubrics.php", {
                 method: "GET",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-            }
-        )
-            .then((res) => res.json())
-            .then((result) => {
-                setRubrics(result)
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+                credentials: "include"
+        })
+        .then((res) => res.json())
+        .then((result) => {
+          setRubrics(result["rubrics"])
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
 
     // Fetch rubrics when the component mounts

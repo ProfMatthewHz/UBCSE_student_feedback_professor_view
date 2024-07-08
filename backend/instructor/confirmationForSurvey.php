@@ -34,8 +34,7 @@ $instructor_id = $_SESSION['id'];
 
 // Get the pairings we will be using in this survey
 if (!isset($_SESSION["survey_data"]) || !isset($_SESSION["survey_course_id"]) || 
-    !isset($_SESSION["survey_file"]) || !isset($_SESSION["survey_students"])) 
-{
+    !isset($_SESSION["survey_file"]) || !isset($_SESSION["survey_students"]))  {
     http_response_code(403);
     echo "Missing parameters, Survey Roster contains errors!";
     exit();
@@ -66,7 +65,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
   $response['errors'] = array();
 
   $errorMsg = array();
-  $surveyTypes = getSurveyTypes($con, $id);
+  $surveyTypes = getSurveyTypes($con);
   if (!array_key_exists($survey_type, $surveyTypes)) {
     $errorMsg['survey'] = "Request uses an incorrect survey type"; 
 

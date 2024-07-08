@@ -32,8 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $retVal["survey_types"]["mult"] = array();
     $retVal["survey_types"]["no_mult"] = array();
 
-
-    $allSurveyTypes = getSurveyTypes($con, $instructor_id);
+    $allSurveyTypes = getSurveyTypes($con);
 
     if (count($allSurveyTypes) == 0) {
         $retVal["error"] = "There are no survey types available!";

@@ -58,6 +58,7 @@ const Course = ({course, page}) => {
         })
         .catch((err) => {
             console.log(err);
+            throw err;
         });
     }
 
@@ -126,28 +127,26 @@ const Course = ({course, page}) => {
      * Perform a GET call to rubricsGet.php to fetch names and ID of the rubrics. 
      */
     const fetchRubrics = () => {
-        fetch(process.env.REACT_APP_API_URL + "rubricsGet.php", {
+        fetch(process.env.REACT_APP_API_URL + "getInstructorRubrics.php", {
             method: "GET",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
         })
         .then((res) => res.json())
         .then((result) => {
-            //this is an array of objects of example elements {rubricId: 1, rubricDesc: 'exampleDescription'}
+            //this is an array of objects of example elements {id: 1, description: 'exampleDescription'}
             let rubricIDandDescriptions = result.rubrics.map((element) => element);
-            //An array of just the rubricDesc
-            let rubricNames = result.rubrics.map((element) => element.rubricDesc);
+            //An array of just the descriptions of the rubrics
+            let rubricNames = result.rubrics.map((element) => element.description);
             setNames(rubricNames);
             setIDandDescriptions(rubricIDandDescriptions);
         })
         .catch((err) => {
             console.log(err);
+            throw err;
         });
     }; 
     /**
-     * Perform a GET call to surveryTypesGet.php to fetch pairing modes for each surver, stored in pairingModesFull and pairingModesNames 
+     * Perform a GET call to getSurveyTypes.php to fetch pairing modes for each surver, stored in pairingModesFull and pairingModesNames 
      */
     const fetchPairingModes = () => {
         fetch(process.env.REACT_APP_API_URL + "getSurveyTypes.php", {
@@ -169,16 +168,17 @@ const Course = ({course, page}) => {
         })
         .catch((err) => {
             console.log(err);
+            throw err;
         });
     };
 
-    const openModal = () => {
+    const openAddSurveyModal = () => {
         setModalIsOpen(true);
         fetchRubrics();
         fetchPairingModes();
     };
 
-    const closeModal = () => {
+    const closeAddSurveyModal = () => {
         setModalIsOpen(false);
         setEmptyNameError(false);
         setEmptyStartTimeError(false);
@@ -220,11 +220,15 @@ const Course = ({course, page}) => {
         const value = "TEAM";
         return value;
     };
+    const getInitialMultiplier = () => {
+        const value = "1";
+        return value;
+    };
 
     const [valueRubric, setValueRubric] = useState(getInitialStateRubric);
     const [valuePairing, setValuePairing] = useState(getInitialStatePairing);
-    const [multiplierNumber, setMultiplierNumber] = useState("one");
-    const [validPairingModeForMultiplier, setMultiplier] = useState(false);
+    const [multiplierNumber, setMultiplierNumber] = useState(getInitialMultiplier);
+    const [validPairingModeForMultiplier, setMultiplier] = useState(true);
     const [pairingImage, setPairingImage] = useState(Team);
 
     const handleChangeRubric = (e) => {
@@ -235,7 +239,6 @@ const Course = ({course, page}) => {
     };
 
     const handleUpdateImage = (e) => {
-        console.log(e.target.value);
         switch(e.target.value) {
             case 'TEAM':
                 setPairingImage(Team);
@@ -253,111 +256,84 @@ const Course = ({course, page}) => {
                 setPairingImage(PM);
                 break;
             default:
-                console.log('Unexpected pairing mode: ${pairingMode}');
+                console.log('Unexpected pairing mode: ' + e.target.value);
                 break;
         }
     }
     const handleChangePairing = (e) => {
-        var boolean = false;
+        let showMult = false;
 
         let multiplierCheckArray = pairingModesFull.mult.map(
             (element) => element.description
         );
         if (multiplierCheckArray.includes(e.target.value)) {
-            boolean = true;
+            showMult = true;
         }
         
         handleUpdateImage(e);
         setValuePairing(e.target.value);
-        setMultiplier(boolean);
+        setMultiplier(showMult);
     };
 
     async function fetchRosterNonRoster() {
         let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
-        console.log(fetchHTTP);
-        try {
-            const response = await fetch(fetchHTTP, {
-                method: "GET",
-                credentials: "include",
-            });
-            const result = await response.json();
+        const result = fetch(fetchHTTP, {
+            method: "GET",
+            credentials: "include",
+        })
+        .then((res) => res.json());
 
-            return result; // Return the result directly
-        } catch (err) {
-            console.log("goes to error");
-            console.error(err);
-            throw err; // Re-throw to be handled by the caller
-        }
+        return result; // Return the result directly
     }
 
     async function fetchAddSurveyToDatabaseComplete(data) {
         console.log(data);
         let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
-        try {
-            const response = await fetch(fetchHTTP, {
-                method: "POST",
-                credentials: "include",
-                body: data,
-            });
-            const result = await response.json();
-            console.log(result);
-            return result; // Return the result directly
-        } catch (err) {
-            throw err; // Re-throw to be handled by the caller
-        }
+        const result = await fetch(fetchHTTP, {
+            method: "POST",
+            credentials: "include",
+            body: data,
+        })
+        .then((res) => res.json());
+        console.log(result);
+        return result; // Return the result directly
     }
 
-    async function confirmSurveyComplete() {
+    function confirmSurveyComplete() {
         let formData2 = new FormData();
         formData2.append("save-survey", "1");
-        let any = await fetchAddSurveyToDatabaseComplete(formData2);
+        fetchAddSurveyToDatabaseComplete(formData2);
         updateAllSurveys();
         closeModalSurveyConfirm();
-        return;
     }
 
     async function getAddSurveyResponse(formData) {
         let fetchHTTP =
-            process.env.REACT_APP_API_URL + "addSurveyToCourse.php?course=" +
-            course.id;
-        try {
-            const response = await fetch(fetchHTTP, {
-                method: "POST",
-                credentials: "include",
-                body: formData,
-            });
-            const result = await response.json();
+            process.env.REACT_APP_API_URL + "addSurveyToCourse.php";
+        const result = await fetch(fetchHTTP, {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+        })
+        .then((res) => res.json());
 
-            return result; // Return the result directly
-        } catch (err) {
-            console.error(err);
-            throw err; // Re-throw to be handled by the caller
-        }
+        return result; // Return the result directly
     }
 
-    async function duplicateSurveyBackend(formdata) {
+ function duplicateSurveyBackend(formdata) {
         let fetchHTTP =
             process.env.REACT_APP_API_URL +
             "duplicateExistingSurvey.php?survey=" +
             currentSurvey.id;
-        try {
-            const response = await fetch(fetchHTTP, {
-                method: "POST",
-                credentials: "include",
-                body: formdata,
-            });
-            const result = await response.text();
-            console.log(currentSurvey);
-            console.log(result);
-
-            return result; // Return the result directly
-        } catch (err) {
-            console.error(err);
-            throw err; // Re-throw to be handled by the caller
-        }
+        const result = fetch(fetchHTTP, {
+            method: "POST",
+            credentials: "include",
+            body: formdata,
+        }).then((res) => res.text());
+        return result; // Return the result directly
     }
 
-    async function verifyDuplicateSurvey() {
+    function verifyDuplicateSurvey() {
         setEmptyNameError(false);
         setEmptyStartTimeError(false);
         setEmptyEndTimeError(false);
@@ -376,66 +352,37 @@ const Course = ({course, page}) => {
         setStartTimeHoursBeforeCurrent(false);
         setStartTimeMinutesBeforeCurrent(false);
 
-        var surveyName = document.getElementById("survey-name").value;
-        var startTime = document.getElementById("start-time").value;
-        var endTime = document.getElementById("end-time").value;
-        var startDate = document.getElementById("start-date").value;
-        var endDate = document.getElementById("end-date").value;
-        var rubric = document.getElementById("rubric-type").value;
-
-        var dictNameToInputValue = {
-            "Survey name": surveyName,
-            "Start time": startTime,
-            "End time": endTime,
-            "Start date": startDate,
-            "End date": endDate,
-        };
-
-        for (let k in dictNameToInputValue) {
-            if (dictNameToInputValue[k] === "") {
-                if (k === "Survey name") {
-                    setEmptyNameError(true);
-                    return;
-                }
-                if (k === "Start time") {
-                    setEmptyStartTimeError(true);
-                    return;
-                }
-                if (k === "End time") {
-                    setEmptyEndTimeError(true);
-                    return;
-                }
-                if (k === "Start date") {
-                    setEmptyStartDateError(true);
-                    return;
-                }
-                if (k === "End date") {
-                    setEmptyEndDateError(true);
-                    return;
-                }
-            }
+        let surveyName = document.getElementById("survey-name").value;
+        let startTime = document.getElementById("start-time").value;
+        let endTime = document.getElementById("end-time").value;
+        let startDate = document.getElementById("start-date").value;
+        let endDate = document.getElementById("end-date").value;
+        let rubric = document.getElementById("rubric-type").value;
+        
+        if (surveyName === "") {
+            setEmptyNameError(true);
+            return;
+        }
+        if (startTime === "") {
+            setEmptyStartTimeError(true);
+            return;
+        }
+        if (endTime === "") {
+            setEmptyEndTimeError(true);
+            return;
+        }
+        if (startDate === "") {
+            setEmptyStartDateError(true);
+            return;
+        }
+        if (endDate === "") {
+            setEmptyEndDateError(true);
+            return;
         }
 
         //date and time keyboard typing bound checks.
         let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
         let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
-        // if (startDateObject < minDateObject) {
-        //     setStartDateBoundError(true);
-        //     return;
-        // }
-        // if (startDateObject > maxDateObject) {
-        //     setStartDateBound1Error(true);
-        //     return;
-        // }
-        // if (endDateObject < minDateObject) {
-        //     setEndDateBoundError(true);
-        //     return;
-        // }
-        // if (endDateObject > maxDateObject) {
-        //     setStartDateBound1Error(true);
-        //     return;
-        // }
-        //END:date and time keyboard typing bound checks.
 
         //special startdate case. Startdate cannot be before the current day.
         let timestamp = new Date(Date.now());
@@ -472,10 +419,7 @@ const Course = ({course, page}) => {
             }
         }
         //Start time must be after current time if start date is the current day.
-
-        if (
-            startDateObject.getDate(startDateObject) === timestamp.getDate(timestamp)
-        ) {
+        if (startDateObject.getDate(startDateObject) === timestamp.getDate(timestamp)) {
             let timestampWithHour = new Date(Date.now());
             let currentHour = timestampWithHour.getHours(timestampWithHour);
             let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
@@ -501,8 +445,8 @@ const Course = ({course, page}) => {
         let rubricId;
 
         for (const element of rubricIDandDescriptions) {
-            if (element.rubricDesc === rubric) {
-                rubricId = element.rubricId;
+            if (element.description === rubric) {
+                rubricId = element.id;
             }
         }
 
@@ -515,7 +459,7 @@ const Course = ({course, page}) => {
         formData3.append("end-time", endTime);
 
         //form data is set. Call the post request
-        let awaitedResponse = await duplicateSurveyBackend(formData3);
+        duplicateSurveyBackend(formData3);
         updateAllSurveys();
         closeModalDuplicate();
     }
@@ -547,42 +491,29 @@ const Course = ({course, page}) => {
         var csvFile = document.getElementById("csv-file").value;
         var rubric = document.getElementById("rubric-type").value;
 
-        var dictNameToInputValue = {
-            "Survey name": surveyName,
-            "Start time": startTime,
-            "End time": endTime,
-            "Start date": startDate,
-            "End date": endDate,
-            "Csv file": csvFile,
-        };
-
-        for (let k in dictNameToInputValue) {
-            if (dictNameToInputValue[k] === "") {
-                if (k === "Survey name") {
-                    setEmptyNameError(true);
-                    return;
-                }
-                if (k === "Start time") {
-                    setEmptyStartTimeError(true);
-                    return;
-                }
-                if (k === "End time") {
-                    setEmptyEndTimeError(true);
-                    return;
-                }
-                if (k === "Start date") {
-                    setEmptyStartDateError(true);
-                    return;
-                }
-                if (k === "End date") {
-                    setEmptyEndDateError(true);
-                    return;
-                }
-                if (k === "Csv file") {
-                    setEmptyCSVFileError(true);
-                    return;
-                }
-            }
+        if (surveyName === "") {
+            setEmptyNameError(true);
+            return;
+        }
+        if (startTime === "") {
+            setEmptyStartTimeError(true);
+            return;
+        }
+        if (endTime === "") {
+            setEmptyEndTimeError(true);
+            return;
+        }
+        if (startDate === "") {
+            setEmptyStartDateError(true);
+            return;
+        }
+        if (endDate === "") {
+            setEmptyEndDateError(true);
+            return;
+        }
+        if (csvFile === "") {
+            setEmptyCSVFileError(true);
+            return;
         }
 
         //date and time keyboard typing bound checks.
@@ -626,15 +557,12 @@ const Course = ({course, page}) => {
         //Start time must be after current time if start date is the current day.
 
 
-        if (
-            startDateObject.getDate(startDateObject) === timestamp.getDate(timestamp)
-        ) {
+        if (startDateObject.getDate(startDateObject) === timestamp.getDate(timestamp)) {
             let timestampWithHour = new Date(Date.now());
             let currentHour = timestampWithHour.getHours(timestampWithHour);
             let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
             let startHourNew = parseInt(startTime.split(":")[0]);
             let startMinutes = parseInt(startTime.split(":")[1]);
-
 
             if (startHourNew < currentHour) {
                 setStartTimeHoursBeforeCurrent(true);
@@ -656,8 +584,8 @@ const Course = ({course, page}) => {
         let multiplier;
 
         for (const element of rubricIDandDescriptions) {
-            if (element.rubricDesc === rubric) {
-                rubricId = element.rubricId;
+            if (element.description === rubric) {
+                rubricId = element.id;
             }
         }
 
@@ -667,8 +595,7 @@ const Course = ({course, page}) => {
                 multiplier = 1;
             }
         }
-        console.log(document.getElementById("pairing-mode").value);
-        console.log(pairingModesFull);
+
         for (const element in pairingModesFull.mult) {
             if (pairingModesFull.mult[element].description === document.getElementById("pairing-mode").value) {
                 pairingId = pairingModesFull.mult[element].id;
@@ -692,10 +619,9 @@ const Course = ({course, page}) => {
         //form data is set. Call the post request
         let awaitedResponse = await getAddSurveyResponse(formData);
 
-        //let errorsObject = errorOrSuccessResponse.errors;
         let errorsObject = awaitedResponse.errors;
         let dataObject = awaitedResponse.data;
-
+        console.log(errorsObject.length);
         if (errorsObject.length === 0) {
             //succesful survey.
             let rosterDataAll = await fetchRosterNonRoster();
@@ -709,7 +635,7 @@ const Course = ({course, page}) => {
                 setRubricNameConfirm(rubric);
                 setStartDateConfirm(startDate + " at " + startTime);
                 setEndDateConfirm(endDate + " at " + endTime);
-                closeModal();
+                closeAddSurveyModal();
                 setModalIsOpenSurveyConfirm(true);
                 return;
             }
@@ -730,14 +656,11 @@ const Course = ({course, page}) => {
                 i++;
             }
             const allErrorStrings = pairingFileStrings.concat(anyOtherStrings);
-
             setErrorsList(allErrorStrings);
-            closeModal();
+            closeAddSurveyModal();
             setModalIsOpenError(true);
-
             return;
         }
-
         return;
     }
     let Navigate = useNavigate();
@@ -828,7 +751,6 @@ const Course = ({course, page}) => {
     };
 
     //MODAL CODE
-
     useEffect(() => {
         fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
             method: "POST",
@@ -883,37 +805,17 @@ const Course = ({course, page}) => {
         setStartTimeMinutesBeforeCurrent(false);
     }
 
-    async function verifyDeleteBackendGet(id) {
-        let fetchHTTP =
-            process.env.REACT_APP_API_URL + "deleteSurvey.php?survey=" + id;
-        try {
-            const response = await fetch(fetchHTTP, {
-                method: "GET",
-                credentials: "include",
-            });
-            const result = await response.json();
-            console.log(result);
-            return result; // Return the result directly
-        } catch (err) {
-            throw err; // Re-throw to be handled by the caller
-        }
-    }
-
     async function verifyDeleteBackend(formdata, id) {
         let fetchHTTP =
-            process.env.REACT_APP_API_URL + "deleteSurvey.php?survey=" + id;
-        try {
-            const response = await fetch(fetchHTTP, {
+            process.env.REACT_APP_API_URL + "deleteSurvey.php";
+        const result = await fetch(fetchHTTP, {
                 method: "POST",
                 body: formdata,
                 credentials: "include",
-            });
-            const result = await response.json();
-            console.log(result);
-            return result; // Return the result directly
-        } catch (err) {
-            throw err; // Re-throw to be handled by the caller
-        }
+            })
+            .then((res) => res.json());
+        console.log(result);
+        return await result; // Return the result directly
     }
 
     async function extendSurveyBackendPost(formdata) {
@@ -1076,17 +978,16 @@ const Course = ({course, page}) => {
         extendModalClose();
     }
 
-    async function verifyDelete() {
+    function verifyDelete() {
         setEmptyOrWrongDeleteNameError(false);
         let inputtedText = document.getElementById("delete-name").value;
         if (inputtedText !== currentSurvey.name) {
             setEmptyOrWrongDeleteNameError(true);
         } else {
             let form = new FormData();
+            form.append("survey_id", currentSurvey.id);
             form.append("agreement", 1);
-            let surveyId = currentSurvey.id;
-            let pre = await verifyDeleteBackendGet(surveyId);
-            let final = await verifyDeleteBackend(form, surveyId);
+            verifyDeleteBackend(form);
             updateAllSurveys();
             deleteModalClose();
         }
@@ -1456,7 +1357,7 @@ const Course = ({course, page}) => {
                             </tbody>
                         </table>
                     ) : (
-                        <div className="empty-view">Course Roster has no Students</div>
+                        <div className="empty-view">No students on course roster</div>
                     )}
 
                     {NonRosterArray.length > 0 ? (
@@ -1576,12 +1477,12 @@ const Course = ({course, page}) => {
             </Modal>
             <Modal
                 open={modalIsOpen}
-                onRequestClose={closeModal}
+                onRequestClose={closeAddSurveyModal}
                 width={"800px"}
                 maxWidth={"90%"}
             >
                 <div className="CancelContainer">
-                    <button className="CancelButton" onClick={closeModal}>
+                    <button className="CancelButton" onClick={closeAddSurveyModal}>
                         ×
                     </button>
                 </div>
@@ -1739,7 +1640,10 @@ const Course = ({course, page}) => {
                     {validPairingModeForMultiplier && (
                         <label className="add-survey--label" for="subject-line">
                             Multiplier
-                            <select id="multiplier-type">
+                            <select className="multiplier"
+                                    id="multiplier-type"
+                                    value={multiplierNumber}
+                                    onChange={handleChangeMultiplierNumber}>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -1775,7 +1679,7 @@ const Course = ({course, page}) => {
                     </h2>
                     {page === "home" ? (
                         <div className="courseHeader-btns">
-                            <button className="btn add-btn" onClick={openModal}>
+                            <button className="btn add-btn" onClick={openAddSurveyModal}>
                                 + Add Survey
                             </button>
                             <button
