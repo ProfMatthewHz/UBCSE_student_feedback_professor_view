@@ -69,8 +69,8 @@ const Course = ({course, page}) => {
     const [emptyOrWrongDeleteNameError, setEmptyOrWrongDeleteNameError] =
         useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
-    const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [modalIsOpenError, setModalIsOpenError] = useState(false);
+    const [addSurveyModalIsOpen, setAddSurveyModalIsOpen] = useState(false);
+    const [errorModalIsOpen, setModalIsOpenError] = useState(false);
     const [errorsList, setErrorsList] = useState([]);
     const [modalIsOpenSurveyConfirm, setModalIsOpenSurveyConfirm] =
         useState(false);
@@ -173,13 +173,13 @@ const Course = ({course, page}) => {
     };
 
     const openAddSurveyModal = () => {
-        setModalIsOpen(true);
+        setAddSurveyModalIsOpen(true);
         fetchRubrics();
         fetchPairingModes();
     };
 
     const closeAddSurveyModal = () => {
-        setModalIsOpen(false);
+        setAddSurveyModalIsOpen(false);
         setEmptyNameError(false);
         setEmptyStartTimeError(false);
         setEmptyEndTimeError(false);
@@ -1422,7 +1422,7 @@ const Course = ({course, page}) => {
                 </div>
             </Modal>
             <Modal
-                open={modalIsOpenError}
+                open={errorModalIsOpen}
                 onRequestClose={closeModalError}
                 width={"800px"}
             >
@@ -1476,7 +1476,7 @@ const Course = ({course, page}) => {
                 </button>
             </Modal>
             <Modal
-                open={modalIsOpen}
+                open={addSurveyModalIsOpen}
                 onRequestClose={closeAddSurveyModal}
                 width={"800px"}
                 maxWidth={"90%"}
