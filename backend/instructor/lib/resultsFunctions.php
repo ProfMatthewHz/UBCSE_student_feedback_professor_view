@@ -62,7 +62,7 @@ function getFinalResults($teammates, $scores, $topics, $team_data) {
   $ret_val = array();
 
   // Create the header row
-  $header = array("Reviewee Name (Email)", "Average Normalized Result");
+  $header = array("Reviewee Name (Email)", "Normalized Average");
   $ret_val[] = $header;
 
   // Then add one row per student who was reviewed

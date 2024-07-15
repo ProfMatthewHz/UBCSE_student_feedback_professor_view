@@ -1789,8 +1789,8 @@ const Course = ({course, page}) => {
             {/* View Results Modal*/}
             {showViewResultsModal && (
                 <ViewResults
-                    handleViewResultsModalChange={handleViewResultsModalChange}
-                    viewingCurrentSurvey={viewingCurrentSurvey}
+                    closeViewResultsModal={handleViewResultsModalChange}
+                    surveyToView={viewingCurrentSurvey}
                     course={course}
                 />
             )}

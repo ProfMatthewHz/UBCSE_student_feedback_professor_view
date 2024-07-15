@@ -58,7 +58,6 @@ function isSurveyInstructor($con, $survey_id, $instructor_id) {
 }
 
 function getSurveyCourse($con, $survey_id){
-
   # no courses where course-id is 0
   $retVal = 0;
   $stmt = $con->prepare('SELECT surveys.course_id
@@ -118,6 +117,29 @@ function getSurveyParticipantData($con, $survey_id, $retrieved_field) {
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
     $student_id = $row[0];
     $ret_val[$student_id] = array("email"=>$row[1], "name"=>$row[2]);
+  }
+  $stmt->close();
+  return $ret_val;
+}
+
+function getReviewerCompletionResults($con, $survey_id) {
+  $ret_val = array();
+  // This survey should roughly parallel the completion results in getReviewerPerTeamResults
+  $stmt = $con->prepare('SELECT students.name, students.email, COUNT(reviews.id), COUNT(evals.id)
+                         FROM reviews
+                         LEFT JOIN evals ON evals.review_id=reviews.id
+                         LEFT JOIN scores ON evals.id=scores.eval_id
+                         LEFT JOIN students ON students.id=reviews.reviewer_id
+                         WHERE survey_id=?
+                         GROUP BY students.name, students.email');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $name = $row[0];
+    $email = $row[1];
+    $completed = ($row[2] == $row[3]);
+    $ret_val[] = array("name" => $name, "email" => $email, "completed" => $completed);
   }
   $stmt->close();
   return $ret_val;

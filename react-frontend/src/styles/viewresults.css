@@ -31,7 +31,8 @@
     font-size: 22px;
 }
 
-.viewresults-modal--main-button-container {
+.viewresults-modal--main-button-container,
+.viewresults-modal--other-button-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,14 +40,12 @@
     margin-bottom: 30px;
 }
 
-.viewresults-modal--other-button-container,
 .viewresults-modal--cancel-button-container {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
 }
-
 
 .viewresults-modal--cancel-button-container .cancel-btn {
     border-radius: 5px;
