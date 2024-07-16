@@ -782,7 +782,7 @@ const Course = ({course, page}) => {
             .catch((err) => {
                 console.log(err);
             });
-    }, []);
+    }, [course.id]);
 
     function closeModalDuplicate() {
         setDuplicateModel(false);

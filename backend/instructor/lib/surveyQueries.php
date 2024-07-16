@@ -122,6 +122,25 @@ function getSurveyParticipantData($con, $survey_id, $retrieved_field) {
   return $ret_val;
 }
 
+function getReviewerResultReviewsCount($con, $survey_id) {
+  $ret_val = array();
+  // This survey should roughly parallel the completion results in getReviewerPerTeamResults
+  $stmt = $con->prepare('SELECT DISTINCT students.email, visit_count
+                         FROM student_visit_data
+                         INNER JOIN students ON students.id=student_id
+                         WHERE survey_id=?');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $email = $row[0];
+    $count = $row[1];
+    $ret_val[$email] = $count;
+  }
+  $stmt->close();
+  return $ret_val;
+}
+
 function getReviewerCompletionResults($con, $survey_id) {
   $ret_val = array();
   // This survey should roughly parallel the completion results in getReviewerPerTeamResults

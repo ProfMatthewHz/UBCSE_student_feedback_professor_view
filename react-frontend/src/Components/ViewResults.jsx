@@ -21,10 +21,9 @@ const ViewResults = ({
     const [showNormalizedSurveyResults, setShowNormalizedSurveyResults] = useState(null); // For Normalized Results
     const [normalizedTableHeaders, setNormalizedTableHeaders] = useState([]); // For Normalized Results
     const [normalizedResults, setNormalizedResults] = useState([]); // For Normalized Results
-    const [currentCSVData, setCurrentCSVData] = useState(null); // For CSV Download
+    const [currentCSVData, setCurrentCSVData] = useState([]); // For CSV Download
     const [completionCSVData, setCompletionCSVData] = useState([]); // For CSV Download for Completion Results
-    const [completionData, setCompletionData] = useState(null); // THe data we get from api call that tells us who completed which surveys
-    var countFromAPI = 0;
+    const [individualAveragesCSVData, setIndividualAveragesCSVData] = useState([]); // For CSV Download for Completion Results
     
     /**
      * Maps headers to values
@@ -46,10 +45,39 @@ const ViewResults = ({
         });
     };
 
+    //Fetches the data that tells use who completed surveys
+    const fetchCompleted = (surveyid) => {
+            fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
 
+                body: new URLSearchParams({
+                    survey: surveyid,
+                    type: "completion",
+                }),
+            })
+                .then((res) => res.json())
+                .then((result) => {
+                    const completedCSVLines = [["Name", "Email", "Completion Status"]];
+                    for (let dict of result) {
+                        const name = dict["name"];
+                        const email = dict["email"];
+                        const completed = dict["completed"];
+                        const row = [name, email, completed];
+                        completedCSVLines.push(row);
+                    }
+                    setCompletionCSVData(completedCSVLines);
+                })
+                .catch((err) => {
+                    console.error('There was a problem with your fetch operation:', err);
+                });
+    };
 
-//Fetches the data that tells use who completed surveys
-const fetchCompleted = (surveyid, mappedResults) => {
+    //Fetches the data with the individual averages for students
+    const fetchIndividualAverages = (surveyid) => {
         fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
             method: "POST",
             credentials: "include",
@@ -59,26 +87,19 @@ const fetchCompleted = (surveyid, mappedResults) => {
 
             body: new URLSearchParams({
                 survey: surveyid,
-                type: "completion",
+                type: "individual",
             }),
         })
             .then((res) => res.json())
             .then((result) => {
-                setCompletionData(result); 
-                const completedCSVLines = [["Name", "Email", "Completion Status"]];
-                for (let dict of result) {
-                    const name = dict["name"];
-                    const email = dict["email"];
-                    const completed = dict["completed"];
-                    const row = [name, email, completed];
-                    completedCSVLines.push(row);
-                }
-                setCompletionCSVData(completedCSVLines);
+                const csvLines = [];
+                csvLines.push(...result);
+                setIndividualAveragesCSVData(csvLines);
             })
             .catch((err) => {
                 console.error('There was a problem with your fetch operation:', err);
             });
-};
+    };
 
     /**
      * Handles the change of the selected survey results modal
@@ -104,23 +125,22 @@ const fetchCompleted = (surveyid, mappedResults) => {
                     setShowRawSurveyResults(result.slice(1));
                     setRawResultsHeaders(result[0]);
                     const mappedResults = mapHeadersToValues(result[0], result.slice(1));
-                    //console.log(mappedResults);
                     setRawResults(mappedResults);
                     if (result.length > 1) {
                         setCurrentCSVData(result);
-                        fetchCompleted(surveyid, mappedResults);
+                        fetchCompleted(surveyid);
                     } else {
                         setCurrentCSVData(null);
                     }
-                    console.log("Completion Data: ", completionData);
                     
                 } else {
                     setShowRawSurveyResults(null);
                     if (result.length > 1) {
+                        fetchIndividualAverages(surveyid);
                         const results_without_headers = result.slice(1);
                         console.log(results_without_headers)
                         const maxValue = Math.max(
-                            ...results_without_headers.map((result) => isNaN(result[1])? 0 : result[1])
+                            ...results_without_headers.map((result) => isNaN(result[2])? 0 : result[2])
                         );
                         let labels = {'0.0-0.2' : 0};
                         let startLabel = 0.01;
@@ -135,7 +155,7 @@ const fetchCompleted = (surveyid, mappedResults) => {
                                 const label_split = key.split("-");
                                 const current_min = parseFloat(label_split[0]);
                                 const current_max = parseFloat(label_split[1]);
-                                const current_normalized_average = individual_data[1];
+                                const current_normalized_average = individual_data[2];
 
                                 if (
                                     current_normalized_average >= current_min &&
@@ -151,20 +171,14 @@ const fetchCompleted = (surveyid, mappedResults) => {
                         
                         const mappedNormalizedResults = mapHeadersToValues(
                             result[0],
-                            result.slice(1)
+                            results_without_headers
                         );
                         setCurrentCSVData(result);
                         setShowNormalizedSurveyResults(labels);
                     
                         setNormalizedResults(mappedNormalizedResults);
-                 
-
-                        if (mappedNormalizedResults.length > 0) { //update the normalizedResults map to include feedback count for each student
-                            callFetchFeedbackCount(surveyid,mappedNormalizedResults);
-                        }
                         setNormalizedTableHeaders(result[0]);  
                     } else {
-                        setCurrentCSVData(null);
                         setShowNormalizedSurveyResults(true);
                     }
                 }
@@ -183,73 +197,6 @@ useEffect(() => {
         }
         setShowNormalizedSurveyResults(null);
     }, [surveyToView]);
-
-    
-    // API call to get feedback view count for each student
-    const fetchFeedbackCount = (email, survey_id) => {
-        // Send student_id and survey_id back to student
-        const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?email=${encodeURIComponent(email)}&survey_id=${survey_id}`;
-
-        return fetch(url, {
-            method: "GET",
-            credentials: "include",
-        })
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error('HTTP Response error');
-            }
-            return res.json();
-        })
-        .then((result) => {
-        // Value of "count" from the JSON response
-           console.log("Fetch data: ", result["count"]);
-           countFromAPI=result["count"];        
-        })
-        .catch((err) => {
-            console.error('There was a problem with your fetch operation:', err);
-            return "Not Available"; 
-        });
-    };
-
-    const callFetchFeedbackCount = async (survey_id,results) => {
-        // Iterate through each student object in normalizedResults and fetch feedback count
-        for (let i = 0; i < results.length; i++) {
-            const email = results[i]["Reviewee name (email)"];
-            const parts = email.split(' (');
-            const name = parts[0];
-            const emailPart = parts[parts.length - 1];
-            const cleanedEmail = emailPart.replace(/[()]/g, '');
-    
-            try {
-                // Fetch feedback count for the current student
-                const result = await fetchFeedbackCount(cleanedEmail, survey_id);
-                // Update "Feedback view count" in normalizedResults
-                const newDict = {"Reviewee name": name, "Email": cleanedEmail, "Average normalized result": results[i]["Average normalized result"], "Feedback view count": countFromAPI}
-                results[i] = newDict;
-            } catch (error) {
-                console.error('Error fetching feedback count:', error);
-                // Handle error if necessary
-            }
-        }
-    
-        // After updating all normalizedResults, set the state with the updated array
-        setNormalizedResults([...results]);
-       // console.log("New Normalized Results", results);
-
-
-        //Update csv to include fields: name, email, normalized result, feedback view count
-        const newResults = [Object.keys(results[0])]
-        for (let i in results){
-            newResults.push(Object.values(results[i]))
-        }
-        setCurrentCSVData(newResults)
-    };
-
-    useEffect(() => {
-        if (normalizedResults.length > 0) {
-            callFetchFeedbackCount(surveyToView.id);
-        }
-    }, []);
     
     return (
         <div className="viewresults-modal">
@@ -283,7 +230,7 @@ useEffect(() => {
                         }
                         }
                     >
-                        Raw Results
+                        Raw Surveys
                     </button>
                    
                     <button
@@ -298,7 +245,7 @@ useEffect(() => {
                         } 
                         }
                     >
-                        Normalized Results
+                        Individual Results
                     </button>
                 </div>
                 {!showRawSurveyResults && !showNormalizedSurveyResults ? (
@@ -317,7 +264,7 @@ useEffect(() => {
                                 }
                                 data={currentCSVData}
                             >
-                                Download Results
+                                Download Surveys
                             </CSVLink>
                         </div>
                         
@@ -336,7 +283,7 @@ useEffect(() => {
                     </div>
 
                         <div className="rawresults--table-container">
-                            {/* Table for Raw Results */}
+                            {/* Table for Raw Surveys */}
                             <DataTable
                                 value={rawResults}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -378,37 +325,50 @@ useEffect(() => {
                 {showNormalizedSurveyResults && currentCSVData ? (
                     <div>
                         <div className="viewresults-modal--other-button-container">
-                            <CSVLink
-                                className="downloadbtn"
-                                filename={
-                                    "survey-" +
-                                    surveyToView.id +
-                                    "-normalized-averages.csv"
-                                }
-                                data={currentCSVData}
-                            >
-                                Download Results
-                            </CSVLink>
-                          
+                            <div className="viewresults-modal--download-button">
+                                <CSVLink
+                                    className="downloadbtn"
+                                    filename={
+                                        "survey-" + 
+                                        surveyToView.id + 
+                                        "-normalized-averages.csv"
+                                    }
+                                    data={currentCSVData}
+                                >
+                                    Download Normalized Scores
+                                </CSVLink>
+                            </div>
+                            
+                            {/* Button to view who completed the survey */}
+                            <div className="viewresults-modal--download-button">
+                                <CSVLink
+                                    className="downloadbtn"
+                                    filename={
+                                        "survey-" + 
+                                        surveyToView.id + 
+                                        "-individual-averages.csv"
+                                    }
+                                    data={individualAveragesCSVData}
+                                >
+                                    Download Criterion Scores
+                                </CSVLink>
+                            </div>
                         </div>
                         <div className="viewresults-modal--barchart-container">
                         {/* {updateNormalizeFlag === 0 && callFetchFeedbackCount(surveyToView.id)}
                          */}
                             <BarChart survey_data={showNormalizedSurveyResults}/>
                            
-                            {console.log(Object.keys(normalizedResults[0]))}
                             <DataTable
                                 value={normalizedResults}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 paginator
                                 rows={5}
-                                filterDisplay="row"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                                 emptyMessage="No results found"
-                                globalFilterFields={["Reviewee name", "Email"]}
                             >
                                 {Object.keys(normalizedResults[0]).map((header) => {
-                                    return header === "Reviewee name" || header === "Email" ? (
+                                    return header === "Name" || header === "Email" ? (
                                         <Column
                                             field={header}
                                             header={header}

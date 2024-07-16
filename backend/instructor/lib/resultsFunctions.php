@@ -7,7 +7,7 @@ function getIndividualsAverages($students, $scores, $topics) {
   $ret_val = array();
 
   // Create the header row
-  $header = array("Reviewee Name (Email)");
+  $header = array("Name", "Email");
   foreach ($topics as $question) {
     $header[] = $question;
   }
@@ -15,7 +15,7 @@ function getIndividualsAverages($students, $scores, $topics) {
 
   // Then add one row per student who was reviewed
   foreach ($students as $id => $name_and_email) {
-    $line = array($name_and_email['name'] . ' (' . $name_and_email['email'] . ')');
+    $line = array($name_and_email['name'], $name_and_email['email']);
     foreach ($topics as $topic_id => $question) {
       $line[] = $averages[$id][$topic_id];
     }
@@ -54,7 +54,7 @@ function getRawResults($teammates, $scores, $topics, $reviewers, $team_data) {
   return $ret_val;
 }
 
-function getFinalResults($teammates, $scores, $topics, $team_data) {
+function getNormalizedResults($teammates, $scores, $topics, $team_data, $views) {
   // Finally, calculate the overall results for each student
   $overall = calculateFinalNormalizedScore(array_keys($teammates), $scores, $topics, $team_data);
 
@@ -62,12 +62,17 @@ function getFinalResults($teammates, $scores, $topics, $team_data) {
   $ret_val = array();
 
   // Create the header row
-  $header = array("Reviewee Name (Email)", "Normalized Average");
+  $header = array("Name", "Email", "Normalized Average", "Feedback Views");
   $ret_val[] = $header;
 
   // Then add one row per student who was reviewed
   foreach ($teammates as $id => $name_and_email) {
-    $line = array($name_and_email['name'] .' (' . $name_and_email['email'] . ')', $overall[$id]);
+    if (!array_key_exists($name_and_email['email'], $views)) {
+      $views = 0;
+    } else {
+      $views = $views[$name_and_email['email']];
+    }
+    $line = array($name_and_email['name'], $name_and_email['email'], $overall[$id], $views);
     $ret_val[] = $line;
   }
   return $ret_val;

@@ -97,8 +97,8 @@ if ($_POST['type'] === 'completion') {
   } else if ($_POST['type'] === 'raw-full') {
     $results = getRawResults($teammates, $scores, $topics, $reviewers, $team_data);
   } else {
-    $prelim;
-    $results = getFinalResults($teammates, $scores, $topics, $team_data);
+    $views = getReviewerResultReviewsCount($con, $survey_id);
+    $results = getNormalizedResults($teammates, $scores, $topics, $team_data, $views);
   }
   // Now output the results
   header("Content-Type: application/json; charset=UTF-8");

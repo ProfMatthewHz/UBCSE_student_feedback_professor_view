@@ -203,7 +203,7 @@ $team_data = getReviewerPerTeamResults($con, $survey_id);
             <table class="table table-striped table-hover text-start align-middle" id="averagesTable">
               <thead>
                 <?php
-                    $results = getFinalResults($teammates, $scores, $topics, $team_data);
+                    $results = getNormalizedResults($teammates, $scores, $topics, $team_data);
                     $header = array_shift($results);
                     foreach ($header as $cell) {
                       echo '<th scope="col">'.$cell.'</th>';
