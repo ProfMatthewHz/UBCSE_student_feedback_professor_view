@@ -28,9 +28,10 @@ $instructor_id = $_SESSION['id'];
 // Verify we have already defined the rubric in total
 if (!isset($_SESSION["rubric-preview"])) { 
   http_response_code(400);
-  echo "Rubric's name, levels and criteria must be defined before previewing rubric";
+  $json_out = json_encode(array("errors" => "Bad Request: Missing information to save rubric"));
+  echo $json_out;
   exit();
-} 
+}
 
 $rubric_name = $_SESSION['rubric-preview']['name'];
 $rubric_levels = $_SESSION['rubric-preview']['levels'];
@@ -41,7 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   if (!isset($_POST['save-rubric'])){
     http_response_code(400);
-    echo "Bad Request: Missing parameters to save rubric";
+    $json_out = json_encode(array("errors" => "Bad Request: Missing parameters to save rubric"));
+    echo $json_out;
     exit();
   }
 

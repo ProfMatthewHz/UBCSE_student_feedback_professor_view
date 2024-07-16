@@ -121,8 +121,8 @@ function SideBar(props) {
           </button>
         </div>
         <AddRubric
-        handleAddRubricModal={handleAddRubricModal}
-        getRubrics={props.getRubrics} 
+        handleCloseModal={handleAddRubricModal}
+        getRubrics={props.getRubrics}
         />
       </Modal>
      
