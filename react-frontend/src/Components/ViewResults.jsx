@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {CSVLink} from "react-csv";
 import {DataTable} from "primereact/datatable";
 import {Column} from "primereact/column";
@@ -15,16 +15,17 @@ const ViewResults = ({
     /* Viewing Types of Survey Results */
    
 
-    const [showRawSurveyResults, setShowRawSurveyResults] = useState(null); // For Raw Results
-    const [rawResultsHeaders, setRawResultsHeaders] = useState(null); // For Raw Results
-    const [rawResults, setRawResults] = useState([]); // For Raw Results
+    const [rawSurveysHeaders, setRawSurveysHeaders] = useState(null); // For Raw Results
+    const [rawSurveys, setRawSurveys] = useState(null); // For Raw Results
     const [showNormalizedSurveyResults, setShowNormalizedSurveyResults] = useState(null); // For Normalized Results
-    const [normalizedTableHeaders, setNormalizedTableHeaders] = useState([]); // For Normalized Results
-    const [normalizedResults, setNormalizedResults] = useState([]); // For Normalized Results
-    const [currentCSVData, setCurrentCSVData] = useState([]); // For CSV Download
+    const [rawSurveyCSVData, setRawSurveyCSVData] = useState(); // For CSV download of the raw survey data
+    const [normalizedCSVData, setNormalizedCSVData] = useState(); // For CSV download of the raw survey data
+    const [normalizedTableHeaders, setNormalizedTableHeaders] = useState(null); // For Normalized Results
+    const [normalizedResults, setNormalizedResults] = useState(null); // For Normalized Results
     const [completionCSVData, setCompletionCSVData] = useState([]); // For CSV Download for Completion Results
     const [individualAveragesCSVData, setIndividualAveragesCSVData] = useState([]); // For CSV Download for Completion Results
-    
+    const [surveyType, setSurveyType] = useState(""); // For Survey Type
+
     /**
      * Maps headers to values
      * @param headers
@@ -46,7 +47,7 @@ const ViewResults = ({
     };
 
     //Fetches the data that tells use who completed surveys
-    const fetchCompleted = (surveyid) => {
+    const fetchCompleted = useCallback((surveyid) => {
             fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
                 method: "POST",
                 credentials: "include",
@@ -74,10 +75,10 @@ const ViewResults = ({
                 .catch((err) => {
                     console.error('There was a problem with your fetch operation:', err);
                 });
-    };
+    },[]);
 
     //Fetches the data with the individual averages for students
-    const fetchIndividualAverages = (surveyid) => {
+    const fetchIndividualAverages = useCallback((surveyid) => {
         fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
             method: "POST",
             credentials: "include",
@@ -99,104 +100,111 @@ const ViewResults = ({
             .catch((err) => {
                 console.error('There was a problem with your fetch operation:', err);
             });
-    };
+    },[]);
 
-    /**
-     * Handles the change of the selected survey results modal
-     * @param surveyid
-     * @param surveytype
-     */
-    const handleSelectedSurveyResultsModalChange = (surveyid, surveytype) => {
+    //Fetches the data with the individual averages for students
+    const fetchRawSurveys = useCallback((surveyid) => {
         fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
             method: "POST",
             credentials: "include",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
+
             body: new URLSearchParams({
                 survey: surveyid,
-                type: surveytype,
+                type: "raw-full",
+            }),
+        })
+            .then((res) => res.json())
+            .then((result) => {                    
+                setRawSurveysHeaders(result[0]);
+                const mappedResults = mapHeadersToValues(result[0], result.slice(1));
+                setRawSurveys(mappedResults);
+                if (result.length > 1) {
+                    setRawSurveyCSVData(result);
+                }
+            })
+            .catch((err) => {
+                console.error('There was a problem with your fetch operation:', err);
+            });
+    }, []);
+
+    //Fetches the data with the individual averages for students
+    const fetchNormalizedResults = useCallback((surveyid) => {
+        fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+
+            body: new URLSearchParams({
+                survey: surveyid,
+                type: "average",
             }),
         })
             .then((res) => res.json())
             .then((result) => {
-                if (surveytype === "raw-full") {
-                    setShowNormalizedSurveyResults(null);
-                    setShowRawSurveyResults(result.slice(1));
-                    setRawResultsHeaders(result[0]);
-                    const mappedResults = mapHeadersToValues(result[0], result.slice(1));
-                    setRawResults(mappedResults);
-                    if (result.length > 1) {
-                        setCurrentCSVData(result);
-                        fetchCompleted(surveyid);
-                    } else {
-                        setCurrentCSVData(null);
+                if (result.length > 1) {
+                    const results_without_headers = result.slice(1);
+                    const maxValue = Math.max(
+                        ...results_without_headers.map((result) => isNaN(result[2])? 0 : result[2])
+                    );
+                    let labels = {'0.0-0.2' : 0};
+                    let startLabel = 0.01;
+                    let endLabel = 0.2;
+                    while (endLabel < maxValue) {
+                        startLabel += 0.2;
+                        endLabel += 0.2;
+                        labels[`${startLabel.toFixed(2)}-${endLabel.toFixed(1)}`] = 0;
                     }
-                    
-                } else {
-                    setShowRawSurveyResults(null);
-                    if (result.length > 1) {
-                        fetchIndividualAverages(surveyid);
-                        const results_without_headers = result.slice(1);
-                        console.log(results_without_headers)
-                        const maxValue = Math.max(
-                            ...results_without_headers.map((result) => isNaN(result[2])? 0 : result[2])
-                        );
-                        let labels = {'0.0-0.2' : 0};
-                        let startLabel = 0.01;
-                        let endLabel = 0.2;
-                        while (endLabel < maxValue) {
-                            startLabel += 0.2;
-                            endLabel += 0.2;
-                            labels[`${startLabel.toFixed(2)}-${endLabel.toFixed(1)}`] = 0;
-                        }
-                        for (let individual_data of results_without_headers) {
-                            for (let key of Object.keys(labels)) {
-                                const label_split = key.split("-");
-                                const current_min = parseFloat(label_split[0]);
-                                const current_max = parseFloat(label_split[1]);
-                                const current_normalized_average = individual_data[2];
+                    for (let individual_data of results_without_headers) {
+                        for (let key of Object.keys(labels)) {
+                            const label_split = key.split("-");
+                            const current_min = parseFloat(label_split[0]);
+                            const current_max = parseFloat(label_split[1]);
+                            const current_normalized_average = individual_data[2];
 
-                                if (
-                                    current_normalized_average >= current_min &&
-                                    current_normalized_average <= current_max
-                                ) {
-                                    labels[key] += 1;
-                                }
+                            if (
+                                current_normalized_average >= current_min &&
+                                current_normalized_average <= current_max
+                            ) {
+                                labels[key] += 1;
                             }
                         }
-
-                        labels = Object.entries(labels);
-                        labels.unshift(["Normalized Averages", "Number of Students"]);
-                        
-                        const mappedNormalizedResults = mapHeadersToValues(
-                            result[0],
-                            results_without_headers
-                        );
-                        setCurrentCSVData(result);
-                        setShowNormalizedSurveyResults(labels);
-                    
-                        setNormalizedResults(mappedNormalizedResults);
-                        setNormalizedTableHeaders(result[0]);  
-                    } else {
-                        setShowNormalizedSurveyResults(true);
                     }
+
+                    labels = Object.entries(labels);
+                    labels.unshift(["Normalized Averages", "Number of Students"]);
+                    
+                    const mappedNormalizedResults = mapHeadersToValues(
+                        result[0],
+                        results_without_headers
+                    );
+                    setNormalizedCSVData(result);
+                    setShowNormalizedSurveyResults(labels);
+                    setNormalizedResults(mappedNormalizedResults);
+                    setNormalizedTableHeaders(result[0]);  
+                } else {
+                    setShowNormalizedSurveyResults(true);
                 }
             })
             .catch((err) => {
-                console.log(err);
+                console.error('There was a problem with your fetch operation:', err);
             });
-    };
+    }, []);
+
 
 useEffect(() => {
         if (surveyToView) {
-            handleSelectedSurveyResultsModalChange(
-                surveyToView.id,
-                "raw-full"
-            );
+            fetchRawSurveys(surveyToView.id);
+            fetchCompleted(surveyToView.id);
+            fetchNormalizedResults(surveyToView.id);
+            fetchIndividualAverages(surveyToView.id);
+            setSurveyType("raw-full");
         }
-        setShowNormalizedSurveyResults(null);
-    }, [surveyToView]);
+    }, [surveyToView, fetchRawSurveys, fetchNormalizedResults, fetchCompleted, fetchIndividualAverages]);
     
     return (
         <div className="viewresults-modal">
@@ -216,17 +224,12 @@ useEffect(() => {
                 <div className="viewresults-modal--main-button-container">
                     <button
                         className={
-                            showRawSurveyResults
+                            surveyType === "raw-full"
                                 ? "survey-result--option-active"
                                 : "survey-result--option"
                         }
                         onClick={() =>{
-                            handleSelectedSurveyResultsModalChange(
-                                surveyToView.id,
-                                "raw-full"
-                            );
-                            console.log("Raw Results Clicked")
-
+                            setSurveyType("raw-full");
                         }
                         }
                     >
@@ -235,36 +238,30 @@ useEffect(() => {
                    
                     <button
                         className={
-                            showNormalizedSurveyResults
+                            surveyType === "average"
                                 ? "survey-result--option-active"
                                 : "survey-result--option"
-                        }
-                        onClick={() =>
-                           { handleSelectedSurveyResultsModalChange(surveyToView.id, "average");  
-                           console.log("VIEW FEEDBACK CLICKED!!") ;
-                        } 
+                            }
+                            onClick={() => {
+                                setSurveyType("average")
+                            } 
                         }
                     >
                         Individual Results
                     </button>
                 </div>
-                {!showRawSurveyResults && !showNormalizedSurveyResults ? (
-                    <div className="viewresults-modal--no-options-selected-text">
-                        Select Option to View Results
-                    </div>
-                ) : null}
-                {showRawSurveyResults && currentCSVData ? (
+                {surveyType === "raw-full" && rawSurveys ? (
                 <div>
                     <div className="viewresults-modal--other-button-container">
                         <div className="viewresults-modal--download-button">
                             <CSVLink
                                 className="downloadbtn"
                                 filename={
-                                    "survey-" + surveyToView.id + "-raw-results.csv"
+                                    "survey-" + surveyToView.id + "-all-surveys.csv"
                                 }
-                                data={currentCSVData}
+                                data={rawSurveyCSVData}
                             >
-                                Download Surveys
+                                Download All Surveys
                             </CSVLink>
                         </div>
                         
@@ -281,48 +278,47 @@ useEffect(() => {
                             </CSVLink>
                         </div>
                     </div>
-
-                        <div className="rawresults--table-container">
-                            {/* Table for Raw Surveys */}
-                            <DataTable
-                                value={rawResults}
-                                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                                paginator
-                                rows={5}
-                                className="rawresults--table"
-                                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                                emptyMessage="No results found"
-                            >
-                                {Object.keys(rawResults[0]).map((header) => {
-                                    return header === "Reviewee name (email)" ||
-                                    header === "Reviewer name (email)" ? (
-                                        <Column
-                                            field={header}
-                                            header={header}
-                                            sortable
-                                            style={{width: `${100 / rawResultsHeaders.length}%`}}
-                                            filter
-                                            filterPlaceholder="Search by name or email"
-                                            filterMatchMode="contains"
-                                        ></Column>
-                                    ) : (
-                                        <Column
-                                            field={header}
-                                            header={header}
-                                            sortable
-                                            style={{width: `${100 / rawResultsHeaders.length}%`}}
-                                        ></Column>
-                                    );
-                                })}
-                            </DataTable>
-                        </div>
+                    <div className="rawresults--table-container">
+                        {/* Table for Raw Surveys */}
+                        <DataTable
+                            value={rawSurveys}
+                            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                            paginator
+                            rows={5}
+                            className="rawresults--table"
+                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            emptyMessage="No results found"
+                        >
+                            {Object.keys(rawSurveys[0]).map((header) => {
+                                return header === "Reviewee name (email)" ||
+                                header === "Reviewer name (email)" ? (
+                                    <Column
+                                        field={header}
+                                        header={header}
+                                        sortable
+                                        style={{width: `${100 / rawSurveysHeaders.length}%`}}
+                                        filter
+                                        filterPlaceholder="Search by name or email"
+                                        filterMatchMode="contains"
+                                    ></Column>
+                                ) : (
+                                    <Column
+                                        field={header}
+                                        header={header}
+                                        sortable
+                                        style={{width: `${100 / rawSurveysHeaders.length}%`}}
+                                    ></Column>
+                                );
+                            })}
+                        </DataTable>
                     </div>
-                ) : showRawSurveyResults && !currentCSVData ? (
+                </div>
+                ) : surveyType === "raw-full" && !rawSurveys ? (
                     <div className="viewresults-modal--no-options-selected-text">
                         No Results Found
                     </div>
                 ) : null}
-                {showNormalizedSurveyResults && currentCSVData ? (
+                {surveyType === "average" && showNormalizedSurveyResults ? (
                     <div>
                         <div className="viewresults-modal--other-button-container">
                             <div className="viewresults-modal--download-button">
@@ -333,7 +329,7 @@ useEffect(() => {
                                         surveyToView.id + 
                                         "-normalized-averages.csv"
                                     }
-                                    data={currentCSVData}
+                                    data={normalizedCSVData}
                                 >
                                     Download Normalized Scores
                                 </CSVLink>
@@ -392,7 +388,7 @@ useEffect(() => {
                             </DataTable>
                         </div>
                     </div>
-                ) : showNormalizedSurveyResults && !currentCSVData ? (
+                ) : surveyType === "average" && !normalizedResults ? (
                     <div className="viewresults-modal--no-options-selected-text">
                         No Results Found
                     </div>
