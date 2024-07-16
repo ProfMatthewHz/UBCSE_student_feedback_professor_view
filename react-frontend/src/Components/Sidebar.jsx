@@ -13,26 +13,34 @@ import AddRubric from "./AddRubric";
 function SideBar(props) {
 
   const [clicked, setClicked] = useState(false);
-
   const [activeButton, setActiveButton] = useState(false);
   const [dropdown_value, setDropDownValue] = useState("");
-  const sidebar_items = props.content_dictionary["Courses"] ? Object.values(props.content_dictionary["Courses"])
-    : (props.content_dictionary["Rubrics"]) ? Object.values(props.content_dictionary["Rubrics"])
-    : []
+  const [sidebar_items, setSidebarItems] = useState([])
   const [termContents, setTermContents] = useState([]);
-  // Add course stuff
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
+  const [showAddRubricModal, setShowAddRubricModal] = useState(false);
 
   const handleAddCourseModal = () => {
     setShowAddCourseModal(prevState => !prevState);
   };
 
-  // + Add Rubric for Library Page
-  const [showAddRubricModal, setShowAddRubricModal] = useState(false);
-
   const handleAddRubricModal = () => {
     setShowAddRubricModal(prevState => !prevState);
   }
+
+  const handleClick = () => {
+    setClicked(prevState => !prevState)
+  }
+
+  useEffect(() => {
+    if (props.content_dictionary["Courses"]) {
+      setSidebarItems(Object.values(props.content_dictionary["Courses"]));
+    } else if (props.content_dictionary["Rubrics"]) {
+      setSidebarItems(Object.values(props.content_dictionary["Rubrics"]));
+    } else {
+      setSidebarItems([]);
+    }
+  }, [props]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -113,7 +121,7 @@ function SideBar(props) {
           </button>
         </div>
         <AddRubric
-        handleAddRubricModal ={handleAddRubricModal}
+        handleAddRubricModal={handleAddRubricModal}
         getRubrics={props.getRubrics} 
         />
       </Modal>
@@ -123,7 +131,6 @@ function SideBar(props) {
         <h1>TEAMWORK</h1>
           <h1>EVALUATION</h1>
         <div className="sidebar">
-
           <nav> 
             <ul className={`${clicked ? "open" : ""}`}>
               <li>
@@ -138,14 +145,12 @@ function SideBar(props) {
                         >
                           
                           {(title === "Courses" && dropdown_value !== "") 
-                          // ||title === "Terms" 
                           ? (
                             <h1>{title}</h1>
                           ) : null}
 
-                          
                           <div className="sidebar-list">
-                            {
+                          {
                           
                             title === "Courses" && dropdown_value !== "" && props.route ==="/" ? (
                               // dropdown bar
@@ -228,14 +233,10 @@ function SideBar(props) {
               </li>
               <li>
                 <NavLink to="/history">History</NavLink>
-                    <br></br>
-                    <br></br>
                       
                     {props.route==="/history" && Object.entries(props.content_dictionary).map(([title, contents]) => {
                       return props.route === "/history" ? (
-                      
 
-                        
                         <div
                           className="sidebar-content"
                           style={title === "Courses" ? { maxHeight: "75%" } : null}
@@ -312,7 +313,6 @@ function SideBar(props) {
                               <div className="no-content">No {title}</div>
                             )}
                           </div>
-                        
                         </div>
                       );
                     })}
@@ -416,28 +416,23 @@ function SideBar(props) {
               </li>
               <li>
                 <NavLink to="/student">Student View</NavLink>  
-             
-              
               </li>
               <li>
               <NavLink to="/about">About</NavLink>  
-               
-
-
               </li>
             </ul>
-
 
             {/* Hamburger menu for phone, commented out bc of hertz request with only having Home
                 May be changed in the future so just uncomment the code below and a hamburger menu will
                 show on mobile
             */}
-            {/* <div id="nav-mobile" onClick={handleClick}>
+            { /*<div id="nav-mobile" onClick={handleClick}>
               <i
                 id="nav-bar"
                 className={`fas ${clicked ? "fa-times" : "fa-bars"}`}
               ></i>
-            </div> */}
+            </div> */
+          }
           </nav>
 
   
@@ -446,11 +441,6 @@ function SideBar(props) {
         </div>
       </div> {/* div for title */}
       
-
-
-
-
-
     </>
   );
 }

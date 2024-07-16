@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from 'react-router-dom';
-import AboutSidebar from "../Components/AboutSidebar";
+import SideBar from "../Components/Sidebar";
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
 import "../styles/sidebar.css";
@@ -213,7 +213,7 @@ console.log("Future Surveys")
   return (
     <>
     {modalData && <Modal open={openModal} onClose={() => setOpenModal(false)} modalData={modalData} />}
-    <AboutSidebar />
+    <SideBar route="/profStudentHome" content_dictionary={{}}/>
       <div className="home--container">
         <div className="containerOfCourses">
           <div id="Open Surveys" class="courseContainer">

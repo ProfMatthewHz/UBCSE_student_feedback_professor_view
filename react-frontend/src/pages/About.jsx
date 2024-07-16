@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/about.css";
-import AboutSidebar from "../Components/AboutSidebar";
+import SideBar from "../Components/Sidebar";
 import AriannaPFP from "../assets/fall2023team/ariannaescobarreyes.jpg";
 import JustinPFP from "../assets/fall2023team/justinvariara.png";
 import KoreyPFP from "../assets/fall2023team/koreyliu.jpg"
@@ -23,7 +23,7 @@ const About = () => {
   
   return (
     <>
-  <AboutSidebar />
+  <SideBar route="/About" content_dictionary={{}} />
     <div className="about-page--container">
       <div className="about-page--individual-team-container">
         <h1>Development Team</h1>

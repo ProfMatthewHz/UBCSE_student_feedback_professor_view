@@ -133,6 +133,10 @@
   font-weight: 400;
 }
 
+.sidebar-list > .dropdown {
+  padding-top: 10px;
+}
+
 .sidebar-content a > div:hover {
   background-color: #103876;
   border-radius: 5px;
@@ -198,7 +202,7 @@
 
 
 
- .student-sidebar-list::-webkit-scrollbar {
+.student-sidebar-list::-webkit-scrollbar {
   width: 5px;
 }
 
