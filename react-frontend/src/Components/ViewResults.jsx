@@ -50,64 +50,35 @@ const ViewResults = ({
 
 //Fetches the data that tells use who completed surveys
 const fetchCompleted = (surveyid, mappedResults) => {
-        fetch(process.env.REACT_APP_API_URL + "studentSurveyCompletion.php", {
+        fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
             method: "POST",
             credentials: "include",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
+
             body: new URLSearchParams({
-                survey: surveyid
+                survey: surveyid,
+                type: "completion",
             }),
         })
             .then((res) => res.json())
             .then((result) => {
                 setCompletionData(result); 
-                var infoList = result[surveyid]  // retrieve the list pair with the survey_id key
-                var completedStudents = []      // holds list of students that have completed the survey
-
-            // builds list of students that have completed the survey
-            for (let dict of infoList){
-                completedStudents.push(dict["name"]);
-            }
-            var completedCSVLines = [];
-            var currentReviewers = [];
-                
-            if ( (mappedResults.length > 0) && (infoList!=null)) { //compute the csv file for completion results
-                for (let dict of mappedResults) {
-                //console.log("Current Dict: ", dict);
-                    const email = dict["Reviewer name (email)"];
-                    const parts = email.split(' (');
-                    const name = parts[0].trim();
-                    
-                    const emailPart = parts[parts.length - 1];
-                    const cleanedEmail = emailPart.replace(/[()]/g, '');
-                
-                    if (!currentReviewers.includes(name)) {
-                        if (completedStudents.includes(name)){
-                            const row = [name,cleanedEmail, "Completed"];
-                            completedCSVLines.push(row);
-                        } else {
-                            const row = [name,cleanedEmail, "Incomplete"];
-                            completedCSVLines.push(row);
-                        }
-                    currentReviewers.push(name);
-                    }
+                const completedCSVLines = [["Name", "Email", "Completion Status"]];
+                for (let dict of result) {
+                    const name = dict["name"];
+                    const email = dict["email"];
+                    const completed = dict["completed"];
+                    const row = [name, email, completed];
+                    completedCSVLines.push(row);
                 }
-
-                 completedCSVLines.unshift(["Name", "Email", "Completion Status"]) ;// add in header row
-
-                 setCompletionCSVData(completedCSVLines);
-                // console.log("Completed CSV Lines: ", completedCSVLines);
-                 //console.log("Completed Students: ", completedStudents);
-             }
-        })
-        .catch((err) => {
-            console.error('There was a problem with your fetch operation:', err);
-        });
+                setCompletionCSVData(completedCSVLines);
+            })
+            .catch((err) => {
+                console.error('There was a problem with your fetch operation:', err);
+            });
 };
-
-
 
     /**
      * Handles the change of the selected survey results modal

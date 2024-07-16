@@ -138,7 +138,7 @@ function getReviewerCompletionResults($con, $survey_id) {
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
     $name = $row[0];
     $email = $row[1];
-    $completed = ($row[2] == $row[3]);
+    $completed = ($row[2] == $row[3]) ? "Completed" : "Not completed";
     $ret_val[] = array("name" => $name, "email" => $email, "completed" => $completed);
   }
   $stmt->close();
