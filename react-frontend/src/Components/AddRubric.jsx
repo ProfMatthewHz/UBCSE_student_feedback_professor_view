@@ -374,7 +374,7 @@ const AddRubric = ({ getRubrics, handleCloseModal, duplicatedRubricData }) => {
       setRubricData({ name: "", levels: defaultLevels, topics: defaultCriterions })
     }
 
-  }, [])
+  }, [duplicatedRubricData]);
 
   /**
    * Handles the click of the close button.
