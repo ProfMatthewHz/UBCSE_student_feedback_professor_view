@@ -12,9 +12,7 @@ const RubricModal = ({open,onClose,modalData}) => {
 
     //GET request to backend to retrieve the feedback results using survey_id
     const fetchFeedback = useCallback(() => { 
-        const url = `${process.env.REACT_APP_API_URL_STUDENT}resultsEndpoint.php?survey=${survey_id}`;
-
-        fetch(url, {
+        fetch(process.env.REACT_APP_API_URL_STUDENT + "resultsEndpoint.php?survey=" + survey_id, {
             method: "GET",
             credentials: "include",
         })
