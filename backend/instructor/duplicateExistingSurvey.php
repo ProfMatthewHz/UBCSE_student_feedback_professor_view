@@ -59,7 +59,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'GET') && isset($_GET['survey'])) {
 }
 
 // Get rubric info
-$rubrics = getRubrics($con);
+$rubrics = getRubrics($con, $instructor_id);
 
 // try to look up info about the requested survey
 $survey_info = getSurveyData($con, $survey_id);

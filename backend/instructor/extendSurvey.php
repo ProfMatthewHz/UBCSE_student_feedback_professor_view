@@ -42,7 +42,7 @@ $term = MONTH_MAP_SEMESTER[$month];
 $year = idate('Y');
 
 // store information about rubrics as array of array
-$rubrics = getRubrics($con);
+$rubrics = getRubrics($con, $instructor_id);
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
