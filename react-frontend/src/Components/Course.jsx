@@ -14,7 +14,6 @@ import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
 import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
 import PM from "../assets/pairingmodes/PM.png"
 import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
-// import SurveyForm from "./pages/SurveyForm"
 import { useNavigate } from "react-router-dom";
 
 /**
@@ -162,8 +161,9 @@ const Course = ({course, page}) => {
             let pairingModeNames = allPairingModeArray.map(
                 (element) => element.description
             );
-            let pairingModeFull1 = result.survey_types;
-            setPairingModesFull(pairingModeFull1);
+            let pairingModeFull_ = result.survey_types;
+            console.log(pairingModeFull_);
+            setPairingModesFull(pairingModeFull_);
             setPairingModesNames(pairingModeNames);
         })
         .catch((err) => {
@@ -252,7 +252,7 @@ const Course = ({course, page}) => {
             case 'Single Pairs':
                 setPairingImage(SinglePairs);
                 break;
-            case 'PM':
+            case 'MANAGER':
                 setPairingImage(PM);
                 break;
             default:

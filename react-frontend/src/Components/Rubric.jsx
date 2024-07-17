@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import AddRubric from "./AddRubric";
 import Modal from "./Modal";
 import "../styles/rubric.css";
@@ -7,11 +7,9 @@ const Rubric = ({rubric_id, getRubrics}) => {
 
     // IMPORTANT: rubricData contains rubric name, levels, and criterions
     const [duplicatedRubricData, setDuplicatedRubricData] = useState({});
-
     const [criterions, setCriterions] = useState({}) // Contains the criterions
     const [levels, setLevels] = useState({}) // Contains the levels
     const [rubricName, setRubricName] = useState("") // Contains the rubric name
-
     const [showDuplicateRubricModal, setShowDuplicateRubricModal] = useState(false); // Show Duplicate Rubric Modal
 
     /**
@@ -25,7 +23,7 @@ const Rubric = ({rubric_id, getRubrics}) => {
      * Fetches the rubric info from the API.
      * @param filename
      */
-    const fetchRubricInfo = (filename) => {
+    const fetchRubricInfo = useCallback((filename) => {
         fetch(
             process.env.REACT_APP_API_URL + filename,
             {
@@ -53,13 +51,12 @@ const Rubric = ({rubric_id, getRubrics}) => {
             .catch((err) => {
                 console.log(err);
             });
-    };
+    }, [rubric_id]);
 
-// Fetch rubric info when the component mounts
     useEffect(() => {
         fetchRubricInfo("getInstructorRubrics.php") // Displaying Rubric for Library Page
         fetchRubricInfo("rubricDuplicate.php") // Duplicating Rubric
-    }, []);
+    }, [fetchRubricInfo]);
 
     /**
      * The Rubric component renders a rubric with the specified name, levels, and criterions.
