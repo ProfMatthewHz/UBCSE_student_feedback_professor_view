@@ -3,6 +3,7 @@ import "../styles/rubricModal.css";
 
 const RubricModal = ({open,onClose,modalData}) => {
    
+    // eslint-disable-next-line no-unused-vars
     const { student_id, survey_id, survey_name } = modalData; //obtrains the student_id, survey_id,and survey_name from modalData 
     //Fetches data for the feedback form/ viewing results
    
