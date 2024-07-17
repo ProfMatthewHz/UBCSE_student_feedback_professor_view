@@ -6,6 +6,8 @@ ini_set("error_log", "~/php-error.log");
 
 session_start();
 require_once "../lib/database.php";
+require_once "../lib/surveyQueries.php";
+require_once "../lib/visitCountQueries.php";
 
 // Ensure the database connection is established
 $con = connectToDatabase();
@@ -19,42 +21,34 @@ if (!isset($_SESSION['student_id'])) {
     echo json_encode(["error" => "Bad Request: Only requests from within the app are valid."]);
     exit();
 }
+
 if (!isset($_POST['survey-id'])) {
     http_response_code(400);
     echo json_encode(["error" => "Bad Request: Missing required data."]);
     exit();
 }
 
+$student_id = $_SESSION['student_id'];
 $survey_id = intval($_POST['survey-id']);
 
-$stmt_check_visit = $con->prepare("SELECT visit_count FROM student_visit_data WHERE reviewer_id = ? AND survey_id = ?");
-$stmt_check_visit->bind_param("ii", $student_id, $survey_id);
-$stmt_check_visit->execute();
-$result_check_visit = $stmt_check_visit->get_result();
+if (!wasReviewedInSurvey($con, $survey_id, $student_id)) {
+    http_response_code(403);
+    echo json_encode(["error" => "Bad Request: Improper survey requested."]);
+    exit();
+}
 
-if ($result_check_visit->num_rows > 0) {
-    $row = $result_check_visit->fetch_assoc();
-    $visit_count = $row['visit_count'] + 1;
-
-    $stmt_update_visit = $con->prepare("UPDATE student_visit_data SET visit_count = ?, last_visit = ? WHERE reviewer_id = ? AND survey_id = ?");
-    $stmt_update_visit->bind_param("isii", $visit_count, $current_timestamp, $student_id, $survey_id);
-    $stmt_update_visit->execute();
+$visit_count = getVisitCount($con, $survey_id, $student_id); 
+if ($visit_count == 0) {
+    createFirstVisit($con, $survey_id, $student_id);
 } else {
-    $visit_count = 1;
-
-    $stmt_insert_visit = $con->prepare("INSERT INTO student_visit_data (reviewer_id, survey_id, visit_count, last_visit) VALUES (?, ?, ?, ?)");
-    $stmt_insert_visit->bind_param("iiis", $student_id, $survey_id, $visit_count, $current_timestamp);
-    $stmt_insert_visit->execute();
+    updateVisitCount($con, $survey_id, $student_id, $visit_count + 1);
 }
 
 $response = [
-    "student_id" => $student_id,
-    "survey_id" => $survey_id,
-    "count" => $visit_count,
+    "count" => $visit_count + 1,
     "message" => "Student visit data updated successfully."
 ];
 
-mysqli_close($con);
 header('Content-Type: application/json');
 echo json_encode($response);
 ?>
