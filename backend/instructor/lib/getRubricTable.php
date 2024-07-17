@@ -20,7 +20,7 @@ $con = connectToDatabase();
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 if (!isset($_SESSION['id'])) {
   http_response_code(403);
-  echo "Forbidden: You must be logged in to access this page.";
+  echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
   exit();
 }
 $instructor_id = $_SESSION['id'];
@@ -31,19 +31,18 @@ unset($_SESSION['rubric_reviewed']);
 // Verify that we are handling a POST request
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
   http_response_code(504);
-  echo "Bad Request: Wrong request type.";
+  echo json_encode(array("error" => "Bad Request: Wrong request type."));
   exit();
 }
 // Double-check the POST request included the proper data
 if (!isset($_POST["rubric"]) || !ctype_digit($_POST["rubric"])) {
   http_response_code(400);
-  echo "Bad request: parameters provided do not match what is required";
+  echo json_encode(array("error" => "Bad Request: Incorrect parameters."));
   exit(); 
 }
 $rubric_id = intval($_POST["rubric"]);
 $data = getRubricData($con, $rubric_id);
-$table_data = emitRubricTable($data["topics"], $data["scores"]);
 $_SESSION['rubric_reviewed'] = $rubric_id;
-// echo json_encode($table_data);
-echo json_encode($data);
+$json_data = json_encode($data);
+echo $json_data;
 ?>

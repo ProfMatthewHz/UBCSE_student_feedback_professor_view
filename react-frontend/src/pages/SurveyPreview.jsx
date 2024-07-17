@@ -6,7 +6,6 @@ import { useLocation } from "react-router-dom";
 const SurveyPreview = () => {
     const location = useLocation();
     const [rubricData, setRubricData] = useState(null);
-    console.log(location.state.survey_name);
     
     useEffect(() => {
       const postData = async () => {

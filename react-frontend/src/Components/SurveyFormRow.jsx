@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import "../styles/surveyForm.css";
-import { json } from 'react-router-dom';
 
 const SurveyFormRow = ({x, surveyResults, setSurveyResults, survey_id, key}) => {
     const [results, setResults] = useState([]);
