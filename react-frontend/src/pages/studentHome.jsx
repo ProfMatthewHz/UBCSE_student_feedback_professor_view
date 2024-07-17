@@ -98,8 +98,8 @@ const StudentHome = () => {
   }
 
 
-  const fetchCurrent = () => {
-      const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=current`;
+  const fetchSurveys = () => {
+      const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php`;
       console.log("Current Url: ", url);
 
       fetch(url, {
@@ -108,8 +108,12 @@ const StudentHome = () => {
       })
           .then((res) => res.json())
           .then((result) => {
-              console.log("Current result: ", result);
-              setRubricCurrent(result); 
+              console.log("Current result: ", result.current);
+              setRubricCurrent(result.current); 
+              console.log("Past result: ", result.past);
+              setRubricPast(result.past); 
+              console.log("Future result: ", result.future);
+              setRubricFuture(result.future); 
           })
           .catch((err) => {
             console.error('There was a problem with your fetch operation:', err);
@@ -117,58 +121,8 @@ const StudentHome = () => {
   };
 
   useEffect(() => {
-      fetchCurrent()
+      fetchSurveys()
   }, []);
-
-  console.log("CURRENT");
-  console.log(rubricCurrent);
-
-  //past evals
-  const fetchPast = () => {
-      const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=past`;
-      console.log("Past Url: ", url);
-      fetch(url, {
-          method: "GET",
-      })
-          .then((res) => res.json())
-          .then((result) => {
-            console.log("Past result: ", result);
-              setRubricPast(result); 
-          })
-          .catch((err) => {
-            console.error('There was a problem with your fetch operation:', err);
-          });
-  };
-
-  useEffect(() => {
-      fetchPast()
-  }, []);
-  console.log("PAST");
-  console.log(rubricPast);
-
-
-  const fetchFuture = () => {
-      // Adjust the URL to point to your surveys endpoint and include the survey type query parameter
-      const url = `${process.env.REACT_APP_API_URL_STUDENT}endpoints.php?type=upcoming`;
-      console.log("Future Url: ", url);
-      fetch(url, {
-          method: "GET",
-      })
-          .then((res) => res.json())
-          .then((result) => {
-            console.log("Current Fetch: ", result);
-              setRubricFuture(result); 
-          })
-          .catch((err) => {
-            console.error('There was a problem with your fetch operation:', err);
-          });
-  };
-
-  useEffect(() => {
-      fetchFuture()
-  }, []);
-console.log("Future Surveys")
-console.log(rubricFuture)
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
   const fetchFeedbackCount = (email, survey_id) => {
