@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 //import { Link, NavLink } from "react-router-dom";
 import "../styles/sidebar.css";
 
@@ -29,8 +29,10 @@ function StudentSideBar() {
 
 
 
+  // eslint-disable-next-line no-unused-vars
   const [clicked, setClicked] = useState(false)
 
+  // eslint-disable-next-line no-unused-vars
   const handleClick = () => {
     setClicked((prev) => !prev)
   }

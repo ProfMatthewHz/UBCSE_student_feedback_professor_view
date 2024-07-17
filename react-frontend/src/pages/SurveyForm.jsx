@@ -4,7 +4,6 @@ import "../styles/surveyForm.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const SurveyForm = () => {
-  const location = useLocation();
   const [surveyData, setSurveyData] = useState(null);
   const [groupMembers, setGroupMembers] = useState(null);
   const [groupMemberIndex, setGroupMemberIndex] = useState(0);
@@ -12,11 +11,10 @@ const SurveyForm = () => {
   const [buttonText, setButtonText] = useState('NEXT');
   const [showPrevious, setShowPrevious] = useState(false)
   const [surveyResults, setSurveyResults] = useState("");
-  const survey_id = location.state.survey_id + "";
   const [refreshKey, setRefreshKey] = useState(0);
-
+  const location = useLocation();
   const Navigate = useNavigate();
-
+  console.log("Location is: ", location);
   const sendSurveyDataToBackend = async () => {
     const requestData = {
       review_id: reviewIDs[groupMemberIndex],
@@ -47,7 +45,8 @@ const SurveyForm = () => {
 
     if (buttonText === 'FINISH') {
       await sendSurveyDataToBackend();
-      Navigate("../");
+      console.log('Navigating to:', location.state.return_to);
+      Navigate(location.state.return_to);
       return; // Return early if the button text is already 'FINISH'
     } 
 
@@ -85,7 +84,7 @@ const SurveyForm = () => {
   useEffect(() => {
     const fetchData = async () => {
         try {
-            const response = await fetch(process.env.REACT_APP_API_URL + '../startSurvey.php?survey=' +survey_id, {
+            const response = await fetch(process.env.REACT_APP_API_URL + '../startSurvey.php?survey=' + location.state.survey_id, {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -104,7 +103,7 @@ const SurveyForm = () => {
     };
 
     fetchData();
-  }, [survey_id]);
+  }, [location.state.survey_id]);
 
 
   console.log(surveyData);

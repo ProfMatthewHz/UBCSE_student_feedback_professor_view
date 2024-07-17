@@ -10,7 +10,7 @@ require "lib/database.php";
 require "lib/surveyQueries.php";
 date_default_timezone_set('America/New_York');
 
-if(!isset($_SESSION['student_id'])) {
+if(!isset($_SESSION['student_id']) && !isset($_SESSION['id'])) {
     http_response_code(400);
     echo json_encode(array('error' => 'Bad request: Request only valid from within app'));
     exit();

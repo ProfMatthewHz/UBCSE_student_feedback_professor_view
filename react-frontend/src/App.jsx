@@ -47,6 +47,7 @@ function App() {
                 <Route path="/student" element={<ProfStudentHome />} /> 
                 <Route path="/about" element={<About />} />
                 <Route path ="/surveyPreview" element={<SurveyPreview />} />
+                <Route path ="/SurveyForm" element={<SurveyForm />} />
                 </>
             )}
             {/* Student Paths */}
