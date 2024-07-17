@@ -115,22 +115,23 @@ const SurveyListing = (props) => {
   }, []);
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
-  const fetchFeedbackCount = (email, survey_id) => {
+  const fetchFeedbackCount = (survey_id) => {
             // Send student_id and survey_id back to student
-
-            const url = `${process.env.REACT_APP_API_URL}studentSurveyVisitData.php?email=${encodeURIComponent(email)}&survey_id=${survey_id}`;
+            const url = process.env.REACT_APP_API_URL + "studentSurveyVisitData.php";
         
             return fetch(url, {
-                method: "GET",
+                method: "POST",
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: new URLSearchParams({
+                  "survey-id": survey_id,
+              }),
             })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error('HTTP Response error');
-                }
-                return res.json();
-            })
+            .then((res) => { res.json(); })
             .then((result) => {
-
+              console.log(result);
             })
             .catch((err) => {
                 console.error('There was a problem with your fetch operation:', err);
@@ -139,7 +140,7 @@ const SurveyListing = (props) => {
         };
 
     const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
-      fetchFeedbackCount(postData["email"],postData["survey_id"])
+      fetchFeedbackCount(postData["survey_id"])
       console.log("View Feedback Clicked");
       console.log("postData");
       console.log(postData);
@@ -166,7 +167,7 @@ const SurveyListing = (props) => {
                                 <th>Survey Closes</th>
                                 <th>Course Name</th>
                                 <th>Survey Name</th>
-                                <th>Completion Rate</th>
+                                <th>Survey Completion</th>
                                 <th>Action</th>
   
   
@@ -297,7 +298,7 @@ const SurveyListing = (props) => {
                                   <td>{item.surveyName}</td>
                                   {/* <td><button>View Submission</button></td> */}
                                   {/* <td></td> */}
-                                 <td><button onClick={() => combinedClickHandler({"email":item.email,"survey_name":item.surveyName,"survey_id":item.surveyID})}>View Feedback</button></td>
+                                 <td><button onClick={() => combinedClickHandler({"survey_name":item.surveyName,"survey_id":item.surveyID})}>View Feedback</button></td>
                                  
                                 </tr>
                               ))}

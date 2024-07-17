@@ -59,7 +59,7 @@ if(count($current_surveys) > 0) {
             'surveyName' => $value[1],
             'closingDate' => $value[2],
             'openingDate' => $value[7],
-            'completionRate' => round(getCompletionRate($con, $key), 2)
+            'completionRate' => round(getCompletionRate($con, $key, $student_id), 2)
         ];
         $currentSurveysResponse[] = $currentSurveyData;
     }

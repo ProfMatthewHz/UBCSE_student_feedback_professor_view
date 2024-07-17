@@ -227,12 +227,12 @@ function getUpcomingSurveys($con, $id) {
     return $retVal;
 }
 
-function getCompletionRate($con, $survey_id) {
+function getCompletionRate($con, $survey_id, $student_id) {
     $reviewIds = [];
     // get an array of review_ids within reviews table that correspond to survey_id //
-    $sql = "SELECT id FROM reviews WHERE survey_id = ?";
+    $sql = "SELECT id FROM reviews WHERE survey_id = ? AND reviewer_id = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param("i", $survey_id);
+    $stmt->bind_param("ii", $survey_id, $student_id);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {

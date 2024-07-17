@@ -124,7 +124,7 @@ function getSurveysFromSingleCourse($con, $course_id){
       // Generate and store that progress as text
       $percentage = 0;
       if ($s['total'] != 0) {
-        $percentage = floor(($s['completed'] / $s['total']) * 100);
+        $percentage = round(($s['completed'] / $s['total']) * 100);
       }
       $survey_info['completion'] = $percentage . '% completed';
 
