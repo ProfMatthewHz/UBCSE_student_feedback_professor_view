@@ -3,7 +3,7 @@ import AddRubric from "./AddRubric";
 import Modal from "./Modal";
 import "../styles/rubric.css";
 
-const Rubric = ({rubric_id, getRubrics}) => {
+const Rubric = ({rubric_id, updateRubrics}) => {
 
     // IMPORTANT: rubricData contains rubric name, levels, and criterions
     const [duplicatedRubricData, setDuplicatedRubricData] = useState({});
@@ -76,7 +76,7 @@ const Rubric = ({rubric_id, getRubrics}) => {
                 </div>
                 <AddRubric
                     handleAddRubricModal={handleDuplicateRubricModal}
-                    getRubrics={getRubrics}
+                    updateRubrics={updateRubrics}
                     duplicatedRubricData={duplicatedRubricData}
                 />
             </Modal>
