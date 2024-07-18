@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     !isset($_POST['semester']) && !empty($_POST['additional-instructors'])
   ) {
     http_response_code(400);
-    echo "Bad Request: Missing parmeters.";
+    echo json_encode(array("errors" => "Request must be made from within app."));
     exit();
   }
 
