@@ -121,8 +121,6 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
         }
     };
 
-    const [semesters, ] = useState(getFutureSemesters()); // State for storing the future semesters
-
     // fetch the courses to display on the sidebar
     useEffect(() => {
         setYear(getCurrentYear());
@@ -161,7 +159,7 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
     useEffect(() => {
         let instructorIds = [];
         for (let instructor of instructors) {
-            instructorIds.push(+instructor.value);
+            instructorIds.push(parseInt(instructor.value));
         }
         setSelectedInstructors(instructorIds);
     }, [instructors]);
@@ -339,7 +337,7 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
                                         name="semester"
                                         required
                                     >
-                                        {semesters.map((sem) => {
+                                        {getFutureSemesters().map((sem) => {
                                             return (
                                                 <option
                                                     key={sem.value}
