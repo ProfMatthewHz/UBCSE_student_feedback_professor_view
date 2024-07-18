@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import { useNavigate } from 'react-router-dom';
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
@@ -12,17 +12,17 @@ const SurveyListing = (props) => {
  // State to store the list of courses
  const [openModal, setOpenModal] = useState(false);
  const [modalData, setModalData] = useState(null); 
- const [rubricCurrent, setRubricCurrent] = useState([]);
- const [rubricPast, setRubricPast] = useState([]);
- const [rubricFuture, setRubricFuture] = useState([]);
- 
+ const [surveyCurrent, setSurveyCurrent] = useState([]);
+ const [surveyPast, setSurveyPast] = useState([]);
+ const [surveyFuture, setSurveyFuture] = useState([]);
+
  const navigate = useNavigate();
 
   //redirects to temporary page for open action buton
   const completeSurveyButtonHandler = (surveyData) => {
     console.log(surveyData);
     const stateData = {...surveyData, return_to: props.return_to};
-    navigate("/SurveyForm", {state: stateData});
+    navigate("/surveyForm", {state: stateData});
   };
 
   //reformat time to 00:00:00 PM/AM
@@ -91,26 +91,25 @@ const SurveyListing = (props) => {
       return result;
   }
 
-
-  const fetchSurveys = () => {
+  const fetchSurveys = useCallback(() => {
       fetch(process.env.REACT_APP_API_URL_STUDENT + "endpoints.php", {
           method: "GET",
           credentials: "include",
       })
           .then((res) => res.json())
           .then((result) => {
-              setRubricCurrent(result.current); 
-              setRubricPast(result.past); 
-              setRubricFuture(result.future); 
+              setSurveyCurrent(sortByDate(result.current)); 
+              setSurveyPast(sortByDate(result.past)); 
+              setSurveyFuture(sortByDate(result.future)); 
           })
           .catch((err) => {
             console.error('There was a problem with your fetch operation:', err);
           });
-  };
+  }, []);
 
   useEffect(() => {
       fetchSurveys()
-  }, []);
+  }, [fetchSurveys]);
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
   const updateFeedbackCount = (survey_id) => {
@@ -151,7 +150,7 @@ const SurveyListing = (props) => {
                           Open Surveys
                       </h2>
                   </div>
-                  {rubricCurrent.length > 0 ? (
+                  {surveyCurrent.length > 0 ? (
                           <table className="surveyTable">
                             <thead>
                               <tr>
@@ -166,7 +165,7 @@ const SurveyListing = (props) => {
                             </thead>
   
                             <tbody>
-                              {sortByDate(rubricCurrent).map((item, index) => (
+                              {surveyCurrent.map((item, index) => (
                                 <tr key={index} className="survey-row">
   
                                   {/* if the date is < 3 days away, make the text red */}
@@ -216,7 +215,7 @@ const SurveyListing = (props) => {
                           Future Surveys
                       </h2>
                   </div>
-                   {rubricFuture.length > 0 ? (
+                   {surveyFuture.length > 0 ? (
                           <table className="surveyTable">
                             <thead>
                               <tr>
@@ -227,7 +226,7 @@ const SurveyListing = (props) => {
                             </thead>
   
                             <tbody>
-                              {sortByDate(rubricFuture).map((item, index) => (
+                              {surveyFuture.map((item, index) => (
                                 <tr key={index} className="survey-row">
                                   <td>
                                     {reformatDate(item.closingDate.date)}
@@ -263,9 +262,7 @@ const SurveyListing = (props) => {
                       </h2>
                   </div>
                  
-                  
-  
-                  {rubricPast.length > 0 ? (
+                  {surveyPast.length > 0 ? (
                           <table className="surveyTable">
                             <thead>
                               <tr>
@@ -278,7 +275,7 @@ const SurveyListing = (props) => {
                             </thead>
   
                             <tbody>
-                              {sortByDate(rubricPast).map((item, index) => (
+                              {surveyPast.map((item, index) => (
                                 <tr key={index} className="survey-row">
                                   <td>
                                     {reformatDate(item.closingDate.date)}
@@ -290,7 +287,6 @@ const SurveyListing = (props) => {
                                   {/* <td><button>View Submission</button></td> */}
                                   {/* <td></td> */}
                                  <td><button onClick={() => combinedClickHandler({"survey_name":item.surveyName,"survey_id":item.surveyID})}>View Feedback</button></td>
-                                 
                                 </tr>
                               ))}
                             </tbody>

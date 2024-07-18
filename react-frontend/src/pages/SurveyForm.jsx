@@ -104,8 +104,6 @@ const SurveyForm = () => {
     fetchData();
   }, [location.state.survey_id]);
 
-
-  console.log(surveyData);
   return (
     <div>
      {surveyData != null && groupMembers != null ? (

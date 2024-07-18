@@ -70,7 +70,7 @@ const RubricModal = ({open,onClose,modalData}) => {
                                         </tr>
                                     ))
                                     ) : (
-                                        <th colSpan="3">Feedback Results Not Available</th>
+                                        <tr colSpan="3">Feedback Results Not Available</tr>
                                     )}
                             </tbody>
                     </table>

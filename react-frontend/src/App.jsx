@@ -47,14 +47,14 @@ function App() {
                 <Route path="/student" element={<ProfStudentHome />} /> 
                 <Route path="/about" element={<About />} />
                 <Route path ="/surveyPreview" element={<SurveyPreview />} />
-                <Route path ="/SurveyForm" element={<SurveyForm />} />
+                <Route path ="/surveyForm" element={<SurveyForm />} />
                 </>
             )}
             {/* Student Paths */}
             {userFlag === 2 && (
               <>
                 <Route path="/" element={<StudentHome />} /> 
-                <Route path="/SurveyForm" element={<SurveyForm />} />
+                <Route path="/surveyForm" element={<SurveyForm />} />
               </>
             )}
             </Routes>    
