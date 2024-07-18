@@ -1,9 +1,21 @@
 <?php
-function getAllInstructors($con) {
+function getAllInstructorIds($con) {
   $ret_val = array();
-  $result = mysqli_query($con, "SELECT * FROM instructors");
-  while ($row = mysqli_fetch_assoc($result)) {
-    $ret_val[] = $row['id'];
+  $result = $con->query($con, "SELECT id FROM instructors");
+  while ($row = $result->fetch_array()) {
+    $ret_val[] = $row[0];
+  }
+  return $ret_val;
+}
+
+function getAllOtherInstructorsFull($con, $instructor_id) {
+  $ret_val = array();
+  $result = $con->query("SELECT * FROM instructors");
+  while ($row = $result->fetch_assoc()) {
+    if ($row['id'] != $instructor_id) {
+        $instructor = array($row['id'], $row['name'], $row['email']);
+        $ret_val[] = $instructor;
+    }
   }
   return $ret_val;
 }

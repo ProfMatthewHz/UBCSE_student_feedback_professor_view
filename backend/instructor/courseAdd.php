@@ -24,11 +24,11 @@ $con = connectToDatabase();
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 if (!isset($_SESSION['id'])) {
   http_response_code(403);
-  echo "Forbidden: You must be logged in to access this page.";
+  echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
   exit();
 }
 
-$instructor_ids = getAllInstructors($con);
+$instructor_ids = getAllInstructorIds($con);
 
 $instructor_id = $_SESSION['id'];
 //stores error messages corresponding to form fields

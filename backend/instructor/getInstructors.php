@@ -18,38 +18,14 @@ $con = connectToDatabase();
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 if (!isset($_SESSION['id'])) {
     http_response_code(403);
-    echo "Forbidden: You must be logged in to access this page.";
+    echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
     exit();
-  }
-$instructor_id = $_SESSION['id'];
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $instructors = array();
-
-    // Fetch all instructors
-    $query = "SELECT * FROM instructors";
-    $result = mysqli_query($con, $query);
-
-    if ($result) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            if($row['id'] == $instructor_id){
-                continue;
-            }else {
-                $instructor = array(
-                    $row['id'],
-                    $row['name'],
-                    $row['email']
-                    
-                );
-                $instructors[] = $instructor;
-            }
-        }
-        // Output the array of arrays for instructor details
-        header('Content-Type: application/json');
-        echo json_encode($instructors);
-    } else {
-        echo "Error retrieving instructors: " . mysqli_error($con);
-    }
-    exit;
 }
+
+$instructor_id = $_SESSION['id'];
+$instructors = getAllOtherInstructorsFull($con, $instructor_id);
+
+// Output the array of arrays for instructor details
+header('Content-Type: application/json');
+echo json_encode($instructors);
 ?>
