@@ -20,6 +20,7 @@ require_once "lib/courseQueries.php";
 
 //query information about the requester
 $con = connectToDatabase();
+header("Content-Type: application/json; charset=UTF-8");
 
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 if (!isset($_SESSION['id'])) {
@@ -93,16 +94,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $additional_instructors = [];
   }
 
-  $currentYear = date('Y');
+  $currentYear = idate('Y');
   $month = idate('m');
-  $ActualMonth = MONTH_MAP_SEMESTER[$month];
-  $currentActualMonth = SEMESTER_MAP_REVERSE[$ActualMonth];
+  $currentTerm = MONTH_MAP_SEMESTER[$month];
   
   // accounts for the current year and current semester 
   // so courses cannot be created for past terms
   if ($course_year < $currentYear) {
     $errorMsg['course-year'] = 'Course year cannot be in the past.';
-  } else if  (($course_year == $currentYear) && ($semester != $ActualMonth) ) {
+  } else if  (($course_year == $currentYear) && ($semester < $currentTerm) ) {
     $errorMsg['semester'] = 'Course term cannot be in the past.';
   }
 
@@ -152,7 +152,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       }
     }
   }
-  header("Content-Type: application/json; charset=UTF-8");
   // Now lets dump the data we found
   $myJSON = json_encode($errorMsg);
   echo $myJSON;

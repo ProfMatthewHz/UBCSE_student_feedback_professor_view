@@ -1,7 +1,7 @@
 <?php
 function getAllInstructorIds($con) {
   $ret_val = array();
-  $result = $con->query($con, "SELECT id FROM instructors");
+  $result = $con->query("SELECT id FROM instructors");
   while ($row = $result->fetch_array()) {
     $ret_val[] = $row[0];
   }
