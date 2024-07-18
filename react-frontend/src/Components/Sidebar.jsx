@@ -28,6 +28,7 @@ function SideBar(props) {
     setShowAddRubricModal(prevState => !prevState);
   }
 
+  // eslint-disable-next-line no-unused-vars
   const handleClick = () => {
     setClicked(prevState => !prevState)
   }

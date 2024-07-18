@@ -5,7 +5,6 @@ import "../styles/rubricCourse.css";
 import "../styles/sidebar.css";
 import Modal from "./RubricModal";
 
-
 /**
  * This will be rendered for students
  */
@@ -16,9 +15,8 @@ const SurveyListing = (props) => {
  const [rubricCurrent, setRubricCurrent] = useState([]);
  const [rubricPast, setRubricPast] = useState([]);
  const [rubricFuture, setRubricFuture] = useState([]);
-  
-
-  const navigate = useNavigate();
+ 
+ const navigate = useNavigate();
 
   //redirects to temporary page for open action buton
   const completeSurveyButtonHandler = (surveyData) => {
@@ -115,7 +113,7 @@ const SurveyListing = (props) => {
   }, []);
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
-  const fetchFeedbackCount = (survey_id) => {
+  const updateFeedbackCount = (survey_id) => {
             // Send student_id and survey_id back to student
             const url = process.env.REACT_APP_API_URL + "studentSurveyVisitData.php";
         
@@ -140,7 +138,7 @@ const SurveyListing = (props) => {
         };
 
     const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
-      fetchFeedbackCount(postData["survey_id"])
+      updateFeedbackCount(postData["survey_id"])
       console.log("View Feedback Clicked");
       console.log("postData");
       console.log(postData);
