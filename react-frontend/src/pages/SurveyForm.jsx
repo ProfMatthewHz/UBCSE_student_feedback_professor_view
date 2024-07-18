@@ -13,8 +13,8 @@ const SurveyForm = () => {
   const [surveyResults, setSurveyResults] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
   const location = useLocation();
-  const Navigate = useNavigate();
-  console.log("Location is: ", location);
+  const navigate = useNavigate();
+
   const sendSurveyDataToBackend = async () => {
     const requestData = {
       review_id: reviewIDs[groupMemberIndex],
@@ -45,8 +45,7 @@ const SurveyForm = () => {
 
     if (buttonText === 'FINISH') {
       await sendSurveyDataToBackend();
-      console.log('Navigating to:', location.state.return_to);
-      Navigate(location.state.return_to);
+      navigate(location.state.return_to);
       return; // Return early if the button text is already 'FINISH'
     } 
 

@@ -104,8 +104,8 @@ function SideBar(props) {
           </button>
         </div>
         <AddCourse
-          handleAddCourseModal={handleAddCourseModal}
-          getCourses={props.getCourses}
+          closeModal={handleAddCourseModal}
+          updateCourseListing={props.getCourses}
         />
       </Modal>
 

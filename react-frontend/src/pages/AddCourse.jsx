@@ -12,19 +12,18 @@ import {Select} from "../Components/Select";
  * @constructor
  */
 
-const AddCourse = ({handleAddCourseModal, getCourses}) => {
+const AddCourse = ({closeModal, updateCourseListing}) => {
     const [courseCode, setCourseCode] = useState(""); // State for storing the course code
     const [courseName, setCourseName] = useState(""); // State for storing the course name
     const [file, setFile] = useState(null); // State for storing the file
     const [semester, setSemester] = useState(""); // State for storing the semester
-    const [year, setYear] = useState(null); // State for storing the year
+    const [year, setYear] = useState(0); // State for storing the year
     const [rosterFileError, setRosterFileError] = useState([]); // State for storing the roster file error
     const [duplicateError, setDuplicateError] = useState(""); // State for storing the duplicate error
-    const [showModal, setShowModal] = useState(false); // State for showing the modal
+    const [showFileErrorModal, setShowFileErrorModal] = useState(false); // State for showing the modal
     const [instructors, setInstructors] = useState([]); // array of instructor objects selected including their id and name
     const [allInstructors, setAllInstructors] = useState([]); // array of all instructors in the database
     const [selectedInstructors, setSelectedInstructors] = useState([]); // array of selected instructor ids to send to backend
-    const formData = new FormData();
 
     /**
      * Determines the current year based on the current date.
@@ -54,17 +53,17 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
             return 3; // Summer
         }
 
-        // Fall Semester (Aug 28 to Dec 20)
-        if (
-            (month === 7 && day >= 28) ||
+        // Fall Semester (Aug 19 to Dec 28)
+        else if (
+            (month === 7 && day >= 19) ||
             (month > 7 && month < 11) ||
-            (month === 11 && day <= 20)
+            (month === 11 && day <= 28)
         ) {
             return 4; // Fall
         }
 
-        // Winter Session (Dec 28 to Jan 19)
-        if ((month === 11 && day >= 28) || (month === 0 && day <= 19)) {
+        // Winter Session (Dec 29 to Jan 19)
+        else if ((month === 11 && day >= 29) || (month === 0 && day <= 19)) {
             return 1; // Winter
         }
 
@@ -76,7 +75,6 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
      * Converts semester names to their corresponding integer codes.
      */
     const getFutureSemesters = () => {
-        const date = new Date();
         const currentYear = getCurrentYear();
         const currentSemester = getCurrentSemester();
         const futureSemesters = [];
@@ -123,8 +121,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
         }
     };
 
-    const futureSemesters = getFutureSemesters(); // Array of future semesters
-    const [semesters, setSemesters] = useState(futureSemesters); // State for storing the future semesters
+    const [semesters, ] = useState(getFutureSemesters()); // State for storing the future semesters
 
     // fetch the courses to display on the sidebar
     useEffect(() => {
@@ -146,13 +143,13 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
             .then((res) => res.json())
             .then((result) => {
                 let fetchedInstructors = [];
-                result.map((instructor) => {
+                for (let instructorArray of result) {
                     let currentInstructor = {
-                        label: instructor[1],
-                        value: instructor[0],
+                        label: instructorArray[1],
+                        value: instructorArray[0],
                     };
                     fetchedInstructors.push(currentInstructor);
-                });
+                };
                 setAllInstructors(fetchedInstructors);
             })
             .catch((err) => {
@@ -163,9 +160,9 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
     // Everytime an instructor is selected/deselected the selectedInstructors state updates
     useEffect(() => {
         let instructorIds = [];
-        instructors.map((instructor) => {
+        for (let instructor of instructors) {
             instructorIds.push(+instructor.value);
-        });
+        }
         setSelectedInstructors(instructorIds);
     }, [instructors]);
 
@@ -204,7 +201,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
      */
     const handleSubmit = (e) => {
         e.preventDefault();
-
+        const formData = new FormData();
         formData.append("course-code", courseCode);
         formData.append("course-name", courseName);
         formData.append("course-year", year);
@@ -227,7 +224,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
                         const parsedResult = JSON.parse(result);
                         console.log(parsedResult);
                         if (parsedResult["roster-file"]) {
-                            setShowModal(true);
+                            setShowFileErrorModal(true);
                             const updatedError = formatRosterError(
                                 parsedResult["roster-file"]
                             );
@@ -240,8 +237,8 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
                     }
                 } else {
                     // Class is valid, so we can just navigate to the home page
-                    handleAddCourseModal();
-                    getCourses();
+                    closeModal();
+                    updateCourseListing();
                     setRosterFileError([]);
                     setDuplicateError("");
                 }
@@ -251,8 +248,8 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
             });
     };
 
-    const handleModalClose = () => {
-        setShowModal(false); // Close the modal
+    const fileErrorModalClose = () => {
+        setShowFileErrorModal(false); // Close the modal
     };
 
     // The AddCourse component renders a form to add a new course.
@@ -317,8 +314,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
                             {/* File input for course roster CSV file with specific requirements. */}
                             <div className="form__item file-input-wrapper">
                                 <label className="form__item--label form__item--file">
-                                    Roster (CSV File) - Requires Emails in Columns 1, First Names
-                                    in Columns 2 and Last Names in Columns 3
+                                    Roster (CSV File) - Each Row Must Be Formatted: email, first name, last name
                                     <input
                                         type="file"
                                         id="addcourse-file-input"
@@ -383,7 +379,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
             </div>
 
             {/* Conditional rendering of a modal dialog for roster file errors. */}
-            {showModal && (
+            {showFileErrorModal && (
                 <div className="modal">
                     <div className="modal-content">
                         <h2>Roster File Error</h2>
@@ -392,7 +388,7 @@ const AddCourse = ({handleAddCourseModal, getCourses}) => {
                                 <p>{err}</p>
                             ))
                         }
-                        <button className="roster-file--error-btn" onClick={handleModalClose}>OK</button>
+                        <button className="roster-file--error-btn" onClick={fileErrorModalClose}>OK</button>
                     </div>
                 </div>
             )}

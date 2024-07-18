@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import SideBar from "../Components/Sidebar";
 import Rubric from "../Components/Rubric";
 import "../styles/library.css";
@@ -11,7 +11,7 @@ const Library = () => {
     /**
      * Fetches the list of rubrics from the API.
      */
-    const fetchRubrics = () => {
+    const fetchRubrics = useCallback(() => {
         fetch(process.env.REACT_APP_API_URL + "getInstructorRubrics.php", {
                 method: "GET",
                 credentials: "include"
@@ -23,18 +23,17 @@ const Library = () => {
         .catch((err) => {
           console.log(err);
         });
-    };
+    }, []);
 
     // Fetch rubrics when the component mounts
     useEffect(() => {
         fetchRubrics()
-    }, []);
+    }, [fetchRubrics]);
 
     // Prepare content for the Sidebar component
     const sidebar_content = {
-        Rubrics: rubrics ? rubrics.map((rubric) => rubric.description) : [],
+        Rubrics: rubrics.length > 0 ? rubrics.map((rubric) => rubric.description) : [],
     };
-    console.log("Sidebar content", sidebar_content)
 
   return (
     <>
