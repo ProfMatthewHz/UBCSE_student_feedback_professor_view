@@ -159,14 +159,17 @@ function getSurveysFromSingleCourse($con, $course_id){
 
 require_once '../lib/constants.php';
 
-function getInstructorTerms($con, $instructor_id, $currentSemester, $currentYear) {
+function getInstructorHistoricalTerms($con, $instructor_id) {
+  // Get the current semester and year
+  $currentMonth = idate('m');
+  $currentSemester = MONTH_MAP_SEMESTER[$currentMonth];
+  $currentYear = idate('Y');
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
                          INNER JOIN course_instructors ON courses.id = course_instructors.course_id
                          WHERE course_instructors.instructor_id = ?
                          AND (year < ? OR (year = ? AND semester < ?))
                          ORDER BY year, semester');
-
   $stmt->bind_param('iiii', $instructor_id, $currentYear, $currentYear, $currentSemester);
   $stmt->execute();
   $result = $stmt->get_result();

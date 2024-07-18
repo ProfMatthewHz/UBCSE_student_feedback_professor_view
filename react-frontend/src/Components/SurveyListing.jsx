@@ -127,10 +127,6 @@ const SurveyListing = (props) => {
                   "survey-id": survey_id,
               }),
             })
-            .then((res) => { res.json(); })
-            .then((result) => {
-              console.log(result);
-            })
             .catch((err) => {
                 console.error('There was a problem with your fetch operation:', err);
                 return "Not Available"; 
@@ -139,9 +135,6 @@ const SurveyListing = (props) => {
 
     const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
       updateFeedbackCount(postData["survey_id"])
-      console.log("View Feedback Clicked");
-      console.log("postData");
-      console.log(postData);
       setOpenModal(true); 
       setModalData(postData); //sends postData to rubric modal
     };

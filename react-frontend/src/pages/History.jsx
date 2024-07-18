@@ -21,49 +21,6 @@ const History = () => {
         setCurrentTerm(newValue)
     }
 
-
-    const getCurrentYear = () => {
-        const date = new Date();
-        return date.getFullYear();
-    };
-
-    // Using 2023-2024 course schedule
-    /**
-     * Determines the current semester based on the current date.
-     * @returns {number} The current semester encoded as an integer (1 for Winter, 2 for Spring, 3 for Summer, 4 for Fall).
-     */
-    const getCurrentSemester = () => {
-        const date = new Date();
-        const month = date.getMonth(); // 0 for January, 1 for February, etc.
-        const day = date.getDate();
-
-        // Summer Sessions (May 30 to Aug 18)
-        if (
-            (month === 4 && day >= 30) ||
-            (month > 4 && month < 7) ||
-            (month === 7 && day <= 18)
-        ) {
-            return 3; // Summer
-        }
-
-        // Fall Semester (Aug 28 to Dec 20)
-        if (
-            (month === 7 && day >= 28) ||
-            (month > 7 && month < 11) ||
-            (month === 11 && day <= 20)
-        ) {
-            return 4; // Fall
-        }
-
-        // Winter Session (Dec 28 to Jan 19)
-        if ((month === 11 && day >= 28) || (month === 0 && day <= 19)) {
-            return 1; // Winter
-        }
-
-        // If none of the above conditions are met, it must be Spring (Jan 24 to May 19)
-        return 2; // Spring
-    };
-
     /**
      * Converts semester names to their corresponding integer codes.
      * @param {string} semester The name of the semester.
@@ -88,17 +45,10 @@ const History = () => {
     useEffect(() => {
         // First, a fetch request is made to retrieve the terms (e.g., Fall 2023, Spring 2024) for which the instructor has courses.
         fetch(
-            process.env.REACT_APP_API_URL + "instructorTermsPost.php",
+            process.env.REACT_APP_API_URL + "getInstructorHistoricalTerms.php",
             {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                    currentYear: getCurrentYear(),
-                    currentSemester: getCurrentSemester(),
-                }),
+                method: "GET",
+                credentials: "include"
             }
         )
             .then((res) => res.json()) // Parsing the response to JSON format.
@@ -111,7 +61,7 @@ const History = () => {
                     const term_key = term.semester + " " + term.year
                     all_courses[term_key] = []
                     return fetch(
-                        process.env.REACT_APP_API_URL + "instructorCoursesInTerm.php",
+                        process.env.REACT_APP_API_URL + "getInstructorCoursesInTerm.php",
                         {
                             method: "POST",
                             credentials: "include",

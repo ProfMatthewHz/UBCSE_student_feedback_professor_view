@@ -46,7 +46,7 @@ const Home = () => {
 
   const fetchCourses = () => {
     fetch(
-      process.env.REACT_APP_API_URL + "instructorCoursesInTerm.php",
+      process.env.REACT_APP_API_URL + "getInstructorCoursesInTerm.php",
       {
         method: "POST",
         credentials: "include",
