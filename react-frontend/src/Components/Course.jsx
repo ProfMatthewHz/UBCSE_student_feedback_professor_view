@@ -15,6 +15,7 @@ import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 import { useNavigate } from "react-router-dom";
 import SurveyExtendModal from "./SurveyExtendModal";
 import SurveyDeleteModal from "./SurveyDeleteModal";
+import SurveyErrorsModal from "./SurveyErrorsModal";
 
 
 /**
@@ -841,6 +842,11 @@ const Course = ({course, page}) => {
                 modalClose={deleteModalClose}
                 survey_data={currentSurvey} />
             )}
+            {errorModalIsOpen &&
+            (<SurveyErrorsModal
+                modalClose={closeModalError}
+                errors={errorsList} />
+            )}
             <Modal
                 open={duplicateModal}
                 onRequestClose={closeModalDuplicate}
@@ -1132,60 +1138,7 @@ const Course = ({course, page}) => {
                     </button>
                 </div>
             </Modal>
-            <Modal
-                open={errorModalIsOpen}
-                onRequestClose={closeModalError}
-                width={"800px"}
-            >
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        borderBottom: "thin solid #225cb5",
-                    }}
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                            width: "100%",
-                            marginTop: "2px",
-                            paddingBottom: "2px",
-                            justifyContent: "center",
-                            borderBottom: "thin solid #225cb5",
-                        }}
-                    >
-                        <h2 style={{color: "#225cb5"}}>Survey Errors</h2>
-                    </div>
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            maxHeight: "400px", // Set a maximum height for the container
-                            overflowY: "auto", // Enable vertical scrolling
-                            overflowX: "hidden", // Disable horizontal scrolling
-                        }}
-                    >
-                        {errorsList.map((string, index) => (
-                            <div key={index} className="string-list-item">
-                                {string}
-                            </div>
-                        ))}
-                    </div>
-                </div>
 
-                <button
-                    className="Cancel"
-                    style={{
-                        borderRadius: "5px",
-                        fontSize: "18px",
-                        fontWeight: "700",
-                        padding: "5px 12px",
-                    }}
-                    onClick={closeModalError}
-                >
-                    Close
-                </button>
-            </Modal>
             <Modal
                 open={addSurveyModalIsOpen}
                 onRequestClose={closeAddSurveyModal}
