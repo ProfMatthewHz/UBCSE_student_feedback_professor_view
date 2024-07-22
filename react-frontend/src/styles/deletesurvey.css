@@ -1,3 +1,8 @@
+.delete-modal {
+  width: "600px";
+  max-width: "90%";
+}
+
 .delete-survey--contents-container {
   align-items: flex-start;
   display: flex;
@@ -89,7 +94,6 @@ label.delete-survey--error-label {
 
 /* PHONES AND SMALL DEVICES */
 @media screen and (max-width: 500px) {
-
   .delete-survey-btn-container {
       display: flex;
       justify-content: center;

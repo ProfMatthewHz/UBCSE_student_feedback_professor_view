@@ -1,8 +1,11 @@
-import React, {useCallback, useState} from "react";
+import React, {useState} from "react";
 import "../styles/modal.css";
 import "../styles/extendsurvey.css";
 
-const ExtendModal = ({modalClose, survey_data}) => {
+const SurveyExtendModal = ({modalClose, survey_data}) => {
+  const [survey_id,] = useState(survey_data.id);
+  const [survey_name,] = useState(survey_data.name);
+  const [originalEndDate,] = useState(survey_data.end_date);
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
   const [emptyFieldsError, setEmptyFieldsError] = useState(false);
@@ -12,7 +15,7 @@ const ExtendModal = ({modalClose, survey_data}) => {
   const [newEndMustComeAfterOldEndDay, setNewEndMustComeAfterOldEndDay] = useState(false);
   const [newEndMustComeAfterOldEndHour, setNewEndMustComeAfterOldEndHour] = useState(false);
 
-  const extendSurveyPost = useCallback(async (formdata) => {
+  async function extendSurveyPost(formdata) {
     let fetchHTTP =
         process.env.REACT_APP_API_URL + "extendSurvey.php";
     try {
@@ -26,7 +29,7 @@ const ExtendModal = ({modalClose, survey_data}) => {
     } catch (err) {
         throw err; // Re-throw to be handled by the caller
     }
-}, []);
+}
 
   async function verifyAndSubmit() {
     setEmptyFieldsError(false);
@@ -65,8 +68,8 @@ const ExtendModal = ({modalClose, survey_data}) => {
     }
 
     //new end date must come after old end date
-    let oldEndDate = survey_data.end_date.split(' ')[0]
-    let oldEndTimeHours = survey_data.end_date.split(' ')[1]
+    let oldEndDate = originalEndDate.split(' ')[0]
+    let oldEndTimeHours = originalEndDate.split(' ')[1]
     oldEndTimeHours = oldEndTimeHours.split(':');
     oldEndTimeHours = oldEndTimeHours[0] + ':' + oldEndTimeHours[1];
     let oldEndDateTimeObject = new Date(oldEndDate + "T00:00:00")
@@ -89,15 +92,10 @@ const ExtendModal = ({modalClose, survey_data}) => {
     if (endDateTimeObject.getDate(endDateTimeObject) === timestamp.getDate(timestamp)) {
         if (endDateTimeObject.getMonth(endDateTimeObject) === timestamp.getMonth(timestamp)) {
             let timestampWithHour = new Date(Date.now());
-            console.log(timestampWithHour)
             let currentHour = timestampWithHour.getHours(timestampWithHour);
-            console.log(currentHour)
             let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
-            console.log(currentMinutes)
             let endHours = parseInt(newEndTime.split(":")[0]);
-            console.log(endHours)
             let endMinutes = parseInt(newEndTime.split(":")[1]);
-            console.log(endMinutes)
 
             if (endHours < currentHour) {
                 setMustBeAfterCurrentTime(true);
@@ -127,7 +125,7 @@ const ExtendModal = ({modalClose, survey_data}) => {
 
     }
 
-    let surveyId = survey_data.id;
+    let surveyId = survey_id;
     let formData5 = new FormData();
 
     formData5.append('survey-id', surveyId);
@@ -160,7 +158,6 @@ const ExtendModal = ({modalClose, survey_data}) => {
 
     modalClose([]);
 }
-
   return (
     <div className="modal">
       <div className="modal-content modal-phone">
@@ -171,12 +168,12 @@ const ExtendModal = ({modalClose, survey_data}) => {
         </div>
         <div className="extend-survey--contents-container">
             <h2 className="extend-survey--main-title">
-                Extend Survey: {survey_data.name}
+                Extend Survey: {survey_name}
             </h2>
             <div className="extend-survey--boxes-container">
                 <div className="extend-survey--left-box-container">
                     <h2>Current Deadline</h2>
-                    <h3>{survey_data.end_date}</h3>
+                    <h3>{originalEndDate}</h3>
                 </div>
                 <div className="extend-survey--right-box-container">
                     <h2>New Deadline</h2>
@@ -234,4 +231,4 @@ const ExtendModal = ({modalClose, survey_data}) => {
   );
 }
 
-export default ExtendModal;
+export default SurveyExtendModal;

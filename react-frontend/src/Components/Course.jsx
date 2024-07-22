@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from "react";
 import "../styles/course.css";
 import "../styles/modal.css";
-//import "../styles/extendsurvey.css";
-import "../styles/deletesurvey.css";
 import "../styles/duplicatesurvey.css";
 import "../styles/addsurvey.css";
 import Modal from "./Modal";
@@ -15,7 +13,9 @@ import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
 import PM from "../assets/pairingmodes/PM.png"
 import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 import { useNavigate } from "react-router-dom";
-import ExtendModal from "./ExtendModal";
+import SurveyExtendModal from "./SurveyExtendModal";
+import SurveyDeleteModal from "./SurveyDeleteModal";
+
 
 /**
  * @component
@@ -66,8 +66,7 @@ const Course = ({course, page}) => {
     const [actionsButtonValue, setActionsButtonValue] = useState("");
     const [extendModal, setExtendModal] = useState(false);
     const [duplicateModal, setDuplicateModel] = useState(false);
-    const [emptyOrWrongDeleteNameError, setEmptyOrWrongDeleteNameError] =
-        useState(false);
+
     const [deleteModal, setDeleteModal] = useState(false);
     const [addSurveyModalIsOpen, setAddSurveyModalIsOpen] = useState(false);
     const [errorModalIsOpen, setModalIsOpenError] = useState(false);
@@ -806,34 +805,6 @@ const Course = ({course, page}) => {
         setStartTimeMinutesBeforeCurrent(false);
     }
 
-    async function verifyDeleteBackend(formdata, id) {
-        let fetchHTTP =
-            process.env.REACT_APP_API_URL + "deleteSurvey.php";
-        const result = await fetch(fetchHTTP, {
-                method: "POST",
-                body: formdata,
-                credentials: "include",
-            })
-            .then((res) => res.json());
-        console.log(result);
-        return await result; // Return the result directly
-    }
-
-    function verifyDelete() {
-        setEmptyOrWrongDeleteNameError(false);
-        let inputtedText = document.getElementById("delete-name").value;
-        if (inputtedText !== currentSurvey.name) {
-            setEmptyOrWrongDeleteNameError(true);
-        } else {
-            let form = new FormData();
-            form.append("survey_id", currentSurvey.id);
-            form.append("agreement", 1);
-            verifyDeleteBackend(form);
-            updateAllSurveys();
-            deleteModalClose();
-        }
-    }
-
     function extendModalClose(errorList) {
         setExtendModal(false);
         if (errorList && errorList.length > 0) {
@@ -845,7 +816,7 @@ const Course = ({course, page}) => {
     }
 
     function deleteModalClose() {
-        setEmptyOrWrongDeleteNameError(false);
+        updateAllSurveys();
         setDeleteModal(false);
     }
 
@@ -857,126 +828,19 @@ const Course = ({course, page}) => {
         setViewResultsModal((prev) => !prev);
         setViewingCurrentSurvey(survey);
     };
-    console.log(extendModal);
-    console.log(currentSurvey)
+
     return (
         <div id={course.code} className="courseContainer">
             {extendModal &&
-            (<ExtendModal
+            (<SurveyExtendModal
                 modalClose={extendModalClose}
                 survey_data={currentSurvey} />
             )}
-            {/*<Modal
-                open={extendModal}
-                onRequestClose={extendModalClose}
-                width={"650px"}
-                maxWidth={"90%"}
-            >
-                <div className="CancelContainer">
-                    <button className="CancelButton" onClick={extendModalClose}>
-                        x
-                    </button>
-                </div>
-                <div className="extend-survey--contents-container">
-                    <h2 className="extend-survey--main-title">
-                        Extend Survey: {currentSurvey.name}
-                    </h2>
-                    <div className="extend-survey--boxes-container">
-                        <div className="extend-survey--left-box-container">
-                            <h2>Current Deadline</h2>
-                            <h3>{currentSurvey.end_date}</h3>
-                        </div>
-                        <div className="extend-survey--right-box-container">
-                            <h2>New Deadline</h2>
-                            <div className="extend-survey--inputs-container">
-                                <label for="subject-line">
-                                    New Date
-                                    <input
-                                        id="new-endDate"
-                                        className={(extendEmptyFieldsError || extendStartDateGreater || extendMustBeAfterCurrentTime || extendNewEndMustComeAfterOldEndDay) ? "extend-survey--error-input" : null}
-                                        type="date"
-                                        placeholder="New End Date"
-                                    />
-                                </label>
-                                <label for="subject-line">
-                                    New Time
-                                    <input
-                                        id="new-endTime"
-                                        className={(extendEmptyFieldsError || extendStartHourIsGreater || extendNewEndMustComeAfterOldEndHour) ? "extend-survey--error-input" : null}
-                                        type="time"
-                                        placeholder="New End Time"
-                                    />
-                                </label>
-                            </div>
-                            {extendEmptyFieldsError ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                New date and time must be entered</label> : null}
-                            {extendStartDateGreater ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                End date must be later than start date</label> : null}
-                            {extendStartHourIsGreater ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                New end time must be later than starting time</label> : null}
-                            {extendMustBeAfterCurrentTime ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                End date cannot be in the past</label> : null}
-                            {extendNewEndMustComeAfterOldEndDay ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                New end date must be later than current end date</label> : null}
-                            {extendNewEndMustComeAfterOldEndHour ? <label className="extend-survey--error-label">
-                                <div className="extend-survey--red-warning-sign"/>
-                                New end time must be later than current end time</label> : null}
-                        </div>
-                    </div>
-                    <button
-                        className="extend-survey--confirm-btn"
-                        onClick={verifyExtendModal}
-                    >
-                        Extend Survey
-                    </button>
-                </div>
-            </Modal>*/}
-            <Modal
-                open={deleteModal}
-                onRequestClose={deleteModalClose}
-                width={"600px"}
-                maxWidth={"90%"}
-            >
-                <div className="CancelContainer">
-                    <button className="CancelButton" onClick={deleteModalClose}>
-                        ×
-                    </button>
-                </div>
-                <div className="delete-survey--contents-container">
-                    <h2 className="delete-survey--main-title">
-                        Delete Survey: {currentSurvey.name}
-                    </h2>
-                    <div
-                        className={
-                            emptyOrWrongDeleteNameError
-                                ? "delete-survey--inputs-container-error"
-                                : "delete-survey--inputs-container"
-                        }
-                    >
-                        <label for="subject-line">Enter Survey Name</label>
-                        <input id="delete-name" type="text"/>
-                        {emptyOrWrongDeleteNameError ? (
-                            <label className="delete-survey--error-label">
-                                <div className="delete-survey--red-warning-sign"/>
-                                Must match survey name
-                            </label>
-                        ) : null}
-                    </div>
-                    <div className="delete-survey-btn-container">
-                        <button
-                            className="delete-survey--confirm-btn"
-                            onClick={verifyDelete}
-                        >
-                            Delete Survey
-                        </button>
-                    </div>
-                </div>
-            </Modal>
+            {deleteModal &&
+            (<SurveyDeleteModal
+                modalClose={deleteModalClose}
+                survey_data={currentSurvey} />
+            )}
             <Modal
                 open={duplicateModal}
                 onRequestClose={closeModalDuplicate}
