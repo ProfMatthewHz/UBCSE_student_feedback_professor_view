@@ -212,7 +212,7 @@ function SideBar(props) {
 
                           {/* add course button */}
                           {props.route === "/" ? (
-                            <div class="button-container">
+                            <div className="button-container">
                             <button
                               className="add_course-btn"
                               onClick={handleAddCourseModal}
@@ -399,7 +399,7 @@ function SideBar(props) {
 
                             {/* add rubric button */}
                           { props.route === "/library" ? (
-                            <div class="button-container">
+                            <div className="button-container">
                             <button 
                               className="add_course-btn" 
                               onClick={handleAddRubricModal}

@@ -124,7 +124,6 @@ const SurveyExtendModal = ({modalClose, survey_data}) => {
         }
 
     }
-
     let surveyId = survey_id;
     let formData5 = new FormData();
 
@@ -176,27 +175,26 @@ const SurveyExtendModal = ({modalClose, survey_data}) => {
                     <h3>{originalEndDate}</h3>
                 </div>
                 <div className="extend-survey--right-box-container">
-                    <h2>New Deadline</h2>
+                    <h2>Extended Deadline</h2>
                     <div className="extend-survey--inputs-container">
-                        <label for="subject-line">
+                        <label htmlFor="new-endDate">
                             New Date
-                            <input
-                                id="new-endDate"
-                                className={(emptyFieldsError || startDateGreater || mustBeAfterCurrentTime || newEndMustComeAfterOldEndDay) ? "extend-survey--error-input" : null}
-                                type="date"
-                                placeholder="New End Date"
-                                onChange={(e) => setEndDate(e.target.value)}
-                            />
-                        </label>
-                        <label for="subject-line">
+                        <input
+                            id="new-endDate"
+                            className={(emptyFieldsError || startDateGreater || mustBeAfterCurrentTime || newEndMustComeAfterOldEndDay) ? "extend-survey--error-input" : null}
+                            type="date"
+                            placeholder="New End Date"
+                            onChange={(e) => setEndDate(e.target.value)}
+                        /> </label>
+                        <label htmlFor="new-endTime">
                             New Time
-                            <input
-                                id="new-endTime"
-                                className={(emptyFieldsError || startHourIsGreater || newEndMustComeAfterOldEndHour) ? "extend-survey--error-input" : null}
-                                type="time"
-                                placeholder="New End Time"
-                                onChange={(e) => setEndTime(e.target.value)}
-                            />
+                        <input
+                            id="new-endTime"
+                            className={(emptyFieldsError || startHourIsGreater || newEndMustComeAfterOldEndHour) ? "extend-survey--error-input" : null}
+                            type="time"
+                            placeholder="New End Time"
+                            onChange={(e) => setEndTime(e.target.value)}
+                        />
                         </label>
                     </div>
                     {emptyFieldsError ? <label className="extend-survey--error-label">

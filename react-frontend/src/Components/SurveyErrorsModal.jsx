@@ -2,12 +2,12 @@ import React, {useState} from "react";
 import "../styles/modal.css";
 import "../styles/surveyerrors.css";
 
-const SurveyErrorsModal = ({modalClose, errors}) => {
+const SurveyErrorsModal = ({modalClose, error_type, errors}) => {
   const [errorsList,] = useState(errors);
-
+  const [title,] = useState(error_type + " Errors");
   return ( 
     <div className="modal">
-      <div className="errors-modal modal-phone">
+      <div className="modal-content modal-phone">
         <div className="CancelContainer">
               <button className="CancelButton" onClick={modalClose}>
                   ×
@@ -15,7 +15,7 @@ const SurveyErrorsModal = ({modalClose, errors}) => {
           </div>
           <div className="error-container">
               <div className="error-header">
-                  <h2 className="error-header-text">Survey Errors</h2>
+                  <h2 className="error-header-text">{title}</h2>
               </div>
               <div class="error-list-container">
                   {errorsList.map((string, index) => (

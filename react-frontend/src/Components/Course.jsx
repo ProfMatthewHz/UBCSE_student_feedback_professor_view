@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import SurveyExtendModal from "./SurveyExtendModal";
 import SurveyDeleteModal from "./SurveyDeleteModal";
 import SurveyErrorsModal from "./SurveyErrorsModal";
+import SurveyConfirmModal from "./SurveyConfirmModal";
 
 
 /**
@@ -91,8 +92,7 @@ const Course = ({course, page}) => {
     const [rubricIDandDescriptions, setIDandDescriptions] = useState([]);
     const [pairingModesFull, setPairingModesFull] = useState([]);
     const [pairingModesNames, setPairingModesNames] = useState([]);
-    const [RosterArray, setRosterArray] = useState([]);
-    const [NonRosterArray, setNonRosterArray] = useState([]);
+    const [survey_confirm_data, setSurveyConfirmData] = useState(null);
 
     //START:Error codes for modal frontend
     const [emptySurveyNameError, setEmptyNameError] = useState(false);
@@ -116,10 +116,6 @@ const Course = ({course, page}) => {
     const [StartTimeMinutesBeforeCurrent, setStartTimeMinutesBeforeCurrent] =
         useState(false);
     //END:Error codes for modal frontend
-    const [surveyNameConfirm, setSurveyNameConfirm] = useState();
-    const [rubricNameConfirm, setRubricNameConfirm] = useState();
-    const [startDateConfirm, setStartDateConfirm] = useState();
-    const [endDateConfirm, setEndDateConfirm] = useState();
 
     const updateRosterformData = new FormData();
 
@@ -203,8 +199,13 @@ const Course = ({course, page}) => {
     const closeModalError = () => {
         setModalIsOpenError(false);
     };
-    const closeModalSurveyConfirm = () => {
+
+    const closeModalSurveyConfirm = (success) => {
         setModalIsOpenSurveyConfirm(false);
+        setSurveyConfirmData(null);
+        if (success) {
+            updateAllSurveys();
+        }
     };
 
     const handleErrorModalClose = () => {
@@ -287,27 +288,6 @@ const Course = ({course, page}) => {
         return result; // Return the result directly
     }
 
-    async function fetchAddSurveyToDatabaseComplete(data) {
-        console.log(data);
-        let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
-        const result = await fetch(fetchHTTP, {
-            method: "POST",
-            credentials: "include",
-            body: data,
-        })
-        .then((res) => res.json());
-        console.log(result);
-        return result; // Return the result directly
-    }
-
-    function confirmSurveyComplete() {
-        let formData2 = new FormData();
-        formData2.append("save-survey", "1");
-        fetchAddSurveyToDatabaseComplete(formData2);
-        updateAllSurveys();
-        closeModalSurveyConfirm();
-    }
-
     async function getAddSurveyResponse(formData) {
         let fetchHTTP =
             process.env.REACT_APP_API_URL + "addSurveyToCourse.php";
@@ -334,7 +314,7 @@ const Course = ({course, page}) => {
         return result; // Return the result directly
     }
 
-    function verifyDuplicateSurvey() {
+    const verifyDuplicateSurvey = () => {
         setEmptyNameError(false);
         setEmptyStartTimeError(false);
         setEmptyEndTimeError(false);
@@ -630,12 +610,10 @@ const Course = ({course, page}) => {
             if (rosterData) {
                 let rostersArrayHere = rosterData["roster-students"];
                 let nonRosterArrayHere = rosterData["non-roster-students"];
-                setRosterArray(rostersArrayHere);
-                setNonRosterArray(nonRosterArrayHere);
-                setSurveyNameConfirm(surveyName);
-                setRubricNameConfirm(rubric);
-                setStartDateConfirm(startDate + " at " + startTime);
-                setEndDateConfirm(endDate + " at " + endTime);
+                let startDay = startDateObject.toLocaleString('default', {month: 'short'}) + " " + startDateObject.getDate();
+                let endDay = endDateObject.toLocaleString('default', {month: 'short'}) + " " + endDateObject.getDate();
+                let survey_data = {course_code: course.code, survey_name: surveyName, rubric_name: rubric, start_date: startDay + " at " + startTime, end_date: endDay + " at " + endTime, roster_array : rostersArrayHere, nonroster_array: nonRosterArrayHere};
+                setSurveyConfirmData(survey_data);
                 closeAddSurveyModal();
                 setModalIsOpenSurveyConfirm(true);
                 return;
@@ -686,9 +664,6 @@ const Course = ({course, page}) => {
         }
         if (e.target.value === "Preview Survey") {
             Navigate("/SurveyPreview", {state:{survey_name: survey.name, rubric_id: survey.rubric_id, course: course.code}});
-            console.log(survey.name);
-            console.log(survey.rubric_id);
-            console.log(course.code);
         }
         setActionsButtonValue("");
     };
@@ -806,7 +781,7 @@ const Course = ({course, page}) => {
         setStartTimeMinutesBeforeCurrent(false);
     }
 
-    function extendModalClose(errorList) {
+    const extendModalClose = (errorList) => {
         setExtendModal(false);
         if (errorList && errorList.length > 0) {
           setErrorsList(errorList);
@@ -816,37 +791,67 @@ const Course = ({course, page}) => {
         }
     }
 
-    function deleteModalClose() {
-        updateAllSurveys();
+    const deleteModalClose = (errorList) =>{
         setDeleteModal(false);
+        if (errorList && errorList.length > 0) {
+            setErrorsList(errorList);
+            setModalIsOpenError(true);
+        } else {
+            updateAllSurveys();
+        }
     }
 
-    const handleUpdateModalChange = () => {
+    function handleUpdateModalChange() {
         setShowUpdateModal((prev) => !prev);
     };
 
-    const handleViewResultsModalChange = (survey) => {
+    function handleViewResultsModalChange(survey) {
         setViewResultsModal((prev) => !prev);
         setViewingCurrentSurvey(survey);
     };
 
     return (
         <div id={course.code} className="courseContainer">
+            {/* Survey extendsion modal*/}
             {extendModal &&
             (<SurveyExtendModal
                 modalClose={extendModalClose}
                 survey_data={currentSurvey} />
             )}
+            {/* Survey deletion modal*/}
             {deleteModal &&
             (<SurveyDeleteModal
                 modalClose={deleteModalClose}
                 survey_data={currentSurvey} />
             )}
-            {errorModalIsOpen &&
-            (<SurveyErrorsModal
+            {/* Survey creation errors modal*/}
+            {errorModalIsOpen && (
+            <SurveyErrorsModal
                 modalClose={closeModalError}
+                error_type={"Survey"}
                 errors={errorsList} />
             )}
+            {/* Survey creation confirmation modal*/}
+            {modalIsOpenSurveyConfirm && (
+            <SurveyConfirmModal
+                modalClose={closeModalSurveyConfirm}
+                survey_data={survey_confirm_data}/>
+            )}
+            {/* View Results Modal*/}
+            {showViewResultsModal && (
+            <ViewResults
+                closeViewResultsModal={handleViewResultsModalChange}
+                surveyToView={viewingCurrentSurvey}
+                course={course}
+            />
+            )}
+            {/* Roster error display */}
+            {showErrorModal && (
+            <SurveyErrorsModal
+                    modalClose={handleErrorModalClose}
+                    error_type={"Roster Update"}
+                    errors={updateRosterError} />
+                )}
             <Modal
                 open={duplicateModal}
                 onRequestClose={closeModalDuplicate}
@@ -994,148 +999,6 @@ const Course = ({course, page}) => {
                             Duplicate Survey
                         </button>
                     </div>
-                </div>
-            </Modal>
-
-            <Modal
-                open={modalIsOpenSurveyConfirm}
-                onRequestClose={closeModalSurveyConfirm}
-                width={"1200px"}
-                maxWidth={"90%"}
-            >
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        flexWrap: "wrap",
-                        borderBottom: "thin solid #225cb5",
-                    }}
-                >
-                    <div
-                        style={{color: "#225cb5", fontSize: "36px", fontWeight: "bolder"}}
-                    >
-                        Confirmation
-                    </div>
-                    <div
-                        style={{
-                            color: "#225cb5",
-                            fontSize: "24px",
-                            fontWeight: "bolder",
-                            marginBottom: "5px",
-                            marginTop: "20px",
-                        }}
-                    >
-                        Survey Name: {surveyNameConfirm}
-                    </div>
-                    <div
-                        style={{color: "#225cb5", fontSize: "24px", fontWeight: "bolder"}}
-                    >
-                        Survey Active: {startDateConfirm} to {endDateConfirm}
-                    </div>
-                    <div
-                        style={{
-                            color: "#225cb5",
-                            fontSize: "24px",
-                            fontWeight: "bolder",
-                            marginBottom: "5px",
-                            marginTop: "20px",
-                        }}
-                    >
-                        Rubric Used: {rubricNameConfirm}
-                    </div>
-                    <div
-                        style={{color: "#225cb5", fontSize: "24px", fontWeight: "bolder"}}
-                    >
-                        For Course: {course.code}
-                    </div>
-                </div>
-
-                <div class="table-containerConfirm">
-                    {RosterArray.length > 0 ? (
-                        <table>
-                            <caption>Course Roster</caption>
-                            <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Name</th>
-                                <th>Reviewing Others</th>
-                                <th>Being Reviewed</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {RosterArray.map((entry, index) => (
-                                <tr key={index}>
-                                    <td>{entry.student_email}</td>
-                                    <td>{entry.student_name}</td>
-                                    {entry.reviewing ? <td>Yes</td> : <td>No</td>}
-                                    {entry.reviewed ? <td>Yes</td> : <td>No</td>}
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <div className="empty-view">No students on course roster</div>
-                    )}
-
-                    {NonRosterArray.length > 0 ? (
-                        <table>
-                            <caption>Non-Course Students</caption>
-                            <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Name</th>
-                                <th>Reviewing Others</th>
-                                <th>Being Reviewed</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {NonRosterArray.map((entry, index) => (
-                                <tr key={index}>
-                                    <td>{entry.student_email}</td>
-                                    <td>{entry.student_name}</td>
-                                    {entry.reviewing ? <td>Yes</td> : <td>No</td>}
-                                    {entry.reviewed ? <td>Yes</td> : <td>No</td>}
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <div className="empty-view">No data to show</div>
-                    )}
-                </div>
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginTop: "20px",
-                        gap: "50px",
-                        marginBottom: "30px",
-                    }}
-                >
-                    <button
-                        className="Cancel"
-                        style={{
-                            borderRadius: "5px",
-                            fontSize: "18px",
-                            fontWeight: "700",
-                            padding: "5px 12px",
-                        }}
-                        onClick={closeModalSurveyConfirm}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className="CompleteSurvey1"
-                        style={{
-                            borderRadius: "5px",
-                            fontSize: "18px",
-                            fontWeight: "700",
-                            padding: "5px 12px",
-                        }}
-                        onClick={confirmSurveyComplete}
-                    >
-                        Confirm Survey
-                    </button>
                 </div>
             </Modal>
 
@@ -1298,8 +1161,6 @@ const Course = ({course, page}) => {
                         <div className="pairing-mode-img-wrapper">
                             <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
                         </div>
-                        
-                        
                     </label>
                     {validPairingModeForMultiplier && (
                         <label className="add-survey--label" for="subject-line">
@@ -1450,14 +1311,6 @@ const Course = ({course, page}) => {
                     </div>
                 )}
             </div>
-            {/* View Results Modal*/}
-            {showViewResultsModal && (
-                <ViewResults
-                    closeViewResultsModal={handleViewResultsModalChange}
-                    surveyToView={viewingCurrentSurvey}
-                    course={course}
-                />
-            )}
             {/* Error Modal for updating roster */}
             {showUpdateModal && (
                 <div className="update-modal">
@@ -1525,20 +1378,6 @@ const Course = ({course, page}) => {
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
-            {/* Error Modal */}
-            {showErrorModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h2>Error(s)</h2>
-                        {
-                            updateRosterError.length > 0 && updateRosterError.map((err) => (
-                                <p>{err}</p>
-                            ))
-                        }
-                        <button className="roster-file--error-btn" onClick={handleErrorModalClose}>OK</button>
                     </div>
                 </div>
             )}

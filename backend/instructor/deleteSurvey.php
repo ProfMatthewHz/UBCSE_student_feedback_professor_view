@@ -46,10 +46,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $survey_id = intval($_POST['survey_id']);
     $survey_data = getSurveyData($con, $survey_id);
     
-    if (empty($survey_data)) {
-      $errorMsg['survey'] = "Please choose a valid survey";
-    } 
-    if (!isSurveyInstructor($con, $survey_id, $instructor_id)){
+    if (empty($survey_data) || !isSurveyInstructor($con, $survey_id, $instructor_id)) {
       $errorMsg['survey'] = "Please choose a valid survey";
     }
   }
@@ -57,12 +54,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (empty($errorMsg)) {
     if (deleteSurvey($con, $survey_id)) { 
       // redirect to next page and set message
-      $response['data']['delete-message'] = "Successfully deleted survey.";
+      $response['success-message'] = "Successfully deleted survey.";
     } else {
-      $response['data']['delete-message'] = "Error: Could not delete survey.";
+      $response['errors'] = "Server Error: Could not delete survey.";
     }
-    unset($_SESSION['survey-id']);
-
   } else {
     $response['errors'] = $errorMsg;
   }

@@ -129,9 +129,12 @@ function parse_roster_file($file_handle) {
     $line_fields = count($line_text);
 
     // Verify the current line's data seems reasonable while allowing us to skip blank lines
-    if ($line_fields != 0 && $line_fields != 3) {
-      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' does not contain an email, first name, and last name';
-    } else if ($line_fields == 3) {
+    if ($line_fields != 0 && $line_fields < 3) {
+      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' missing at least 1 of: email address, first name, and last name';
+    } else if ($line_fields > 3) {
+      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' has more than just an email address, first name, and last name';
+    } else {
+      // Must have 3 fields on this line
       $error = '';
       if (!filter_var($line_text[0], FILTER_VALIDATE_EMAIL)) {
         $error = $error . 'Line '. $line_num . ' includes an improperly formatted email address (' . $line_text[0] . ')';
