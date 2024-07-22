@@ -851,7 +851,7 @@ const Course = ({course, page}) => {
                     modalClose={handleErrorModalClose}
                     error_type={"Roster Update"}
                     errors={updateRosterError} />
-                )}
+            )}
             <Modal
                 open={duplicateModal}
                 onRequestClose={closeModalDuplicate}
@@ -1197,6 +1197,7 @@ const Course = ({course, page}) => {
                     </div>
                 </div>
             </Modal>
+
             <div className="courseContent">
                 <div className="courseHeader">
                     <h2>

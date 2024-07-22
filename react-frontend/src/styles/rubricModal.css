@@ -31,6 +31,7 @@
   z-index: 1000; /* make sure it appears above other elements */
   background: #333;
 }
+
 .input-wrapper1 {
   font-family: Arial, sans-serif;
   width: 48%;
@@ -118,7 +119,9 @@ label {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
+  overflow-y: auto;
 }
+
 .CancelButton{
   color:#ffffff;
   background-color: transparent;
