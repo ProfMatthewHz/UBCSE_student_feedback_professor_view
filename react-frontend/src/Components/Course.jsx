@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import "../styles/course.css";
 import "../styles/modal.css";
-import "../styles/extendsurvey.css";
+//import "../styles/extendsurvey.css";
 import "../styles/deletesurvey.css";
 import "../styles/duplicatesurvey.css";
 import "../styles/addsurvey.css";
@@ -15,6 +15,7 @@ import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
 import PM from "../assets/pairingmodes/PM.png"
 import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 import { useNavigate } from "react-router-dom";
+import ExtendModal from "./ExtendModal";
 
 /**
  * @component
@@ -818,166 +819,6 @@ const Course = ({course, page}) => {
         return await result; // Return the result directly
     }
 
-    async function extendSurveyBackendPost(formdata) {
-        let fetchHTTP =
-            process.env.REACT_APP_API_URL + "extendSurvey.php";
-        try {
-            const response = await fetch(fetchHTTP, {
-                method: "POST",
-                credentials: "include",
-                body: formdata,
-            });
-            const result = await response.json();
-            console.log(result);
-            return result; // Return the result directly
-        } catch (err) {
-            throw err; // Re-throw to be handled by the caller
-        }
-    }
-
-    const [extendEmptyFieldsError, setExtendEmptyFieldsError] = useState(false);
-    const [extendStartDateGreater, setExtendStartDateGreater] = useState(false);
-    const [extendStartHourIsGreater, setExtendStartHourIsGreater] = useState(false);
-    const [extendMustBeAfterCurrentTime, setExtendMustBeAfterCurrentTime] = useState(false);
-    const [extendNewEndMustComeAfterOldEndDay, setExtendNewEndMustComeAfterOldEndDay] = useState(false);
-    const [extendNewEndMustComeAfterOldEndHour, setExtendNewEndMustComeAfterOldEndHour] = useState(false);
-
-    async function verifyExtendModal() {
-        setExtendEmptyFieldsError(false);
-        setExtendStartDateGreater(false);
-        setExtendStartHourIsGreater(false);
-        setExtendMustBeAfterCurrentTime(false);
-        setExtendNewEndMustComeAfterOldEndDay(false);
-        setExtendNewEndMustComeAfterOldEndHour(false);
-        let newEndDate = document.getElementById("new-endDate").value;
-        let newEndTime = document.getElementById("new-endTime").value;
-
-        //empty fields check
-        if (newEndDate === "") {
-            setExtendEmptyFieldsError(true);
-            return;
-        }
-        if (newEndTime === "") {
-            setExtendEmptyFieldsError(true);
-            return;
-        }
-
-        let startDate = currentSurvey.sort_start_date.split(' ')[0]
-        let currentTime = currentSurvey.sort_start_date.split(' ')[1]
-        currentTime = currentTime.split(':');
-        currentTime = currentTime[0] + ':' + currentTime[1];
-
-        let startDateTimeObject = new Date(startDate + "T00:00:00"); //inputted start date.
-        let endDateTimeObject = new Date(newEndDate + "T00:00:00"); //inputted end date.
-
-        let timestamp = new Date(Date.now());
-        timestamp.setHours(0, 0, 0, 0); //set hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
-        //if the selected end date occurs in the past error
-        if (endDateTimeObject < timestamp) {
-            setExtendMustBeAfterCurrentTime(true);
-            return;
-        }
-
-        //new end date must come after old end date
-        let oldEndDate = currentSurvey.sort_expiration_date.split(' ')[0]
-        let oldEndTimeHours = currentSurvey.sort_expiration_date.split(' ')[1]
-        oldEndTimeHours = oldEndTimeHours.split(':');
-        oldEndTimeHours = oldEndTimeHours[0] + ':' + oldEndTimeHours[1];
-        let oldEndDateTimeObject = new Date(oldEndDate + "T00:00:00")
-        //conditional to check if old end calendar date isnt ahead of the new one
-        if (oldEndDateTimeObject > endDateTimeObject) {
-            setExtendNewEndMustComeAfterOldEndDay(true);
-            return;
-        }
-        //conditional to check if new end time hours is greater than old
-        if (oldEndDateTimeObject.getDate(oldEndDateTimeObject) === endDateTimeObject.getDate(endDateTimeObject)) { //same date new hours should be ahead of old
-            if (oldEndDateTimeObject.getMonth(oldEndDateTimeObject) === endDateTimeObject.getMonth(endDateTimeObject)) {
-                if (parseInt(oldEndTimeHours.split(':')[0]) >= parseInt(newEndTime.split(':')[0])) {
-                    setExtendNewEndMustComeAfterOldEndHour(true);
-                    return;
-                }
-            }
-        }
-
-        //selected end date is in the current day. Hours and minutes must be after current h/m
-        if (endDateTimeObject.getDate(endDateTimeObject) === timestamp.getDate(timestamp)) {
-            if (endDateTimeObject.getMonth(endDateTimeObject) === timestamp.getMonth(timestamp)) {
-                let timestampWithHour = new Date(Date.now());
-                console.log(timestampWithHour)
-                let currentHour = timestampWithHour.getHours(timestampWithHour);
-                console.log(currentHour)
-                let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
-                console.log(currentMinutes)
-                let endHours = parseInt(newEndTime.split(":")[0]);
-                console.log(endHours)
-                let endMinutes = parseInt(newEndTime.split(":")[1]);
-                console.log(endMinutes)
-
-                if (endHours < currentHour) {
-                    setExtendMustBeAfterCurrentTime(true);
-                    return;
-                }
-                if (endHours === currentHour) {
-                    if (endMinutes <= currentMinutes) {
-                        setExtendMustBeAfterCurrentTime(true);
-                        return;
-                    }
-                }
-            }
-        }
-
-        //start date comes after end date error
-        if (startDateTimeObject > endDateTimeObject) {
-            setExtendStartDateGreater(true);
-            return
-        }
-        // same date. End date hours must be ahead
-        if (startDateTimeObject === endDateTimeObject) {
-            //hour check. Start date hour must be less than end date hour
-            if (parseInt(currentTime.split(':')[0]) >= parseInt(newEndTime.split(':')[0])) {
-                setExtendStartHourIsGreater(true);
-                return;
-            }
-
-        }
-
-        let surveyId = currentSurvey.id;
-        let formData5 = new FormData();
-
-        formData5.append('survey-id', surveyId);
-        formData5.append('end-date', newEndDate);
-        formData5.append('end-time', newEndTime);
-        let post = await extendSurveyBackendPost(formData5);
-        if (
-            post.errors["end-date"] ||
-            post.errors["end-time"] ||
-            post.errors["start-date"] ||
-            post.errors["start-time"]
-        ) {
-            //there are errors
-            let errorList = [];
-            if (post.errors["end-date"]) {
-                errorList.push(post.errors["end-date"]);
-            }
-            if (post.errors["start-date"]) {
-                errorList.push(post.errors["start-date"]);
-            }
-            if (post.errors["end-time"]) {
-                errorList.push(post.errors["end-time"]);
-            }
-            if (post.errors["start-time"]) {
-                errorList.push(post.errors["start-time"]);
-            }
-            extendModalClose();
-            setErrorsList(errorList);
-            setModalIsOpenError(true);
-            return;
-        }
-
-        updateAllSurveys();
-        extendModalClose();
-    }
-
     function verifyDelete() {
         setEmptyOrWrongDeleteNameError(false);
         let inputtedText = document.getElementById("delete-name").value;
@@ -993,14 +834,14 @@ const Course = ({course, page}) => {
         }
     }
 
-    function extendModalClose() {
+    function extendModalClose(errorList) {
         setExtendModal(false);
-        setExtendEmptyFieldsError(false);
-        setExtendStartDateGreater(false);
-        setExtendStartHourIsGreater(false);
-        setExtendMustBeAfterCurrentTime(false);
-        setExtendNewEndMustComeAfterOldEndDay(false);
-        setExtendNewEndMustComeAfterOldEndHour(false);
+        if (errorList && errorList.length > 0) {
+          setErrorsList(errorList);
+          setModalIsOpenError(true);
+        } else {
+            updateAllSurveys();
+        }
     }
 
     function deleteModalClose() {
@@ -1016,10 +857,16 @@ const Course = ({course, page}) => {
         setViewResultsModal((prev) => !prev);
         setViewingCurrentSurvey(survey);
     };
-
+    console.log(extendModal);
+    console.log(currentSurvey)
     return (
         <div id={course.code} className="courseContainer">
-            <Modal
+            {extendModal &&
+            (<ExtendModal
+                modalClose={extendModalClose}
+                survey_data={currentSurvey} />
+            )}
+            {/*<Modal
                 open={extendModal}
                 onRequestClose={extendModalClose}
                 width={"650px"}
@@ -1027,7 +874,7 @@ const Course = ({course, page}) => {
             >
                 <div className="CancelContainer">
                     <button className="CancelButton" onClick={extendModalClose}>
-                        ×
+                        x
                     </button>
                 </div>
                 <div className="extend-survey--contents-container">
@@ -1088,7 +935,7 @@ const Course = ({course, page}) => {
                         Extend Survey
                     </button>
                 </div>
-            </Modal>
+            </Modal>*/}
             <Modal
                 open={deleteModal}
                 onRequestClose={deleteModalClose}
