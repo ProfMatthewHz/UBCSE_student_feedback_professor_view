@@ -23,10 +23,7 @@ const SurveyDeleteModal = ({modalClose, survey_data}) => {
   }
 
   async function verifyAndSubmit() {
-    setEmptyOrWrongDeleteNameError(false);
-    if (deleteName !== survey_name) {
-        setEmptyOrWrongDeleteNameError(true);
-    } else {
+    if (deleteName === survey_name) {
         let form = new FormData();
         form.append("survey_id", survey_id);
         form.append("agreement", 1);
@@ -39,7 +36,14 @@ const SurveyDeleteModal = ({modalClose, survey_data}) => {
     }
   }
 
-
+  const updateAndCheckSurveyName = (e) => {
+    setDeleteName(e.target.value);
+    if (deleteName !== survey_name) {
+        setEmptyOrWrongDeleteNameError(true);
+    } else {
+        setEmptyOrWrongDeleteNameError(false);
+    }
+  }
   return ( 
     <div className="modal">
       <div className="delete-modal modal-content modal-phone">
@@ -60,7 +64,7 @@ const SurveyDeleteModal = ({modalClose, survey_data}) => {
         }
     >
         <label htmlFor="subject-line">Enter Survey Name
-        <input id="delete-name" type="text" onChange={(e) => setDeleteName(e.target.value)}/></label>
+        <input id="delete-name" type="text" onChange={updateAndCheckSurveyName}/></label>
         {emptyOrWrongDeleteNameError ? (
             <label className="delete-survey--error-label">
                 <div className="delete-survey--red-warning-sign"/>
@@ -72,6 +76,8 @@ const SurveyDeleteModal = ({modalClose, survey_data}) => {
           <button
               className="delete-survey--confirm-btn"
               onClick={verifyAndSubmit}
+              disabled={emptyOrWrongDeleteNameError}
+
           >
               Delete Survey
           </button>

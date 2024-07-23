@@ -24,7 +24,8 @@ $con = connectToDatabase();
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 if (!isset($_SESSION['id'])) {
   http_response_code(403);
-  echo "Forbidden: You must be logged in to access this page.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 $instructor_id = $_SESSION['id'];
@@ -33,14 +34,16 @@ $instructor_id = $_SESSION['id'];
 $survey_id = NULL;
 if ((!isset($_POST['survey'])) || (!isset($_POST['type']))) {
   http_response_code(400);
-  echo "400: Improper request made.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 
 // make sure the type query is one of the valid types. if not, respond not found
 if ($_POST['type'] !== 'raw-full' && $_POST['type'] !== 'individual' && $_POST['type'] !== 'average' && $_POST['type'] !== 'completion') {
   http_response_code(404);
-  echo "404: Not found.";
+  $json_out = json_encode(array("error" => "Unknown request: Request is for unknown results format."));
+  echo $json_out;
   exit();
 }
 
@@ -49,7 +52,8 @@ $survey_id = intval($_POST['survey']);
 
 if ($survey_id === 0) {
   http_response_code(404);
-  echo "404: Not found.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 
@@ -57,14 +61,16 @@ if ($survey_id === 0) {
 $survey_info = getSurveyData($con, $survey_id);
 if (empty($survey_info)) {
   http_response_code(404);
-  echo "404: Not found.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 
 // make sure the survey is for a course the current instructor actually teaches
 if (!isCourseInstructor($con, $survey_info['course_id'], $instructor_id)) {
   http_response_code(403);
-  echo "403: Forbidden.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 

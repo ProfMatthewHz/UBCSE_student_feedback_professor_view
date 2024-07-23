@@ -7,17 +7,12 @@ import Modal from "./Modal";
 import Toast from "./Toast";
 import ViewResults from "./ViewResults";
 import {RadioButton} from "primereact/radiobutton";
-import Team from "../assets/pairingmodes/TEAM.png"
-import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
-import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
-import PM from "../assets/pairingmodes/PM.png"
-import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 import { useNavigate } from "react-router-dom";
 import SurveyExtendModal from "./SurveyExtendModal";
 import SurveyDeleteModal from "./SurveyDeleteModal";
 import SurveyErrorsModal from "./SurveyErrorsModal";
 import SurveyConfirmModal from "./SurveyConfirmModal";
-
+import SurveyAddModal from "./SurveyAddModal";
 
 /**
  * @component
@@ -73,8 +68,7 @@ const Course = ({course, page}) => {
     const [addSurveyModalIsOpen, setAddSurveyModalIsOpen] = useState(false);
     const [errorModalIsOpen, setModalIsOpenError] = useState(false);
     const [errorsList, setErrorsList] = useState([]);
-    const [modalIsOpenSurveyConfirm, setModalIsOpenSurveyConfirm] =
-        useState(false);
+    const [modalIsOpenSurveyConfirm, setModalIsOpenSurveyConfirm] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [currentSurvey, setCurrentSurvey] = useState("");
 
@@ -91,7 +85,6 @@ const Course = ({course, page}) => {
     const [rubricNames, setNames] = useState([]);
     const [rubricIDandDescriptions, setIDandDescriptions] = useState([]);
     const [pairingModesFull, setPairingModesFull] = useState([]);
-    const [pairingModesNames, setPairingModesNames] = useState([]);
     const [survey_confirm_data, setSurveyConfirmData] = useState(null);
 
     //START:Error codes for modal frontend
@@ -100,7 +93,6 @@ const Course = ({course, page}) => {
     const [emptyEndTimeError, setEmptyEndTimeError] = useState(false);
     const [emptyStartDateError, setEmptyStartDateError] = useState(false);
     const [emptyEndDateError, setEmptyEndDateError] = useState(false);
-    const [emptyCSVFileError, setEmptyCSVFileError] = useState(false);
     const [startDateBoundError, setStartDateBoundError] = useState(false);
     const [startDateBound1Error, setStartDateBound1Error] = useState(false);
     const [endDateBoundError, setEndDateBoundError] = useState(false);
@@ -142,7 +134,7 @@ const Course = ({course, page}) => {
         });
     }; 
     /**
-     * Perform a GET call to getSurveyTypes.php to fetch pairing modes for each surver, stored in pairingModesFull and pairingModesNames 
+     * Perform a GET call to getSurveyTypes.php to fetch all possible survey pairing modes
      */
     const fetchPairingModes = () => {
         fetch(process.env.REACT_APP_API_URL + "getSurveyTypes.php", {
@@ -151,17 +143,7 @@ const Course = ({course, page}) => {
         })
         .then((res) => res.json())
         .then((result) => {
-            let allPairingModeArray = result.survey_types.mult.concat(
-                result.survey_types.no_mult
-            );
-
-            let pairingModeNames = allPairingModeArray.map(
-                (element) => element.description
-            );
-            let pairingModeFull_ = result.survey_types;
-            console.log(pairingModeFull_);
-            setPairingModesFull(pairingModeFull_);
-            setPairingModesNames(pairingModeNames);
+            setPairingModesFull(result.survey_types);
         })
         .catch((err) => {
             console.log(err);
@@ -177,23 +159,6 @@ const Course = ({course, page}) => {
 
     const closeAddSurveyModal = () => {
         setAddSurveyModalIsOpen(false);
-        setEmptyNameError(false);
-        setEmptyStartTimeError(false);
-        setEmptyEndTimeError(false);
-        setEmptyStartDateError(false);
-        setEmptyEndDateError(false);
-        setEmptyCSVFileError(false);
-        setStartDateBoundError(false);
-        setStartDateBound1Error(false);
-        setEndDateBoundError(false);
-        setEndDateBound1Error(false);
-        setStartAfterCurrentError(false);
-        setStartDateGreaterError(false);
-        setStartTimeSameDayError(false);
-        setStartHourSameDayError(false);
-        setStartHourAfterEndHourError(false);
-        setStartTimeHoursBeforeCurrent(false);
-        setStartTimeMinutesBeforeCurrent(false);
     };
 
     const closeModalError = () => {
@@ -214,68 +179,6 @@ const Course = ({course, page}) => {
         setShowUpdateModal(true); // open the update modal again
     };
 
-    const getInitialStateRubric = () => {
-        const value = "Select Rubric";
-        return value;
-    };
-    const getInitialStatePairing = () => {
-        const value = "TEAM";
-        return value;
-    };
-    const getInitialMultiplier = () => {
-        const value = "1";
-        return value;
-    };
-
-    const [valueRubric, setValueRubric] = useState(getInitialStateRubric);
-    const [valuePairing, setValuePairing] = useState(getInitialStatePairing);
-    const [multiplierNumber, setMultiplierNumber] = useState(getInitialMultiplier);
-    const [validPairingModeForMultiplier, setMultiplier] = useState(true);
-    const [pairingImage, setPairingImage] = useState(Team);
-
-    const handleChangeRubric = (e) => {
-        setValueRubric(e.target.value);
-    };
-    const handleChangeMultiplierNumber = (e) => {
-        setMultiplierNumber(e.target.value);
-    };
-
-    const handleUpdateImage = (e) => {
-        switch(e.target.value) {
-            case 'TEAM':
-                setPairingImage(Team);
-                break;
-            case 'TEAM + SELF':
-                setPairingImage(TeamSelf);
-                break;
-            case 'TEAM + SELF + MANAGER':
-                setPairingImage(TeamSelfManager);
-                break;
-            case 'Single Pairs':
-                setPairingImage(SinglePairs);
-                break;
-            case 'MANAGER':
-                setPairingImage(PM);
-                break;
-            default:
-                console.log('Unexpected pairing mode: ' + e.target.value);
-                break;
-        }
-    }
-    const handleChangePairing = (e) => {
-        let showMult = false;
-
-        let multiplierCheckArray = pairingModesFull.mult.map(
-            (element) => element.description
-        );
-        if (multiplierCheckArray.includes(e.target.value)) {
-            showMult = true;
-        }
-        
-        handleUpdateImage(e);
-        setValuePairing(e.target.value);
-        setMultiplier(showMult);
-    };
 
     async function fetchRosterNonRoster() {
         let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
@@ -288,18 +191,7 @@ const Course = ({course, page}) => {
         return result; // Return the result directly
     }
 
-    async function getAddSurveyResponse(formData) {
-        let fetchHTTP =
-            process.env.REACT_APP_API_URL + "addSurveyToCourse.php";
-        const result = await fetch(fetchHTTP, {
-            method: "POST",
-            credentials: "include",
-            body: formData,
-        })
-        .then((res) => res.json());
 
-        return result; // Return the result directly
-    }
 
  function duplicateSurveyBackend(formdata) {
         let fetchHTTP =
@@ -320,7 +212,7 @@ const Course = ({course, page}) => {
         setEmptyEndTimeError(false);
         setEmptyStartDateError(false);
         setEmptyEndDateError(false);
-        setEmptyCSVFileError(false);
+        //MHz setEmptyCSVFileError(false);
         setStartDateBoundError(false);
         setStartDateBound1Error(false);
         setEndDateBoundError(false);
@@ -445,203 +337,6 @@ const Course = ({course, page}) => {
         closeModalDuplicate();
     }
 
-    async function verifySurvey() {
-        setEmptyNameError(false);
-        setEmptyStartTimeError(false);
-        setEmptyEndTimeError(false);
-        setEmptyStartDateError(false);
-        setEmptyEndDateError(false);
-        setEmptyCSVFileError(false);
-        setStartDateBoundError(false);
-        setStartDateBound1Error(false);
-        setEndDateBoundError(false);
-        setEndDateBound1Error(false);
-        setStartAfterCurrentError(false);
-        setStartDateGreaterError(false);
-        setStartTimeSameDayError(false);
-        setStartHourSameDayError(false);
-        setStartHourAfterEndHourError(false);
-        setStartTimeHoursBeforeCurrent(false);
-        setStartTimeMinutesBeforeCurrent(false);
-
-        var surveyName = document.getElementById("survey-name").value;
-        var startTime = document.getElementById("start-time").value;
-        var endTime = document.getElementById("end-time").value;
-        var startDate = document.getElementById("start-date").value;
-        var endDate = document.getElementById("end-date").value;
-        var csvFile = document.getElementById("csv-file").value;
-        var rubric = document.getElementById("rubric-type").value;
-
-        if (surveyName === "") {
-            setEmptyNameError(true);
-            return;
-        }
-        if (startTime === "") {
-            setEmptyStartTimeError(true);
-            return;
-        }
-        if (endTime === "") {
-            setEmptyEndTimeError(true);
-            return;
-        }
-        if (startDate === "") {
-            setEmptyStartDateError(true);
-            return;
-        }
-        if (endDate === "") {
-            setEmptyEndDateError(true);
-            return;
-        }
-        if (csvFile === "") {
-            setEmptyCSVFileError(true);
-            return;
-        }
-
-        //date and time keyboard typing bound checks.
-        let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
-        let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
-
-        //special startdate case. Startdate cannot be before the current day.
-        let timestamp = new Date(Date.now());
-
-        timestamp.setHours(0, 0, 0, 0); //set hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
-        if (startDateObject < timestamp) {
-            setStartAfterCurrentError(true);
-            return;
-        }
-        //END:special startdate case. Startdate cannot be before the current day.
-
-        //Start date cannot be greater than End date.
-        if (startDateObject > endDateObject) {
-            setStartDateGreaterError(true);
-            return;
-        }
-        //END:Start date cannot be greater than End date.
-
-        //If on the same day, start time must be before end time
-        if (startDate === endDate) {
-            if (startTime === endTime) {
-                setStartTimeSameDayError(true);
-                return;
-            }
-            let startHour = parseInt(startTime.split(":")[0]);
-            let endHour = parseInt(endTime.split(":")[0]);
-            if (startHour === endHour) {
-                setStartHourSameDayError(true);
-                return;
-            }
-            if (startHour > endHour) {
-                setStartHourAfterEndHourError(true);
-                return;
-            }
-        }
-        //Start time must be after current time if start date is the current day.
-
-
-        if (startDateObject.getDate(startDateObject) === timestamp.getDate(timestamp)) {
-            let timestampWithHour = new Date(Date.now());
-            let currentHour = timestampWithHour.getHours(timestampWithHour);
-            let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
-            let startHourNew = parseInt(startTime.split(":")[0]);
-            let startMinutes = parseInt(startTime.split(":")[1]);
-
-            if (startHourNew < currentHour) {
-                setStartTimeHoursBeforeCurrent(true);
-                return;
-            }
-            if (startHourNew === currentHour) {
-                if (startMinutes < currentMinutes) {
-                    setStartTimeMinutesBeforeCurrent(true);
-                    return;
-                }
-            }
-            //End:Start time must be after current time
-        }
-
-        //Now it's time to send data to the backend
-        let formData = new FormData();
-        let rubricId;
-        let pairingId;
-        let multiplier;
-
-        for (const element of rubricIDandDescriptions) {
-            if (element.description === rubric) {
-                rubricId = element.id;
-            }
-        }
-
-        for (const element in pairingModesFull.no_mult) {
-            if (pairingModesFull.no_mult[element].description === document.getElementById("pairing-mode").value) {
-                pairingId = pairingModesFull.no_mult[element].id;
-                multiplier = 1;
-            }
-        }
-
-        for (const element in pairingModesFull.mult) {
-            if (pairingModesFull.mult[element].description === document.getElementById("pairing-mode").value) {
-                pairingId = pairingModesFull.mult[element].id;
-                multiplier = document.getElementById("multiplier-type").value;
-            }
-        }
-
-        let file = document.getElementById("csv-file").files[0];
-
-        formData.append("survey-name", surveyName);
-        formData.append("course-id", course.id);
-        formData.append("rubric-id", rubricId);
-        formData.append("pairing-mode", pairingId);
-        formData.append("start-date", startDate);
-        formData.append("start-time", startTime);
-        formData.append("end-date", endDate);
-        formData.append("end-time", endTime);
-        formData.append("pm-mult", multiplier);
-        formData.append("pairing-file", file);
-
-        //form data is set. Call the post request
-        let awaitedResponse = await getAddSurveyResponse(formData);
-
-        let errorsObject = awaitedResponse.errors;
-        let dataObject = awaitedResponse.data;
-        console.log(errorsObject.length);
-        if (errorsObject.length === 0) {
-            //succesful survey.
-            let rosterDataAll = await fetchRosterNonRoster();
-            let rosterData = rosterDataAll.data;
-            if (rosterData) {
-                let rostersArrayHere = rosterData["roster-students"];
-                let nonRosterArrayHere = rosterData["non-roster-students"];
-                let startDay = startDateObject.toLocaleString('default', {month: 'short'}) + " " + startDateObject.getDate();
-                let endDay = endDateObject.toLocaleString('default', {month: 'short'}) + " " + endDateObject.getDate();
-                let survey_data = {course_code: course.code, survey_name: surveyName, rubric_name: rubric, start_date: startDay + " at " + startTime, end_date: endDay + " at " + endTime, roster_array : rostersArrayHere, nonroster_array: nonRosterArrayHere};
-                setSurveyConfirmData(survey_data);
-                closeAddSurveyModal();
-                setModalIsOpenSurveyConfirm(true);
-                return;
-            }
-            return;
-        }
-        if (dataObject.length === 0) {
-            let errorKeys = Object.keys(errorsObject);
-            let pairingFileStrings = [];
-            let anyOtherStrings = [];
-            let i = 0;
-            while (i < errorKeys.length) {
-                if (errorKeys[i] === "pairing-file") {
-                    pairingFileStrings = errorsObject["pairing-file"].split("<br>");
-                } else {
-                    let error = errorKeys[i];
-                    anyOtherStrings.push(errorsObject[error]);
-                }
-                i++;
-            }
-            const allErrorStrings = pairingFileStrings.concat(anyOtherStrings);
-            setErrorsList(allErrorStrings);
-            closeAddSurveyModal();
-            setModalIsOpenError(true);
-            return;
-        }
-        return;
-    }
     let Navigate = useNavigate();
     const handleActionButtonChange = (e, survey) => {
         setActionsButtonValue(e.target.value);
@@ -767,7 +462,7 @@ const Course = ({course, page}) => {
         setEmptyEndTimeError(false);
         setEmptyStartDateError(false);
         setEmptyEndDateError(false);
-        setEmptyCSVFileError(false);
+        //MHz setEmptyCSVFileError(false);
         setStartDateBoundError(false);
         setStartDateBound1Error(false);
         setEndDateBoundError(false);
@@ -852,7 +547,15 @@ const Course = ({course, page}) => {
                     error_type={"Roster Update"}
                     errors={updateRosterError} />
             )}
-            <Modal
+            {/* Add Survey to a course modal*/}
+            {addSurveyModalIsOpen && (
+            <SurveyAddModal
+                modalClose={closeAddSurveyModal}
+                survey_data={ {"course_name" : course.code, "course_id" : course.id, "survey_name" : "", } }
+                pairing_modes = {pairingModesFull}
+                rubrics_list={rubricIDandDescriptions}/>
+            )}
+            {/*<Modal
                 open={duplicateModal}
                 onRequestClose={closeModalDuplicate}
                 maxWidth={"90%"}
@@ -1000,9 +703,9 @@ const Course = ({course, page}) => {
                         </button>
                     </div>
                 </div>
-            </Modal>
+            </Modal>*/}
 
-            <Modal
+            {/*<Modal
                 open={addSurveyModalIsOpen}
                 onRequestClose={closeAddSurveyModal}
                 width={"800px"}
@@ -1196,7 +899,7 @@ const Course = ({course, page}) => {
                         </button>
                     </div>
                 </div>
-            </Modal>
+            </Modal>*/}
 
             <div className="courseContent">
                 <div className="courseHeader">
