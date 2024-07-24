@@ -219,17 +219,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           'end' => $e, 
           'pairing_mode' => $pairing_mode, 
           'multiplier' => $pm_mult, 
-          'rubric' => $rubric_id, 
+          'rubric' => $rubric_id,
+          'rubric_name' => $rubrics[$rubric_id],
           'name' => $survey_name
         );
-        
         $response['data'] = $surveyInfo;
 
         // Save the data we will need for the confirmation page
         $_SESSION["survey_course_id"] = $course_id;
         $_SESSION["survey_file"] = $file_data['rows'];
         $_SESSION["survey_students"] = $file_data['individuals'];
-        $_SESSION["survey_data"] = array('start' => $s, 'end' => $e, 'pairing_mode' => $pairing_mode, 'multiplier' => $pm_mult, 'rubric' => $rubric_id, 'name' => $survey_name);
+        $_SESSION["survey_data"] = $surveyInfo["survey_data"];
       }
     }
   }

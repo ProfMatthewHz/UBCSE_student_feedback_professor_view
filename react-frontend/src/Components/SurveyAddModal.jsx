@@ -7,30 +7,14 @@ import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 
 const SurveyAddModal = ({modalClose, survey_data, pairing_modes, rubrics_list}) => {
   const [surveyName, setSurveyName] = useState(survey_data.survey_name);
-  const [courseName, ] = useState(survey_data.course_name);
-  const [courseId, ] = useState(survey_data.course_id);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [csvFile, setCsvFile] = useState(null);
-
-  const getInitialRubric = () => {
-    const value = "Select Rubric";
-    return value;
-  };
-  const getInitialStatePairing = () => {
-      const value = "2";
-      return value;
-  };
-  const getInitialMultiplier = () => {
-      const value = "1";
-      return value;
-  };
-
-  const [rubric, setRubric] = useState(getInitialRubric);
-  const [valuePairing, setValuePairing] = useState(getInitialStatePairing);
-  const [multiplier, setMultiplier] = useState(getInitialMultiplier);
+  const [rubric, setRubric] = useState(rubrics_list[0].id);
+  const [valuePairing, setValuePairing] = useState("2");
+  const [multiplier, setMultiplier] = useState("1");
   const [useMultipler, setUseMultiplier] = useState(false);
   const [pairingImage, setPairingImage] = useState(Team);
   const [emptyCSVFileError, setEmptyCSVFileError] = useState(false);
@@ -39,16 +23,8 @@ const SurveyAddModal = ({modalClose, survey_data, pairing_modes, rubrics_list}) 
   const [emptyEndTimeError, setEmptyEndTimeError] = useState(false);
   const [emptyStartDateError, setEmptyStartDateError] = useState(false);
   const [emptyEndDateError, setEmptyEndDateError] = useState(false);
-  const [startDateBoundError, setStartDateBoundError] = useState(false);
-  const [endDateBoundError, setEndDateBoundError] = useState(false);
   const [startAfterCurrentError, setStartAfterCurrentError] = useState(false);
-  const [startDateGreaterError, setStartDateGreaterError] = useState(false);
-  const [startTimeSameDayError, setStartTimeSameDayError] = useState(false);
-  const [startHourSameDayError, setStartHourSameDayError] = useState(false);
-  const [startHourAfterEndHourError, setStartHourAfterEndHourError] =
-      useState(false);
-  const [startTimeBeforeCurrent, setStartTimeBeforeCurrent] =
-      useState(false);
+  const [startAfterEndError, setStartAfterEndError] = useState(false);
 
 const handleUpdateImage = (pairing) => {
     switch(pairing) {
@@ -92,14 +68,9 @@ const handleUpdateImage = (pairing) => {
   };
 
   const clearErrors = () => {
-    setStartDateBoundError(false);
-    setEndDateBoundError(false);
     setStartAfterCurrentError(false);
-    setStartDateGreaterError(false);
-    setStartTimeSameDayError(false);
-    setStartHourSameDayError(false);
-    setStartHourAfterEndHourError(false);
-    setStartTimeBeforeCurrent(false);
+    setStartAfterEndError(false);
+    setStartAfterCurrentError(false);
 };
 
 async function getAddSurveyResponse(formData) {
@@ -164,30 +135,17 @@ const checkForMissingData = () => {
 
 const checkStartAndEndDateTimes = () => {
   // Check that the starting date is legal
-  let startDateObject = new Date(startDate + "T00:00:00");
+  let startDateObject = new Date(startDate + "T" + startTime + ":00");
   // Get the current time, but then set the hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
   let timestamp = new Date(Date.now());
-  timestamp.setHours(0, 0, 0, 0);
-  console.log(startDateObject)
-  console.log(timestamp)
   if (startDateObject < timestamp) {
     setStartAfterCurrentError(true);
     return true;
-  } else if (startDateObject.getTime() === timestamp.getTime()) {
-    let currentTime = new Date(Date.now());
-    let currentHour = currentTime.getHours();
-    let currentMinutes = currentTime.getMinutes();
-    let startHour = parseInt(startTime.split(":")[0]);
-    let startMin = parseInt(startTime.split(":")[1]);
-    if ((startHour < currentHour) || (startHour === currentHour && startMin < currentMinutes)) {
-      setStartTimeBeforeCurrent(true);
-      return true;
-    }
   }
-  let endDateObject = new Date(endDate + "T00:00:00");
+  let endDateObject = new Date(endDate + "T" + endTime + ":00");
   //Start date cannot be greater than End date.
   if (startDateObject > endDateObject) {
-    setStartDateGreaterError(true);
+    setStartAfterEndError(true);
     return true;
   }
   // If we start and end on the same day, make certain the times are ordered properly
@@ -196,12 +154,8 @@ const checkStartAndEndDateTimes = () => {
     let startMin = parseInt(startTime.split(":")[1]);
     let endHour = parseInt(endTime.split(":")[0]);
     let endMin = parseInt(endTime.split(":")[1]);
-    if (startHour > endHour) {
-      setStartHourAfterEndHourError(true);
-      return true;
-    }
-    if ((startHour === endHour) && (startMin >= endMin)) {
-      setStartHourSameDayError(true);
+    if ((startHour > endHour) || ((startHour === endHour) && (startMin >= endMin)))  {
+      setStartAfterEndError(true);
       return true;
     }
   }
@@ -231,7 +185,7 @@ async function verifyAndPostSurvey() {
   }
 
   formData.append("survey-name", surveyName);
-  formData.append("course-id", courseId);
+  formData.append("course-id", survey_data.course_id);
   formData.append("rubric-id", rubric);
   formData.append("pairing-mode", valuePairing);
   formData.append("start-date", startDate);
@@ -240,51 +194,11 @@ async function verifyAndPostSurvey() {
   formData.append("end-time", endTime);
   formData.append("pm-mult", multInt);
   formData.append("pairing-file", csvFile);
-  console.log(formData)
+  console.log(formData);
 
-  //form data is set. Call the post request
-  /*let awaitedResponse = await getAddSurveyResponse(formData);
-  
-  let errorsObject = awaitedResponse.errors;
-  let dataObject = awaitedResponse.data;
-  if (errorsObject.length === 0) {
-      //succesful survey.
-      let rosterDataAll = await fetchRosterNonRoster();
-      let rosterData = rosterDataAll.data;
-      if (rosterData) {
-          let rostersArrayHere = rosterData["roster-students"];
-          let nonRosterArrayHere = rosterData["non-roster-students"];
-          let startDay = startDateObject.toLocaleString('default', {month: 'short'}) + " " + startDateObject.getDate();
-          let endDay = endDateObject.toLocaleString('default', {month: 'short'}) + " " + endDateObject.getDate();
-          let survey_data = {course_code: course.code, survey_name: surveyName, rubric_name: rubric, start_date: startDay + " at " + startTime, end_date: endDay + " at " + endTime, roster_array : rostersArrayHere, nonroster_array: nonRosterArrayHere};
-          setSurveyConfirmData(survey_data);
-          closeAddSurveyModal();
-          setModalIsOpenSurveyConfirm(true);
-          return;
-      }
-      return;
-  }
-  if (dataObject.length === 0) {
-      let errorKeys = Object.keys(errorsObject);
-      let pairingFileStrings = [];
-      let anyOtherStrings = [];
-      let i = 0;
-      while (i < errorKeys.length) {
-          if (errorKeys[i] === "pairing-file") {
-              pairingFileStrings = errorsObject["pairing-file"].split("<br>");
-          } else {
-              let error = errorKeys[i];
-              anyOtherStrings.push(errorsObject[error]);
-          }
-          i++;
-      }
-      const allErrorStrings = pairingFileStrings.concat(anyOtherStrings);
-      setErrorsList(allErrorStrings);
-      closeAddSurveyModal();
-      setModalIsOpenError(true);
-      return;
-  }
-  return;*/
+  // Form data is set. post the new survey and get the responses
+  let awaitedResponse = await getAddSurveyResponse(formData);
+  modalClose(awaitedResponse);
 }
 
   return (
@@ -297,13 +211,13 @@ async function verifyAndPostSurvey() {
                 </div>
                 <div className="add-survey--contents-container">
                     <h2 className="add-survey--main-title">
-                        Add Survey for {courseName}
+                        Add Survey for {survey_data.course_name}
                     </h2>
 
                     <label className="add-survey--label" htmlFor="survey-name">
                         Survey Name
                         <input
-                            className={emptySurveyNameError && "add-survey-input-error"}
+                            className={emptySurveyNameError ? "add-survey-input-error" : undefined}
                             id="survey-name"
                             type="text"
                             placeholder="Survey Name"
@@ -323,7 +237,7 @@ async function verifyAndPostSurvey() {
                                     <label className="add-survey--label" htmlFor="start-date">
                                         Start Date
                                         <input
-                                            className={(startDateGreaterError || startAfterCurrentError || emptyStartDateError || startDateBoundError ) ? "add-survey-input-error" : null}
+                                            className={(startAfterEndError || startAfterCurrentError || emptyStartDateError ) ? "add-survey-input-error" : null}
                                             id="start-date"
                                             type="date"
                                             placeholder="Enter Start Date"
@@ -334,7 +248,7 @@ async function verifyAndPostSurvey() {
                                     <label className="add-survey--label" htmlFor="start-time">
                                         Start Time
                                         <input
-                                            className={(startHourAfterEndHourError || startHourSameDayError || startTimeSameDayError || emptyStartTimeError || startTimeBeforeCurrent) ? "add-survey-input-error" : null}
+                                            className={(startAfterCurrentError || startAfterEndError || emptyStartTimeError ) ? "add-survey-input-error" : null}
                                             id="start-time"
                                             type="time"
                                             placeholder="Enter Start Time"
@@ -342,35 +256,18 @@ async function verifyAndPostSurvey() {
                                         />
                                     </label>
                                 </div>
-                                {startDateGreaterError ? <label className="add-survey--error-label">
+                                {startAfterEndError ? <label className="add-survey--error-label">
                                     <div className="add-survey--red-warning-sign"/>
-                                    Start date cannot be before the end date</label> : null}
+                                    Start must be earlier than end</label> : null}
                                 {startAfterCurrentError ? <label className="add-survey--error-label">
                                     <div className="add-survey--red-warning-sign"/>
-                                    Start date cannot be before the current date</label> : null}
+                                    Start must be in the future</label> : null}
                                 {emptyStartDateError ? <label className="add-survey--error-label">
                                     <div className="add-survey--red-warning-sign"/>
                                     Start date cannot be empty</label> : null}
-                                {startDateBoundError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date must be at August 31st or later</label> : null}
-                                {startHourAfterEndHourError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    If start and end dates are the same, start time cannot be after end
-                                    time</label> : null}
-                                {startHourSameDayError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    If start and end dates are the same, end hour cannot be in the same hour as the
-                                    start</label> : null}
-                                {startTimeSameDayError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    If start and end dates are the same, start and end times must differ</label> : null}
                                 {emptyStartTimeError ? <label className="add-survey--error-label">
                                     <div className="add-survey--red-warning-sign"/>
                                     Start time cannot be empty</label> : null}
-                                {startTimeBeforeCurrent ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start must be after the current time</label> : null}
                             </div>
 
                             <div className="add-survey--date-times-error-container">
@@ -378,7 +275,7 @@ async function verifyAndPostSurvey() {
                                     <label className="add-survey--label" htmlFor="end-date">
                                         End Date
                                         <input
-                                            className={(emptyEndDateError || endDateBoundError) ? "add-survey-input-error" : null}
+                                            className={(emptyEndDateError || startAfterEndError) ? "add-survey-input-error" : null}
                                             id="end-date"
                                             type="date"
                                             placeholder="Enter End Date"
@@ -389,7 +286,7 @@ async function verifyAndPostSurvey() {
                                     <label className="add-survey--label" htmlFor="end-time">
                                         End Time
                                         <input
-                                            className={(emptyEndTimeError) ? "add-survey-input-error" : null}
+                                            className={(emptyEndTimeError || startAfterEndError) ? "add-survey-input-error" : null}
                                             id="end-time"
                                             type="time"
                                             placeholder="Enter End Time"
@@ -398,32 +295,31 @@ async function verifyAndPostSurvey() {
                                         />
                                     </label>
                                 </div>
+                                {startAfterEndError ? <label className="add-survey--error-label">
+                                    <div className="add-survey--red-warning-sign"/>
+                                    End must be later than start</label> : null}
                                 {emptyEndDateError ? <label className="add-survey--error-label">
                                     <div className="add-survey--red-warning-sign"/>
                                     End date cannot be empty</label> : null}
-                                {endDateBoundError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    End date must be at August 31st or later</label> : null}
                                 {emptyEndTimeError ? <label className="add-survey--error-label">
                                     <div className="add-survey--red-warning-sign"/>
                                     End time cannot be empty</label> : null}
                             </div>
                         </div>
                     </div>
-                    <label className="add-survey--label" for="subject-line">
+                    <label className="add-survey--label" htmlFor="rubric-type">
                         Choose Rubric
                         <select
                             value={rubric}
                             onChange={(e) => setRubric(e.target.value)}
                             id="rubric-type"
-                            placeholder="Select a rubric"
                         >
                             {rubrics_list.map((rubric) => (
                                 <option value={rubric.id}>{rubric.description}</option>
                             ))}
                         </select>
                     </label>
-                    <label className="add-survey--label-pairing" for="subject-line">
+                    <label className="add-survey--label-pairing" htmlFor="pairing">
                         <div className="drop-down-wrapper">
                             Pairing Modes
                             <select className="pairing"
@@ -441,7 +337,7 @@ async function verifyAndPostSurvey() {
                         </div>
                     </label>
                     {useMultipler && (
-                        <label className="add-survey--label" for="subject-line">
+                        <label className="add-survey--label" htmlFor="multiplier">
                             Multiplier
                             <select className="multiplier"
                                     id="multiplier-type"

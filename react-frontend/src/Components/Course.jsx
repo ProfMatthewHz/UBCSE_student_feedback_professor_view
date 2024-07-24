@@ -157,8 +157,49 @@ const Course = ({course, page}) => {
         fetchPairingModes();
     };
 
-    const closeAddSurveyModal = () => {
+    const closeAddSurveyModal = async (response) => {
         setAddSurveyModalIsOpen(false);
+        // Response is either the onclick event or the add survey response object
+        if (!("type"  in response)) {
+            let errorsObject = response.errors;
+            let dataObject = response.data;
+            if (errorsObject.length === 0) {
+                // valid survey subitted
+                let rosterDataAll = await fetchRosterNonRoster();
+                let rosterData = rosterDataAll.data;
+                if (rosterData) {
+                    console.log(dataObject)
+                    let startDateObject = new Date(dataObject["survey_data"]["start"].date);
+                    let endDateObject = new Date(dataObject["survey_data"]["end"].date);
+                    let surveyName = dataObject["survey_data"]["name"];
+                    let rubric_name = dataObject["survey_data"]["rubric_name"];
+                    let rostersArrayHere = rosterData["roster-students"];
+                    let nonRosterArrayHere = rosterData["non-roster-students"];
+                    let start = startDateObject.toLocaleString('default', {month: 'short', day: '2-digit'}) + " at " +  startDateObject.toLocaleString('default', {timeStyle: 'short'});
+                    let end = endDateObject.toLocaleString('default', {month: 'short', day: '2-digit'}) + " at " +  endDateObject.toLocaleString('default', {timeStyle: 'short'});
+                    let survey_data = {course_code: course.code, survey_name: surveyName, rubric_name: rubric_name, start_date: start, end_date: end, roster_array : rostersArrayHere, nonroster_array: nonRosterArrayHere};
+                    setSurveyConfirmData(survey_data);
+                    setModalIsOpenSurveyConfirm(true);
+                }
+            } else {
+                let errorKeys = Object.keys(errorsObject);
+                let pairingFileStrings = [];
+                let anyOtherStrings = [];
+                let i = 0;
+                while (i < errorKeys.length) {
+                    if (errorKeys[i] === "pairing-file") {
+                        pairingFileStrings = errorsObject["pairing-file"].split("<br>");
+                    } else {
+                        let error = errorKeys[i];
+                        anyOtherStrings.push(errorsObject[error]);
+                    }
+                    i++;
+                }
+                const allErrorStrings = pairingFileStrings.concat(anyOtherStrings);
+                setErrorsList(allErrorStrings);
+                setModalIsOpenError(true);
+            }
+        }
     };
 
     const closeModalError = () => {
@@ -179,7 +220,6 @@ const Course = ({course, page}) => {
         setShowUpdateModal(true); // open the update modal again
     };
 
-
     async function fetchRosterNonRoster() {
         let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
         const result = fetch(fetchHTTP, {
@@ -190,8 +230,6 @@ const Course = ({course, page}) => {
 
         return result; // Return the result directly
     }
-
-
 
  function duplicateSurveyBackend(formdata) {
         let fetchHTTP =
