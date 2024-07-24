@@ -4,6 +4,8 @@ import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
 import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
 import PM from "../assets/pairingmodes/PM.png"
 import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
+import "../styles/modal.css";
+import "../styles/course.css";
 
 const SurveyNewModal = ({modalClose, modalReason, button_text, survey_data, pairing_modes, rubrics_list}) => {
   const [surveyName, setSurveyName] = useState(survey_data.survey_name);
@@ -65,6 +67,29 @@ const handleUpdateImage = (pairing) => {
     setValuePairing(pairing);
     setUseMultiplier(pairingMode.usesMultiplier);
   };
+
+  function duplicateSurveyBackend(formData) {
+    formData.append("survey-id", survey_data.original_id);
+    let fetchHTTP = process.env.REACT_APP_API_URL + "duplicateExistingSurvey.php";
+    const result = fetch(fetchHTTP, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+    }).then((res) => res.text());
+    return result; // Return the result directly
+  }
+
+  function addSurveyBackend(formData) {
+    let fetchHTTP =
+        process.env.REACT_APP_API_URL + "addSurveyToCourse.php";
+    const result = fetch(fetchHTTP, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+    })
+    .then((res) => res.json());
+    return result; // Return the result directly
+  }
 
   const clearErrors = () => {
     setStartAfterCurrentError(false);
@@ -179,14 +204,27 @@ async function verifyAndPostSurvey() {
   formData.append("pairing-mode", valuePairing);
   formData.append("pm-mult", multInt);
   formData.append("pairing-file", csvFile);
-  modalClose(formData);
+
+  if (modalReason === "Add") {
+      // Form data is set. post the new survey and get the responses
+      let response = await addSurveyBackend(formData);
+      modalClose(response);
+  } else if (modalReason === "Duplicate") {
+      // Form data is set. post the new survey and get the responses
+      await duplicateSurveyBackend(formData);
+      modalClose(true);
+  }
+}
+
+const quitModal = () => {
+  modalClose(false);
 }
 
   return (
     <div className="modal">
       <div style={{width: "800px", maxWidth: "90%"}} className="add-modal modal-content modal-phone">
                 <div className="CancelContainer">
-                    <button className="CancelButton" onClick={modalClose}>
+                    <button className="CancelButton" onClick={quitModal}>
                         ×
                     </button>
                 </div>

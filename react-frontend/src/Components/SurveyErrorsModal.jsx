@@ -17,7 +17,7 @@ const SurveyErrorsModal = ({modalClose, error_type, errors}) => {
               <div className="error-header">
                   <h2 className="error-header-text">{title}</h2>
               </div>
-              <div class="error-list-container">
+              <div className="error-list-container">
                   {errorsList.map((string, index) => (
                       <div key={index} className="string-list-item">
                           {string}

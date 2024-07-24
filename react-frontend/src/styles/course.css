@@ -211,8 +211,8 @@
   
   /* FORM */
   .update-form__item {
-    margin-bottom: 20px;
-    margin-top: 20px;
+    display:flex;
+    justify-content: center;
   }
   
   .update-cancel-btn {

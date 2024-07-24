@@ -177,23 +177,6 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
     };
 
     /**
-     * Formats the roster file error.
-     * @param input
-     */
-    function formatRosterError(input) {
-        // Split the string into an array on the "Line" pattern, then filter out empty strings
-        const lines = input
-            .split(/(Line \d+)/)
-            .filter((line) => line.trim() !== "");
-        // Combine adjacent elements so that each "Line #" and its message are in the same element
-        const combinedLines = [];
-        for (let i = 0; i < lines.length; i += 2) {
-            combinedLines.push(lines[i] + (lines[i + 1] || ""));
-        }
-        return combinedLines
-    }
-
-    /**
      * Handles the form submission.
      * @param e
      */
@@ -223,9 +206,7 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
                         console.log(parsedResult);
                         if (parsedResult["roster-file"]) {
                             setShowFileErrorModal(true);
-                            const updatedError = formatRosterError(
-                                parsedResult["roster-file"]
-                            );
+                            const updatedError = parsedResult["roster-file"];
                             setRosterFileError(updatedError);
                         } else if (parsedResult["duplicate"]) {
                             setDuplicateError(parsedResult["duplicate"]);
@@ -268,7 +249,7 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
                                 {/* Input fields for course code and name. */}
                                 <div className="addcourse--name-code">
                                     <div className="name-code--item form__item">
-                                        <label className="form__item--label">
+                                        <label className="form__item--label" htmlFor="course-code">
                                             Course Code
                                             <input
                                                 type="text"
@@ -285,7 +266,7 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
                                     </div>
 
                                     <div className="name-code--item form__item">
-                                        <label className=" form__item--label">
+                                        <label className=" form__item--label" htmlFor="course-name">
                                             Course Name
                                             <input
                                                 type="text"
@@ -303,15 +284,15 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
                                 </div>
                                 {/* Displays error message if the course being added is a duplicate. */}
                                 {duplicateError && (
-                                    <p className="add-course--error">
+                                    <div className="add-course--error">
                                         This course already exists
-                                    </p>
+                                    </div>
                                 )}
                             </div>
 
                             {/* File input for course roster CSV file with specific requirements. */}
                             <div className="form__item file-input-wrapper">
-                                <label className="form__item--label form__item--file">
+                                <label className="form__item--label form__item--file" htmlFor="addcourse-file-input">
                                     Roster (CSV File) - Each Row Must Be Formatted: email, first name, last name
                                     <input
                                         type="file"
@@ -326,7 +307,7 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
                             <div className="sem-year--additional-instructor--container">
                                 {/* Dropdown for selecting the course's semester and year. */}
                                 <div className="form__item form__item--select">
-                                    <label className="form__item--label">
+                                    <label className="form__item--label" htmlFor="semester">
                                         Course Semester and Year
                                     </label>
                                     <select
@@ -353,10 +334,11 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
 
                                 {/* Select component for choosing additional instructors. */}
                                 <div className="form__item additional-instructors--item">
-                                    <label className="form__item--label">
+                                    <label className="form__item--label" htmlFor="additional-instructors">
                                         Additional Instructor(s)
                                     </label>
                                     <Select
+                                        id="additional-instructors"
                                         multiple
                                         options={allInstructors}
                                         value={instructors}

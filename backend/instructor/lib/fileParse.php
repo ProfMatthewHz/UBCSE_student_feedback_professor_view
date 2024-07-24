@@ -115,7 +115,7 @@ function parse_manager_review($rows, $student_data) {
 
 function parse_roster_file($file_handle) {
   // return array
-  $ret_val = array('error' => '', 'ids' => array());
+  $ret_val = array('error' => array(), 'ids' => array());
 
   $line_num = 0;
   while (($line_text = fgetcsv($file_handle)) !== FALSE) {
@@ -130,14 +130,14 @@ function parse_roster_file($file_handle) {
 
     // Verify the current line's data seems reasonable while allowing us to skip blank lines
     if ($line_fields != 0 && $line_fields < 3) {
-      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' missing at least 1 of: email address, first name, and last name';
+      $ret_val['error'][] = 'Line ' . $line_num . ' missing at least 1 of: email address, first name, and last name';
     } else if ($line_fields > 3) {
-      $ret_val['error'] = $ret_val['error'] . 'Line ' . $line_num . ' has more than just an email address, first name, and last name';
+      $ret_val['error'][] = 'Line ' . $line_num . ' has more than just: email address, first name, and last name';
     } else {
       // Must have 3 fields on this line
       $error = '';
       if (!filter_var($line_text[0], FILTER_VALIDATE_EMAIL)) {
-        $error = $error . 'Line '. $line_num . ' includes an improperly formatted email address (' . $line_text[0] . ')';
+        $error = 'Line '. $line_num . ' includes an improperly formatted email address (' . $line_text[0] . ')';
       }
       if (!ctype_print($line_text[1])) {
         $error = 'Line '. $line_num . ' includes a first name with unprintable characters (' . $line_text[1] . ')';
@@ -149,7 +149,7 @@ function parse_roster_file($file_handle) {
         // add the fields to the array
         $ret_val['ids'][$line_text[0]] = $line_text[1] . " " . $line_text[2];
       } else {
-        $ret_val['error'] = $ret_val['error'] . $error;
+        $ret_val['error'][] = $error;
       }
     }
   }

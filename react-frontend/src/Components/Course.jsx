@@ -5,13 +5,13 @@ import "../styles/duplicatesurvey.css";
 import "../styles/addsurvey.css";
 import Toast from "./Toast";
 import ViewResults from "./ViewResults";
-import {RadioButton} from "primereact/radiobutton";
 import { useNavigate } from "react-router-dom";
 import SurveyExtendModal from "./SurveyExtendModal";
 import SurveyDeleteModal from "./SurveyDeleteModal";
 import SurveyErrorsModal from "./SurveyErrorsModal";
 import SurveyConfirmModal from "./SurveyConfirmModal";
 import SurveyNewModal from "./SurveyNewModal";
+import RosterUpdateModal from "./RosterUpdateModal";
 
 /**
  * @component
@@ -26,7 +26,7 @@ const Course = ({course, page}) => {
      * Perform a POST call to courseSurveysQueries 
      */
     function updateAllSurveys() {
-        const response = fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
+        fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -74,9 +74,6 @@ const Course = ({course, page}) => {
     const [showViewResultsModal, setViewResultsModal] = useState(false);
     const [viewingCurrentSurvey, setViewingCurrentSurvey] = useState(null);
 
-    const [rosterFile, setRosterFile] = useState(null);
-
-    const [updateRosterOption, setUpdateRosterOption] = useState("replace");
     const [updateRosterError, setUpdateRosterError] = useState([]);
 
     const [showErrorModal, setShowErrorModal] = useState(false);
@@ -84,7 +81,6 @@ const Course = ({course, page}) => {
     const [rubrics, setRubrics] = useState([]);
     const [pairingModesFull, setPairingModesFull] = useState([]);
     const [survey_confirm_data, setSurveyConfirmData] = useState(null);
-    const updateRosterformData = new FormData();
 
     /**
      * Create the effect which loads all of the potential rubrics from the system 
@@ -125,7 +121,7 @@ const Course = ({course, page}) => {
         });
     };
 
-    const openAddSurveyModal = async () => {
+    const openAddSurveyModal = () => {
         fetchPairingModes();
         setAddSurveyModalIsOpen(true);
     };
@@ -133,11 +129,9 @@ const Course = ({course, page}) => {
     const closeNewSurveyModalAdd = async (result) => {
         setAddSurveyModalIsOpen(false);
         // Response is either the onclick event or the add survey response object
-        if (!("type"  in result)) {
-            // Form data is set. post the new survey and get the responses
-            let response = await addSurveyBackend(result);
-            let errorsObject = response.errors;
-            let dataObject = response.data;
+        if (result) {
+            let errorsObject = result.errors;
+            let dataObject = result.data;
             if (errorsObject.length === 0) {
                 // valid survey subitted
                 let rosterDataAll = await fetchRosterNonRoster();
@@ -178,11 +172,9 @@ const Course = ({course, page}) => {
     };
 
 
-  const closeNewSurveyModalDuplicate = async (result) => {
+  const closeNewSurveyModalDuplicate = (result) => {
     // Response is either the onclick event or the new survey response object
-    if (!("type"  in result)) {
-      // Call the post request and wait for it to complete
-      await duplicateSurveyBackend(result);
+    if (result) {
       updateAllSurveys();
     }
     setDuplicateModel(false);
@@ -201,7 +193,6 @@ const Course = ({course, page}) => {
     };
 
     const handleErrorModalClose = () => {
-        setRosterFile(null); // sets the file to null
         setShowErrorModal(false); // close the error modal
         setShowUpdateModal(true); // open the update modal again
     };
@@ -216,29 +207,6 @@ const Course = ({course, page}) => {
 
         return result; // Return the result directly
     }
-
- function duplicateSurveyBackend(formData) {
-    formData.append("survey-id", currentSurvey.id);
-    let fetchHTTP = process.env.REACT_APP_API_URL + "duplicateExistingSurvey.php";
-    const result = fetch(fetchHTTP, {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-    }).then((res) => res.text());
-    return result; // Return the result directly
-  }
-
-  function addSurveyBackend(formData) {
-    let fetchHTTP =
-        process.env.REACT_APP_API_URL + "addSurveyToCourse.php";
-    const result = fetch(fetchHTTP, {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-    })
-    .then((res) => res.json());
-    return result; // Return the result directly
-  }
 
   let Navigate = useNavigate();
   async function handleActionButtonChange(e, survey) {
@@ -265,63 +233,18 @@ const Course = ({course, page}) => {
         setActionsButtonValue("");
     }
 
-    function formatRosterError(input) {
-        // Split the string into an array on the "Line" pattern, then filter out empty strings
-        const lines = input
-            .split(/(Line \d+)/)
-            .filter((line) => line.trim() !== "");
-        // Combine adjacent elements so that each "Line #" and its message are in the same element
-        const combinedLines = [];
-        for (let i = 0; i < lines.length; i += 2) {
-            combinedLines.push(lines[i] + (lines[i + 1] || ""));
+
+    const handleUpdateRosterSubmit = (result) => {
+        setShowUpdateModal(false);
+        if (result) {
+            if (result.error !== "") {
+                setUpdateRosterError(result.error);
+                setShowErrorModal(true); // show the error modal
+            } else {
+                setShowToast(true);
+            }
         }
-        return combinedLines
     }
-
-    const handleUpdateRosterSubmit = (e) => {
-        e.preventDefault();
-
-        updateRosterformData.append("roster-file", rosterFile);
-        updateRosterformData.append("course-id", course.id);
-        updateRosterformData.append("update-type", updateRosterOption);
-
-        fetch(process.env.REACT_APP_API_URL + "rosterUpdate.php", {
-            method: "POST",
-            credentials: "include",
-            body: updateRosterformData,
-        })
-            .then((res) => res.text())
-            .then((result) => {
-                if (typeof result === "string" && result !== "") {
-                    try {
-                        const parsedResult = JSON.parse(result);
-                        console.log("Parsed as JSON object: ", parsedResult);
-                        if (
-                            parsedResult.hasOwnProperty("error") &&
-                            parsedResult["error"] !== ""
-                        ) {
-                            const updatedError = formatRosterError(
-                                parsedResult["error"]
-                            );
-                            setUpdateRosterError(updatedError);
-                            setShowUpdateModal(false); // close the update modal
-                            setShowErrorModal(true); // show the error modal
-                        }
-                    } catch (e) {
-                        console.log("Failed to parse JSON: ", e);
-                    }
-                } else {
-                    // no error
-                    // Roster is valid to update, so we can close the pop-up modal
-                    setShowUpdateModal(false);
-                    // show toast on success
-                    setShowToast(true);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
 
     //MODAL CODE
     useEffect(() => {
@@ -434,7 +357,7 @@ const Course = ({course, page}) => {
                 modalClose={closeNewSurveyModalAdd}
                 modalReason="Add"
                 button_text="Verify Survey"
-                survey_data={ {"course_name" : course.code, "course_id" : course.id, "survey_name" : "", } }
+                survey_data={ {course_name : course.code, course_id : course.id, survey_name : "", } }
                 pairing_modes ={pairingModesFull}
                 rubrics_list={rubrics}/>
             )}
@@ -444,9 +367,15 @@ const Course = ({course, page}) => {
                 modalClose={closeNewSurveyModalDuplicate}
                 modalReason="Duplicate"
                 button_text="Duplicate Survey"
-                survey_data={ {"course_name" : course.code, "course_id" : course.id, "survey_name" : currentSurvey.name + " copy" } }
+                survey_data={ {course_name : course.code, course_id : course.id, survey_name : currentSurvey.name + " copy", original_id: currentSurvey.id } }
                 pairing_modes={null}
                 rubrics_list={rubrics}/>
+            )}
+            {/* Show modal to update the roster */}
+            {showUpdateModal && (
+            <RosterUpdateModal
+                modalClose={handleUpdateRosterSubmit}
+                course={course}/>
             )}
             <div className="courseContent">
                 <div className="courseHeader">
@@ -562,77 +491,6 @@ const Course = ({course, page}) => {
                     </div>
                 )}
             </div>
-            {/* Error Modal for updating roster */}
-            {showUpdateModal && (
-                <div className="update-modal">
-                    <div className="update-modal-content">
-                        <div className="CancelContainer">
-                            <button
-                                className="CancelButton"
-                                style={{top: "0px"}}
-                                onClick={handleUpdateModalChange}
-                            >
-                                ×
-                            </button>
-                        </div>
-                        <h2 className="update-modal--heading">
-                            Update Roster for {course.code} {course.name}
-                        </h2>
-                        <form onSubmit={handleUpdateRosterSubmit}>
-                            {/* File input */}
-                            <div className="form__item file-input-wrapper">
-                                <label className="form__item--label form__item--file">
-                                    Roster (CSV File) - Requires Emails in Columns 1, First Names
-                                    in Columns 2 and Last Names in Columns 3
-                                    <input
-                                        type="file"
-                                        id="updateroster-file-input"
-                                        className={`updateroster-file-input`}
-                                        onChange={(e) => setRosterFile(e.target.files[0])}
-                                        required
-                                    />
-                                </label>
-                            </div>
-                            {/* Radio Buttons */}
-                            <div className="update-form__item">
-                                <div className="update-radio-options">
-                                    <div className="update-radio-button--item">
-                                        <RadioButton
-                                            inputId="replace"
-                                            name="replace"
-                                            value="replace"
-                                            onChange={(e) => setUpdateRosterOption(e.value)}
-                                            checked={updateRosterOption === "replace"}
-                                        />
-                                        <label htmlFor="replace" className="update-radio--label">
-                                            Replace
-                                        </label>
-                                    </div>
-
-                                    <div className="update-radio-button--item">
-                                        <RadioButton
-                                            inputId="expand"
-                                            name="expand"
-                                            value="expand"
-                                            onChange={(e) => setUpdateRosterOption(e.value)}
-                                            checked={updateRosterOption === "expand"}
-                                        />
-                                        <label htmlFor="expand" className="update-radio--label">
-                                            Expand
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="form__submit--container">
-                                <button type="submit" className="update-form__submit">
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
             <Toast
                 message={`Roster for ${course.code} ${course.name} successfully updated!`}
                 isVisible={showToast}

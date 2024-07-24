@@ -224,8 +224,9 @@ select.surveyactions--select {
 
 /* FORM */
 .update-form__item {
-  margin-bottom: 20px;
-  margin-top: 20px;
+  display:flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .update-cancel-btn {
