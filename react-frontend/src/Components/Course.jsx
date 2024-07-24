@@ -3,7 +3,6 @@ import "../styles/course.css";
 import "../styles/modal.css";
 import "../styles/duplicatesurvey.css";
 import "../styles/addsurvey.css";
-import Modal from "./Modal";
 import Toast from "./Toast";
 import ViewResults from "./ViewResults";
 import {RadioButton} from "primereact/radiobutton";
@@ -12,7 +11,7 @@ import SurveyExtendModal from "./SurveyExtendModal";
 import SurveyDeleteModal from "./SurveyDeleteModal";
 import SurveyErrorsModal from "./SurveyErrorsModal";
 import SurveyConfirmModal from "./SurveyConfirmModal";
-import SurveyAddModal from "./SurveyAddModal";
+import SurveyNewModal from "./SurveyNewModal";
 
 /**
  * @component
@@ -27,7 +26,7 @@ const Course = ({course, page}) => {
      * Perform a POST call to courseSurveysQueries 
      */
     function updateAllSurveys() {
-        fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
+        const response = fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -82,39 +81,15 @@ const Course = ({course, page}) => {
 
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
-    const [rubricNames, setNames] = useState([]);
-    const [rubricIDandDescriptions, setIDandDescriptions] = useState([]);
+    const [rubrics, setRubrics] = useState([]);
     const [pairingModesFull, setPairingModesFull] = useState([]);
     const [survey_confirm_data, setSurveyConfirmData] = useState(null);
-
-    //START:Error codes for modal frontend
-    const [emptySurveyNameError, setEmptyNameError] = useState(false);
-    const [emptyStartTimeError, setEmptyStartTimeError] = useState(false);
-    const [emptyEndTimeError, setEmptyEndTimeError] = useState(false);
-    const [emptyStartDateError, setEmptyStartDateError] = useState(false);
-    const [emptyEndDateError, setEmptyEndDateError] = useState(false);
-    const [startDateBoundError, setStartDateBoundError] = useState(false);
-    const [startDateBound1Error, setStartDateBound1Error] = useState(false);
-    const [endDateBoundError, setEndDateBoundError] = useState(false);
-    const [endDateBound1Error, setEndDateBound1Error] = useState(false);
-    const [StartAfterCurrentError, setStartAfterCurrentError] = useState(false);
-    const [StartDateGreaterError, setStartDateGreaterError] = useState(false);
-    const [StartTimeSameDayError, setStartTimeSameDayError] = useState(false);
-    const [StartHourSameDayError, setStartHourSameDayError] = useState(false);
-    const [StartHourAfterEndHourError, setStartHourAfterEndHourError] =
-        useState(false);
-    const [StartTimeHoursBeforeCurrent, setStartTimeHoursBeforeCurrent] =
-        useState(false);
-    const [StartTimeMinutesBeforeCurrent, setStartTimeMinutesBeforeCurrent] =
-        useState(false);
-    //END:Error codes for modal frontend
-
     const updateRosterformData = new FormData();
 
     /**
-     * Perform a GET call to rubricsGet.php to fetch names and ID of the rubrics. 
+     * Create the effect which loads all of the potential rubrics from the system 
      */
-    const fetchRubrics = () => {
+    useEffect(() => {
         fetch(process.env.REACT_APP_API_URL + "getInstructorRubrics.php", {
             method: "GET",
             credentials: "include",
@@ -123,16 +98,15 @@ const Course = ({course, page}) => {
         .then((result) => {
             //this is an array of objects of example elements {id: 1, description: 'exampleDescription'}
             let rubricIDandDescriptions = result.rubrics.map((element) => element);
-            //An array of just the descriptions of the rubrics
-            let rubricNames = result.rubrics.map((element) => element.description);
-            setNames(rubricNames);
-            setIDandDescriptions(rubricIDandDescriptions);
+            // An array of just the descriptions of the rubrics
+            setRubrics(rubricIDandDescriptions);
         })
         .catch((err) => {
             console.log(err);
             throw err;
         });
-    }; 
+    }, []);
+
     /**
      * Perform a GET call to getSurveyTypes.php to fetch all possible survey pairing modes
      */
@@ -151,16 +125,17 @@ const Course = ({course, page}) => {
         });
     };
 
-    const openAddSurveyModal = () => {
-        setAddSurveyModalIsOpen(true);
-        fetchRubrics();
+    const openAddSurveyModal = async () => {
         fetchPairingModes();
+        setAddSurveyModalIsOpen(true);
     };
 
-    const closeAddSurveyModal = async (response) => {
+    const closeNewSurveyModalAdd = async (result) => {
         setAddSurveyModalIsOpen(false);
         // Response is either the onclick event or the add survey response object
-        if (!("type"  in response)) {
+        if (!("type"  in result)) {
+            // Form data is set. post the new survey and get the responses
+            let response = await addSurveyBackend(result);
             let errorsObject = response.errors;
             let dataObject = response.data;
             if (errorsObject.length === 0) {
@@ -202,16 +177,27 @@ const Course = ({course, page}) => {
         }
     };
 
+
+  const closeNewSurveyModalDuplicate = async (result) => {
+    // Response is either the onclick event or the new survey response object
+    if (!("type"  in result)) {
+      // Call the post request and wait for it to complete
+      await duplicateSurveyBackend(result);
+      updateAllSurveys();
+    }
+    setDuplicateModel(false);
+  }
+
     const closeModalError = () => {
         setModalIsOpenError(false);
     };
 
     const closeModalSurveyConfirm = (success) => {
-        setModalIsOpenSurveyConfirm(false);
         setSurveyConfirmData(null);
         if (success) {
-            updateAllSurveys();
+          updateAllSurveys();
         }
+        setModalIsOpenSurveyConfirm(false);
     };
 
     const handleErrorModalClose = () => {
@@ -231,156 +217,34 @@ const Course = ({course, page}) => {
         return result; // Return the result directly
     }
 
- function duplicateSurveyBackend(formdata) {
-        let fetchHTTP =
-            process.env.REACT_APP_API_URL +
-            "duplicateExistingSurvey.php?survey=" +
-            currentSurvey.id;
-        const result = fetch(fetchHTTP, {
-            method: "POST",
-            credentials: "include",
-            body: formdata,
-        }).then((res) => res.text());
-        return result; // Return the result directly
-    }
+ function duplicateSurveyBackend(formData) {
+    formData.append("survey-id", currentSurvey.id);
+    let fetchHTTP = process.env.REACT_APP_API_URL + "duplicateExistingSurvey.php";
+    const result = fetch(fetchHTTP, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+    }).then((res) => res.text());
+    return result; // Return the result directly
+  }
 
-    const verifyDuplicateSurvey = () => {
-        setEmptyNameError(false);
-        setEmptyStartTimeError(false);
-        setEmptyEndTimeError(false);
-        setEmptyStartDateError(false);
-        setEmptyEndDateError(false);
-        //MHz setEmptyCSVFileError(false);
-        setStartDateBoundError(false);
-        setStartDateBound1Error(false);
-        setEndDateBoundError(false);
-        setEndDateBound1Error(false);
-        setStartAfterCurrentError(false);
-        setStartDateGreaterError(false);
-        setStartTimeSameDayError(false);
-        setStartHourSameDayError(false);
-        setStartHourAfterEndHourError(false);
-        setStartTimeHoursBeforeCurrent(false);
-        setStartTimeMinutesBeforeCurrent(false);
+  function addSurveyBackend(formData) {
+    let fetchHTTP =
+        process.env.REACT_APP_API_URL + "addSurveyToCourse.php";
+    const result = fetch(fetchHTTP, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+    })
+    .then((res) => res.json());
+    return result; // Return the result directly
+  }
 
-        let surveyName = document.getElementById("survey-name").value;
-        let startTime = document.getElementById("start-time").value;
-        let endTime = document.getElementById("end-time").value;
-        let startDate = document.getElementById("start-date").value;
-        let endDate = document.getElementById("end-date").value;
-        let rubric = document.getElementById("rubric-type").value;
-        
-        if (surveyName === "") {
-            setEmptyNameError(true);
-            return;
-        }
-        if (startTime === "") {
-            setEmptyStartTimeError(true);
-            return;
-        }
-        if (endTime === "") {
-            setEmptyEndTimeError(true);
-            return;
-        }
-        if (startDate === "") {
-            setEmptyStartDateError(true);
-            return;
-        }
-        if (endDate === "") {
-            setEmptyEndDateError(true);
-            return;
-        }
-
-        //date and time keyboard typing bound checks.
-        let startDateObject = new Date(startDate + "T00:00:00"); //inputted start date.
-        let endDateObject = new Date(endDate + "T00:00:00"); //inputted end date.
-
-        //special startdate case. Startdate cannot be before the current day.
-        let timestamp = new Date(Date.now());
-
-        timestamp.setHours(0, 0, 0, 0); //set hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
-        if (startDateObject < timestamp) {
-            setStartAfterCurrentError(true);
-            return;
-        }
-        //END:special startdate case. Startdate cannot be before the current day.
-
-        //Start date cannot be greater than End date.
-        if (startDateObject > endDateObject) {
-            setStartDateGreaterError(true);
-            return;
-        }
-        //END:Start date cannot be greater than End date.
-
-        //If on the same day, start time must be before end time
-        if (startDate === endDate) {
-            if (startTime === endTime) {
-                setStartTimeSameDayError(true);
-                return;
-            }
-            let startHour = parseInt(startTime.split(":")[0]);
-            let endHour = parseInt(endTime.split(":")[0]);
-            if (startHour === endHour) {
-                setStartHourSameDayError(true);
-                return;
-            }
-            if (startHour > endHour) {
-                setStartHourAfterEndHourError(true);
-                return;
-            }
-        }
-        //Start time must be after current time if start date is the current day.
-        if (startDateObject.getDate(startDateObject) === timestamp.getDate(timestamp)) {
-            let timestampWithHour = new Date(Date.now());
-            let currentHour = timestampWithHour.getHours(timestampWithHour);
-            let currentMinutes = timestampWithHour.getMinutes(timestampWithHour);
-            let startHourNew = parseInt(startTime.split(":")[0]);
-            let startMinutes = parseInt(startTime.split(":")[1]);
-
-            if (startHourNew < currentHour) {
-                setStartTimeHoursBeforeCurrent(true);
-                return;
-            }
-            if (startHourNew === currentHour) {
-                if (startMinutes < currentMinutes) {
-                    setStartTimeMinutesBeforeCurrent(true);
-                    return;
-                }
-            }
-            //End:Start time must be after current time
-        }
-
-        //Now it's time to send data to the backend
-
-        let formData3 = new FormData();
-        let rubricId;
-
-        for (const element of rubricIDandDescriptions) {
-            if (element.description === rubric) {
-                rubricId = element.id;
-            }
-        }
-
-        formData3.append("survey-id", currentSurvey.id);
-        formData3.append("survey-name", surveyName);
-        formData3.append("rubric-id", rubricId);
-        formData3.append("start-date", startDate);
-        formData3.append("start-time", startTime);
-        formData3.append("end-date", endDate);
-        formData3.append("end-time", endTime);
-
-        //form data is set. Call the post request
-        duplicateSurveyBackend(formData3);
-        updateAllSurveys();
-        closeModalDuplicate();
-    }
-
-    let Navigate = useNavigate();
-    const handleActionButtonChange = (e, survey) => {
+  let Navigate = useNavigate();
+  async function handleActionButtonChange(e, survey) {
         setActionsButtonValue(e.target.value);
 
         if (e.target.value === "Duplicate") {
-            fetchRubrics();
             setCurrentSurvey(survey);
             setDuplicateModel(true);
         }
@@ -399,7 +263,7 @@ const Course = ({course, page}) => {
             Navigate("/SurveyPreview", {state:{survey_name: survey.name, rubric_id: survey.rubric_id, course: course.code}});
         }
         setActionsButtonValue("");
-    };
+    }
 
     function formatRosterError(input) {
         // Split the string into an array on the "Line" pattern, then filter out empty strings
@@ -493,55 +357,34 @@ const Course = ({course, page}) => {
             });
     }, [course.id]);
 
-    function closeModalDuplicate() {
-        setDuplicateModel(false);
-        setEmptyNameError(false);
-        setEmptyStartTimeError(false);
-        setEmptyEndTimeError(false);
-        setEmptyStartDateError(false);
-        setEmptyEndDateError(false);
-        //MHz setEmptyCSVFileError(false);
-        setStartDateBoundError(false);
-        setStartDateBound1Error(false);
-        setEndDateBoundError(false);
-        setEndDateBound1Error(false);
-        setStartAfterCurrentError(false);
-        setStartDateGreaterError(false);
-        setStartTimeSameDayError(false);
-        setStartHourSameDayError(false);
-        setStartHourAfterEndHourError(false);
-        setStartTimeHoursBeforeCurrent(false);
-        setStartTimeMinutesBeforeCurrent(false);
-    }
-
     const extendModalClose = (errorList) => {
-        setExtendModal(false);
         if (errorList && errorList.length > 0) {
           setErrorsList(errorList);
           setModalIsOpenError(true);
         } else {
-            updateAllSurveys();
+          updateAllSurveys();
         }
+        setExtendModal(false);
     }
 
     const deleteModalClose = (errorList) =>{
-        setDeleteModal(false);
         if (errorList && errorList.length > 0) {
             setErrorsList(errorList);
             setModalIsOpenError(true);
         } else {
             updateAllSurveys();
         }
+        setDeleteModal(false);
     }
 
     function handleUpdateModalChange() {
         setShowUpdateModal((prev) => !prev);
-    };
+    }
 
     function handleViewResultsModalChange(survey) {
         setViewResultsModal((prev) => !prev);
         setViewingCurrentSurvey(survey);
-    };
+    }
 
     return (
         <div id={course.code} className="courseContainer">
@@ -585,360 +428,26 @@ const Course = ({course, page}) => {
                     error_type={"Roster Update"}
                     errors={updateRosterError} />
             )}
-            {/* Add Survey to a course modal*/}
+            {/* Add Survey modal display */}
             {addSurveyModalIsOpen && (
-            <SurveyAddModal
-                modalClose={closeAddSurveyModal}
+            <SurveyNewModal
+                modalClose={closeNewSurveyModalAdd}
+                modalReason="Add"
+                button_text="Verify Survey"
                 survey_data={ {"course_name" : course.code, "course_id" : course.id, "survey_name" : "", } }
-                pairing_modes = {pairingModesFull}
-                rubrics_list={rubricIDandDescriptions}/>
+                pairing_modes ={pairingModesFull}
+                rubrics_list={rubrics}/>
             )}
-            {/*<Modal
-                open={duplicateModal}
-                onRequestClose={closeModalDuplicate}
-                maxWidth={"90%"}
-            >
-                <div className="CancelContainer">
-                    <button className="CancelButton" onClick={closeModalDuplicate}>
-                        ×
-                    </button>
-                </div>
-                <div className="duplicate-survey--contents-container">
-                    <h2 className="duplicate-survey--main-title">
-                        Duplicate Survey: {currentSurvey.name}
-                    </h2>
-                    <div
-                        className={
-                            emptySurveyNameError
-                                ? "duplicate-survey--input-error"
-                                : "duplicate-survey--input"
-                        }
-                    >
-                        <label for="subject-line">New Survey Name</label>
-                        <input id="survey-name" placeholder="New Name" type="text"/>
-                        {emptySurveyNameError ? (
-                            <label className="duplicate-survey--error-label">
-                                <div className="duplicate-survey--red-warning-sign"/>
-                                Survey name cannot be empty
-                            </label>
-                        ) : null}
-                    </div>
-                    <div className="duplicate-survey--input">
-                        <label for="subject-line">Choose Rubric</label>
-                        <select
-                            value={valueRubric}
-                            onChange={handleChangeRubric}
-                            id="rubric-type"
-                            placeholder="Select a rubric"
-                        >
-                            {rubricNames.map((rubric) => (
-                                <option value={rubric}>{rubric}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="duplicate-survey--timeline-data-error-container">
-                        <div className="duplicate-survey--timeline-data-container">
-                            <div className="duplicate-survey--labels-dates-container">
-                                <div className="duplicate-survey--dates-times-error-container">
-                                    <label for="subject-line">
-                                        Start Date
-                                        <input
-                                            className={(StartDateGreaterError || StartAfterCurrentError || emptyStartDateError || startDateBoundError || startDateBound1Error) ? "duplicate-survey--error-input" : null}
-                                            id="start-date"
-                                            type="date"
-                                            placeholder="Enter New Start Date"
-                                        />
-                                    </label>
-                                    <label for="subject-line">
-                                        Start Time
-                                        <input
-                                            className={(StartHourAfterEndHourError || StartHourSameDayError || StartTimeSameDayError || emptyStartTimeError || StartTimeHoursBeforeCurrent || StartTimeMinutesBeforeCurrent ? "duplicate-survey--error-input" : null)}
-                                            id="start-time"
-                                            type="time"
-                                            placeholder="Enter New Start Time"
-                                        />
-                                    </label>
-                                </div>
-                                {StartDateGreaterError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start date cannot be before the end date</label> : null}
-                                {StartAfterCurrentError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start date cannot be before the current date</label> : null}
-                                {emptyStartDateError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start date cannot be empty</label> : null}
-                                {startDateBoundError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start date must be at August 31st or later</label> : null}
-                                {startDateBound1Error ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start date must be at December 31st or earlier</label> : null}
-                                {StartHourAfterEndHourError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    If start and end dates are the same, start time cannot be after end
-                                    time</label> : null}
-                                {StartHourSameDayError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    If start and end dates are the same, end hour can not be in the same hour as
-                                    start</label> : null}
-                                {StartTimeSameDayError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    If start and end dates are the same, start and end times must differ</label> : null}
-                                {emptyStartTimeError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start time cannot be empty</label> : null}
-                                {StartTimeHoursBeforeCurrent ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start time hour cannot be before the current hour</label> : null}
-                                {StartTimeMinutesBeforeCurrent ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    Start time minutes cannot be before current minutes</label> : null}
-                            </div>
-                            <div className="duplicate-survey--labels-dates-container">
-                                <div className="duplicate-survey--dates-times-error-container">
-                                    <label for="subject-line">
-                                        End Date
-                                        <input
-                                            className={(emptyEndDateError || endDateBoundError || endDateBound1Error) ? "duplicate-survey--error-input" : null}
-                                            id="end-date"
-                                            type="date"
-                                            placeholder="Enter New End Date"
-                                        />
-                                    </label>
-
-                                    <label for="subject-line">
-                                        End Time
-                                        <input
-                                            className={emptyEndTimeError ? "duplicate-survey--error-input" : null}
-                                            id="end-time"
-                                            type="time"
-                                            placeholder="Enter New End Time"
-                                        />
-                                    </label>
-                                </div>
-                                {emptyEndDateError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    End date cannot be empty</label> : null}
-                                {endDateBoundError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    End date must be at August 31st or later</label> : null}
-                                {endDateBound1Error ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    End date must be at December 31st or earlier</label> : null}
-                                {emptyEndTimeError ? <label className="duplicate-survey--error-label">
-                                    <div className="duplicate-survey--red-warning-sign"/>
-                                    End time cannot be empty</label> : null}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="duplicate-survey--confirm-btn-container">
-                        <button
-                            className="duplicate-survey--confirm-btn"
-                            onClick={verifyDuplicateSurvey}
-                        >
-                            Duplicate Survey
-                        </button>
-                    </div>
-                </div>
-            </Modal>*/}
-
-            {/*<Modal
-                open={addSurveyModalIsOpen}
-                onRequestClose={closeAddSurveyModal}
-                width={"800px"}
-                maxWidth={"90%"}
-            >
-                <div className="CancelContainer">
-                    <button className="CancelButton" onClick={closeAddSurveyModal}>
-                        ×
-                    </button>
-                </div>
-                <div className="add-survey--contents-container">
-                    <h2 className="add-survey--main-title">
-                        Add Survey for {course.code}
-                    </h2>
-
-                    <label className="add-survey--label" for="subject-line">
-                        Survey Name
-                        <input
-                            className={emptySurveyNameError && "add-survey-input-error"}
-                            id="survey-name"
-                            type="text"
-                            placeholder="Survey Name"
-                        />
-                        {emptySurveyNameError ? (
-                            <label className="add-survey--error-label">
-                                <div className="add-survey--red-warning-sign"/>
-                                Survey name cannot be empty
-                            </label>
-                        ) : null}
-                    </label>
-                    <div className="add-survey--date-times-errors-container">
-                        <div className="add-survey--all-dates-and-times-container">
-                            <div className="add-survey--date-times-error-container">
-                                <div className="add-survey--date-and-times-container">
-                                    <label className="add-survey--label" for="subject-line">
-                                        Start Date
-                                        <input
-                                            className={(StartDateGreaterError || StartAfterCurrentError || emptyStartDateError || startDateBoundError || startDateBound1Error) ? "add-survey-input-error" : null}
-                                            id="start-date"
-                                            type="date"
-                                            placeholder="Enter Start Date"
-                                        />
-                                    </label>
-
-                                    <label className="add-survey--label" for="subject-line">
-                                        Start Time
-                                        <input
-                                            className={(StartHourAfterEndHourError || StartHourSameDayError || StartTimeSameDayError || emptyStartTimeError || StartTimeHoursBeforeCurrent || StartTimeMinutesBeforeCurrent) ? "add-survey-input-error" : null}
-                                            id="start-time"
-                                            type="time"
-                                            placeholder="Enter Start Time"
-                                        />
-                                    </label>
-                                </div>
-                                {StartDateGreaterError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date cannot be before the end date</label> : null}
-                                {StartAfterCurrentError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date cannot be before the current date</label> : null}
-                                {emptyStartDateError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date cannot be empty</label> : null}
-                                {startDateBoundError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date must be at August 31st or later</label> : null}
-                                {startDateBound1Error ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start date must be at December 31st or earlier</label> : null}
-                                {StartHourAfterEndHourError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    If start and end dates are the same, start time cannot be after end
-                                    time</label> : null}
-                                {StartHourSameDayError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    If start and end dates are the same, end hour cannot be in the same hour as the
-                                    start</label> : null}
-                                {StartTimeSameDayError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    If start and end dates are the same, start and end times must differ</label> : null}
-                                {emptyStartTimeError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start time cannot be empty</label> : null}
-                                {StartTimeHoursBeforeCurrent ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start time hour cannot be before the current hour</label> : null}
-                                {StartTimeMinutesBeforeCurrent ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    Start time minutes cannot be before current minutes</label> : null}
-                            </div>
-
-
-                            <div className="add-survey--date-times-error-container">
-                                <div className="add-survey--date-and-times-container">
-                                    <label className="add-survey--label" for="subject-line">
-                                        End Date
-                                        <input
-                                            className={(emptyEndDateError || endDateBoundError || endDateBound1Error) ? "add-survey-input-error" : null}
-                                            id="end-date"
-                                            type="date"
-                                            placeholder="Enter End Date"
-                                        />
-                                    </label>
-
-                                    <label className="add-survey--label" for="subject-line">
-                                        End Time
-                                        <input
-                                            className={(emptyEndTimeError) ? "add-survey-input-error" : null}
-                                            id="end-time"
-                                            type="time"
-                                            placeholder="Enter End Time"
-                                        />
-                                    </label>
-                                </div>
-                                {emptyEndDateError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    End date cannot be empty</label> : null}
-                                {endDateBoundError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    End date must be at August 31st or later</label> : null}
-                                {endDateBound1Error ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    End date must be at December 31st or earlier</label> : null}
-                                {emptyEndTimeError ? <label className="add-survey--error-label">
-                                    <div className="add-survey--red-warning-sign"/>
-                                    End time cannot be empty</label> : null}
-                            </div>
-                        </div>
-                    </div>
-                    <label className="add-survey--label" for="subject-line">
-                        Choose Rubric
-                        <select
-                            value={valueRubric}
-                            onChange={handleChangeRubric}
-                            id="rubric-type"
-                            placeholder="Select a rubric"
-                        >
-                            {rubricNames.map((rubric) => (
-                                <option value={rubric}>{rubric}</option>
-                            ))}
-                        </select>
-                    </label>
-                    <label className="add-survey--label-pairing" for="subject-line">
-                        <div className="drop-down-wrapper">
-                            Pairing Modes
-                            <select className="pairing"
-                                value={valuePairing}
-                                onChange={handleChangePairing}
-                                id="pairing-mode"
-                            >
-                                {pairingModesNames.map((pairing) => (
-                                    <option className= "pairing-option" value={pairing}>{pairing}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="pairing-mode-img-wrapper">
-                            <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
-                        </div>
-                    </label>
-                    {validPairingModeForMultiplier && (
-                        <label className="add-survey--label" for="subject-line">
-                            Multiplier
-                            <select className="multiplier"
-                                    id="multiplier-type"
-                                    value={multiplierNumber}
-                                    onChange={handleChangeMultiplierNumber}>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                            </select>
-                        </label>
-                    )}
-                    <label className="add-survey--file-label" for="subject-line">
-                        CSV File Upload
-                        <input
-                            className={emptyCSVFileError && "add-survey-input-error"}
-                            id="csv-file"
-                            type="file"
-                            placeholder="Upload The File"
-                        />
-                        {emptyCSVFileError ? (
-                            <label className="add-survey--error-label">
-                                <div className="add-survey--red-warning-sign"/>
-                                Select a file</label>
-                        ) : null}
-                    </label>
-                    <div className="add-survey--confirm-btn-container">
-                        <button className="add-survey--confirm-btn" onClick={verifySurvey}>
-                            Verify Survey
-                        </button>
-                    </div>
-                </div>
-            </Modal>*/}
-
+            {/* Add Survey to a course modal*/}
+            {duplicateModal && (
+            <SurveyNewModal
+                modalClose={closeNewSurveyModalDuplicate}
+                modalReason="Duplicate"
+                button_text="Duplicate Survey"
+                survey_data={ {"course_name" : course.code, "course_id" : course.id, "survey_name" : currentSurvey.name + " copy" } }
+                pairing_modes={null}
+                rubrics_list={rubrics}/>
+            )}
             <div className="courseContent">
                 <div className="courseHeader">
                     <h2>

@@ -5,7 +5,7 @@ import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
 import PM from "../assets/pairingmodes/PM.png"
 import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 
-const SurveyAddModal = ({modalClose, survey_data, pairing_modes, rubrics_list}) => {
+const SurveyNewModal = ({modalClose, modalReason, button_text, survey_data, pairing_modes, rubrics_list}) => {
   const [surveyName, setSurveyName] = useState(survey_data.survey_name);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -61,7 +61,6 @@ const handleUpdateImage = (pairing) => {
   const handleChangePairing = (e) => {
     let pairing = parseInt(e.target.value);
     let pairingMode = findPairingData(pairing, pairing_modes);
-    console.log(pairingMode);
     handleUpdateImage(pairingMode.description);
     setValuePairing(pairing);
     setUseMultiplier(pairingMode.usesMultiplier);
@@ -72,19 +71,6 @@ const handleUpdateImage = (pairing) => {
     setStartAfterEndError(false);
     setStartAfterCurrentError(false);
 };
-
-async function getAddSurveyResponse(formData) {
-  let fetchHTTP =
-      process.env.REACT_APP_API_URL + "addSurveyToCourse.php";
-  const result = await fetch(fetchHTTP, {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-  })
-  .then((res) => res.json());
-
-  return result; // Return the result directly
-}
 
 const checkForMissingData = () => {
   let missingData = false;
@@ -123,8 +109,7 @@ const checkForMissingData = () => {
   } else {
     setEmptyEndDateError(false);
   }
-
-  if (csvFile == null) {
+  if ( (pairing_modes != null) && (csvFile == null) ) {
     setEmptyCSVFileError(true);
     missingData = true;
   } else {
@@ -187,18 +172,14 @@ async function verifyAndPostSurvey() {
   formData.append("survey-name", surveyName);
   formData.append("course-id", survey_data.course_id);
   formData.append("rubric-id", rubric);
-  formData.append("pairing-mode", valuePairing);
   formData.append("start-date", startDate);
   formData.append("start-time", startTime);
   formData.append("end-date", endDate);
   formData.append("end-time", endTime);
+  formData.append("pairing-mode", valuePairing);
   formData.append("pm-mult", multInt);
   formData.append("pairing-file", csvFile);
-  console.log(formData);
-
-  // Form data is set. post the new survey and get the responses
-  let awaitedResponse = await getAddSurveyResponse(formData);
-  modalClose(awaitedResponse);
+  modalClose(formData);
 }
 
   return (
@@ -211,7 +192,7 @@ async function verifyAndPostSurvey() {
                 </div>
                 <div className="add-survey--contents-container">
                     <h2 className="add-survey--main-title">
-                        Add Survey for {survey_data.course_name}
+                        {modalReason} Survey for {survey_data.course_name}
                     </h2>
 
                     <label className="add-survey--label" htmlFor="survey-name">
@@ -221,6 +202,7 @@ async function verifyAndPostSurvey() {
                             id="survey-name"
                             type="text"
                             placeholder="Survey Name"
+                            value={surveyName !== "" ? surveyName : undefined}
                             onChange={(e) => setSurveyName(e.target.value)}
                         />
                         {emptySurveyNameError ? (
@@ -319,7 +301,7 @@ async function verifyAndPostSurvey() {
                             ))}
                         </select>
                     </label>
-                    <label className="add-survey--label-pairing" htmlFor="pairing">
+                    {pairing_modes && <label className="add-survey--label-pairing" htmlFor="pairing">
                         <div className="drop-down-wrapper">
                             Pairing Modes
                             <select className="pairing"
@@ -328,14 +310,14 @@ async function verifyAndPostSurvey() {
                                 id="pairing-mode"
                             >
                                 {pairing_modes.map((pairing) => (
-                                    <option className= "pairing-option" value={pairing.id}>{pairing.description}</option>
+                                    <option className="pairing-option" value={pairing.id}>{pairing.description}</option>
                                 ))}
                             </select>
                         </div>
                         <div className="pairing-mode-img-wrapper">
                             <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
                         </div>
-                    </label>
+                    </label>}
                     {useMultipler && (
                         <label className="add-survey--label" htmlFor="multiplier">
                             Multiplier
@@ -350,7 +332,7 @@ async function verifyAndPostSurvey() {
                             </select>
                         </label>
                     )}
-                    <label className="add-survey--file-label" htmlFor="csv-file">
+                    {pairing_modes && <label className="add-survey--file-label" htmlFor="csv-file">
                         CSV File Upload
                         <input
                             className={emptyCSVFileError && "add-survey-input-error"}
@@ -364,10 +346,10 @@ async function verifyAndPostSurvey() {
                                 <div className="add-survey--red-warning-sign"/>
                                 Select a file</label>
                         ) : null}
-                    </label>
+                    </label>}
                     <div className="add-survey--confirm-btn-container">
                         <button className="add-survey--confirm-btn" onClick={verifyAndPostSurvey}>
-                            Verify Survey
+                            {button_text}
                         </button>
                     </div>
                 </div>
@@ -375,4 +357,4 @@ async function verifyAndPostSurvey() {
                 </div>
   );
 }
-export default SurveyAddModal;
+export default SurveyNewModal;

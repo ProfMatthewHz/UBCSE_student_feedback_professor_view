@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import "../styles/modal.css";
 import "../styles/deletesurvey.css";
 
@@ -23,7 +23,7 @@ const SurveyDeleteModal = ({modalClose, survey_data}) => {
   }
 
   async function verifyAndSubmit() {
-    if (deleteName === survey_name) {
+    if (!emptyOrWrongDeleteNameError) {
         let form = new FormData();
         form.append("survey_id", survey_id);
         form.append("agreement", 1);
@@ -38,12 +38,16 @@ const SurveyDeleteModal = ({modalClose, survey_data}) => {
 
   const updateAndCheckSurveyName = (e) => {
     setDeleteName(e.target.value);
+  }
+
+  useEffect(() => {
     if (deleteName !== survey_name) {
         setEmptyOrWrongDeleteNameError(true);
     } else {
         setEmptyOrWrongDeleteNameError(false);
     }
-  }
+  }, [deleteName, survey_name]);
+
   return ( 
     <div className="modal">
       <div className="delete-modal modal-content modal-phone">
