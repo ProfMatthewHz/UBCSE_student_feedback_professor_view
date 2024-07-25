@@ -136,7 +136,6 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     // good php practice to unset loop vars
     unset($email, $student_data);
 
-
     $rosterData['roster-students'] = $roster_students;
     $rosterData['non-roster-students'] = $non_roster_students;
     $rosterData['pairings'] = $file_results['pairings'];

@@ -13,10 +13,9 @@ const ErrorsModal = ({modalClose, error_type, errors}) => {
                   ×
               </button>
           </div>
-          <div className="error-container">
-              <div className="error-header">
-                  <h2 className="error-header-text">{title}</h2>
-              </div>
+          <div className="modal--contents-container">
+            <h2 className="modal--main-title">{title}</h2>
+          </div>
               <div className="error-list-container">
                   {errorsList.map((string, index) => (
                       <div key={index} className="string-list-item">
@@ -25,11 +24,15 @@ const ErrorsModal = ({modalClose, error_type, errors}) => {
                   ))}
               </div>
           </div>
-          <button className="Cancel error-cancel-button" onClick={modalClose}>
-              Close
-          </button>
+          <div className="form__item--confirm-btn-container">
+                        <button
+                            className="form__item--confirm-btn"
+                            onClick={modalClose}
+                        >
+                            Close
+                        </button>
+                    </div>
       </div>
-    </div>
   );
 }
 export default ErrorsModal;

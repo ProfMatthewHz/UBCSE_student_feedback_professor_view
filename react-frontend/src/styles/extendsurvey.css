@@ -1,53 +1,13 @@
-.extend-modal {
-  width: 650px;
-  max-width: 100%;
-}
-
-.extend-survey--contents-container {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 20px;
-  margin: 20px;
-}
-
-h2.extend-survey--main-title {
-  color: #225cb5;
-  font-size: 24px;
-  font-weight: bold;
-  margin-top: 20px;
-}
-
 .extend-survey--boxes-container {
   display: flex;
   flex-direction: column;
-  margin: 20px 0px;
   width: 100%;
-}
-
-label.extend-survey--error-label {
-  color: #af0e0e;
-  display: flex;
-  font-size: 16px;
-  font-weight: bold;
-  gap: 5px;
-  margin: 0;
-  text-align: left;
-}
-
-.extend-survey--red-warning-sign {
-    background-image: url("../assets/redwarningsign.png");
-    background-repeat: no-repeat;
-    background-size: contain;
-    width: 18px;
 }
 
 .extend-survey--left-box-container,
 .extend-survey--right-box-container {
   align-items: center;
   /* aspect-ratio: 1/1; */
-  border: solid 1.5px #225cb5;
   display: flex;
   flex-direction: column;
   font-size: 20px;
@@ -75,7 +35,7 @@ label.extend-survey--error-label {
 }
 
 .extend-survey--boxes-container h2 {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 .extend-survey--left-box-container h3 {
@@ -88,50 +48,14 @@ label.extend-survey--error-label {
 }
 
 .extend-survey--inputs-container label {
-  font-size: 16px;
-  font-weight: bold;
   display: flex;
   flex-direction: column;
   gap: 5px;
   margin: 10px;
-  text-align: left;
-}
-
-.extend-survey--inputs-container input {
-  border: solid 1.5px #225cb5;
-  border-radius: 5px;
-  font-size: 16px;
-  height: 100%;
-  padding: 10px;
-  width: 100%;
-}
-
-input.extend-survey--error-input {
-  background-color: #ffdddd !important;
-  border: 1.5px solid #af0e0e !important;
-}
-
-button.extend-survey--confirm-btn {
-  background-color: #6da04b;
-  border: hidden;
-  border-radius: 5px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0;
-  padding: 10px 20px;
-  transition: all .2s ease;
-}
-
-button.extend-survey--confirm-btn:hover {
-  background-color: #59863d;
-  color: #fff;
 }
 
 /* PHONES AND SMALL DEVICES */
-@media screen and (max-width: 500px) {
-
+@media screen and (max-width: 650px) {
   .extend-survey--inputs-container {
     display: flex;
     flex-direction: column;

@@ -29,7 +29,7 @@ const SurveyExtendModal = ({modalClose, survey_data}) => {
     } catch (err) {
         throw err; // Re-throw to be handled by the caller
     }
-}
+  }
 
   async function verifyAndSubmit() {
     setEmptyFieldsError(false);
@@ -159,14 +159,14 @@ const SurveyExtendModal = ({modalClose, survey_data}) => {
 }
   return (
     <div className="modal">
-      <div className="modal-content modal-phone">
+      <div style={{ width: "650px", maxWidth: "90%" }}className="modal-content modal-phone">
         <div className="CancelContainer">
             <button className="CancelButton" onClick={modalClose}>
                 ×
             </button>
         </div>
-        <div className="extend-survey--contents-container">
-            <h2 className="extend-survey--main-title">
+        <div className="modal--contents-container">
+            <h2 className="modal--main-title">
                 Extend Survey: {survey_name}
             </h2>
             <div className="extend-survey--boxes-container">
@@ -177,52 +177,51 @@ const SurveyExtendModal = ({modalClose, survey_data}) => {
                 <div className="extend-survey--right-box-container">
                     <h2>Extended Deadline</h2>
                     <div className="extend-survey--inputs-container">
-                        <label htmlFor="new-endDate">
+                        <label className="form__item--label" htmlFor="new-endDate">
                             New Date
                         <input
                             id="new-endDate"
-                            className={(emptyFieldsError || startDateGreater || mustBeAfterCurrentTime || newEndMustComeAfterOldEndDay) ? "extend-survey--error-input" : null}
+                            className={(emptyFieldsError || startDateGreater || mustBeAfterCurrentTime || newEndMustComeAfterOldEndDay) ? "form__item--input-error" : null}
                             type="date"
                             placeholder="New End Date"
                             onChange={(e) => setEndDate(e.target.value)}
                         /> </label>
-                        <label htmlFor="new-endTime">
+                        <label className="form__item--label" htmlFor="new-endTime">
                             New Time
                         <input
                             id="new-endTime"
-                            className={(emptyFieldsError || startHourIsGreater || newEndMustComeAfterOldEndHour) ? "extend-survey--error-input" : null}
+                            className={(emptyFieldsError || startHourIsGreater || newEndMustComeAfterOldEndHour) ? "form__item--input-error" : null}
                             type="time"
                             placeholder="New End Time"
                             onChange={(e) => setEndTime(e.target.value)}
                         />
                         </label>
                     </div>
-                    {emptyFieldsError ? <label className="extend-survey--error-label">
-                        <div className="extend-survey--red-warning-sign"/>
+                    {emptyFieldsError ? <label className="form__item--error-label">
+                        <div className="form__item--red-warning-sign"/>
                         New date and time must be entered</label> : null}
-                    {startDateGreater ? <label className="extend-survey--error-label">
-                        <div className="extend-survey--red-warning-sign"/>
+                    {startDateGreater ? <label className="form__item--error-label">
+                        <div className="form__item--red-warning-sign"/>
                         End date must be later than start date</label> : null}
-                    {startHourIsGreater ? <label className="extend-survey--error-label">
-                        <div className="extend-survey--red-warning-sign"/>
+                    {startHourIsGreater ? <label className="form__item--error-label">
+                        <div className="form__item--red-warning-sign"/>
                         New end time must be later than starting time</label> : null}
-                    {mustBeAfterCurrentTime ? <label className="extend-survey--error-label">
-                        <div className="extend-survey--red-warning-sign"/>
+                    {mustBeAfterCurrentTime ? <label className="form__item--error-label">
+                        <div className="form__item--red-warning-sign"/>
                         End date cannot be in the past</label> : null}
-                    {newEndMustComeAfterOldEndDay ? <label className="extend-survey--error-label">
-                        <div className="extend-survey--red-warning-sign"/>
+                    {newEndMustComeAfterOldEndDay ? <label className="form__item--error-label">
+                        <div className="form__item--red-warning-sign"/>
                         New end date must be later than current end date</label> : null}
-                    {newEndMustComeAfterOldEndHour ? <label className="extend-survey--error-label">
-                        <div className="extend-survey--red-warning-sign"/>
+                    {newEndMustComeAfterOldEndHour ? <label className="form__item--error-label">
+                        <div className="form__item--red-warning-sign"/>
                         New end time must be later than current end time</label> : null}
                 </div>
             </div>
-            <button
-                className="extend-survey--confirm-btn"
-                onClick={verifyAndSubmit}
-            >
-                Extend Survey
+            <div className="form__item--confirm-btn-container">
+            <button className="form__item--confirm-btn" onClick={verifyAndSubmit}>
+             Extend Survey
             </button>
+          </div>
         </div>
       </div>
     </div>

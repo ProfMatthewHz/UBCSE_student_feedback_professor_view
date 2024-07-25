@@ -3,7 +3,7 @@ import "../styles/addcourse.css";
 import "../styles/modal.css";
 import "../styles/course.css";
 import {Select} from "../Components/Select";
-import {ErrorsModal} from "../Components/ErrorsModal";
+import ErrorsModal from "../Components/ErrorsModal";
 
 /**
  * The AddCourse component displays a form for adding a new course to the system.
