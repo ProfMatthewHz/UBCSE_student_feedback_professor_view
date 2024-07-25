@@ -3,6 +3,7 @@ import "../styles/addcourse.css";
 import "../styles/modal.css";
 import "../styles/course.css";
 import {Select} from "../Components/Select";
+import {ErrorsModal} from "../Components/ErrorsModal";
 
 /**
  * The AddCourse component displays a form for adding a new course to the system.
@@ -360,17 +361,10 @@ const AddCourse = ({closeModal, updateCourseListing}) => {
 
             {/* Conditional rendering of a modal dialog for roster file errors. */}
             {showFileErrorModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h2>Roster File Error</h2>
-                        {
-                            rosterFileError.length > 0 && rosterFileError.map((err) => (
-                                <p>{err}</p>
-                            ))
-                        }
-                        <button className="roster-file--error-btn" onClick={fileErrorModalClose}>OK</button>
-                    </div>
-                </div>
+                <ErrorsModal
+                    modalClose={fileErrorModalClose}
+                    error_type={"Roster File"}
+                    errors={rosterFileError}/>
             )}
         </>
     );

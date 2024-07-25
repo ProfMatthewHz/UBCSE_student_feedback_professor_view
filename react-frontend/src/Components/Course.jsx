@@ -8,7 +8,7 @@ import ViewResults from "./ViewResults";
 import { useNavigate } from "react-router-dom";
 import SurveyExtendModal from "./SurveyExtendModal";
 import SurveyDeleteModal from "./SurveyDeleteModal";
-import SurveyErrorsModal from "./SurveyErrorsModal";
+import ErrorsModal from "./ErrorsModal";
 import SurveyConfirmModal from "./SurveyConfirmModal";
 import SurveyNewModal from "./SurveyNewModal";
 import RosterUpdateModal from "./RosterUpdateModal";
@@ -325,7 +325,7 @@ const Course = ({course, page}) => {
             )}
             {/* Survey creation errors modal*/}
             {errorModalIsOpen && (
-            <SurveyErrorsModal
+            <ErrorsModal
                 modalClose={closeModalError}
                 error_type={"Survey"}
                 errors={errorsList} />
@@ -346,7 +346,7 @@ const Course = ({course, page}) => {
             )}
             {/* Roster error display */}
             {showErrorModal && (
-            <SurveyErrorsModal
+            <ErrorsModal
                     modalClose={handleErrorModalClose}
                     error_type={"Roster Update"}
                     errors={updateRosterError} />

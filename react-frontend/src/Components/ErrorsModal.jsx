@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import "../styles/modal.css";
 import "../styles/surveyerrors.css";
 
-const SurveyErrorsModal = ({modalClose, error_type, errors}) => {
+const ErrorsModal = ({modalClose, error_type, errors}) => {
   const [errorsList,] = useState(errors);
   const [title,] = useState(error_type + " Errors");
   return ( 
@@ -32,4 +32,4 @@ const SurveyErrorsModal = ({modalClose, error_type, errors}) => {
     </div>
   );
 }
-export default SurveyErrorsModal;
+export default ErrorsModal;
