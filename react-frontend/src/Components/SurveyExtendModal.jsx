@@ -167,15 +167,15 @@ const SurveyExtendModal = ({modalClose, survey_data}) => {
         </div>
         <div className="modal--contents-container">
             <h2 className="modal--main-title">
-                Extend Survey: {survey_name}
+                Extend Survey
             </h2>
             <div className="extend-survey--boxes-container">
-                <div className="extend-survey--left-box-container">
-                    <h2>Current Deadline</h2>
-                    <h3>{originalEndDate}</h3>
+                <div className="extend-survey--top-box-container">
+                    <h3 className="form__item--info">Survey Name: {survey_name}</h3>
+                    <h3 className="form__item--info">Current Deadline: {originalEndDate}</h3>
                 </div>
-                <div className="extend-survey--right-box-container">
-                    <h2>Extended Deadline</h2>
+                <div className="extend-survey--bottom-box-container">
+                     <h3 className="extend-survey--bottom-label form__item--info">Extended Deadline</h3>
                     <div className="extend-survey--inputs-container">
                         <label className="form__item--label" htmlFor="new-endDate">
                             New Date
