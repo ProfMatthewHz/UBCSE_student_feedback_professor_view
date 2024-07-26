@@ -26,7 +26,7 @@ $con = connectToDatabase();
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 if (!isset($_SESSION['id'])) {
   http_response_code(403);
-  echo "Forbidden: You must be logged in to access this page.";
+  echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
   exit();
 }
 $instructor_id = $_SESSION['id'];
@@ -36,7 +36,7 @@ $instructor_id = $_SESSION['id'];
 if (!isset($_SESSION["survey_data"]) || !isset($_SESSION["survey_course_id"]) || 
     !isset($_SESSION["survey_file"]) || !isset($_SESSION["survey_students"]))  {
     http_response_code(403);
-    echo "Missing parameters, Survey Roster contains errors!";
+    echo json_encode(array("error" => "Incorrect usage: This file must be used within app."));
     exit();
 }
 // Get the data we previously created
@@ -56,103 +56,6 @@ $survey_end = $survey_e->format('M j').' at '. $survey_e->format('g:i A');
 $survey_type = $survey_data['pairing_mode'];
 $pm_mult = $survey_data['multiplier'];
 $rubric_id = $survey_data['rubric'];
-
-if($_SERVER['REQUEST_METHOD'] == 'GET') {
-  // Verify we have already defined all the data required for this conformation.
-
-  $response = array();
-  $response['data'] = array();
-  $response['errors'] = array();
-
-  $errorMsg = array();
-  $surveyTypes = getSurveyTypes($con);
-  if (!array_key_exists($survey_type, $surveyTypes)) {
-    $errorMsg['survey'] = "Request uses an incorrect survey type"; 
-
-  }
-  $rubric_name = getRubricName($con, $rubric_id);
-  if (empty($rubric_name)) {
-    $errorMsg['rubric'] = "Request specifies an incorrect rubric";
-  }
-
-  // make sure the survey is for a course the current instructor actually teaches
-  if (!isCourseInstructor($con, $course_id, $instructor_id)) {
-    $errorMsg['course'] = "Request specifies an incorrect course.";
-  }
-
-  if (empty($errorMsg)){
-    $course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
-    $course_code = $course_info['code'];
-    $course_name = $course_info['name'];
-    $roster = getRoster($con, $course_id);
-    $non_roster = getNonRosterStudents($survey_students, $roster);
-    $file_results = processReviewRows($file_data, $survey_students, $pm_mult, $survey_type);
-    $_SESSION["pairings"] = $file_results["pairings"];
-    $roles = $file_results["roles"];
-  
-    $rosterData = array();
-
-    // {"student_email", "student_name", "reviewing", "reviewed"}
-    $roster_students = array();
-    $non_roster_students = array();
-
-    # get roster students data
-    foreach($roster as $email => $student_data){
-
-      $student_name = $student_data[0];
-      $student_id = $student_data[1];
-
-      $isReviewer = (array_key_exists($student_id, $roles) && $roles[$student_id][0]);
-      $isReviewed = (array_key_exists($student_id, $roles) && $roles[$student_id][1]);
-
-      $student_data = array(
-        'student_email' => $email,
-        'student_name' => $student_name,
-        'reviewing' => $isReviewer,
-        'reviewed' => $isReviewed,
-      );
-      $roster_students[] = $student_data;
-    }
-    // good php practice to unset loop vars
-    unset($email, $student_data);
-
-    # get non-roster students data
-    foreach($non_roster as $email => $student_data){
-
-      $student_name = $student_data[0];
-      $student_id = $student_data[1];
-
-      $isReviewer = (array_key_exists($student_id, $roles) && $roles[$student_id][0]);
-      $isReviewed = (array_key_exists($student_id, $roles) && $roles[$student_id][1]);
-
-      $student_data = array(
-        'student_email' => $email,
-        'student_name' => $student_name,
-        'reviewing' => $isReviewer,
-        'reviewed' => $isReviewed,
-      );
-      $non_roster_students[] = $student_data;
-    }
-    // good php practice to unset loop vars
-    unset($email, $student_data);
-
-    $rosterData['roster-students'] = $roster_students;
-    $rosterData['non-roster-students'] = $non_roster_students;
-    $rosterData['pairings'] = $file_results['pairings'];
-
-    $response['data'] = $rosterData;
-  } else {
-    $response['errors'] = $errorMsg;
-  }
-
-
-  header("Content-Type: application/json; charset=UTF-8");
-
-  $responseJSON = json_encode($response);
-
-  echo $responseJSON;
-  exit();
-}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $response = array('data' => array(), 'errors' => array());

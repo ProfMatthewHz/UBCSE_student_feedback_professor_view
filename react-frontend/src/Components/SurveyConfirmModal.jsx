@@ -23,7 +23,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data }) => {
     }
 
     const fetchRosterNonRosterInfo = useCallback(() => {
-        let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
+        let fetchHTTP = process.env.REACT_APP_API_URL + "surveyRosterBreakout.php";
          fetch(fetchHTTP, {
             method: "GET",
             credentials: "include",
