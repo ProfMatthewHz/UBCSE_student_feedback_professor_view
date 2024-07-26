@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../styles/modal.css";
 import "../styles/confirmsurvey.css";
 
@@ -8,8 +8,8 @@ const SurveyConfirmModal = ({ modalClose, survey_data }) => {
     const [end_date,] = useState(survey_data.end_date);
     const [course_code,] = useState(survey_data.course_code);
     const [rubric_name,] = useState(survey_data.rubric_name);
-    const [roster_array,] = useState(survey_data.roster_array);
-    const [nonroster_array,] = useState(survey_data.nonroster_array);
+    const [roster_array, setRosterArray] = useState([]);
+    const [nonroster_array, setNonRosterArray] = useState([]);
 
     async function confirmSurveyPost(data) {
         let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
@@ -21,6 +21,24 @@ const SurveyConfirmModal = ({ modalClose, survey_data }) => {
             .then((res) => res.json());
         return result; // Return the result directly
     }
+
+    const fetchRosterNonRosterInfo = useCallback(() => {
+        let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
+         fetch(fetchHTTP, {
+            method: "GET",
+            credentials: "include",
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            setRosterArray(data.data["roster-students"]);
+            setNonRosterArray(data.data["non-roster-students"]);
+        })
+    }, []);
+
+    useEffect(() => {
+        fetchRosterNonRosterInfo();
+    }, [fetchRosterNonRosterInfo]);
+
 
     function quitModal() {
         modalClose(false);
@@ -60,7 +78,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data }) => {
                 </div>
                 <h3 className="confirm--bottom-label form__item--info">Survey Participants</h3>
                 <div className="confirm--bottom-container">
-                    {roster_array.length > 0 ? (
+                    {roster_array && roster_array.length > 0 ? (
                         <table>
                             <caption>Course Roster</caption>
                             <thead>
@@ -86,7 +104,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data }) => {
                         <div className="confirm--empty-text">No students on roster</div>
                     )}
 
-                    {nonroster_array.length > 0 ? (
+                    {nonroster_array && nonroster_array.length > 0 ? (
                         <table>
                             <caption>Non-Course Students</caption>
                             <thead>

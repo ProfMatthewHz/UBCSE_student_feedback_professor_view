@@ -143,7 +143,7 @@ const SurveyListing = (props) => {
         {modalData && <Modal open={openModal} onClose={() => setOpenModal(false)} modalData={modalData} />}
         <div className="home--container">
           <div className="containerOfCourses">
-            <div id="Open Surveys" class="courseContainer">
+            <div id="Open Surveys" className="courseContainer">
             <div className="courseContent">
                   <div className="courseHeader">
                       <h2>
@@ -208,7 +208,7 @@ const SurveyListing = (props) => {
               </div>
             </div>
   
-            <div id="Future Surveys" class="courseContainer">
+            <div id="Future Surveys" className="courseContainer">
             <div className="courseContent">
                   <div className="courseHeader">
                       <h2>
@@ -254,7 +254,7 @@ const SurveyListing = (props) => {
             </div>
   
   
-            <div id="Closed Surveys" class="courseContainer">
+            <div id="Closed Surveys" className="courseContainer">
             <div className="courseContent">
                   <div className="courseHeader">
                       <h2>

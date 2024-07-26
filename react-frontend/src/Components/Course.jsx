@@ -134,22 +134,16 @@ const Course = ({course, page}) => {
             let dataObject = result.data;
             if (errorsObject.length === 0) {
                 // valid survey subitted
-                let rosterDataAll = await fetchRosterNonRoster();
-                let rosterData = rosterDataAll.data;
-                if (rosterData) {
-                    console.log(dataObject)
-                    let startDateObject = new Date(dataObject["survey_data"]["start"].date);
-                    let endDateObject = new Date(dataObject["survey_data"]["end"].date);
-                    let surveyName = dataObject["survey_data"]["name"];
-                    let rubric_name = dataObject["survey_data"]["rubric_name"];
-                    let rostersArrayHere = rosterData["roster-students"];
-                    let nonRosterArrayHere = rosterData["non-roster-students"];
-                    let start = startDateObject.toLocaleString('default', {month: 'short', day: '2-digit'}) + " at " +  startDateObject.toLocaleString('default', {timeStyle: 'short'});
-                    let end = endDateObject.toLocaleString('default', {month: 'short', day: '2-digit'}) + " at " +  endDateObject.toLocaleString('default', {timeStyle: 'short'});
-                    let survey_data = {course_code: course.code, survey_name: surveyName, rubric_name: rubric_name, start_date: start, end_date: end, roster_array : rostersArrayHere, nonroster_array: nonRosterArrayHere};
-                    setSurveyConfirmData(survey_data);
-                    setModalIsOpenSurveyConfirm(true);
-                }
+                console.log(dataObject)
+                let startDateObject = new Date(dataObject["survey_data"]["start"].date);
+                let endDateObject = new Date(dataObject["survey_data"]["end"].date);
+                let surveyName = dataObject["survey_data"]["name"];
+                let rubric_name = dataObject["survey_data"]["rubric_name"];
+                let start = startDateObject.toLocaleString('default', {month: 'short', day: '2-digit'}) + " at " +  startDateObject.toLocaleString('default', {timeStyle: 'short'});
+                let end = endDateObject.toLocaleString('default', {month: 'short', day: '2-digit'}) + " at " +  endDateObject.toLocaleString('default', {timeStyle: 'short'});
+                let survey_data = {course_code: course.code, survey_name: surveyName, rubric_name: rubric_name, start_date: start, end_date: end};
+                setSurveyConfirmData(survey_data);
+                setModalIsOpenSurveyConfirm(true);
             } else {
                 let errorKeys = Object.keys(errorsObject);
                 let pairingFileStrings = [];
@@ -196,17 +190,6 @@ const Course = ({course, page}) => {
         setShowErrorModal(false); // close the error modal
         setShowUpdateModal(true); // open the update modal again
     };
-
-    async function fetchRosterNonRoster() {
-        let fetchHTTP = process.env.REACT_APP_API_URL + "confirmationForSurvey.php";
-        const result = fetch(fetchHTTP, {
-            method: "GET",
-            credentials: "include",
-        })
-        .then((res) => res.json());
-
-        return result; // Return the result directly
-    }
 
   let Navigate = useNavigate();
   async function handleActionButtonChange(e, survey) {
@@ -431,7 +414,6 @@ const Course = ({course, page}) => {
                                             }}
                                             onChange={(e) => handleActionButtonChange(e, survey)}
                                             value={actionsButtonValue}
-                                            defaultValue=""
                                         >
                                             <option
                                                 className="surveyactions--option"
