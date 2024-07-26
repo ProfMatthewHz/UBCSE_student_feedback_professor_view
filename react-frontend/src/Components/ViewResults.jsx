@@ -207,20 +207,19 @@ useEffect(() => {
     }, [surveyToView, fetchRawSurveys, fetchNormalizedResults, fetchCompleted, fetchIndividualAverages]);
     
     return (
-        <div className="viewresults-modal">
-            <div className="viewresults-modal-content">
+        <div className="modal">
+            <div style={{ width: "1200px", maxWidth: "90%" }} className="modal-content modal-phone">
                 <div className="CancelContainer">
                     <button
                         className="CancelButton"
-                        style={{top: "0px"}}
                         onClick={() => closeViewResultsModal(null)}
                     >
                         ×
                     </button>
                 </div>
-                <h2 className="viewresults-modal--heading">
-                    Results for {course.code} Survey: {surveyToView.name}
-                </h2>
+            <h2 className="modal--main-title">
+            Results for {course.code} Survey: {surveyToView.name}
+            </h2>
                 <div className="viewresults-modal--main-button-container">
                     <button
                         className={
