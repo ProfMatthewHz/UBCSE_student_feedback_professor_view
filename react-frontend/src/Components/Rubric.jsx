@@ -108,7 +108,7 @@ const Rubric = ({rubric_id, updateRubrics}) => {
                                     </thead>
                                     <tbody>
                                     {Object.values(criterions).map((criterion) =>
-                                        <tr>
+                                        <tr key={criterion.question}>
                                             <td className="criterion--heading">{criterion.question}</td>
                                             {Object.values(criterion.responses).map((response) =>
                                                 <td>{response}</td>
