@@ -76,8 +76,8 @@ const SurveyConfirmModal = ({ modalClose, survey_data }) => {
                                     <tr key={index}>
                                         <td>{entry.student_email}</td>
                                         <td>{entry.student_name}</td>
-                                        {entry.reviewing ? <td>Yes</td> : <td>No</td>}
-                                        {entry.reviewed ? <td>Yes</td> : <td>No</td>}
+                                        {entry.reviewing ? <td>&#9989;</td> : <td>&#10060;</td>}
+                                        {entry.reviewed ? <td>&#9989;</td> : <td>&#10060;</td>}
                                     </tr>
                                 ))}
                             </tbody>
@@ -102,8 +102,8 @@ const SurveyConfirmModal = ({ modalClose, survey_data }) => {
                                     <tr key={index}>
                                         <td>{entry.student_email}</td>
                                         <td>{entry.student_name}</td>
-                                        {entry.reviewing ? <td>Yes</td> : <td>No</td>}
-                                        {entry.reviewed ? <td>Yes</td> : <td>No</td>}
+                                        {entry.reviewing ? <td>&#9989;</td> : <td>&#10060;</td>}
+                                        {entry.reviewed ? <td>&#9989;</td> : <td>&#10060;</td>}
                                     </tr>
                                 ))}
                             </tbody>

@@ -8,6 +8,7 @@ const SurveyDeleteModal = ({ modalClose, survey_data }) => {
     const [survey_name,] = useState(survey_data.name);
     const [emptyOrWrongDeleteNameError, setEmptyOrWrongDeleteNameError] = useState(false);
     const [deleteName, setDeleteName] = useState("");
+    const [updated, setUpdated] = useState(false);
 
     async function postSurveyDelete(formdata) {
         let fetchHTTP =
@@ -37,16 +38,19 @@ const SurveyDeleteModal = ({ modalClose, survey_data }) => {
     }
 
     const updateAndCheckSurveyName = (e) => {
+        setUpdated(true);
         setDeleteName(e.target.value);
     }
 
     useEffect(() => {
-        if (deleteName !== survey_name) {
-            setEmptyOrWrongDeleteNameError(true);
-        } else {
-            setEmptyOrWrongDeleteNameError(false);
+        if (updated) {
+            if (deleteName !== survey_name) {
+                setEmptyOrWrongDeleteNameError(true);
+            } else {
+                setEmptyOrWrongDeleteNameError(false);
+            }
         }
-    }, [deleteName, survey_name]);
+    }, [deleteName, survey_name, updated]);
 
     return (
         <div className="modal">
@@ -76,7 +80,7 @@ const SurveyDeleteModal = ({ modalClose, survey_data }) => {
                         </label>
                     <div className="form__item--confirm-btn-container">
                         <button
-                            className="form__item--confirm-btn"
+                            className={emptyOrWrongDeleteNameError ? "form__item--confirm-btn-disabled": "form__item--confirm-btn"}
                             onClick={verifyAndSubmit}
                             disabled={emptyOrWrongDeleteNameError}
 

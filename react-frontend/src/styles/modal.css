@@ -317,6 +317,19 @@ button.form__item--cancel-btn {
   transition: all .2s ease;
 }
 
+button.form__item--confirm-btn-disabled {
+  background-color: rgba(109, 160, 75, 0.5);
+  border: hidden;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  padding: 10px 20px;
+  transition: all .2s ease;
+}
+
 button.form__item--confirm-btn {
   background-color: #6da04b;
   border: hidden;
