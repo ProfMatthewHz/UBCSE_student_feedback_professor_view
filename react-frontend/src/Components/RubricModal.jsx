@@ -45,7 +45,7 @@ const RubricModal = ({open,onClose,modalData}) => {
         <div className = "modal">
             <div className='styled-input'>
                 <div className = "feedback">
-                    <button className = "CancelButton" onClick={onClose}>X</button>
+                    <button className = "CancelButton" onClick={onClose}>x</button>
                     <div className="courseHeader">
                             <h2>{survey_name}</h2>
                     </div>
