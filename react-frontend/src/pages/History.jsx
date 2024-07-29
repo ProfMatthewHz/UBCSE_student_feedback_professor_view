@@ -9,9 +9,9 @@ import "../styles/home.css";
  */
 
 const History = () => {
-    const [courses, setCourses] = useState([]); // State for storing courses
     const [terms, setTerms] = useState({}); // State for storing terms and associated courses
     const [currentTerm, setCurrentTerm] = useState(''); // State to track the currently selected term
+    const [sidebar_content, setSidebarContent] = useState({}); // State to store the content for the Sidebar component
 
     /**
      * Updates the currently selected term.
@@ -54,12 +54,13 @@ const History = () => {
             .then((res) => res.json()) // Parsing the response to JSON format.
             .then((result) => { // Handling the parsed JSON data.
                 const all_courses = {} // An object to store courses grouped by their terms.
-
+                const sidebar_data = {} // An object mapping terms to the names of courses in that term
                 // Mapping through each term received from the first API call to fetch courses for those terms.
                 const fetchCourses = result.map((term) => {
                     // Constructing a key for each term combining its name and year for easy identification and storage.
                     const term_key = term.semester + " " + term.year
                     all_courses[term_key] = []
+                    sidebar_data[term_key] = []
                     return fetch(
                         process.env.REACT_APP_API_URL + "getInstructorCoursesInTerm.php",
                         {
@@ -77,18 +78,18 @@ const History = () => {
                         .then((res2) => res2.json())
                         .then((result2) => {
                             all_courses[term_key].push(...result2)
+                            sidebar_data[term_key] = result2.map((course) => course.code)
                         })
                         .catch(err => {
                             console.log(err)
                         })
 
                 });
-
+                // Create a single promise that resolves only after each term is completed
                 Promise.all(fetchCourses)
                     .then(() => {
-                        const courses_only = Object.values(all_courses).flat(); // Update the terms state with all terms and courses
                         setTerms(all_courses)
-                        setCourses(courses_only); // Update the courses state with all courses
+                        setSidebarContent(sidebar_data);
                     })
                     .catch(err => {
                         console.log(err);
@@ -100,12 +101,6 @@ const History = () => {
                 console.log(err)
             })
     }, []);
-
-    // Prepare content for the Sidebar component
-    const sidebar_content = {
-        Terms: Object.entries(terms).length > 0 ? Object.fromEntries(Object.entries(terms)) : [],
-        Courses: courses.length > 0 ? courses.map((course) => course.code) : [],
-    };
 
   return (
     <>

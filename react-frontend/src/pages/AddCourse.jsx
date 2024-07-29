@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import "../styles/addcourse.css";
 import "../styles/modal.css";
 import "../styles/course.css";
-import {Select} from "../Components/Select";
+import Select from "../Components/Select";
 import ErrorsModal from "../Components/ErrorsModal";
 
 /**

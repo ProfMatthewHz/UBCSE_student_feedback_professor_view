@@ -5,6 +5,7 @@ import Course from "../Components/Course";
 
 const Home = () => {
   const [courses, setCourses] = useState([]);
+  const [sidebar_content, setSidebarContent] = useState({});
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -70,11 +71,13 @@ const Home = () => {
   useEffect(() => {
     fetchCourses()
   }, [fetchCourses]);
-
-  const sidebar_content = {
-    Courses: courses ? courses.map((course) => course.code) : [],
-  };
-
+  
+  useEffect(() => {
+    setSidebarContent({
+      Courses: courses.length > 0 ? courses.map((course) => course.code) : [],
+    })
+  }, [courses]);
+  
   return (
     <>
       <SideBar route="/" content_dictionary={sidebar_content} getCourses={fetchCourses} />

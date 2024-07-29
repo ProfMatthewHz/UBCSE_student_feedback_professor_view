@@ -7,6 +7,7 @@ import "../styles/library.css";
 const Library = () => {
     // State to store the list of rubrics
     const [rubrics, setRubrics] = useState([])
+    const [sidebar_content, setSidebarContent] = useState({});
 
     /**
      * Fetches the list of rubrics from the API.
@@ -30,10 +31,11 @@ const Library = () => {
         fetchRubrics()
     }, [fetchRubrics]);
 
-    // Prepare content for the Sidebar component
-    const sidebar_content = {
+    useEffect(() => {
+      setSidebarContent({
         Rubrics: rubrics.length > 0 ? rubrics.map((rubric) => rubric.description) : [],
-    };
+      })
+    }, [rubrics]);
 
   return (
     <>

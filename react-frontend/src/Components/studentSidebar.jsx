@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import "../styles/sidebar.css";
 
 
-function StudentSideBar() {
+const StudentSideBar = () => {
 
   const scrollToTable1 = () => {
     const table1Element = document.getElementById('Open Surveys');
@@ -103,6 +103,6 @@ function StudentSideBar() {
   
     </>
   );
-}
+};
 
 export default StudentSideBar;
