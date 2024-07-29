@@ -1,12 +1,11 @@
 import "../styles/sidebar.css";
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { HashLink as Link } from "react-router-hash-link";
 import Dropdown from "./Dropdown";
 import Modal from "./Modal";
 import AddCourse from "../pages/AddCourse";
 import AddRubric from "./AddRubric";
-
-
 
 /** Combining NavBar into Side Bar*/
 
@@ -74,10 +73,7 @@ function SideBar(props) {
     if (props.route === "/history") {
       if (!dropdown_value) {
         props.updateCurrentTerm("");
-      } else if (
-        dropdown_value &&
-        props.content_dictionary["Terms"][dropdown_value]
-      ) {
+      } else if (dropdown_value && props.content_dictionary["Terms"][dropdown_value]) {
         setTermContents(
           Object.values(props.content_dictionary["Terms"][dropdown_value])
         );
@@ -158,7 +154,7 @@ function SideBar(props) {
                               termContents.length > 0 ? (
                                 termContents.map((item) => {
                                   return (
-                                    <a href={"#" + item.code}>
+                                    <Link to={{hash: "#" + item.code}}>
                                       <div
                                         onClick={() =>
                                           setActiveButton(item.code + "-Option")
@@ -172,7 +168,7 @@ function SideBar(props) {
                                       >
                                         {item.code}
                                       </div>
-                                    </a>
+                                      </Link>
                                   );
                                 })
                               ) : (
@@ -189,7 +185,8 @@ function SideBar(props) {
                             {contents.length > 0 ? (
                               contents.map((item) => {
                                 return (
-                                  <a href={"#" + item}>
+                                  <Link to={{hash: "#" + item}} state={{hash: item}}>
+
                                     <div
                                       onClick={() => setActiveButton(item + "-Option")}
                                       id={item + "-Option"}
@@ -199,9 +196,9 @@ function SideBar(props) {
                                           : item + "-Option"
                                       }
                                     >
-                                      {item}
+                                        {item}
                                     </div>
-                                  </a>
+                                    </Link>
                                 );
                               })
                             ) : (
@@ -265,7 +262,7 @@ function SideBar(props) {
                               termContents.length > 0 ? (
                                 termContents.map((item) => {
                                   return (
-                                    <a href={"#" + item.code}>
+                                    <Link to={{hash: "#" + item.code}}>
                                       <div
                                         onClick={() =>
                                           setActiveButton(item.code + "-Option")
@@ -279,7 +276,7 @@ function SideBar(props) {
                                       >
                                         {item.code}
                                       </div>
-                                    </a>
+                                      </Link>
                                   );
                                 })
                               ) : (
@@ -295,7 +292,7 @@ function SideBar(props) {
                             {contents.length > 0 ? (
                               contents.map((item) => {
                                 return (
-                                  <a href={"#" + item}>
+                                  <Link to={{hash: "#" + item}}>
                                     <div
                                       onClick={() => setActiveButton(item + "-Option")}
                                       id={item + "-Option"}
@@ -305,9 +302,9 @@ function SideBar(props) {
                                           : item + "-Option"
                                       }
                                     >
-                                      {item}
+                                        {item}
                                     </div>
-                                  </a>
+                                    </Link>
                                 );
                               })
                             ) : (
@@ -345,7 +342,7 @@ function SideBar(props) {
                               termContents.length > 0 ? (
                                 termContents.map((item) => {
                                   return (
-                                    <a href={"#" + item.code}>
+                                    <Link to={{hash: "#" + item.code}}>
                                       <div
                                         onClick={() =>
                                           setActiveButton(item.code + "-Option")
@@ -359,7 +356,7 @@ function SideBar(props) {
                                       >
                                         {item.code}
                                       </div>
-                                    </a>
+                                    </Link>
                                   );
                                 })
                               ) : (
@@ -376,7 +373,7 @@ function SideBar(props) {
                             {contents.length > 0 ? (
                               contents.map((item) => {
                                 return (
-                                  <a href={"#" + item}>
+                                  <Link to={{hash: "#" + item}}>
                                     <div
                                       onClick={() => setActiveButton(item + "-Option")}
                                       id={item + "-Option"}
@@ -388,7 +385,7 @@ function SideBar(props) {
                                     >
                                       {item}
                                     </div>
-                                  </a>
+                                  </Link>
                                 );
                               })
                             ) : (
