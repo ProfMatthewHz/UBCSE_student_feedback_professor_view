@@ -239,7 +239,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               id="survey-name"
               type="text"
               placeholder="Survey Name"
-              value={surveyName !== "" ? surveyName : undefined}
+              value={surveyName !== "" ? surveyName : null}
               onChange={(e) => setSurveyName(e.target.value)}
             />
             {emptySurveyNameError ? (
@@ -256,7 +256,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                   <label className="form__item--label" htmlFor="start-date">
                     Start Date
                     <input
-                      className={(startAfterEndError || startAfterCurrentError || emptyStartDateError) ? "form__item--input-error" : null}
+                      className={(startAfterEndError || startAfterCurrentError || emptyStartDateError) ? "form__item--input-error" : undefined}
                       id="start-date"
                       type="date"
                       placeholder="Enter Start Date"
@@ -267,7 +267,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                   <label className="form__item--label" htmlFor="start-time">
                     Start Time
                     <input
-                      className={(startAfterCurrentError || startAfterEndError || emptyStartTimeError) ? "form__item--input-error" : null}
+                      className={(startAfterCurrentError || startAfterEndError || emptyStartTimeError) ? "form__item--input-error" : undefined}
                       id="start-time"
                       type="time"
                       placeholder="Enter Start Time"
@@ -294,7 +294,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                   <label className="form__item--label" htmlFor="end-date">
                     End Date
                     <input
-                      className={(emptyEndDateError || startAfterEndError) ? "form__item--input-error" : null}
+                      className={(emptyEndDateError || startAfterEndError) ? "form__item--input-error" : undefined}
                       id="end-date"
                       type="date"
                       placeholder="Enter End Date"
@@ -305,7 +305,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                   <label className="form__item--label" htmlFor="end-time">
                     End Time
                     <input
-                      className={(emptyEndTimeError || startAfterEndError) ? "form__item--input-error" : null}
+                      className={(emptyEndTimeError || startAfterEndError) ? "form__item--input-error" : undefined}
                       id="end-time"
                       type="time"
                       placeholder="Enter End Time"
@@ -372,7 +372,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
           {pairing_modes && <label className="form__item--file-label" htmlFor="csv-file">
             CSV File Upload
             <input
-              className={emptyCSVFileError && "form__item-input-error"}
+              className={emptyCSVFileError ? "form__item-input-error" : undefined}
               id="csv-file"
               type="file"
               placeholder="Upload The File"
