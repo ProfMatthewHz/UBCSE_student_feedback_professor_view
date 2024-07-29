@@ -11,7 +11,6 @@ import SidebarList from "./SidebarList";
 
 const SideBar = (props) => {
   const [clicked, setClicked] = useState(false);
-  const [activeButton, setActiveButton] = useState(false);
   const [dropdown_value, setDropDownValue] = useState("");
   const [sidebar_items, setSidebarItems] = useState([])
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
@@ -33,10 +32,6 @@ const SideBar = (props) => {
     setClicked(prevState => !prevState)
   }
 
-  const getActiveButton = () => {
-    return activeButton;
-  }
-
   useEffect(() => {
     if (props.content_dictionary["Courses"]) {
       setSidebarItems(Object.values(props.content_dictionary["Courses"]));
@@ -56,27 +51,6 @@ const SideBar = (props) => {
       setRubricState(true);
     }
   }, [props]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      let name = sidebar_items[0];
-      for (let item_name of sidebar_items) {
-        const connected_course = document.getElementById(item_name);
-        if (connected_course.offsetTop < scrollPosition) {
-          name = item_name;
-        }
-      }
-      const connector = document.getElementById(name + "-Option");
-      connector.scrollIntoView();
-      setActiveButton(name + "-Option");
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [sidebar_items]);
 
   useEffect(() => {
     if (historyState) {
@@ -145,7 +119,7 @@ const SideBar = (props) => {
                 {courseState &&
                   (
                     <div className="sidebar-content" style={{ minHeight: "90%" }}>
-                      <SidebarList list={sidebar_items} getActiveButton={getActiveButton} emptyMessage={"No Courses"} />
+                      <SidebarList list={sidebar_items} emptyMessage={"No Courses"} />
                     </div>
                   )}
               </li>
@@ -179,7 +153,7 @@ const SideBar = (props) => {
                   (
                     <div className="sidebar-content" style={{ maxHeight: "75%" }}>
                       {dropdown_value !== "" ? (
-                        <SidebarList list={sidebar_items} getActiveButton={getActiveButton} emptyMessage={"No Courses"} />
+                        <SidebarList list={sidebar_items} emptyMessage={"No Courses"} />
                       ) : (<div className="no-content"></div>)
                       }
                     </div>
@@ -190,7 +164,7 @@ const SideBar = (props) => {
                 <NavLink to="/library">Library </NavLink>
                 {rubricState && (
                   <div className="sidebar-content" style={{ minHeight: "90%" }}>
-                    <SidebarList list={sidebar_items} getActiveButton={getActiveButton} emptyMessage={"No Courses"} />
+                    <SidebarList list={sidebar_items} emptyMessage={"No Courses"} />
                   </div>
                 )}
               </li>
