@@ -23,7 +23,6 @@ function App() {
           .then((res) => res.json())
           .then((result) => {
               setUserFlag(result["redirect"]);
-              console.log(result["redirect"]);
           })
           .catch((err) => {
             console.error('There was a problem with your fetch operation:', err);

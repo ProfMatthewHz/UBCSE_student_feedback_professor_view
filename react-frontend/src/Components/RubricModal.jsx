@@ -53,7 +53,6 @@ const RubricModal = ({open,onClose,modalData}) => {
                         
                             <thead>
                                 <tr>
-
                                     <th>Criterion</th>
                                     <th>Average Score</th>
                                     <th>Median</th>
@@ -70,7 +69,7 @@ const RubricModal = ({open,onClose,modalData}) => {
                                         </tr>
                                     ))
                                     ) : (
-                                        <tr colSpan="3">Feedback Results Not Available</tr>
+                                        <tr><td colSpan="3">Feedback Results Not Available</td></tr>
                                     )}
                             </tbody>
                     </table>
