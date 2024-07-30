@@ -1,5 +1,6 @@
 import { HashLink as Link } from "react-router-hash-link";
 import { useState, useEffect } from "react";
+import "../styles/sidebar.css";
 
 const SidebarList = ({ list, emptyMessage }) => {
   const [activeButton, setActiveButton] = useState(false);

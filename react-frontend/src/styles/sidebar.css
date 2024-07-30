@@ -1,4 +1,4 @@
-.title{
+.title {
   width: 195px;
   height: 100%; 
   background: #225CB5;
@@ -9,7 +9,7 @@
   flex-direction: column;
 }
 
-.title h1{ /*Evalutation Tool Title*/
+.title h1 { /*Evalutation Tool Title*/
   color: #ffffff;
   font-size: 28px;
   font-weight: bold;
@@ -40,7 +40,7 @@
   height: 50px;
   width: 180px;
   position: fixed;
-  bottom: 20px; 
+  bottom: 20px;
   left: 0;
 }
 
@@ -74,15 +74,6 @@
   overflow-y: auto;
   padding-left: 25%;
   overflow-x: hidden; 
-}
-
-.sidebar-list2 {
-  max-height: 400px;
-  width: 166px;
-  overflow-y: auto;
-  padding-left: 25%;
-  overflow-x: hidden; 
-
 }
 
 .sidebar-list::-webkit-scrollbar {
@@ -125,10 +116,7 @@
 }
 
 .sidebar-content a > div {
-  padding: 10% 0% 10% 15%;
-  margin-bottom: 10px;
-  /* padding: 10px 0; 
-  margin-bottom: 0;  */
+  padding: 10% 0% 10% 0%;
   font-size: 20px;
   font-weight: 400;
 }
@@ -157,8 +145,6 @@
   font-style: italic;
 }
 
-
-
 .student-title{
   width: 195px;
   height: 100%; 
@@ -174,7 +160,7 @@
   padding-top:10px;
 }
 
-.student-title h1{ /*Evalutation Tool Title*/
+.student-title h1 { /*Evalutation Tool Title*/
   color: #ffffff;
   font-size: 28px;
   font-weight: bold;
@@ -200,8 +186,6 @@
   margin: 5%;
 }
 
-
-
 .student-sidebar-list::-webkit-scrollbar {
   width: 5px;
 }
@@ -225,7 +209,7 @@
   padding: 6% 6%;
   margin-right: 5%;
   margin-left: 5%;
-  margin-bottom: 10%;
+  margin-bottom: 5%;
 }
 
 .student-sidebar-content a > div:hover {
@@ -248,8 +232,6 @@
   margin-right: 5%;
   margin-left: 5%;
   margin-bottom: 10%;
-
-
 }
 
 .student-sidebar-list .student-no-content {
@@ -258,9 +240,6 @@
   font-weight: 400;
   font-style: italic;
 }
-
-
-
 
 /* Media queries for responsiveness */
 @media screen and (max-width: 800px) {

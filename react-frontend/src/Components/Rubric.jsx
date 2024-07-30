@@ -100,9 +100,9 @@ const Rubric = ({rubric_id, updateRubrics}) => {
                                 <table className="rubric--table">
                                     <thead>
                                     <tr>
-                                        <th>Criterion</th>
+                                        <th key="Criterion">Criterion</th>
                                         {Object.values(levels).map((level) => (
-                                            <th>{level.name + " (" + level.score + " pts)"}</th>
+                                            <th key={level.score}>{level.name + " (" + level.score + " pts)"}</th>
                                         ))}
                                     </tr>
                                     </thead>
@@ -111,7 +111,7 @@ const Rubric = ({rubric_id, updateRubrics}) => {
                                         <tr key={criterion.question}>
                                             <td className="criterion--heading">{criterion.question}</td>
                                             {Object.values(criterion.responses).map((response) =>
-                                                <td>{response}</td>
+                                                <td key={crypto.randomUUID()}>{response}</td>
                                             )}
                                         </tr>
                                     )}

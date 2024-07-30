@@ -47,7 +47,7 @@ const Library = () => {
             <div>
                <div className="yes-course"><h1>Rubrics</h1></div>
             {rubrics.map((rubric) => (
-              <Rubric rubric_id={rubric.id} getRubrics={fetchRubrics}/>
+              <Rubric key={rubric.id} rubric_id={rubric.id} getRubrics={fetchRubrics}/>
             ))}
             </div>
           ) : (
