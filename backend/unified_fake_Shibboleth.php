@@ -14,6 +14,7 @@ require_once "lib/constants.php";
 require_once "instructor/lib/pairingFunctions.php";
 require_once "instructor/lib/instructorQueries.php";
 require_once "lib/studentQueries.php";
+require_once "lib/loginRoutine.php";
 
 // Sanity check that prevents this from being used on the production server
 if (!empty($_SERVER['uid'])) {
@@ -25,28 +26,13 @@ if (!empty($_SERVER['uid'])) {
   }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $con = connectToDatabase();
     if (empty($_POST["UBIT"])) {
         http_response_code(400);
         echo "Bad Request: Missing parameters.";
         exit();
     }
-
-    $email = $_POST['UBIT'] . "@buffalo.edu";
-    $id = getInstructorId($con, $email);
-    $id_and_name = getStudentInfoFromEmail($con, $email);
-
-     // Logic for when it is NOT an instructor BUT a student
-     if (!empty($id_and_name)) {
-        $_SESSION['student_id'] = $id_and_name[0];
-        $_SESSION['ubit'] = $_POST['UBIT'];
-        $_SESSION['redirect'] = 2;
-    }
+    setSessionVariables($email);
     
-    if (!empty($id)) {
-        $_SESSION['id'] = $id;
-        $_SESSION['redirect'] = 1;
-    }
     if (!empty($_SESSION['redirect'])) {
         http_response_code(302);
         header("Location: " . FRONTEND_HOME);
