@@ -1,0 +1,58 @@
+.confirm--top-container {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 20px;
+  width: 100%;
+  background-color: #225cb5;
+  border-radius: 5px 5px 0px 0px;
+  color: #fff;
+  gap: 5px;
+}
+
+.confirm--bottom-label {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+  color: #225cb5;
+}
+
+.confirm--bottom-container {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: thin solid #225cb5;
+  overflow-x: auto; /* Enables horizontal scrolling */
+  max-height: 390px; /* Set a maximum height */
+  overflow-y: auto; /* Enables vertical scrolling */
+}
+
+.confirm--btn-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.confirm--bottom-container table {
+  border-collapse: collapse;
+  width: 50%;
+  margin: 0px 10px;
+}
+
+.confirm--bottom-container th, .confirm--bottom-container td {
+  border: 1px solid #225cb5;
+  padding: 8px;
+  text-align: left;
+}
+
+.confirm--bottom-container th {
+  background-color: #f2f2f2;
+}
+
+.confirm--empty-text {
+  text-align: center;
+  font-size: 20px;
+  color: grey;
+  margin: 10px;
+  padding: 20px;
+}

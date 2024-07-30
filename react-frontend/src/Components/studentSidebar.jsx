@@ -1,12 +1,10 @@
 
-import React, { useEffect, useRef, useState } from "react";
-//import { Link, NavLink } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "../styles/sidebar.css";
 
 
-function StudentSideBar() {
-
- 
+const StudentSideBar = () => {
 
   const scrollToTable1 = () => {
     const table1Element = document.getElementById('Open Surveys');
@@ -31,8 +29,10 @@ function StudentSideBar() {
 
 
 
+  // eslint-disable-next-line no-unused-vars
   const [clicked, setClicked] = useState(false)
 
+  // eslint-disable-next-line no-unused-vars
   const handleClick = () => {
     setClicked((prev) => !prev)
   }
@@ -56,7 +56,7 @@ function StudentSideBar() {
             <div className="sidebar-content" style={{ minHeight: "90%" }}>
                 {/* list of courses */}
                 <div className="sidebar-list2">
-                <a href="#Open Surveys">
+                  <Link to={{hash: "#Open Surveys"}}>
                     <div
                     
                       onClick={() =>{
@@ -68,8 +68,8 @@ function StudentSideBar() {
                     >
                       Open Surveys
                     </div>
-                  </a>
-                <a href="#Future Surveys">
+                  </Link>
+                  <Link to={{hash: "#Future Surveys"}}>
                   <div
                     onClick={() => {setActiveButton("Future Surveys-Option");
                       scrollToTable2();}}
@@ -78,8 +78,8 @@ function StudentSideBar() {
                   >
                     Future Surveys
                   </div>
-                </a>
-                <a href="#Closed Surveys">
+                </Link>
+                <Link to={{hash: "#Closed Surveys"}}>
                   <div
                     onClick={() => {setActiveButton("Closed Surveys-Option");
                   scrollToTable3();}}
@@ -88,7 +88,7 @@ function StudentSideBar() {
                   >
                     Closed Surveys
                   </div>
-                </a>
+                </Link>
               
                 </div>
 
@@ -103,6 +103,6 @@ function StudentSideBar() {
   
     </>
   );
-}
+};
 
 export default StudentSideBar;

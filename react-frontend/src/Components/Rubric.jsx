@@ -1,17 +1,15 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import AddRubric from "./AddRubric";
 import Modal from "./Modal";
 import "../styles/rubric.css";
 
-const Rubric = ({rubric_id, getRubrics}) => {
+const Rubric = ({rubric_id, updateRubrics}) => {
 
     // IMPORTANT: rubricData contains rubric name, levels, and criterions
     const [duplicatedRubricData, setDuplicatedRubricData] = useState({});
-
     const [criterions, setCriterions] = useState({}) // Contains the criterions
     const [levels, setLevels] = useState({}) // Contains the levels
     const [rubricName, setRubricName] = useState("") // Contains the rubric name
-
     const [showDuplicateRubricModal, setShowDuplicateRubricModal] = useState(false); // Show Duplicate Rubric Modal
 
     /**
@@ -25,11 +23,12 @@ const Rubric = ({rubric_id, getRubrics}) => {
      * Fetches the rubric info from the API.
      * @param filename
      */
-    const fetchRubricInfo = (filename) => {
+    const fetchRubricInfo = useCallback((filename) => {
         fetch(
             process.env.REACT_APP_API_URL + filename,
             {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
@@ -40,7 +39,6 @@ const Rubric = ({rubric_id, getRubrics}) => {
         )
             .then((res) => res.json())
             .then((result) => {
-
                 if (filename === "getInstructorRubrics.php") { // Initial Rubric Info
                     setRubricName(result.data.name)
                     setLevels(Object.values(result.data.levels))
@@ -53,13 +51,12 @@ const Rubric = ({rubric_id, getRubrics}) => {
             .catch((err) => {
                 console.log(err);
             });
-    };
+    }, [rubric_id]);
 
-// Fetch rubric info when the component mounts
     useEffect(() => {
         fetchRubricInfo("getInstructorRubrics.php") // Displaying Rubric for Library Page
         fetchRubricInfo("rubricDuplicate.php") // Duplicating Rubric
-    }, []);
+    }, [fetchRubricInfo]);
 
     /**
      * The Rubric component renders a rubric with the specified name, levels, and criterions.
@@ -79,7 +76,7 @@ const Rubric = ({rubric_id, getRubrics}) => {
                 </div>
                 <AddRubric
                     handleAddRubricModal={handleDuplicateRubricModal}
-                    getRubrics={getRubrics}
+                    updateRubrics={updateRubrics}
                     duplicatedRubricData={duplicatedRubricData}
                 />
             </Modal>
@@ -103,18 +100,18 @@ const Rubric = ({rubric_id, getRubrics}) => {
                                 <table className="rubric--table">
                                     <thead>
                                     <tr>
-                                        <th>Criterion</th>
+                                        <th key="Criterion">Criterion</th>
                                         {Object.values(levels).map((level) => (
-                                            <th>{level.name + " (" + level.score + " pts)"}</th>
+                                            <th key={level.score}>{level.name + " (" + level.score + " pts)"}</th>
                                         ))}
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {Object.values(criterions).map((criterion) =>
-                                        <tr>
+                                        <tr key={criterion.question}>
                                             <td className="criterion--heading">{criterion.question}</td>
                                             {Object.values(criterion.responses).map((response) =>
-                                                <td>{response}</td>
+                                                <td key={crypto.randomUUID()}>{response}</td>
                                             )}
                                         </tr>
                                     )}

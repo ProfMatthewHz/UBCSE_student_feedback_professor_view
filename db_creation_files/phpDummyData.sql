@@ -832,7 +832,11 @@ INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rub
 (46, 42358, '2023-12-15 23:00:00', '2023-12-20 23:00:00', 'Delete this survey 1', 1, 2);
 
 INSERT INTO `survey_types` (`id`, `description`, `file_organization`, `display_multiplier`) VALUES
-(1, 'Individual Reviewed by Individual', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0),
-(2, 'Each Team Member Reviewed By Entire Team', 'One row per team. Each row contains the email addresses for all team members. Blank columns are ignored', 0),
-(3, 'Each Team Member Reviewed by Entire Team + Manager', 'One row per team. Each row contains the email addresses for all team members with the manager email address listed last. Blank columns are ignored', 1),
-(4, 'Single Individual Reviewed by Each Team Member', 'One row per individual being reviewed. Every row contains the email addresses of the reviewers and the person being reviewed. The person being reviewed MUST be in the final column in the row.', 0);
+(1, 'TEAM', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0),
+(2, 'TEAM + SELF', 'One row per team. Each row contains the email addresses for all team members. Blank columns are ignored', 0),
+(3, 'TEAM + SELF + MANAGER', 'One row per team. Each row contains the email addresses for all team members with the manager email address listed last. Blank columns are ignored', 1),
+(4, 'PM', 'One row per individual being reviewed. Every row contains the email addresses of the reviewers and the person being reviewed. The person being reviewed MUST be in the final column in the row.', 0),
+(5, 'Single Pairs', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0);
+
+INSERT INTO `student_visit_data` (`student_id`, `survey_id`, `visit_count`, `last_visit`) VALUES
+(50243490, 42, 11, '2024-02-29 14:30:06');

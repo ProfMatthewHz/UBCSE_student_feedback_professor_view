@@ -23,7 +23,8 @@ $con = connectToDatabase();
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 if (!isset($_SESSION['id'])) {
   http_response_code(403);
-  echo "Forbidden: You must be logged in to access this page.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 $instructor_id = $_SESSION['id'];
@@ -31,20 +32,23 @@ $instructor_id = $_SESSION['id'];
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!isset($_FILES['roster-file']) || !isset($_POST['course-id']) || !isset($_POST['update-type'])) {
     http_response_code(400);
-    echo "Bad Request: Missing parmeters.";
+    $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+    echo $json_out;
     exit();
   }
 
   if (!is_uploaded_file($_FILES['roster-file']['tmp_name'])) {
     http_response_code(403);
-    echo "Forbidden: Incorrect parameters.";
+    $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+    echo $json_out;
     exit();
   }
 
   $update_type = $_POST['update-type'];
   if (($update_type != 'replace') && ($update_type != 'expand')) {
     http_response_code(400);
-    echo "Bad Request: Incorrect parameters.";
+    $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+    echo $json_out;
     exit();
   }
 
@@ -54,7 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // make sure the survey is for a course the current instructor actually teaches
   if (!isCourseInstructor($con, $course_id, $instructor_id)) {
     http_response_code(403);
-    echo "403: Forbidden.";
+    $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through logged in users of the application."));
+    echo $json_out;
     exit();
   }
   //echo "error on line\n" ;
@@ -86,9 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       if (!empty($names_emails['error'])) {
         $ret_val['error'] = $names_emails['error'];
       } else {
-
-
-
         if($update_type == "replace"){ // remove old roster and add new students
           //remove all students from the course
           $course_roster = getRoster($con, $course_id);
@@ -111,11 +113,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
          // echo "Students have been successfully added. \n" ;
         }
 
-      //   foreach ($new_students as $email => $name) {
-      //     var_dump($email); // This will output the email (key)
-      //     var_dump($name);  // This will output the name (value)
-      //     addStudents($con, $course_id, [$emails => $name]);
-      // }
         $_SESSION["roster_data"] = breakoutRosters($course_roster, $names_emails["ids"]);
         $_SESSION["roster_course_id"] = $course_id;
         $_SESSION["roster_update_type"] = $update_type;

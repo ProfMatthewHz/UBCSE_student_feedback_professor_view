@@ -1,22 +1,25 @@
 <?php
+include_once 'lib/constants.php';
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
+
 session_start();
-
-header('Content-Type: application/json');
-
-$retArray = [];
+header("Access-Control-Allow-Origin: http://localhost:3000");
+header('Access-Control-Allow-Headers: Content-Type');
+header("Access-Control-Allow-Credentials: true");
 
 if (empty($_SESSION['redirect'])) {
-    header("Location: "."http://localhost/StudentSurvey/backend/unified_fake_Shibboleth.php");
-//    header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/backed/unified_fake_Shibboleth.php");
-    exit();
+  http_response_code(405);
+  header('Content-Type: application/json');
+  echo ('{"error": "No redirect set"}');
+  exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    $retArray['redirect'] = $_SESSION['redirect'];
+    $retArray = ['redirect' => $_SESSION['redirect']];
     http_response_code(302);
+    header('Content-Type: application/json');
     echo json_encode($retArray);
     exit();
 }

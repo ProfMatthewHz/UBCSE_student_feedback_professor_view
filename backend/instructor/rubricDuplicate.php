@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   $rubric_id = $_POST['rubric-id'];
-  $rubrics = getRubrics($con);
+  $rubrics = getRubrics($con, $instructor_id);
   if (!array_key_exists($rubric_id, $rubrics)) {
     $response['errors']['rubric'] = "Please choose a valid rubric.";
   }

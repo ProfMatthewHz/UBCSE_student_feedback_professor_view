@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import "../styles/modal.css";
-
 
 /**
  * The Modal component is a reusable component that displays a modal window.
  */
 
 export default function Modal({open,children,width,maxWidth}) {
-
-
-
     if (!open) return null
 
     else{

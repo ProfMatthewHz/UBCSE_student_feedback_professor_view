@@ -42,7 +42,7 @@ $term = MONTH_MAP_SEMESTER[$month];
 $year = idate('Y');
 
 // store information about rubrics as array of array
-$rubrics = getRubrics($con);
+$rubrics = getRubrics($con, $instructor_id);
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
@@ -64,31 +64,7 @@ $pairing_mode = NULL;
 $survey_name = NULL;
 $pm_mult = 1;
 
-// check for the query string or post parameter
-if($_SERVER['REQUEST_METHOD'] == 'GET') {
-  // respond not found on no query string parameter
-  if (isset($_GET['course'])) {
-
-    $course_id = intval($_GET['course']);
-    
-    if (!isCourseInstructor($con, $course_id, $instructor_id)){
-      http_response_code(400);
-      echo "You do not teach this course!";
-      exit();
-    }
-
-
-  } else {
-    http_response_code(400);
-    echo "Bad Request: Missing parameters.";
-    exit();
-  }
-
-  echo "Success! This is the page to add a survey to course " . $course_id . "<br>";
-}
-
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-
   // make sure values exist
   if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) || 
       !isset($_POST['start-date']) || !isset($_POST['start-time']) || 
@@ -198,7 +174,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // check the pairing mode
   $pairing_mode = intval($_POST['pairing-mode']);
-  if (!array_key_exists($pairing_mode, $_SESSION["surveyTypes"])) {
+  $surveyTypes = getSurveyTypes($con);
+  if (!array_key_exists($pairing_mode, $surveyTypes)) {
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
   }
   
@@ -215,9 +192,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     // start parsing the file
     $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
 
-    // catch errors or continue parsing the file
-
-
+    // Catch errors when the file cannot be opened
     if (!$file_handle) {
       $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
     } else {
@@ -233,13 +208,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       } 
       
       if (!empty($errorMsg)){
-        
         $response['errors'] = $errorMsg;
-
-      } else if (empty($errorMsg)) {
-
+      } else {
         $surveyInfo = array();
-
         $surveyInfo["survey_course_id"] = $course_id;
         $surveyInfo["survey_file"] = $file_data['rows'];
         $surveyInfo['survey_students'] = $file_data['individuals'];
@@ -248,30 +219,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
           'end' => $e, 
           'pairing_mode' => $pairing_mode, 
           'multiplier' => $pm_mult, 
-          'rubric' => $rubric_id, 
+          'rubric' => $rubric_id,
+          'rubric_name' => $rubrics[$rubric_id],
           'name' => $survey_name
         );
-        
         $response['data'] = $surveyInfo;
 
         // Save the data we will need for the confirmation page
         $_SESSION["survey_course_id"] = $course_id;
         $_SESSION["survey_file"] = $file_data['rows'];
         $_SESSION["survey_students"] = $file_data['individuals'];
-        $_SESSION["survey_data"] = array('start' => $s, 'end' => $e, 'pairing_mode' => $pairing_mode, 'multiplier' => $pm_mult, 'rubric' => $rubric_id, 'name' => $survey_name);
+        $_SESSION["survey_data"] = $surveyInfo["survey_data"];
       }
     }
   }
 
   header("Content-Type: application/json; charset=UTF-8");
-
-  // $response['errors'] = $errorMsg;
   $responseJSON = json_encode($response);
-
   echo $responseJSON;
   
-}
-if ( (!isset($rubric_id)) && (count($rubrics) == 1)) {
-  $rubric_id = array_key_first($rubrics);
 }
 ?>

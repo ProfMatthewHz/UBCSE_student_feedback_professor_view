@@ -183,6 +183,15 @@ CREATE TABLE `scores` (
  CONSTRAINT `scores_rubric_score_constraint` FOREIGN KEY (`rubric_score_id`) REFERENCES `rubric_scores` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE `student_visit_data` (
+  `student_id` int(11) NOT NULL,
+  `survey_id` int(11) NOT NULL,
+  `visit_count` int(11) DEFAULT 1,
+  `last_visit` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+   CONSTRAINT `student_visit_data_student_constraint` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `student_visit_data_survey_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
 -- freeforms TABLE
 -- each row represents the freeform response entered on an evaluation in response to a freeform question
 CREATE TABLE `freeforms` (

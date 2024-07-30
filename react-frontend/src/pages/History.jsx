@@ -9,9 +9,9 @@ import "../styles/home.css";
  */
 
 const History = () => {
-    const [courses, setCourses] = useState([]); // State for storing courses
     const [terms, setTerms] = useState({}); // State for storing terms and associated courses
     const [currentTerm, setCurrentTerm] = useState(''); // State to track the currently selected term
+    const [sidebar_content, setSidebarContent] = useState({}); // State to store the content for the Sidebar component
 
     /**
      * Updates the currently selected term.
@@ -21,60 +21,17 @@ const History = () => {
         setCurrentTerm(newValue)
     }
 
-
-    const getCurrentYear = () => {
-        const date = new Date();
-        return date.getFullYear();
-    };
-
-    // Using 2023-2024 course schedule
-    /**
-     * Determines the current semester based on the current date.
-     * @returns {number} The current semester encoded as an integer (1 for Winter, 2 for Spring, 3 for Summer, 4 for Fall).
-     */
-    const getCurrentSemester = () => {
-        const date = new Date();
-        const month = date.getMonth(); // 0 for January, 1 for February, etc.
-        const day = date.getDate();
-
-        // Summer Sessions (May 30 to Aug 18)
-        if (
-            (month === 4 && day >= 30) ||
-            (month > 4 && month < 7) ||
-            (month === 7 && day <= 18)
-        ) {
-            return 3; // Summer
-        }
-
-        // Fall Semester (Aug 28 to Dec 20)
-        if (
-            (month === 7 && day >= 28) ||
-            (month > 7 && month < 11) ||
-            (month === 11 && day <= 20)
-        ) {
-            return 4; // Fall
-        }
-
-        // Winter Session (Dec 28 to Jan 19)
-        if ((month === 11 && day >= 28) || (month === 0 && day <= 19)) {
-            return 1; // Winter
-        }
-
-        // If none of the above conditions are met, it must be Spring (Jan 24 to May 19)
-        return 2; // Spring
-    };
-
     /**
      * Converts semester names to their corresponding integer codes.
      * @param {string} semester The name of the semester.
      * @returns {number} The integer code of the semester.
      */
-    const getSemestermAsInt = (semester) => {
-        if (semester === 'fall') {
+    const getSemesterAsInt = (semester) => {
+        if (semester === 'Fall') {
             return 4;
-        } else if (semester === 'summer') {
+        } else if (semester === 'Summer') {
             return 3;
-        } else if (semester === 'spring') {
+        } else if (semester === 'Spring') {
             return 2;
         } else {
             return 1; // winter
@@ -88,37 +45,32 @@ const History = () => {
     useEffect(() => {
         // First, a fetch request is made to retrieve the terms (e.g., Fall 2023, Spring 2024) for which the instructor has courses.
         fetch(
-            process.env.REACT_APP_API_URL + "instructorTermsPost.php",
+            process.env.REACT_APP_API_URL + "getInstructorHistoricalTerms.php",
             {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                    currentYear: getCurrentYear(),
-                    currentSemester: getCurrentSemester(),
-                }),
+                method: "GET",
+                credentials: "include"
             }
         )
             .then((res) => res.json()) // Parsing the response to JSON format.
             .then((result) => { // Handling the parsed JSON data.
                 const all_courses = {} // An object to store courses grouped by their terms.
-
+                const sidebar_data = {} // An object mapping terms to the names of courses in that term
                 // Mapping through each term received from the first API call to fetch courses for those terms.
                 const fetchCourses = result.map((term) => {
-
                     // Constructing a key for each term combining its name and year for easy identification and storage.
-                    const term_key = term.semester.charAt(0).toUpperCase() + term.semester.slice(1) + " " + term.year
+                    const term_key = term.semester + " " + term.year
                     all_courses[term_key] = []
+                    sidebar_data[term_key] = []
                     return fetch(
-                        process.env.REACT_APP_API_URL + "instructorCoursesInTerm.php",
+                        process.env.REACT_APP_API_URL + "getInstructorCoursesInTerm.php",
                         {
                             method: "POST",
+                            credentials: "include",
                             headers: {
                                 "Content-Type": "application/x-www-form-urlencoded",
                             },
                             body: new URLSearchParams({
-                                semester: getSemestermAsInt(term.semester),
+                                semester: getSemesterAsInt(term.semester),
                                 year: parseInt(term.year),
                             }),
                         }
@@ -126,19 +78,18 @@ const History = () => {
                         .then((res2) => res2.json())
                         .then((result2) => {
                             all_courses[term_key].push(...result2)
+                            sidebar_data[term_key] = result2.map((course) => course.code)
                         })
                         .catch(err => {
                             console.log(err)
                         })
 
                 });
-
+                // Create a single promise that resolves only after each term is completed
                 Promise.all(fetchCourses)
                     .then(() => {
-
-                        const courses_only = Object.values(all_courses).flat(); // Update the terms state with all terms and courses
                         setTerms(all_courses)
-                        setCourses(courses_only); // Update the courses state with all courses
+                        setSidebarContent(sidebar_data);
                     })
                     .catch(err => {
                         console.log(err);
@@ -150,12 +101,6 @@ const History = () => {
                 console.log(err)
             })
     }, []);
-
-    // Prepare content for the Sidebar component
-    const sidebar_content = {
-        Terms: Object.entries(terms).length > 0 ? Object.fromEntries(Object.entries(terms)) : [],
-        Courses: courses.length > 0 ? courses.map((course) => course.code) : [],
-    };
 
   return (
     <>
