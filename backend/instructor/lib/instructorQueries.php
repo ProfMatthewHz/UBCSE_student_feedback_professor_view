@@ -1,4 +1,25 @@
 <?php
+function getAllInstructorIds($con) {
+  $ret_val = array();
+  $result = $con->query("SELECT id FROM instructors");
+  while ($row = $result->fetch_array()) {
+    $ret_val[] = $row[0];
+  }
+  return $ret_val;
+}
+
+function getAllOtherInstructorsFull($con, $instructor_id) {
+  $ret_val = array();
+  $result = $con->query("SELECT * FROM instructors");
+  while ($row = $result->fetch_assoc()) {
+    if ($row['id'] != $instructor_id) {
+        $instructor = array($row['id'], $row['name'], $row['email']);
+        $ret_val[] = $instructor;
+    }
+  }
+  return $ret_val;
+}
+
 function getInstructorId($con, $email) {
   // Pessimistically assume that this fails
   $retVal = 0;

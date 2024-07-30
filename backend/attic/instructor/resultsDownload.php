@@ -93,7 +93,7 @@ if ($_POST['type'] === 'individual') {
   $results = getRawResults($teammates, $scores, $topics, $reviewers, $team_data);
   $filename = 'survey-' . $survey_id . '-raw-results.csv';
 } else {
-  $results = getFinalResults($teammates, $scores, $topics, $team_data);
+  $results = getNormalizedResults($teammates, $scores, $topics, $team_data);
   $filename = 'survey-' . $survey_id . '-normalized-averages.csv';
 }
 // Now output the results

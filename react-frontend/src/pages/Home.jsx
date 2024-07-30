@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import SideBar from "../Components/Sidebar";
 import "../styles/home.css";
 import Course from "../Components/Course";
 
 const Home = () => {
   const [courses, setCourses] = useState([]);
+  const [sidebar_content, setSidebarContent] = useState({});
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -17,26 +18,25 @@ const Home = () => {
     const month = date.getMonth(); // 0 for January, 1 for February, etc.
     const day = date.getDate();
 
-    // Summer Sessions (May 30 to Aug 18)
+    // Summer Sessions (May 23 to Aug 18)
     if (
-      (month === 4 && day >= 30) ||
+      (month === 4 && day >= 23) ||
       (month > 4 && month < 7) ||
       (month === 7 && day <= 18)
     ) {
       return 3; // Summer
     }
 
-    // Fall Semester (Aug 28 to Dec 20)
+    // Fall Semester (Aug 19 to Dec 31)
     if (
-      (month === 7 && day >= 28) ||
-      (month > 7 && month < 11) ||
-      (month === 11 && day <= 20)
+      (month === 7 && day > 18) ||
+      (month > 7 && month <= 11)
     ) {
       return 4; // Fall
     }
 
-    // Winter Session (Dec 28 to Jan 19)
-    if ((month === 11 && day >= 28) || (month === 0 && day <= 19)) {
+    // Winter Session (Jan 1 to Jan 23)
+    if (month === 0 && day <= 23) {
       return 1; // Winter
     }
 
@@ -44,11 +44,12 @@ const Home = () => {
     return 2; // Spring
   };
 
-  const fetchCourses = () => {
+  const fetchCourses = useCallback(() => {
     fetch(
-      process.env.REACT_APP_API_URL + "instructorCoursesInTerm.php",
+      process.env.REACT_APP_API_URL + "getInstructorCoursesInTerm.php",
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
@@ -65,16 +66,18 @@ const Home = () => {
       .catch((err) => {
         console.log(err);
       });
-  };
+  }, []);
 
   useEffect(() => {
     fetchCourses()
-  }, []);
-
-  const sidebar_content = {
-    Courses: courses ? courses.map((course) => course.code) : [],
-  };
-
+  }, [fetchCourses]);
+  
+  useEffect(() => {
+    setSidebarContent({
+      Courses: courses.length > 0 ? courses.map((course) => course.code) : [],
+    })
+  }, [courses]);
+  
   return (
     <>
       <SideBar route="/" content_dictionary={sidebar_content} getCourses={fetchCourses} />

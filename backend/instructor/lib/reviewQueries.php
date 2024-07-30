@@ -1,28 +1,4 @@
 <?php
-
-function getReviewPairingsData($con, $survey_id) {
-  $stmt = $con->prepare('SELECT reviewer.email reviewer_email, reviewer.name reviewer_name, reviewed.email reviewed_email, reviewed.name reviewed_name
-                         FROM reviews
-                         INNER JOIN students reviewer ON reviews.reviewer_id=reviewer.id
-                         INNER JOIN students reviewed ON reviews.reviewed_id=reviewed.id
-                         WHERE survey_id=?
-                         ORDER BY reviews.id');
-  $stmt->bind_param('i', $survey_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $retVal = $result->fetch_all(MYSQLI_ASSOC);
-  $stmt->close();
-  return $retVal;
-}
-
-function removeExistingPairings($con, $survey_id) {
-  $stmt = $con->prepare('DELETE FROM reviews WHERE survey_id=?');
-  $stmt->bind_param('i', $survey_id);
-  $retVal = $stmt->execute();
-  $stmt->close();
-  return $retVal;
-}
-
 function getReviewsForSurvey($con, $survey_id) {
   // Get the pairings used in the original survey 
   $retVal = array();

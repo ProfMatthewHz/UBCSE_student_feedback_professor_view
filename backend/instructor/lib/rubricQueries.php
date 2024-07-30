@@ -50,7 +50,7 @@ function insertRubricResponse($con, $topic_id, $level_id, $response) {
   return $ret_val;
 }
 
-function getRubrics($con) {
+function getRubrics($con, $instructor_id) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT id, description FROM rubrics');
   $stmt->execute();
@@ -144,7 +144,6 @@ function getRubricData($con, $rubric_id) {
   $ret_val = array();
   $rubric_scores = getRubricScores($con, $rubric_id);
   $ret_val["scores"] = $rubric_scores;
-  // $rubric_topics = getRubricTopics($con, $rubric_id, $rubric_scores);
   $rubric_topics = getRubricTopics($con, $rubric_id);
   $ret_val["topics"] = $rubric_topics;
   return $ret_val;
@@ -153,13 +152,14 @@ function getRubricData($con, $rubric_id) {
 function countRubricNames($con, $rubric_name){
   // find starts with
   $rubric_name = $rubric_name.'%';
-  $stmt = $con->prepare('SELECT id FROM rubrics WHERE description LIKE ?');
+  $stmt = $con->prepare('SELECT COUNT(id) FROM rubrics WHERE description LIKE ?');
   $stmt->bind_param('s', $rubric_name);
   $stmt->execute();
   $result = $stmt->get_result();
-  $retVal = $result->num_rows;
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $retVal = $row[0];
+  }
   $stmt->close();
   return $retVal;
 }
-
 ?>

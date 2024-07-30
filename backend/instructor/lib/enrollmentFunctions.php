@@ -16,12 +16,6 @@ function breakoutRosters($old_roster, $new_roster) {
       $ret_val["remaining"][$email] = $name_and_id;
     }
   }
-  // foreach ($ret_val as $key => $value) {
-  //   echo $key . "\n";
-  //   foreach ($value as $email => $name) {
-  //     echo $key ." " . $email . "\n";
-  //   }
-  // }
   return $ret_val;
 }
 

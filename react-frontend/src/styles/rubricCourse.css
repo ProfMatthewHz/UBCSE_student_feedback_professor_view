@@ -173,130 +173,12 @@ select.surveyactions--select {
   color: #123e81;
 }
 
-.CancelContainer {
-  margin-bottom: 30px;
-}
-
-.CancelContainer .CancelButton {
-    background-color: rgba(0,0,0,0);
-    color: #225cb5;
-    text-decoration: none;
-    text-align: center;
-    font-size: 30px;
-    font-weight: bold;
-    position: absolute;
-    padding: 6px 16px;
-    right: 0;
-    top: 0;
-    border-radius: 0px 5px 0px 0px;
-    border-style: none;
-}
-
-.CancelContainer .CancelButton:hover {
-  cursor: pointer;
-}
-
-/* FOR UPDATE ROSTER BUTTON */
-/* Modal overall container */
-.update-modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
-  z-index: 1000; /* make sure it appears above other elements */
-}
-
-/* Modal content container */
-.update-modal-content {
-  position: relative;
-  max-width: 70%;
-  width: 600px;
-  padding: 20px 40px 20px 40px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* FORM */
-.update-form__item {
-  margin-bottom: 20px;
-  margin-top: 20px;
-}
-
-.update-cancel-btn {
-  background-color: #fff !important;
-  border: 1px solid #990000 !important;
-  color: #990000 !important;
-  text-decoration: none;
-  margin-right: 12px;
-  text-align: center;
-}
-
-.update-form__submit {
-  background-color: #6da04b !important;
-  border: 1px solid #6da04b !important;
-  color: #fff !important;
-}
-
 .form__submit--container {
   display: flex;
   align-items: center;
   justify-content: end;
 }
 
-.update-form__submit:hover {
-  background-color: #59863d !important;
-  cursor: pointer;
-}
-
-.update-form__submit:active {
-  border-color: #225cb5 !important;
-  color: #225cb5 !important;
-}
-
-.update-cancel-btn:active,
-.update-cancel-btn:hover {
-  background-color: #990000 !important;
-  color: #fff !important;
-}
-
-.update-cancel-btn:hover {
-  cursor: pointer;
-}
-
-.update-cancel-btn,
-.update-form__submit {
-  border-radius: 5px;
-  font-weight: 500;
-  padding: 9px 18px;
-  font-size: 16px;
-  transition: all 200ms ease;
-}
-
-/* Style for the wrapper */
-.update-file-input-wrapper {
-  position: relative;
-  border-bottom: 2px solid #225cb5;
-}
-
-.update-file-input-wrapper div {
-  margin-bottom: 8px;
-  margin-top: 8px;
-}
-
-/* Hide the default input */
-.updateroster-file-input {
-  border: 1.5px solid #225cb5;
-  border-radius: 5px;
-  color: #000;
-  font-size: 16px;
-  padding: 10px;
-}
 
 /* Custom styling for the button */
 .custom-file-label {
@@ -315,27 +197,6 @@ select.surveyactions--select {
   color: #000;
 }
 
-/* Radio Buttons */
-.update-radio-options {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 25px;
-}
-
-.update-radio--label {
-  margin-bottom: 0 !important;
-  font-size: 18px !important;
-}
-
-.update-radio--label:hover {
-  cursor: pointer;
-}
-
-.update-radio-button--item {
-  display: flex;
-  align-items: center;
-}
 .p-radiobutton .p-radiobutton-box.p-highlight {
   background: #225cb5;
   border-color: #225cb5;

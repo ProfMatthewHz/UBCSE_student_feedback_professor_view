@@ -77,28 +77,6 @@ p.add-course--error {
   margin-bottom: 0 !important;
 }
 
-label.form__item--label {
-  color: #225cb5;
-  display: flex;
-  flex-direction: column;
-  font-size: 16px;
-  font-weight: bold;
-  gap: 5px;
-  margin: 0 !important;
-  width: 100%;
-}
-
-.add__form .form__item input {
-  border: solid 1.5px #225cb5;
-  border-radius: 5px;
-  color: #000;
-  font-size: 16px;
-  padding: 10px;
-}
-
-.add__form .form__item input::placeholder {
-  color: #666666;
-}
 
 .add__form .form__item input:hover {
   border-color: #225cb5;
@@ -198,15 +176,6 @@ label.form__item--file input::file-selector-button {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
   z-index: 1000; /* make sure it appears above other elements */
-}
-
-/* Modal content container */
-.modal-content {
-  width: 500px;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Modal button */

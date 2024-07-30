@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/addrubric.css";
 
-const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) => {
-
+const AddRubric = ({ updateRubrics, handleCloseModal, duplicatedRubricData }) => {
 
   // IMPORTANT: rubricData contains all the data collected from each modal
   const [rubricData, setRubricData] = useState({});
@@ -253,7 +252,6 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
    * Handles the click of the next button.
    */
   const handleNextButton = async () => {
-
     if (showCreateLevelsModal) {
       let errors = await fetchRubricErrors("rubricInitialize.php");
 
@@ -272,11 +270,10 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
         setShowPreviewModal(true);
       }
     } else {
-      let errors = await fetchSaveRubric();
+      await fetchSaveRubric();
       setShowPreviewModal(false);
-      getRubrics();
-      handleAddRubricModal(false);
-
+      updateRubrics();
+      handleCloseModal(false);
     }
   };
 
@@ -292,6 +289,7 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
         process.env.REACT_APP_API_URL + filename,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -317,10 +315,11 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
    */
   const fetchSaveRubric = async () => {
     try {
-      const response = await fetch(
+      const response = fetch(
         process.env.REACT_APP_API_URL + "rubricConfirm.php",
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
@@ -329,15 +328,15 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
           }),
         }
       );
-
-      return
+      const result = await response.json();
+      console.log(result);
+      return result;
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-
     if (duplicatedRubricData) { // + Duplicate Rubric
       setRubricData(duplicatedRubricData)
     } else { // + Add Rubric
@@ -375,7 +374,7 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
       setRubricData({ name: "", levels: defaultLevels, topics: defaultCriterions })
     }
 
-  }, [])
+  }, [duplicatedRubricData]);
 
   /**
    * Handles the click of the close button.
@@ -467,6 +466,7 @@ const AddRubric = ({ getRubrics, handleAddRubricModal, duplicatedRubricData }) =
                           required
                           type="number"
                           value={level["score"]}
+                          min="0"
                         />
                         pts
                       </div>

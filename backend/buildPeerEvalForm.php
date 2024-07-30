@@ -11,19 +11,16 @@ require "lib/surveyQueries.php";
 require "lib/scoreQueries.php";
 
 header('Content-Type: application/json');
+
+if(!isset($_SESSION['student_id']) || !isset($_SESSION['mc_answers'])) {
+    http_response_code(400);
+    echo json_encode(array('error' => 'Bad request: Request only valid from within app'));
+    exit();
+}
+
 $responseArray = [];
 $id = $_SESSION['student_id'];
 $con = connectToDatabase();
-
-if(!isset($_SESSION['student_id'])) {
-    header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/backend/unified_fake_Shibboleth.php");
-    exit();
-}
-
-if(!isset($_SESSION['mc_answers'])) {
-    header("Location: ". "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/backend/unified_fake_Shibboleth.php");
-    exit();
-}
 
 /* expected response :
 review_id -> x,
@@ -37,14 +34,14 @@ review_id -> x,
     ]
 */
 
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+    $postData = json_decode(file_get_contents('php://input'), true);
+}
 //When submit button is pressed
-$postData = json_decode(file_get_contents('php://input'), true);
-
 if (!empty($postData)) {
-
     if (!isset($postData['review_id'], $postData['responses'])) {
-        http_response_code(400);
-        $responseArray[] = "Bad Request: Missing POST parameters";
+        http_response_code(403);
+        echo json_encode(array('error' => 'Bad request: Missing required POST data'));
         exit();
     }
 
@@ -83,7 +80,7 @@ if (!empty($postData)) {
 
         if ($score_id == -1) {
             http_response_code(400);
-            $responseArray[] = "Bad Request: score text doesnt correspond to a valid score_id";
+            echo json_encode(array('error' => 'Bad request: Request only valid from within app'));
             exit();
         }
 
@@ -96,8 +93,6 @@ if (!empty($postData)) {
         }
 
     }
-
-
 }
 
 

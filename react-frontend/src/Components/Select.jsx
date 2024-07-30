@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import styles from "../styles/select.module.css";
 
-export function Select({multiple, value, onChange, options}) {
+const Select = ({multiple, value, onChange, options}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
     const containerRef = useRef(null);
@@ -122,4 +122,6 @@ export function Select({multiple, value, onChange, options}) {
             </ul>
         </div>
     );
-}
+};
+
+export default Select;

@@ -22,10 +22,10 @@ function handleSurveyQuery($db_connection, $survey_id, $student_id, $student_id_
 // Pessimistically assume this fails
     $ret_val = null;
     $query = 'SELECT DISTINCT courses.name course_name, surveys.name survey_name 
-FROM surveys
-INNER JOIN reviews ON reviews.survey_id = surveys.id 
-INNER JOIN courses on courses.id = surveys.course_id 
-WHERE surveys.id=? AND reviews.'.$student_id_field.'=? AND '.$addl_query;
+              FROM surveys
+              INNER JOIN reviews ON reviews.survey_id = surveys.id 
+              INNER JOIN courses on courses.id = surveys.course_id 
+              WHERE surveys.id=? AND reviews.'.$student_id_field.'=? AND '.$addl_query;
     $stmt = $db_connection->prepare($query);
     $stmt->bind_param('ii', $survey_id, $student_id);
     $stmt->execute();
@@ -41,10 +41,10 @@ WHERE surveys.id=? AND reviews.'.$student_id_field.'=? AND '.$addl_query;
 function getSurveyMultipleChoiceTopics($db_connection, $survey_id) {
     $ret_val = array();
     $query_str = 'SELECT rubric_topics.id, question
-FROM surveys 
-INNER JOIN rubric_topics ON surveys.rubric_id = rubric_topics.rubric_id
-WHERE surveys.id = ? AND rubric_topics.question_response = "'.MC_QUESTION_TYPE.'"
-ORDER BY rubric_topics.id';
+                  FROM surveys 
+                  INNER JOIN rubric_topics ON surveys.rubric_id = rubric_topics.rubric_id
+                  WHERE surveys.id = ? AND rubric_topics.question_response = "'.MC_QUESTION_TYPE.'"
+                  ORDER BY rubric_topics.id';
     $stmt_topics = $db_connection->prepare($query_str);
     $stmt_topics->bind_param('i', $survey_id);
     $stmt_topics->execute();
@@ -59,10 +59,10 @@ ORDER BY rubric_topics.id';
 function getSurveyFreeformTopics($db_connection, $survey_id) {
     $ret_val = array();
     $query_str = 'SELECT rubric_topics.id, question
-FROM surveys 
-INNER JOIN rubric_topics ON surveys.rubric_id = rubric_topics.rubric_id
-WHERE surveys.id = ? AND rubric_topics.question_response = "'.FREEFORM_QUESTION_TYPE.'"
-ORDER BY rubric_topics.id';
+                  FROM surveys 
+                  INNER JOIN rubric_topics ON surveys.rubric_id = rubric_topics.rubric_id
+                  WHERE surveys.id = ? AND rubric_topics.question_response = "'.FREEFORM_QUESTION_TYPE.'"
+                  ORDER BY rubric_topics.id';
     $stmt_topics = $db_connection->prepare($query_str);
     $stmt_topics->bind_param('i', $survey_id);
     $stmt_topics->execute();
@@ -77,10 +77,10 @@ ORDER BY rubric_topics.id';
 function getSurveyMultipleChoiceResponses($db_connection, $topic_id, $include_score) {
     $ret_val = array();
     $query_str = 'SELECT rubric_responses.rubric_score_id, response, score
-FROM rubric_responses
-INNER JOIN rubric_scores ON rubric_scores.id = rubric_responses.rubric_score_id
-WHERE topic_id = ? 
-ORDER BY rubric_responses.rubric_score_id';
+                  FROM rubric_responses
+                  INNER JOIN rubric_scores ON rubric_scores.id = rubric_responses.rubric_score_id
+                  WHERE topic_id = ? 
+                  ORDER BY rubric_responses.rubric_score_id';
     $stmt_responses = $db_connection->prepare($query_str);
     $stmt_responses->bind_param('i', $topic_id);
     $stmt_responses->execute();
@@ -98,11 +98,11 @@ ORDER BY rubric_responses.rubric_score_id';
 
 function createActiveQueryReviewer($con, $date_clause) {
     $sql = 'SELECT courses.name, surveys.name, surveys.id, surveys.start_date, surveys.end_date, COUNT(reviews.id) AS review_count, COUNT(evals.id) AS eval_count
-FROM surveys
-INNER JOIN courses ON courses.id = surveys.course_id 
-INNER JOIN reviews ON reviews.survey_id = surveys.id
-LEFT JOIN evals ON evals.review_id = reviews.id
-WHERE reviews.reviewer_id=?';
+            FROM surveys
+            INNER JOIN courses ON courses.id = surveys.course_id 
+            INNER JOIN reviews ON reviews.survey_id = surveys.id
+            LEFT JOIN evals ON evals.review_id = reviews.id
+            WHERE reviews.reviewer_id=?';
     if (!empty($date_clause)) {
         $sql .= ' AND ' . $date_clause;
     }
@@ -113,11 +113,11 @@ WHERE reviews.reviewer_id=?';
 
 function createClosedQueryReviewer($con, $date_clause) {
     $sql = 'SELECT courses.name, surveys.name, surveys.id, surveys.start_date, surveys.end_date, COUNT(reviews.id) AS review_count, COUNT(evals.id) AS eval_count
-FROM surveys
-INNER JOIN courses ON courses.id = surveys.course_id 
-INNER JOIN reviews ON reviews.survey_id = surveys.id
-LEFT JOIN evals ON evals.review_id = reviews.id
-WHERE reviews.reviewer_id=? AND courses.semester=? AND courses.year=?';
+            FROM surveys
+            INNER JOIN courses ON courses.id = surveys.course_id 
+            INNER JOIN reviews ON reviews.survey_id = surveys.id
+            LEFT JOIN evals ON evals.review_id = reviews.id
+            WHERE reviews.reviewer_id=? AND courses.semester=? AND courses.year=?';
     if (!empty($date_clause)) {
         $sql .= ' AND ' . $date_clause;
     }
@@ -128,11 +128,11 @@ WHERE reviews.reviewer_id=? AND courses.semester=? AND courses.year=?';
 
 function createQueryReviewed($con, $date_clause) {
     $sql = 'SELECT courses.name, surveys.name, surveys.id, surveys.start_date, surveys.end_date, COUNT(evals.id) AS eval_count
-FROM surveys
-INNER JOIN courses ON courses.id = surveys.course_id 
-INNER JOIN reviews ON reviews.survey_id = surveys.id
-LEFT JOIN evals ON evals.review_id = reviews.id
-WHERE reviews.reviewed_id=? AND reviews.reviewer_id<>? AND courses.semester=? AND courses.year=?';
+            FROM surveys
+            INNER JOIN courses ON courses.id = surveys.course_id 
+            INNER JOIN reviews ON reviews.survey_id = surveys.id
+            LEFT JOIN evals ON evals.review_id = reviews.id
+            WHERE reviews.reviewed_id=? AND reviews.reviewer_id<>? AND courses.semester=? AND courses.year=?';
     if (!empty($date_clause)) {
         $sql .= ' AND ' . $date_clause;
     }
@@ -227,30 +227,36 @@ function getUpcomingSurveys($con, $id) {
     return $retVal;
 }
 
+function wasReviewedInSurvey($con, $survey_id, $student_id) {
+    $count = 0;
+    $stmt = $con->prepare('SELECT COUNT(*) FROM reviews WHERE survey_id=? AND reviewed_id=?');
+    $stmt->bind_param('ii', $survey_id, $student_id);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    return $count > 0;
+}
 
-function getCompletionRate($con, $survey_id) {
-
+function getCompletionRate($con, $survey_id, $student_id) {
     $reviewIds = [];
-// get an array of review_ids within reviews table that correspond to survey_id //
-    $sql = "SELECT id FROM reviews WHERE survey_id = ?";
+    // get an array of review_ids within reviews table that correspond to survey_id //
+    $sql = "SELECT id FROM reviews WHERE survey_id = ? AND reviewer_id = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param("i", $survey_id);
+    $stmt->bind_param("ii", $survey_id, $student_id);
     $stmt->execute();
     $result = $stmt->get_result();
-
     while ($row = $result->fetch_assoc()) {
         $reviewIds[] = $row['id'];
     }
-
     $stmt->close();
     $denominator = count($reviewIds);
-
     if ($denominator == 0) {
         return 0;
     }
 
     $numerator = 0;
-// get the number of rows in Evals that have a review id in reviewIDs
+    // get the number of rows in Evals that have a review id in reviewIDs
     $placeholders = implode(',', array_fill(0, count($reviewIds), '?'));
     $sql2 = "SELECT COUNT(*) FROM evals WHERE review_id IN ($placeholders)";
     $stmt2 = $con->prepare($sql2);
@@ -260,13 +266,7 @@ function getCompletionRate($con, $survey_id) {
     $stmt2->bind_result($numerator);
     $stmt2->fetch();
     $stmt2->close();
-
-    if ($numerator == 0) {
-        return 0;
-    }
-
     $compRate = $numerator/$denominator;
     return $compRate;
-
 }
 ?>

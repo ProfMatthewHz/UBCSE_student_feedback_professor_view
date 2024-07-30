@@ -24,7 +24,8 @@ $con = connectToDatabase();
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 if (!isset($_SESSION['id'])) {
   http_response_code(403);
-  echo "Forbidden: You must be logged in to access this page.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 $instructor_id = $_SESSION['id'];
@@ -33,14 +34,16 @@ $instructor_id = $_SESSION['id'];
 $survey_id = NULL;
 if ((!isset($_POST['survey'])) || (!isset($_POST['type']))) {
   http_response_code(400);
-  echo "400: Improper request made.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 
 // make sure the type query is one of the valid types. if not, respond not found
-if ($_POST['type'] !== 'raw-full' && $_POST['type'] !== 'individual' && $_POST['type'] !== 'average') {
+if ($_POST['type'] !== 'raw-full' && $_POST['type'] !== 'individual' && $_POST['type'] !== 'average' && $_POST['type'] !== 'completion') {
   http_response_code(404);
-  echo "404: Not found.";
+  $json_out = json_encode(array("error" => "Unknown request: Request is for unknown results format."));
+  echo $json_out;
   exit();
 }
 
@@ -49,7 +52,8 @@ $survey_id = intval($_POST['survey']);
 
 if ($survey_id === 0) {
   http_response_code(404);
-  echo "404: Not found.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 
@@ -57,43 +61,54 @@ if ($survey_id === 0) {
 $survey_info = getSurveyData($con, $survey_id);
 if (empty($survey_info)) {
   http_response_code(404);
-  echo "404: Not found.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 
 // make sure the survey is for a course the current instructor actually teaches
 if (!isCourseInstructor($con, $survey_info['course_id'], $instructor_id)) {
   http_response_code(403);
-  echo "403: Forbidden.";
+  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
+  echo $json_out;
   exit();
 }
 
-// Retrieves the ids, names, & emails of everyone who was reviewed in this survey.
-$teammates = getReviewedData($con, $survey_id);
-
-// Get the survey results organized by the student being reviewed since this is how we actually do our calculations
-$scores = getSurveyScores($con, $survey_id, $teammates);
-
-// Averages only exist for multiple-choice topics, so that is all we get for now
-$topics = getSurveyMultipleChoiceTopics($con, $survey_id);
-
-// Retrieves the ids, names, & emails of everyone who was a reviewer in this survey.
-$reviewers = getReviewerData($con, $survey_id);
-
-// Retrieves the per-team records organized by reviewer
-$team_data = getReviewerPerTeamResults($con, $survey_id);
-
-$results = NULL;
-// now generate the raw scores output
-if ($_POST['type'] === 'individual') {
-  $results = getIndividualsAverages($teammates, $scores, $topics);
-} else if ($_POST['type'] === 'raw-full') {
-  $results = getRawResults($teammates, $scores, $topics, $reviewers, $team_data);
+// Check if we are just getting survey completion data
+if ($_POST['type'] === 'completion') {
+  $results = getReviewerCompletionResults($con, $survey_id);
+  $json_encode = json_encode($results);
+  echo $json_encode;
+  exit();
 } else {
-  $results = getFinalResults($teammates, $scores, $topics, $team_data);
+  // Retrieves he ids, names, & emails of everyone who was reviewed in this survey.
+  $teammates = getReviewedData($con, $survey_id);
+
+  // Get the survey results organized by the student being reviewed since this is how we actually do our calculations
+  $scores = getSurveyScores($con, $survey_id, $teammates);
+
+  // Averages only exist for multiple-choice topics, so that is all we get for now
+  $topics = getSurveyMultipleChoiceTopics($con, $survey_id);
+
+  // Retrieves the ids, names, & emails of everyone who was a reviewer in this survey.
+  $reviewers = getReviewerData($con, $survey_id);
+
+  // Retrieves the per-team records organized by reviewer
+  $team_data = getReviewerPerTeamResults($con, $survey_id);
+
+  $results = NULL;
+  // now generate the raw scores output
+  if ($_POST['type'] === 'individual') {
+    $results = getIndividualsAverages($teammates, $scores, $topics);
+  } else if ($_POST['type'] === 'raw-full') {
+    $results = getRawResults($teammates, $scores, $topics, $reviewers, $team_data);
+  } else {
+    $views = getReviewerResultReviewsCount($con, $survey_id);
+    $results = getNormalizedResults($teammates, $scores, $topics, $team_data, $views);
+  }
+  // Now output the results
+  header("Content-Type: application/json; charset=UTF-8");
+  $json_results = json_encode($results);
+  echo $json_results;
 }
-// Now output the results
-header("Content-Type: application/json; charset=UTF-8");
-$json_results = json_encode($results);
-echo $json_results;
 ?>

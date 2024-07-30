@@ -27,34 +27,31 @@ if (!isset($_SESSION['id'])) {
 }
 $instructor_id = $_SESSION['id'];
 
-$response = array();
-// will be the response to return, depending on HTTP request
+$ret_val = array();
 
 # get all rubrics and return json
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    $rubrics = getRubrics($con);
-
-    $rubrics_array = array();
-    foreach ($rubrics as $id => $desc) {
-        $single_rubric = array("id" => $id, "description" => $desc);
-        $rubrics_array[] = $single_rubric;
+    $rubrics = getRubrics($con, $instructor_id);
+    if (count($rubrics) == 0) {
+        $ret_val["error"] = "There are no rubrics! Please add one.";
+    } else {
+        $ret_val["rubrics"] = array();
+        foreach ($rubrics as $id => $desc) {
+          $single_rubric = array("id" => $id, "description" => $desc);
+          $ret_val["rubrics"][] = $single_rubric;
+        }
     }
-    unset($id, $desc);
 
     header("Content-Type: application/json; charset=UTF-8");
-    $response = $rubrics_array;
-    $responseJSON = json_encode($response);
+    $responseJSON = json_encode($ret_val);
     echo $responseJSON;
-
 	exit();
-
-    
 }
 
 # post the rubric-id
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $response['data'] = array();
-    $response['errors'] = array();
+    $ret_val['data'] = array();
+    $ret_val['errors'] = array();
 
 
     if (!isset($_POST['rubric-id'])) {
@@ -64,31 +61,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	}
 
     $rubric_id = $_POST['rubric-id'];
-    $rubrics = getRubrics($con);
+    $rubrics = getRubrics($con, $instructor_id);
     if (!array_key_exists($rubric_id, $rubrics)) {
-
-        $response['errors']['rubric'] = "Please choose a valid rubric.";
-
+        $ret_val['errors']['rubric'] = "Please choose a valid rubric.";
     }
 
-    if (empty($response['errors'])){
+    if (empty($ret_val['errors'])){
 		// no errors, grab data
-
         $rubric_name = getRubricName($con, $rubric_id);
         $rubric_scores = getRubricScores($con, $rubric_id);
         $rubric_topics = getRubricTopics($con, $rubric_id);
-
 		$rubric_data = format_rubric_data($rubric_name, $rubric_scores, $rubric_topics);
-
-        $response['data'] = $rubric_data;
+        $ret_val['data'] = $rubric_data;
     
     }
 
     header("Content-Type: application/json; charset=UTF-8");
-    $responseJSON = json_encode($response, JSON_ENCODE_OPTIONS);
+    $responseJSON = json_encode($ret_val, JSON_ENCODE_OPTIONS);
     echo $responseJSON;
 	exit();
-
 }
-
 ?>

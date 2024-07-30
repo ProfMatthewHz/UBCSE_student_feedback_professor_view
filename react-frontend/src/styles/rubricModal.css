@@ -31,6 +31,7 @@
   z-index: 1000; /* make sure it appears above other elements */
   background: #333;
 }
+
 .input-wrapper1 {
   font-family: Arial, sans-serif;
   width: 48%;
@@ -109,16 +110,6 @@ label {
   z-index: 1000; /* make sure it appears above other elements */
 }
 
-/* Modal content container */
-.modal-content {
-  width: 90%;
-  max-height: fit-content;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
-}
 .CancelButton{
   color:#ffffff;
   background-color: transparent;
@@ -181,18 +172,6 @@ label {
   background-color: #f2f2f2;
 }
 
-.empty-view {
-  text-align: center;
-  font-size: 20px;
-  color: grey;
-  margin: 10px;
-  padding: 20px;
-}
-caption {
-  font-weight: bold;
-  margin-bottom: 10px;
-  font-size: larger;
-}
 .title-barConfirm {
   display: flex;
   justify-content: center; /* Center the items horizontally */
