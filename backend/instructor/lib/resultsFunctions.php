@@ -68,11 +68,11 @@ function getNormalizedResults($teammates, $scores, $topics, $team_data, $views) 
   // Then add one row per student who was reviewed
   foreach ($teammates as $id => $name_and_email) {
     if (!array_key_exists($name_and_email['email'], $views)) {
-      $views = 0;
+      $counts = 0;
     } else {
-      $views = $views[$name_and_email['email']];
+      $counts = $views[$name_and_email['email']];
     }
-    $line = array($name_and_email['name'], $name_and_email['email'], $overall[$id], $views);
+    $line = array($name_and_email['name'], $name_and_email['email'], $overall[$id], $counts);
     $ret_val[] = $line;
   }
   return $ret_val;
