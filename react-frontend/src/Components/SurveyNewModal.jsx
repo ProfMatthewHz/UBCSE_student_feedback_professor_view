@@ -42,7 +42,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       case 'Single Pairs':
         setPairingImage(SinglePairs);
         break;
-      case 'MANAGER':
+      case 'PM':
         setPairingImage(PM);
         break;
       default:
@@ -347,7 +347,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                 id="pairing-mode"
               >
                 {pairing_modes.map((pairing) => (
-                  <option className="pairing-option" value={pairing.id}>{pairing.description}</option>
+                  <option className="pairing-option" value={pairing.id}>{pairing.text}</option>
                 ))}
               </select>
             </div>
