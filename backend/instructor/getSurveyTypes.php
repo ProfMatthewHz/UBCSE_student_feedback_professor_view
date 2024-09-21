@@ -41,7 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $desc = $surveyTypeInfo[0];
             $file_org = $surveyTypeInfo[1];
             $display_mult = $surveyTypeInfo[2];
-            $retVal["survey_types"][] = array("id" => $surveyTypeId, "description" => $desc, "file_organization" => $file_org, "usesMultiplier" => ($display_mult===1));
+            $text = $surveyTypeInfo[3];
+            $retVal["survey_types"][] = array("id" => $surveyTypeId, "text" => $text ,"description" => $desc, "file_organization" => $file_org, "usesMultiplier" => ($display_mult===1));
         }
     }
     header("Content-Type: application/json; charset=UTF-8");

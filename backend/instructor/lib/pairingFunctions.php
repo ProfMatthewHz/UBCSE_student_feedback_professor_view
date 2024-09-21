@@ -1,14 +1,14 @@
 <?php
 function getSurveyTypes($con) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT id, description, file_organization, display_multiplier
+  $stmt = $con->prepare('SELECT id, description, file_organization, display_multiplier, text
                          FROM survey_types
                          ORDER BY id');
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
     $key = $row[0];
-    $ret_val[$key] = array($row[1], $row[2], $row[3]);
+    $ret_val[$key] = array($row[1], $row[2], $row[3], $row[4]);
   }
   $stmt->close();
   return $ret_val;

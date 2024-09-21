@@ -7,14 +7,8 @@ import "primereact/resources/primereact.min.css";
 import BarChart from "./Barchart";
 import "../styles/viewresults.css";
 
-const ViewResults = ({
-                        closeViewResultsModal,
-                        surveyToView,
-                        course,
-                     }) => {
+const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
     /* Viewing Types of Survey Results */
-   
-
     const [rawSurveysHeaders, setRawSurveysHeaders] = useState(null); // For Raw Results
     const [rawSurveys, setRawSurveys] = useState(null); // For Raw Results
     const [showNormalizedSurveyResults, setShowNormalizedSurveyResults] = useState(null); // For Normalized Results
@@ -379,9 +373,7 @@ useEffect(() => {
                                             header={header}
                                             sortable
                                             style={{width: `${100 / normalizedTableHeaders.length}%`}}
-                                        ></Column> 
-                                        // TODO: Add another column here for feedback count
-                                        
+                                        ></Column>
                                     );
                                 })}
                             </DataTable>
