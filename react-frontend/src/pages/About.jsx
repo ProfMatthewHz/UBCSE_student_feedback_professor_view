@@ -28,7 +28,7 @@ const About = () => {
       <div className="about-page--individual-team-container">
         <h1>Development Team</h1>
         <div className="about-page--team-info">
-          <h1>Fall 2023</h1>
+          <h1>2023 - 2024</h1>
             <div className="about-page--team-members">
                 <div className="about-page--profile">
                     <img src={AriannaPFP} alt="Arianna"/>

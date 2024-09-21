@@ -36,7 +36,7 @@ function getRawResults($teammates, $scores, $topics, $reviewers, $team_data) {
   foreach ($topics as $question) {
     $header[] = $question;
   }
-  $header[] = "Normalized Total";
+  $header[] = "Norm. Avg.";
   $ret_val[] = $header;
 
   // Then add one row per student who was reviewed
@@ -62,7 +62,7 @@ function getNormalizedResults($teammates, $scores, $topics, $team_data, $views) 
   $ret_val = array();
 
   // Create the header row
-  $header = array("Name", "Email", "Normalized Average", "Feedback Views");
+  $header = array("Name", "Email", "Norm. Avg.", "Feedback Views");
   $ret_val[] = $header;
 
   // Then add one row per student who was reviewed

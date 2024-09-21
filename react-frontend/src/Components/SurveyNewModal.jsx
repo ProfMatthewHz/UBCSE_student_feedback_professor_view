@@ -63,7 +63,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
   const handleChangePairing = (e) => {
     let pairing = parseInt(e.target.value);
     let pairingMode = findPairingData(pairing, pairing_modes);
-    handleUpdateImage(pairingMode.description);
+    handleUpdateImage(pairingMode.text);
     setValuePairing(pairing);
     setUseMultiplier(pairingMode.usesMultiplier);
   };
