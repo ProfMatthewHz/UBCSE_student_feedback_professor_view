@@ -122,13 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // We can open the file, so lets start setting up the header
   header("Content-Type: application/json; charset=UTF-8");
   // Now lets dump the data we found
-  if (isset($ret_val['error']) && $ret_val['error'] === "") {
-    //echo "Success \n ";
-    $myJSON = json_encode($ret_val);
-  } else {
-    $myJSON = json_encode($ret_val);
-  echo $myJSON;
-  }
- 
+  $myJSON = json_encode($ret_val);
+  echo $myJSON; 
 }
 ?>
