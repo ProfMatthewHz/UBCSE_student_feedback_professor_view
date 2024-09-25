@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Bad Request: Missing parameters.";
         exit();
     }
-    setSessionVariables($email);
+    setSessionVariables($_POST["UBIT"]);
     
     if (!empty($_SESSION['redirect'])) {
         http_response_code(302);

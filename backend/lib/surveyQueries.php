@@ -241,31 +241,19 @@ function wasReviewedInSurvey($con, $survey_id, $student_id) {
 function getCompletionRate($con, $survey_id, $student_id) {
     $reviewIds = [];
     // get an array of review_ids within reviews table that correspond to survey_id //
-    $sql = "SELECT id FROM reviews WHERE survey_id = ? AND reviewer_id = ?";
+    $sql = "SELECT COUNT(reviews.id) reviews, COUNT(evals.id) completed
+            FROM reviews
+            LEFT JOIN evals ON reviews.id = evals.review_id
+            WHERE survey_id = ? AND reviewer_id = ?";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("ii", $survey_id, $student_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $reviewIds[] = $row['id'];
+    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+        $denominator = $row['reviews'];
+        $numerator = $row['completed'];
     }
     $stmt->close();
-    $denominator = count($reviewIds);
-    if ($denominator == 0) {
-        return 0;
-    }
-
-    $numerator = 0;
-    // get the number of rows in Evals that have a review id in reviewIDs
-    $placeholders = implode(',', array_fill(0, count($reviewIds), '?'));
-    $sql2 = "SELECT COUNT(*) FROM evals WHERE review_id IN ($placeholders)";
-    $stmt2 = $con->prepare($sql2);
-    $types = str_repeat('i', count($reviewIds));
-    $stmt2->bind_param($types, ...$reviewIds);
-    $stmt2->execute();
-    $stmt2->bind_result($numerator);
-    $stmt2->fetch();
-    $stmt2->close();
     $compRate = $numerator/$denominator;
     return $compRate;
 }

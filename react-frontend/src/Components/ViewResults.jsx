@@ -27,14 +27,9 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
      * @returns {*}
      */
     const mapHeadersToValues = (headers, values) => {
-        // Capitalize headers
-        const capitalizedHeaders = headers.map(
-            (header) => header.charAt(0).toUpperCase() + header.slice(1).toLowerCase()
-        );
-
-        return values.map((row) => {
+          return values.map((row) => {
             return row.reduce((obj, value, index) => {
-                obj[capitalizedHeaders[index]] = value;
+                obj[headers[index]] = value;
                 return obj;
             }, {});
         });
@@ -243,7 +238,7 @@ useEffect(() => {
                         Individual Results
                     </button>
                 </div>
-                {surveyType === "raw-full" && rawSurveys ? (
+                {surveyType === "raw-full" && rawSurveys && rawSurveys.length > 0 ? (
                 <div>
                     <div className="viewresults-modal--other-button-container">
                         <div className="viewresults-modal--download-button">
@@ -282,7 +277,7 @@ useEffect(() => {
                             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                             emptyMessage="No results found"
                         >
-                            {Object.keys(rawSurveys[0]).map((header) => {
+                            {rawSurveysHeaders.map((header) => {
                                 return header === "Reviewee name (email)" ||
                                 header === "Reviewer name (email)" ? (
                                     <Column
