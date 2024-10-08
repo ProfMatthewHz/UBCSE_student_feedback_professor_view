@@ -32,7 +32,7 @@ function getRawResults($teammates, $scores, $topics, $reviewers, $team_data) {
   $ret_val = array();
 
   // Create the header row
-  $header = array("Reviewee Name (email)", "Reviewer Name (email)");
+  $header = array("Reviewee name (email)", "Reviewer name (email)");
   foreach ($topics as $question) {
     $header[] = $question;
   }
