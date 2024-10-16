@@ -7,14 +7,14 @@ import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 import "../styles/modal.css";
 import "../styles/addsurvey.css";
 
-const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pairing_modes, rubrics_list }) => {
+const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pairing_modes, rubric_id, rubrics_list }) => {
   const [surveyName, setSurveyName] = useState(survey_data.survey_name);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [csvFile, setCsvFile] = useState(null);
-  const [rubric, setRubric] = useState(rubrics_list[0].id);
+  const [rubric, setRubric] = useState(rubric_id);
   const [valuePairing, setValuePairing] = useState("2");
   const [multiplier, setMultiplier] = useState("1");
   const [useMultipler, setUseMultiplier] = useState(false);
@@ -333,8 +333,10 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               onChange={(e) => setRubric(e.target.value)}
               id="rubric-type"
             >
-              {rubrics_list.map((rubric) => (
-                <option value={rubric.id}>{rubric.description}</option>
+              {rubrics_list.map((rubric_info) => (
+                (rubric === rubric_info.id) ?
+                <option value={rubric_info.id} selected>{rubric_info.description}</option> :
+                <option value={rubric_info.id}>{rubric_info.description}</option>
               ))}
             </select>
           </label>
