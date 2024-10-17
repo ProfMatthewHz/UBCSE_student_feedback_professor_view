@@ -51,14 +51,8 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
             })
                 .then((res) => res.json())
                 .then((result) => {
-                    const completedCSVLines = [["Name", "Email", "Completion Status"]];
-                    for (let dict of result) {
-                        const name = dict["name"];
-                        const email = dict["email"];
-                        const completed = dict["completed"];
-                        const row = [name, email, completed];
-                        completedCSVLines.push(row);
-                    }
+                    const completedCSVLines = result.map((dict) => {return [dict["name"], dict["email"], dict["completed"]]});
+                    completedCSVLines.unshift(["Name", "Email", "Completion Status"]);
                     setCompletionCSVData(completedCSVLines);
                 })
                 .catch((err) => {
@@ -106,7 +100,7 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
             }),
         })
             .then((res) => res.json())
-            .then((result) => {                    
+            .then((result) => {
                 setRawSurveysHeaders(result[0]);
                 const mappedResults = mapHeadersToValues(result[0], result.slice(1));
                 setRawSurveys(mappedResults);
@@ -135,6 +129,7 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
         })
             .then((res) => res.json())
             .then((result) => {
+                const tableHeaders = result[0];
                 if (result.length > 1) {
                     const results_without_headers = result.slice(1);
                     const maxValue = Math.max(
@@ -168,13 +163,13 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
                     labels.unshift(["Normalized Averages", "Number of Students"]);
                     
                     const mappedNormalizedResults = mapHeadersToValues(
-                        result[0],
+                        tableHeaders,
                         results_without_headers
                     );
+                    setNormalizedTableHeaders(tableHeaders)
                     setNormalizedCSVData(result);
                     setShowNormalizedSurveyResults(labels);
                     setNormalizedResults(mappedNormalizedResults);
-                    setNormalizedTableHeaders(result[0]);  
                 } else {
                     setShowNormalizedSurveyResults(true);
                 }
@@ -238,7 +233,7 @@ useEffect(() => {
                         Individual Results
                     </button>
                 </div>
-                {surveyType === "raw-full" && rawSurveys && rawSurveys.length > 0 ? (
+                {surveyType === "raw-full" && rawSurveys && rawSurveysHeaders ? (
                 <div>
                     <div className="viewresults-modal--other-button-container">
                         <div className="viewresults-modal--download-button">
@@ -272,19 +267,19 @@ useEffect(() => {
                             value={rawSurveys}
                             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                             paginator
-                            rows={5}
+                            rows={10}
+                            rowsPerPageOptions={[5, 10, 25, 50]}
                             className="rawresults--table"
-                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            currentPageReportTemplate="{first} to {last} of {totalRecords}" 
                             emptyMessage="No results found"
                         >
                             {rawSurveysHeaders.map((header) => {
-                                return header === "Reviewee name (email)" ||
-                                header === "Reviewer name (email)" ? (
+                                return header === "Reviewee" ||
+                                header === "Reviewer" ? (
                                     <Column
                                         field={header}
                                         header={header}
                                         sortable
-                                        style={{width: `${100 / rawSurveysHeaders.length}%`}}
                                         filter
                                         filterPlaceholder="Search by name or email"
                                         filterMatchMode="contains"
@@ -294,7 +289,6 @@ useEffect(() => {
                                         field={header}
                                         header={header}
                                         sortable
-                                        style={{width: `${100 / rawSurveysHeaders.length}%`}}
                                     ></Column>
                                 );
                             })}
@@ -348,16 +342,17 @@ useEffect(() => {
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 paginator
                                 rows={5}
-                                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                                rowsPerPageOptions={[5, 10, 25, 50]}
+                                className="rawresults--table"
+                                currentPageReportTemplate="{first} to {last} of {totalRecords}" 
                                 emptyMessage="No results found"
                             >
-                                {Object.keys(normalizedResults[0]).map((header) => {
+                                {normalizedTableHeaders.map((header) => {
                                     return header === "Name" || header === "Email" ? (
                                         <Column
                                             field={header}
                                             header={header}
                                             sortable
-                                            style={{width: `${100 / normalizedTableHeaders.length}%`}}
                                             filter
                                             filterPlaceholder="Search by name"
                                             filterMatchMode="contains"
@@ -367,7 +362,6 @@ useEffect(() => {
                                             field={header}
                                             header={header}
                                             sortable
-                                            style={{width: `${100 / normalizedTableHeaders.length}%`}}
                                         ></Column>
                                     );
                                 })}
