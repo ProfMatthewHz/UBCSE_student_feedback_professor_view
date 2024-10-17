@@ -159,7 +159,7 @@ const SurveyExtendModal = ({modalClose, survey_data}) => {
 }
   return (
     <div className="modal">
-      <div style={{ width: "650px", maxWidth: "90%" }}className="modal-content modal-phone">
+      <div style={{ width: "650px", maxWidth: "90vw" }}className="modal-content modal-phone">
         <div className="CancelContainer">
             <button className="CancelButton" onClick={modalClose}>
                 ×
@@ -167,11 +167,10 @@ const SurveyExtendModal = ({modalClose, survey_data}) => {
         </div>
         <div className="modal--contents-container">
             <h2 className="modal--main-title">
-                Extend Survey
+                Extend Deadline for {survey_name}
             </h2>
             <div className="extend-survey--boxes-container">
                 <div className="extend-survey--top-box-container">
-                    <h3 className="form__item--info">Survey Name: {survey_name}</h3>
                     <h3 className="form__item--info">Current Deadline: {originalEndDate}</h3>
                 </div>
                 <div className="extend-survey--bottom-box-container">
