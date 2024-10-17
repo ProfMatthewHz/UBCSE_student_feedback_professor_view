@@ -7,7 +7,7 @@ import "primereact/resources/primereact.min.css";
 import BarChart from "./Barchart";
 import "../styles/viewresults.css";
 
-const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
+const ViewResults = ({closeViewResultsModal, surveyToView, course}) => {
     /* Viewing Types of Survey Results */
     const [rawSurveysHeaders, setRawSurveysHeaders] = useState(null); // For Raw Results
     const [rawSurveys, setRawSurveys] = useState(null); // For Raw Results
@@ -103,10 +103,11 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
             .then((result) => {
                 setRawSurveysHeaders(result[0]);
                 const mappedResults = mapHeadersToValues(result[0], result.slice(1));
-                setRawSurveys(mappedResults);
-                if (result.length > 1) {
-                    setRawSurveyCSVData(result);
+                for (let result of mappedResults) {
+                    result["Norm. Avg."] = isNaN(result["Norm. Avg."]) ? result["Norm. Avg."] : parseFloat(result["Norm. Avg."]).toFixed(4);
                 }
+                setRawSurveys(mappedResults);
+                setRawSurveyCSVData(result);
             })
             .catch((err) => {
                 console.error('There was a problem with your fetch operation:', err);
@@ -130,6 +131,7 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
             .then((res) => res.json())
             .then((result) => {
                 const tableHeaders = result[0];
+                setNormalizedTableHeaders(tableHeaders)
                 if (result.length > 1) {
                     const results_without_headers = result.slice(1);
                     const maxValue = Math.max(
@@ -166,12 +168,14 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
                         tableHeaders,
                         results_without_headers
                     );
-                    setNormalizedTableHeaders(tableHeaders)
                     setNormalizedCSVData(result);
                     setShowNormalizedSurveyResults(labels);
+                    for (let result of mappedNormalizedResults) {
+                        result["Norm. Avg."] = isNaN(result["Norm. Avg."]) ? result["Norm. Avg."] : parseFloat(result["Norm. Avg."]).toFixed(4);
+                    }
                     setNormalizedResults(mappedNormalizedResults);
                 } else {
-                    setShowNormalizedSurveyResults(true);
+                    setShowNormalizedSurveyResults([]);
                 }
             })
             .catch((err) => {
@@ -192,7 +196,7 @@ useEffect(() => {
     
     return (
         <div className="modal">
-            <div style={{ width: "1200px", maxWidth: "90%" }} className="modal-content modal-phone">
+            <div style={{ width: "1200px", maxWidth: "90vw" }} className="modal-content modal-phone">
                 <div className="CancelContainer">
                     <button
                         className="CancelButton"
@@ -300,7 +304,7 @@ useEffect(() => {
                         No Results Found
                     </div>
                 ) : null}
-                {surveyType === "average" && showNormalizedSurveyResults ? (
+                {surveyType === "average" && normalizedResults ? (
                     <div>
                         <div className="viewresults-modal--other-button-container">
                             <div className="viewresults-modal--download-button">

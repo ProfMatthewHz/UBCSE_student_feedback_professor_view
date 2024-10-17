@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import "../styles/modal.css";
 import "../styles/extendsurvey.css";
 
-const SurveyExtendModal = ({modalClose, survey_data}) => {
+const SurveyExtendModal = ({modalClose, course, survey_data}) => {
   const [survey_id,] = useState(survey_data.id);
   const [survey_name,] = useState(survey_data.name);
   const [originalEndDate,] = useState(survey_data.end_date);
@@ -157,6 +157,7 @@ const SurveyExtendModal = ({modalClose, survey_data}) => {
 
     modalClose([]);
 }
+console.log(survey_data)
   return (
     <div className="modal">
       <div style={{ width: "650px", maxWidth: "90vw" }}className="modal-content modal-phone">
@@ -167,7 +168,7 @@ const SurveyExtendModal = ({modalClose, survey_data}) => {
         </div>
         <div className="modal--contents-container">
             <h2 className="modal--main-title">
-                Extend Deadline for {survey_name}
+                Extend Deadline {course.code}: {survey_name} 
             </h2>
             <div className="extend-survey--boxes-container">
                 <div className="extend-survey--top-box-container">

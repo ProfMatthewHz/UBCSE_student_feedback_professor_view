@@ -13,7 +13,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
   const [endTime, setEndTime] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [csvFile, setCsvFile] = useState(null);
+  const [csvFile, setCsvFile] = useState("");
   const [rubric, setRubric] = useState(rubric_id);
   const [valuePairing, setValuePairing] = useState("2");
   const [multiplier, setMultiplier] = useState("1");
@@ -134,7 +134,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
     } else {
       setEmptyEndDateError(false);
     }
-    if ((pairing_modes != null) && (csvFile == null)) {
+    if ((pairing_modes != null) && (csvFile === "")) {
       setEmptyCSVFileError(true);
       missingData = true;
     } else {
@@ -239,7 +239,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               id="survey-name"
               type="text"
               placeholder="Survey Name"
-              value={surveyName !== "" ? surveyName : null}
+              value={surveyName !== "" ? surveyName : ""}
               onChange={(e) => setSurveyName(e.target.value)}
             />
             {emptySurveyNameError ? (
@@ -310,7 +310,6 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                       type="time"
                       placeholder="Enter End Time"
                       onChange={(e) => setEndTime(e.target.value)}
-
                     />
                   </label>
                 </div>

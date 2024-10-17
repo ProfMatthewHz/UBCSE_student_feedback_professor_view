@@ -298,12 +298,14 @@ const Course = ({course, page}) => {
             {extendModal &&
             (<SurveyExtendModal
                 modalClose={extendModalClose}
+                course={course}
                 survey_data={currentSurvey} />
             )}
             {/* Survey deletion modal*/}
             {deleteModal &&
             (<SurveyDeleteModal
                 modalClose={deleteModalClose}
+                course={course}
                 survey_data={currentSurvey} />
             )}
             {/* Survey creation errors modal*/}
