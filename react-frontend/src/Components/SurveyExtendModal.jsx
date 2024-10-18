@@ -157,8 +157,8 @@ const SurveyExtendModal = ({modalClose, course, survey_data}) => {
 
     modalClose([]);
 }
-console.log(survey_data)
-  return (
+
+return (
     <div className="modal">
       <div style={{ width: "650px", maxWidth: "90vw" }}className="modal-content modal-phone">
         <div className="CancelContainer">
