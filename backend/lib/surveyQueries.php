@@ -155,7 +155,7 @@ function chronologicalComparator($a, $b) {
 
 function getClosedSurveysForTerm($con, $term, $year, $id) {
     $retVal = array();
-    $stmt = createClosedQueryReviewer($con, 'surveys.end_date < NOW()');
+/*    $stmt = createClosedQueryReviewer($con, 'surveys.end_date < NOW()');
     $stmt->bind_param('iii', $id, $term, $year);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -165,7 +165,7 @@ function getClosedSurveysForTerm($con, $term, $year, $id) {
         $fully_submitted = ($row[5] == $row[6]);
         $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false, $s);
     }
-    $stmt->close();
+    $stmt->close();*/
 
     $stmt = createQueryReviewed($con, 'surveys.end_date < NOW()');
     $stmt->bind_param('iiii', $id, $id, $term, $year);

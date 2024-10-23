@@ -159,8 +159,6 @@ const SurveyListing = (props) => {
                                 <th>Survey Name</th>
                                 <th>Survey Completion</th>
                                 <th>Action</th>
-  
-  
                               </tr>
                             </thead>
   
@@ -245,7 +243,6 @@ const SurveyListing = (props) => {
                           <thead>
                             <tr>
                               <th>No Future Surveys</th>
-                              
                             </tr>
                           </thead>
                           </table>
@@ -296,7 +293,6 @@ const SurveyListing = (props) => {
                           <thead>
                             <tr>
                               <th>No Closed Surveys</th>
-                              
                             </tr>
                           </thead>
                           </table>
