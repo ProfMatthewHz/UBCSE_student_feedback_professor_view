@@ -11,8 +11,8 @@ session_start();
 #header('Access-Control-Allow-Headers: Content-Type');
 #header("Access-Control-Allow-Credentials: true");
 
-// Set the session variables when running in production 
-if (!empty($_SERVER['uid'])) {
+// Set the session variables when running in production and it is needed
+if (empty($_SESSION['redirect'])) {
   setSessionVariables($_SERVER['uid']);
 }
 
