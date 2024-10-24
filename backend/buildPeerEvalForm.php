@@ -92,6 +92,7 @@ if (!empty($postData)) {
             insertNewScore($con, $eval_id, $topic_id, $score_id);
         }
     }
+    echo json_encode(array("success" => "Submitted"));
 }
 
 

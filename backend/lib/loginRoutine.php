@@ -1,8 +1,8 @@
 <?php
-require_once "lib/database.php";
-require_once "lib/constants.php";
-require_once "instructor/lib/instructorQueries.php";
-require_once "lib/studentQueries.php";
+require_once "database.php";
+require_once "constants.php";
+require_once "../instructor/lib/instructorQueries.php";
+require_once "studentQueries.php";
 
 function setSessionVariables($ubit) {
   // Only do this when the connection is new
