@@ -15,14 +15,6 @@ if(!isset($_SESSION['student_id'])) {
     exit();
 }
 
-// Validate CSRF token early in the script, this is for deployement
-// if (!isset($_SESSION['csrf_token'])) {
-//     http_response_code(403);
-//     echo json_encode(["error" => "CSRF token validation failed."]);
-//     exit();
-// }
-// print($_SESSION['csrf_token']);
-
 header('Content-Type: application/json');
 
 $id = $_SESSION['student_id'];
@@ -30,14 +22,7 @@ $con = connectToDatabase();
 $responseArray = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-
-//    if (!isset($_GET['csrf_token']) || $_SESSION['csrf_token'] !== $_GET['csrf_token']) {
-//        http_response_code(403);
-//        echo "CSRF token validation failed.";
-//        exit();
-//    }
-
-// Verify that the survey exists
+    // Verify that the survey exists
     if (isset($_GET['survey'])) {
         $survey = $_GET['survey'];
     } else {
@@ -45,44 +30,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         echo json_encode($responseArray);
         exit();
     }
-// Verify that the survey is a valid one for this student to view their results
+    // Verify that the survey is a valid one for this student to view their results
     $survey_info = getSurveyResultsInfo($con, $survey, $id);
-    if (isset($survey_info)) {
-        foreach ($survey_info as $key => $value) {
-            $_SESSION[$key] = $value;
-        }
-    } else {
+    if (!isset($survey_info)) {
         // This is not a valid survey for this student
         http_response_code(400);
         echo json_encode($responseArray);
         exit();
     }
 
-    $_SESSION['reviewers'] = getReviewSources($con, $survey, $id);
+    $reviews = getReviewSources($con, $survey, $id);
 
     // Get the multiple choice questions and responses for this survey.
-    $_SESSION['mc_topics'] = getSurveyMultipleChoiceTopics($con, $survey);
-    $_SESSION['mc_answers'] = array();
-    foreach ($_SESSION['mc_topics'] as $topic_id => $topic) {
-        $_SESSION['mc_answers'][$topic_id] = getSurveyMultipleChoiceResponses($con, $topic_id, true);
+    $mc_topics = getSurveyMultipleChoiceTopics($con, $survey);
+    $mc_answers = array();
+    foreach ($mc_topics as $topic_id => $topic) {
+        $mc_answers[$topic_id] = getSurveyMultipleChoiceResponses($con, $topic_id, true);
     }
 
     // Get the freeform questions and responses for this survey.
-    $_SESSION['ff_topics'] = getSurveyFreeformTopics($con, $survey);
-
-    $course = $_SESSION['course_name'];
-    $survey_name = $_SESSION['survey_name'];
-    $survey_id = $_SESSION['survey_id'];
-    $mc_topics = $_SESSION['mc_topics'];
-    $mc_answers = $_SESSION['mc_answers'];
-    $ff_topics = $_SESSION['ff_topics'];
-    $reviewers = $_SESSION['reviewers'];
+    $ff_topics = getSurveyFreeformTopics($con, $survey);
 
     // Store the scores submitted by each teammate
     $scores = array();
     $texts = array();
-    foreach ($reviewers as $reviewer_id) {
-        $scores[] = getReviewPoints($con, $reviewer_id, $mc_topics);
+    foreach ($reviews as $review_info) {
+        $reviewer_id = $review_info['id'];
+        $multiplier = $review_info['weight'];
+        $answers = getReviewPoints($con, $reviewer_id, $mc_topics);
+        $scores[] = array("answers" => $answers, "multiplier" => $multiplier);
         $texts[] = getReviewText($con, $reviewer_id, $ff_topics);
     }
 
@@ -91,21 +67,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     foreach ($mc_topics as $topic_id => $topic) {
         $sum = 0;
-        $count = 0;
+        $weight = 0;
         $med_score = array();
+        $max_possible = $mc_answers[$topic_id][0][1];
+        foreach ($mc_answers[$topic_id] as $response) {
+            if ($response[1] > $max_possible) {
+                $max_possible = $response[1];
+            }
+        }
 
         // Collect all scores for the current topic.
         foreach ($scores as $submit) {
-            if (isset($submit[$topic_id])) {
-                $sum += $submit[$topic_id];
-                $count++;
+            $response = $submit['answers'];
+            $multiplier = $submit['multiplier'];
+            if (isset($response[$topic_id])) {
+                $sum += $submit[$topic_id] * $multiplier;
+                $weight = $weight + $multiplier;
                 $med_score[] = $submit[$topic_id];
             }
         }
 
-        if ($count > 0) {
+        if ($weight > 0) {
             // Calculate the average score.
-            $average = round($sum / $count, 2);
+            $average = round($sum / $weight, 2);
 
             // Calculate the median score.
             sort($med_score);
@@ -132,14 +116,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             }
 
             // Add the average and median text to the results array.
-            $results[$topic] = ['average' => $average, 'median' => $median_text];
+            $results[$topic] = ['average' => $average, 'median' => $median_text, 'maximum' => $max_possible];
         } else {
             // If there are no scores
-            $results[$topic] = ['average' => null, 'median' => null];
+            $results[$topic] = ['average' => null, 'median' => null, 'maximum' => null];
         }
     }
-
-// $results now contains your criteria as keys and [AvgScore, Median] as values
+    // $results now contains your criteria as keys and [AvgScore, Median] as values
     echo json_encode($results);
 }
 

@@ -1,7 +1,7 @@
 <?php
 function getReviewSources($db_connection, $survey_id, $id) {
   $ret_val = array();
-  $stmt = $db_connection->prepare('SELECT review_id
+  $stmt = $db_connection->prepare('SELECT review_id, eval_weight
                                    FROM reviews
                                    INNER JOIN evals ON evals.review_id = reviews.id
                                    WHERE reviews.survey_id =? AND reviews.reviewed_id=? AND reviews.reviewed_id<>reviews.reviewer_id');
@@ -9,7 +9,7 @@ function getReviewSources($db_connection, $survey_id, $id) {
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    $ret_val[] = $row[0];
+    $ret_val[] = array("id" => $row[0], "weight" => $row[1]);
   }
   $stmt->close();
   return $ret_val;
