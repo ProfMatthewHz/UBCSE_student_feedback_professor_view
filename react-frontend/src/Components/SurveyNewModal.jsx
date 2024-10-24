@@ -7,14 +7,14 @@ import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 import "../styles/modal.css";
 import "../styles/addsurvey.css";
 
-const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pairing_modes, rubrics_list }) => {
+const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pairing_modes, rubric_id, rubrics_list }) => {
   const [surveyName, setSurveyName] = useState(survey_data.survey_name);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [csvFile, setCsvFile] = useState(null);
-  const [rubric, setRubric] = useState(rubrics_list[0].id);
+  const [csvFile, setCsvFile] = useState("");
+  const [rubric, setRubric] = useState(rubric_id);
   const [valuePairing, setValuePairing] = useState("2");
   const [multiplier, setMultiplier] = useState("1");
   const [useMultipler, setUseMultiplier] = useState(false);
@@ -42,7 +42,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       case 'Single Pairs':
         setPairingImage(SinglePairs);
         break;
-      case 'MANAGER':
+      case 'PM':
         setPairingImage(PM);
         break;
       default:
@@ -134,7 +134,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
     } else {
       setEmptyEndDateError(false);
     }
-    if ((pairing_modes != null) && (csvFile == null)) {
+    if ((pairing_modes != null) && (csvFile === "")) {
       setEmptyCSVFileError(true);
       missingData = true;
     } else {
@@ -239,7 +239,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               id="survey-name"
               type="text"
               placeholder="Survey Name"
-              value={surveyName !== "" ? surveyName : null}
+              value={surveyName !== "" ? surveyName : ""}
               onChange={(e) => setSurveyName(e.target.value)}
             />
             {emptySurveyNameError ? (
@@ -310,7 +310,6 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                       type="time"
                       placeholder="Enter End Time"
                       onChange={(e) => setEndTime(e.target.value)}
-
                     />
                   </label>
                 </div>
@@ -333,8 +332,10 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               onChange={(e) => setRubric(e.target.value)}
               id="rubric-type"
             >
-              {rubrics_list.map((rubric) => (
-                <option value={rubric.id}>{rubric.description}</option>
+              {rubrics_list.map((rubric_info) => (
+                (rubric === rubric_info.id) ?
+                <option value={rubric_info.id} selected>{rubric_info.description}</option> :
+                <option value={rubric_info.id}>{rubric_info.description}</option>
               ))}
             </select>
           </label>
@@ -347,7 +348,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                 id="pairing-mode"
               >
                 {pairing_modes.map((pairing) => (
-                  <option className="pairing-option" value={pairing.id}>{pairing.description}</option>
+                  <option className="pairing-option" value={pairing.id}>{pairing.text}</option>
                 ))}
               </select>
             </div>

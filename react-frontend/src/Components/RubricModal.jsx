@@ -63,7 +63,7 @@ const RubricModal = ({open,onClose,modalData}) => {
                                 Object.keys(feedback).map((criterion, index) => (
                                         <tr key={index}>
                                             <td>{criterion}</td>
-                                            <td>{feedback[criterion].average}</td>
+                                            <td>{feedback[criterion].average} out of {feedback[criterion].maximum}</td>
                                             <td>{feedback[criterion].median}</td>
                                         </tr>
                                     ))

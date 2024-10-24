@@ -61,7 +61,7 @@ const Course = ({course, page}) => {
     // MODAL CODE
     const [actionsButtonValue, setActionsButtonValue] = useState("");
     const [extendModal, setExtendModal] = useState(false);
-    const [duplicateModal, setDuplicateModel] = useState(false);
+    const [duplicateModal, setDuplicateModal] = useState(false);
 
     const [deleteModal, setDeleteModal] = useState(false);
     const [addSurveyModalIsOpen, setAddSurveyModalIsOpen] = useState(false);
@@ -171,7 +171,7 @@ const Course = ({course, page}) => {
     if (result) {
       updateAllSurveys();
     }
-    setDuplicateModel(false);
+    setDuplicateModal(false);
   }
 
     const closeModalError = () => {
@@ -197,7 +197,7 @@ const Course = ({course, page}) => {
 
         if (e.target.value === "Duplicate") {
             setCurrentSurvey(survey);
-            setDuplicateModel(true);
+            setDuplicateModal(true);
         }
         if (e.target.value === "Delete") {
             setCurrentSurvey(survey);
@@ -298,12 +298,14 @@ const Course = ({course, page}) => {
             {extendModal &&
             (<SurveyExtendModal
                 modalClose={extendModalClose}
+                course={course}
                 survey_data={currentSurvey} />
             )}
             {/* Survey deletion modal*/}
             {deleteModal &&
             (<SurveyDeleteModal
                 modalClose={deleteModalClose}
+                course={course}
                 survey_data={currentSurvey} />
             )}
             {/* Survey creation errors modal*/}
@@ -342,6 +344,7 @@ const Course = ({course, page}) => {
                 button_text="Verify Survey"
                 survey_data={ {course_name : course.code, course_id : course.id, survey_name : "", } }
                 pairing_modes ={pairingModesFull}
+                rubric_id={rubrics[0].id}
                 rubrics_list={rubrics}/>
             )}
             {/* Add Survey to a course modal*/}
@@ -352,6 +355,7 @@ const Course = ({course, page}) => {
                 button_text="Duplicate Survey"
                 survey_data={ {course_name : course.code, course_id : course.id, survey_name : currentSurvey.name + " copy", original_id: currentSurvey.id } }
                 pairing_modes={null}
+                rubric_id={currentSurvey.rubric_id}
                 rubrics_list={rubrics}/>
             )}
             {/* Show modal to update the roster */}

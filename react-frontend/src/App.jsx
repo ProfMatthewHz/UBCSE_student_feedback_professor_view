@@ -22,7 +22,11 @@ function App() {
       })
           .then((res) => res.json())
           .then((result) => {
+            if ("error" in result) {
+              setUserFlag(-1);
+            } else {
               setUserFlag(result["redirect"]);
+            }
           })
           .catch((err) => {
             console.error('There was a problem with your fetch operation:', err);
@@ -32,35 +36,34 @@ function App() {
     fetchFlag()
 }, []);
 
-  return (
-    <BrowserRouter basename={process.env.REACT_APP_BASE_URL}>
-      <div className="app">
-        <div className="background-design"></div>
-            <Routes>
-            {/* Professor Paths */}
-            {userFlag === 1 && (
+    return (
+      <BrowserRouter basename={process.env.REACT_APP_BASE_URL}>
+        <div className="app">
+          <div className="background-design"></div>
+              <Routes>
+              {/* Professor Paths */}
+              {userFlag === 1 && (
+                  <>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/library" element={<Library />} />
+                  <Route path="/history" element={<History />} />
+                  <Route path="/student" element={<ProfStudentHome />} /> 
+                  <Route path="/about" element={<About />} />
+                  <Route path ="/surveyPreview" element={<SurveyPreview />} />
+                  <Route path ="/surveyForm" element={<SurveyForm />} />
+                  </>
+              )}
+              {/* Student Paths */}
+              {userFlag === 2 && (
                 <>
-                <Route path="/" element={<Home />} />
-                <Route path="/library" element={<Library />} />
-                <Route path="/history" element={<History />} />
-                <Route path="/student" element={<ProfStudentHome />} /> 
-                <Route path="/about" element={<About />} />
-                <Route path ="/surveyPreview" element={<SurveyPreview />} />
-                <Route path ="/surveyForm" element={<SurveyForm />} />
+                  <Route path="/" element={<StudentHome />} /> 
+                  <Route path="/surveyForm" element={<SurveyForm />} />
                 </>
-            )}
-            {/* Student Paths */}
-            {userFlag === 2 && (
-              <>
-                <Route path="/" element={<StudentHome />} /> 
-                <Route path="/surveyForm" element={<SurveyForm />} />
-              </>
-            )}
-            </Routes>    
-      </div>
-    </BrowserRouter>
-
-  );
+              )}
+              </Routes>    
+        </div>
+      </BrowserRouter>
+    );
 }
 
 export default App;

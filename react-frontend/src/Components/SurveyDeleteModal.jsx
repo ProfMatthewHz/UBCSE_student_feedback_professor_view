@@ -3,7 +3,7 @@ import "../styles/modal.css";
 import "../styles/deletesurvey.css";
 
 /* Todo: Update the onchange method to enable the delete survey button if (and only if) it is a perfect match */
-const SurveyDeleteModal = ({ modalClose, survey_data }) => {
+const SurveyDeleteModal = ({ modalClose, course, survey_data }) => {
     const [survey_id,] = useState(survey_data.id);
     const [survey_name,] = useState(survey_data.name);
     const [emptyOrWrongDeleteNameError, setEmptyOrWrongDeleteNameError] = useState(false);
@@ -62,10 +62,10 @@ const SurveyDeleteModal = ({ modalClose, survey_data }) => {
                 </div>
                 <div className="modal--contents-container">
                     <h2 className="modal--main-title">
-                        Delete Survey: {survey_name}
+                        Delete {course.code}: {survey_name}
                     </h2>
                         <label className="form__item--label" htmlFor="delete-name">
-                            Enter Survey Name
+                            Type survey name to confirm:
                             <input
                                 className={emptyOrWrongDeleteNameError ? "form__item--input-error" : undefined}
                                 id="delete-name" 

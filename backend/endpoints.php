@@ -36,15 +36,17 @@ $pastSurveysResponse = [];
 
 if(count($past_surveys) > 0) {
     foreach ($past_surveys as $key => $value) {
-        $pastSurveyData = [
-            'surveyID' => $key,
-            'courseName' => $value[0],
-            'surveyName' => $value[1],
-            'closingDate' => $value[2],
-            'openingDate' => $value[7],
-            'email' => $ubit."@buffalo.edu"
-        ];
-        $pastSurveysResponse[] = $pastSurveyData;
+        if ($past_surveys[$key][5]) {
+            $pastSurveyData = [
+                'surveyID' => $key,
+                'courseName' => $value[0],
+                'surveyName' => $value[1],
+                'closingDate' => $value[2],
+                'openingDate' => $value[7],
+                'email' => $ubit."@buffalo.edu"
+            ];
+            $pastSurveysResponse[] = $pastSurveyData;
+        }
     }
 }
 

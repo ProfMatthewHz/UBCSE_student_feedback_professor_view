@@ -16,7 +16,7 @@ function setSessionVariables($ubit) {
     // Logic for when it is NOT an instructor BUT a student
     if (!empty($id_and_name)) {
           $_SESSION['student_id'] = $id_and_name[0];
-          $_SESSION['ubit'] = $_POST['UBIT'];
+          $_SESSION['ubit'] = $ubit;
           $_SESSION['redirect'] = 2;
     }
       

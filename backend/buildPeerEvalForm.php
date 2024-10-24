@@ -34,9 +34,8 @@ review_id -> x,
     ]
 */
 
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-    $postData = json_decode(file_get_contents('php://input'), true);
-}
+$postData = json_decode(file_get_contents('php://input'), true);
+
 //When submit button is pressed
 if (!empty($postData)) {
     if (!isset($postData['review_id'], $postData['responses'])) {
@@ -61,6 +60,7 @@ if (!empty($postData)) {
 
     // response array //
     $response = $postData['responses'];
+
     // for each response, update or add score //
     foreach ($response as $topic_id => $score) {
 
@@ -91,7 +91,6 @@ if (!empty($postData)) {
             // Insert a new score if it had not existed
             insertNewScore($con, $eval_id, $topic_id, $score_id);
         }
-
     }
 }
 

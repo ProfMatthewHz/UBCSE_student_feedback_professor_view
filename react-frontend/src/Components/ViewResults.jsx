@@ -7,7 +7,7 @@ import "primereact/resources/primereact.min.css";
 import BarChart from "./Barchart";
 import "../styles/viewresults.css";
 
-const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
+const ViewResults = ({closeViewResultsModal, surveyToView, course}) => {
     /* Viewing Types of Survey Results */
     const [rawSurveysHeaders, setRawSurveysHeaders] = useState(null); // For Raw Results
     const [rawSurveys, setRawSurveys] = useState(null); // For Raw Results
@@ -27,14 +27,9 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
      * @returns {*}
      */
     const mapHeadersToValues = (headers, values) => {
-        // Capitalize headers
-        const capitalizedHeaders = headers.map(
-            (header) => header.charAt(0).toUpperCase() + header.slice(1).toLowerCase()
-        );
-
-        return values.map((row) => {
+          return values.map((row) => {
             return row.reduce((obj, value, index) => {
-                obj[capitalizedHeaders[index]] = value;
+                obj[headers[index]] = value;
                 return obj;
             }, {});
         });
@@ -56,14 +51,8 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
             })
                 .then((res) => res.json())
                 .then((result) => {
-                    const completedCSVLines = [["Name", "Email", "Completion Status"]];
-                    for (let dict of result) {
-                        const name = dict["name"];
-                        const email = dict["email"];
-                        const completed = dict["completed"];
-                        const row = [name, email, completed];
-                        completedCSVLines.push(row);
-                    }
+                    const completedCSVLines = result.map((dict) => {return [dict["name"], dict["email"], dict["completed"]]});
+                    completedCSVLines.unshift(["Name", "Email", "Completion Status"]);
                     setCompletionCSVData(completedCSVLines);
                 })
                 .catch((err) => {
@@ -111,13 +100,14 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
             }),
         })
             .then((res) => res.json())
-            .then((result) => {                    
+            .then((result) => {
                 setRawSurveysHeaders(result[0]);
                 const mappedResults = mapHeadersToValues(result[0], result.slice(1));
-                setRawSurveys(mappedResults);
-                if (result.length > 1) {
-                    setRawSurveyCSVData(result);
+                for (let result of mappedResults) {
+                    result["Norm. Avg."] = isNaN(result["Norm. Avg."]) ? result["Norm. Avg."] : parseFloat(result["Norm. Avg."]).toFixed(4);
                 }
+                setRawSurveys(mappedResults);
+                setRawSurveyCSVData(result);
             })
             .catch((err) => {
                 console.error('There was a problem with your fetch operation:', err);
@@ -140,6 +130,8 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
         })
             .then((res) => res.json())
             .then((result) => {
+                const tableHeaders = result[0];
+                setNormalizedTableHeaders(tableHeaders)
                 if (result.length > 1) {
                     const results_without_headers = result.slice(1);
                     const maxValue = Math.max(
@@ -173,15 +165,17 @@ const ViewResults = ({closeViewResultsModal, surveyToView, course,}) => {
                     labels.unshift(["Normalized Averages", "Number of Students"]);
                     
                     const mappedNormalizedResults = mapHeadersToValues(
-                        result[0],
+                        tableHeaders,
                         results_without_headers
                     );
                     setNormalizedCSVData(result);
                     setShowNormalizedSurveyResults(labels);
+                    for (let result of mappedNormalizedResults) {
+                        result["Norm. Avg."] = isNaN(result["Norm. Avg."]) ? result["Norm. Avg."] : parseFloat(result["Norm. Avg."]).toFixed(4);
+                    }
                     setNormalizedResults(mappedNormalizedResults);
-                    setNormalizedTableHeaders(result[0]);  
                 } else {
-                    setShowNormalizedSurveyResults(true);
+                    setShowNormalizedSurveyResults([]);
                 }
             })
             .catch((err) => {
@@ -202,7 +196,7 @@ useEffect(() => {
     
     return (
         <div className="modal">
-            <div style={{ width: "1200px", maxWidth: "90%" }} className="modal-content modal-phone">
+            <div style={{ width: "1200px", maxWidth: "90vw" }} className="modal-content modal-phone">
                 <div className="CancelContainer">
                     <button
                         className="CancelButton"
@@ -243,7 +237,7 @@ useEffect(() => {
                         Individual Results
                     </button>
                 </div>
-                {surveyType === "raw-full" && rawSurveys ? (
+                {surveyType === "raw-full" && rawSurveys && rawSurveysHeaders ? (
                 <div>
                     <div className="viewresults-modal--other-button-container">
                         <div className="viewresults-modal--download-button">
@@ -277,19 +271,19 @@ useEffect(() => {
                             value={rawSurveys}
                             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                             paginator
-                            rows={5}
+                            rows={10}
+                            rowsPerPageOptions={[5, 10, 25, 50]}
                             className="rawresults--table"
-                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            currentPageReportTemplate="{first} to {last} of {totalRecords}" 
                             emptyMessage="No results found"
                         >
-                            {Object.keys(rawSurveys[0]).map((header) => {
-                                return header === "Reviewee name (email)" ||
-                                header === "Reviewer name (email)" ? (
+                            {rawSurveysHeaders.map((header) => {
+                                return header === "Reviewee" ||
+                                header === "Reviewer" ? (
                                     <Column
                                         field={header}
                                         header={header}
                                         sortable
-                                        style={{width: `${100 / rawSurveysHeaders.length}%`}}
                                         filter
                                         filterPlaceholder="Search by name or email"
                                         filterMatchMode="contains"
@@ -299,7 +293,6 @@ useEffect(() => {
                                         field={header}
                                         header={header}
                                         sortable
-                                        style={{width: `${100 / rawSurveysHeaders.length}%`}}
                                     ></Column>
                                 );
                             })}
@@ -311,7 +304,7 @@ useEffect(() => {
                         No Results Found
                     </div>
                 ) : null}
-                {surveyType === "average" && showNormalizedSurveyResults ? (
+                {surveyType === "average" && normalizedResults ? (
                     <div>
                         <div className="viewresults-modal--other-button-container">
                             <div className="viewresults-modal--download-button">
@@ -353,16 +346,17 @@ useEffect(() => {
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 paginator
                                 rows={5}
-                                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                                rowsPerPageOptions={[5, 10, 25, 50]}
+                                className="rawresults--table"
+                                currentPageReportTemplate="{first} to {last} of {totalRecords}" 
                                 emptyMessage="No results found"
                             >
-                                {Object.keys(normalizedResults[0]).map((header) => {
+                                {normalizedTableHeaders.map((header) => {
                                     return header === "Name" || header === "Email" ? (
                                         <Column
                                             field={header}
                                             header={header}
                                             sortable
-                                            style={{width: `${100 / normalizedTableHeaders.length}%`}}
                                             filter
                                             filterPlaceholder="Search by name"
                                             filterMatchMode="contains"
@@ -372,7 +366,6 @@ useEffect(() => {
                                             field={header}
                                             header={header}
                                             sortable
-                                            style={{width: `${100 / normalizedTableHeaders.length}%`}}
                                         ></Column>
                                     );
                                 })}
