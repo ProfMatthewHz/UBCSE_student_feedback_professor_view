@@ -19,7 +19,7 @@ function getActiveSurveyInfo($db_connection, $survey_id, $student_id) {
 }
 
 function handleSurveyQuery($db_connection, $survey_id, $student_id, $student_id_field, $addl_query) {
-// Pessimistically assume this fails
+    // Pessimistically assume this fails
     $ret_val = null;
     $query = 'SELECT DISTINCT courses.name course_name, surveys.name survey_name 
               FROM surveys
@@ -141,6 +141,10 @@ function createQueryReviewed($con, $date_clause) {
     return $stmt;
 }
 
+function reverseChronologicalComparator($a, $b) {
+    return -1 * chronologicalComparator($a, $b);
+}
+
 function chronologicalComparator($a, $b) {
     $a_datetime = $a[1];
     $b_datetime = $b[1];
@@ -174,9 +178,9 @@ function getClosedSurveysForTerm($con, $term, $year, $id) {
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
         if (array_key_exists($row[2], $retVal)) {
             $survey = $retVal[$row[2]];
-// Update that they could be reviewed on this survey
+            // Update that they could be reviewed on this survey
             $survey[5] = true;
-// Update that they were reviewed on this survey
+            // Update that they were reviewed on this survey
             $survey[6] = ($row[5] > 0);
             $retVal[$row[2]] = $survey;
         } else {
@@ -187,8 +191,8 @@ function getClosedSurveysForTerm($con, $term, $year, $id) {
         }
     }
     $stmt->close();
-// Sort the array to be in chronological order
-    uasort($retVal, 'chronologicalComparator');
+    // Sort the array in reverse chronological order
+    uasort($retVal, 'reverseChronologicalComparator');
     return $retVal;
 }
 
