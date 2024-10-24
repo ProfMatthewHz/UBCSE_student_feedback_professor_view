@@ -21,6 +21,8 @@ require_once "lib/resultsFunctions.php";
 // query information about the requester
 $con = connectToDatabase();
 
+header("Content-Type: application/json; charset=UTF-8");
+
 //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 if (!isset($_SESSION['id'])) {
   http_response_code(403);
@@ -107,7 +109,6 @@ if ($_POST['type'] === 'completion') {
     $results = getNormalizedResults($teammates, $scores, $topics, $team_data, $views);
   }
   // Now output the results
-  header("Content-Type: application/json; charset=UTF-8");
   $json_results = json_encode($results);
   echo $json_results;
 }
