@@ -8,6 +8,7 @@ const RubricModal = ({open,onClose,modalData}) => {
     //Fetches data for the feedback form/ viewing results
    
     const [feedback, setFeedback] = useState([]);
+    const [overall, setOverall] = useState(null);
 
 
     //GET request to backend to retrieve the feedback results using survey_id
@@ -24,10 +25,30 @@ const RubricModal = ({open,onClose,modalData}) => {
                 console.log(err);
             });
     }, [survey_id]);
+
+    //GET request to backend to retrieve the feedback results using survey_id
+    const fetchOverall = useCallback(() => {
+            fetch(process.env.REACT_APP_API_URL_STUDENT + "normalizedResult.php?survey=" + survey_id, {
+                method: "GET",
+                credentials: "include",
+            })
+                .then((res) => res.json())
+                .then((result) => {
+                    if (isNaN(result["data"])) {
+                        setOverall(1.0);
+                    } else {
+                        setOverall(parseFloat(result["data"]).toFixed(4));
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }, [survey_id]);
   
     useEffect(() => {
-        fetchFeedback()
-    }, [fetchFeedback]);
+        fetchFeedback();
+        fetchOverall();
+    }, [fetchFeedback, fetchOverall]);
   
     /**  feedback object is in the following format
     {
@@ -49,12 +70,11 @@ const RubricModal = ({open,onClose,modalData}) => {
                             <h2>{survey_name}</h2>
                     </div>
                     <table className="surveyTable">
-                        
                             <thead>
                                 <tr>
                                     <th>Criterion</th>
-                                    <th>Average Score</th>
-                                    <th>Median</th>
+                                    <th>Median Evaluation</th>
+                                    <th>Mean</th>
                                     
                                 </tr>
                             </thead>
@@ -62,9 +82,9 @@ const RubricModal = ({open,onClose,modalData}) => {
                             {feedback.length !== 0 ? (
                                 Object.keys(feedback).map((criterion, index) => (
                                         <tr key={index}>
-                                            <td>{criterion}</td>
-                                            <td>{feedback[criterion].average} out of {feedback[criterion].maximum}</td>
+                                            <td className="criterion">{criterion}</td>
                                             <td>{feedback[criterion].median}</td>
+                                            <td>{feedback[criterion].average} out of {feedback[criterion].maximum}</td>
                                         </tr>
                                     ))
                                     ) : (
@@ -72,6 +92,9 @@ const RubricModal = ({open,onClose,modalData}) => {
                                     )}
                             </tbody>
                     </table>
+                    <div className="summary">
+                        <div className="normalizedAnnounce">Normalized Result:</div> <div className="normalResult">{overall}</div>
+                    </div>
                  </div>
             </div>
          </div>

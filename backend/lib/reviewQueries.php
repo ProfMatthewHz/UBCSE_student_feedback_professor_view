@@ -4,7 +4,7 @@ function getReviewSources($db_connection, $survey_id, $id) {
   $stmt = $db_connection->prepare('SELECT review_id, eval_weight
                                    FROM reviews
                                    INNER JOIN evals ON evals.review_id = reviews.id
-                                   WHERE reviews.survey_id =? AND reviews.reviewed_id=? AND reviews.reviewed_id<>reviews.reviewer_id');
+                                   WHERE reviews.survey_id =? AND reviews.reviewed_id=?');
   $stmt->bind_param('ii',$survey_id,$id);
   $stmt->execute();
   $result = $stmt->get_result();

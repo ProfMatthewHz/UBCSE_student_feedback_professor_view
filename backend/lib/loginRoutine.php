@@ -1,7 +1,7 @@
 <?php
 require_once "database.php";
 require_once "constants.php";
-require_once "../instructor/lib/instructorQueries.php";
+require_once "instructor/lib/instructorQueries.php";
 require_once "studentQueries.php";
 
 function setSessionVariables($ubit) {

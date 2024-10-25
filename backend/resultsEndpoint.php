@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $sum = 0;
         $weight = 0;
         $med_score = array();
-        $max_possible = $mc_answers[$topic_id][0][1];
+        $max_possible = $mc_answers[$topic_id][array_key_first($mc_answers[$topic_id])][1];
         foreach ($mc_answers[$topic_id] as $response) {
             if ($response[1] > $max_possible) {
                 $max_possible = $response[1];
@@ -81,9 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $response = $submit['answers'];
             $multiplier = $submit['multiplier'];
             if (isset($response[$topic_id])) {
-                $sum += $submit[$topic_id] * $multiplier;
+                $sum += $response[$topic_id] * $multiplier;
                 $weight = $weight + $multiplier;
-                $med_score[] = $submit[$topic_id];
+                $med_score[] = $response[$topic_id];
             }
         }
 
