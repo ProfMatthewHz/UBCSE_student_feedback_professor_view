@@ -66,5 +66,4 @@ function createCSRFToken($con, $instructor_id) {
     return null;
   }
 }
-
 ?>

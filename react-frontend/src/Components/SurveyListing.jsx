@@ -66,6 +66,15 @@ const SurveyListing = (props) => {
     });
   };
 
+    //sort surveys from soonest closed date to latest
+    const sortByDateReverse= (dataArray) => {
+      return [...dataArray].sort((a, b) => {
+        const dateA = new Date(a.closingDate.date);
+        const dateB = new Date(b.closingDate.date);
+        return dateB - dateA;
+      });
+    };
+
   //choose action name for open survey button 
   const openChooseAction = (amtCompleted) => {
     if (amtCompleted === 0) {
@@ -99,7 +108,7 @@ const SurveyListing = (props) => {
           .then((res) => res.json())
           .then((result) => {
               setSurveyCurrent(sortByDate(result.current)); 
-              setSurveyPast(sortByDate(result.past)); 
+              setSurveyPast(sortByDateReverse(result.past)); 
               setSurveyFuture(sortByDate(result.future)); 
           })
           .catch((err) => {

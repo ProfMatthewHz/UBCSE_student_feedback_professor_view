@@ -55,7 +55,7 @@ select.surveyactions--select {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 
@@ -246,7 +246,7 @@ select.surveyactions--select {
 .form__submit--container {
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .update-form__submit:hover {

@@ -83,7 +83,7 @@ if ($_POST['type'] === 'completion') {
   echo $json_encode;
   exit();
 } else {
-  // Retrieves he ids, names, & emails of everyone who was reviewed in this survey.
+  // Retrieves the ids, names, & emails of everyone who was reviewed in this survey.
   $teammates = getReviewedData($con, $survey_id);
 
   // Get the survey results organized by the student being reviewed since this is how we actually do our calculations
