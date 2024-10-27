@@ -55,7 +55,7 @@ const SurveyPreview = () => {
                     survey_id={null}
                 />
             </div>
-            <button className='nextFinishButtonGreen' onClick={returnButtonClickHandler}>
+            <button className='directional next green' onClick={returnButtonClickHandler}>
               FINISH
             </button>
         </div>

@@ -226,7 +226,8 @@ const SurveyListing = (props) => {
                           <table className="surveyTable">
                             <thead>
                               <tr>
-                                <th>Survey Closes</th>
+                              <th>Survey Opens</th>
+                              <th>Survey Closes</th>
                                 <th>Course Name</th>
                                 <th>Survey Name</th>
                               </tr>
@@ -235,6 +236,11 @@ const SurveyListing = (props) => {
                             <tbody>
                               {surveyFuture.map((item, index) => (
                                 <tr key={index} className="survey-row">
+                                  <td>
+                                    {reformatDate(item.openingDate.date)}
+                                    <br />
+                                    {reformatTime(item.openingDate.date)}
+                                  </td>
                                   <td>
                                     {reformatDate(item.closingDate.date)}
                                     <br />

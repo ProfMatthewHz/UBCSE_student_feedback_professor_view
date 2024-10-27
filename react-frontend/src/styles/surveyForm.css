@@ -1,61 +1,83 @@
-div.red-vertical-line{
-    border-left: 4px solid #DD281D;
-    height: 100%;
-    display: flex;
-}
-div.green-vertical-line{
-    border-left: 4px solid #6DA04B;
-    height: 100%;
-    display: flex;
-}
-div.row-container {
-    margin-top: 25px;
-    height: 90px;
-}
-
 div.survey-table-container {
     margin-top: 20px;
-    margin-bottom: 20px;
     margin-left: 20px;
     margin-right: 40px;
 }
 
-button.response-button {
+div.row-container {
+    margin-top: 25px;
+    min-height: 90px;
+}
+
+div.vertical-line {
+    min-height: 90px;
+    display: flex;
+    /*flex-flow: row nowrap;*/
+}
+
+div.red-vertical-line{
+    border-left: 4px solid #DD281D;
+}
+
+div.green-vertical-line{
+    border-left: 4px solid #6DA04B;
+}
+
+div.row-topic-question-container {
+    flex: 30%;
+    margin-left: 15px;
+    min-height: 100%;
+    background-color: #225CB5;
+    background-clip: padding-box;
+    text-align: center;
+    display: table;
+    color: white;
+    border-radius: 5px;
+    font-weight: bolder;
+    font-size: larger;   
+}
+
+span.topic-question {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+div.response-container {
+    flex: 70%;
+    display: flex;
+    flex-flow: row wrap;
+    min-height: 100%;
+    row-gap: 10px;
+}
+
+div.table-data-container {
+    padding-left: 10px;
+}
+
+button.response {
     padding-left: 10px;
     height: 100%;
     width: 100%;
     background-color: #EFEFEF;
-    border: none;
-    box-shadow: 0 5px 6px 0 rgba(0,0,0,0.2);
     font-weight: bold;
     border-radius: 5px;
-    width: 100%;
+    font-size: 100%;
+    border: 3px solid;
 }
 
-button.response-button:hover {
-    cursor: pointer;
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+button.unclicked {
+    border-color:  #EFEFEF;
+    box-shadow: 0 5px 6px 0 rgba(0,0,0,0.2);
+}
 
+button.unclicked:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
 button.clicked {
-    padding-left: 10px;
-    height: 100%;
-    background-color: #EFEFEF;
-    font-weight: bold;
-    border-radius: 5px;
-    width: 100%;
-    cursor: pointer;
-    border: 3px solid #225CB5;
+    border-color: #225CB5;
     color: #225CB5;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-
-}
-div.table-data-container {
-    padding-left: 10px;
-    /* max-width: 300px;
-    min-width: 300px; */
-    /* box-sizing: border-box; */
 }
 
 div.Header {
@@ -69,79 +91,35 @@ h1.Survey-Name, h2.Evaluation-Name {
     font-size: 40px;
 }
 
-
-div.row-topic-question-container {
-    margin-left: 15px;
-    min-width: 150px;
-    max-width: 150px;
-    height: 100%;
-    background-color: #225CB5;
-    text-align: center;
-    color: white;
-    background-clip: content-box;
-    border-radius: 5px;
-    font-weight: bold;
-}
-/* tr {
-    
-} */
-
-button.nextFinishButtonRed {
-    position: absolute;
-    left: 92%;
+button.directional {
+    position: fixed;
     bottom: 25px;
+    text-align: center;
+    color:white;
+    font-weight: bold;
+    min-width: 7%;
+    max-width: 7ex;
+    height: 3em;
+    border-radius: 5px;
+    border: none;
+}
+
+button.next {
+    left: 92%;
+}
+
+button.red {
     background-color: #DD281D;
-    text-align: center;
-    color:white;
-    font-weight: bold;
-    width: 150px;
-    height: 30px;
-    border-radius: 5px;
-    border: none;
 }
 
-button.nextFinishButtonGreen {
-    position: absolute;
-    left: 92%;
-    bottom: 25px;
+button.green {
     background-color: green;
-    text-align: center;
-    color:white;
-    font-weight: bold;
-    width: 150px;
-    height: 30px;
-    border-radius: 5px;
-    border: none;
 }
 
-button.previousButton {
-    position: absolute;
+button.previous {
     right: 92%;
-    bottom: 25px;
-    float: left;
-    background-color: green;
-    color: white;
-    font-weight: bold;
-    width: 150px;
-    height: 30px;
-    border-radius: 5px;
-    border: none;
 }
 
-button.previousButton:hover, button.nextFinishButtonRed:hover, button.nextFinishButtonGreen:hover {
+button.directional:hover {
     cursor: pointer;
-}
-
-button.nextFinishButtonRe:hover {
-    cursor: pointer;
-}
-/* div.prevButtonContainer {
-    margin-top: 10px;
-    margin-left: 10px;
-    float: left;
-} */
-
-span.question {
-    color: white;
-
 }

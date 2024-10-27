@@ -4,7 +4,7 @@ import "../styles/surveyForm.css";
 const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id, key}) => {
     const [answered, setAnswered] = useState(0);
     const [topicQuestionElements, setTopicQuestionElements] = useState([]);
-    const [topicQuestionWidth, setTopicQuestionWidth] = useState(150);
+    const [topicQuestionWidth, setTopicQuestionWidth] = useState(30);
     const [clickedButtons, setClickedButtons] = useState({});
 
     useEffect(() => {
@@ -16,9 +16,9 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id, 
     useEffect(() => {
         // Apply width of 250px to each element
         topicQuestionElements.forEach(element => {
-          element.style.width = '250px';
+          element.style.width = topicQuestionWidth + 'ex';
         });
-    }, [topicQuestionElements]);
+    }, [topicQuestionElements, topicQuestionWidth]);
 
     const clickHandler = (response, topic) => {
         const rowID = topic.topic_id !== undefined ? topic.topic_id : topic.question;
@@ -40,13 +40,13 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id, 
     const buttonClass = (response, topic) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
         const rowID = topic.topic_id !== undefined ? topic.topic_id: topic.question;
-        return clickedButtons[rowID] === response ? 'clicked' : 'response-button';
+        return clickedButtons[rowID] === response ? 'response clicked' : 'response unclicked';
     };
 
     const verticalLineClass = (topic) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
         const rowID = topic.topic_id !== undefined ? topic.topic_id: topic.question;
-        return clickedButtons[rowID] != null ? 'green-vertical-line' : 'red-vertical-line';
+        return clickedButtons[rowID] != null ? 'vertical-line green-vertical-line' : 'vertical-line red-vertical-line';
     }
 
     const fetchData = useCallback(() =>  {
@@ -74,24 +74,26 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id, 
 
     const topics = rubricData.topics.map(topic => {
         const length = Object.keys(topic.responses).length;
-        if (topic.question.length > 60 && topicQuestionWidth !== 250 ) {
+        if (topic.question.length > 60 && topicQuestionWidth !== 30 ) {
             const elements = document.getElementsByClassName('row-topic-question-container');
             setTopicQuestionElements(Array.from(elements));
-            setTopicQuestionWidth(250);
+            setTopicQuestionWidth(60);
         }
         return (
             <div className='row-container' id={topic.question}>
                 <div className={verticalLineClass(topic)}>
-                    <div className='row-topic-question-container' style={{'minWidth': topicQuestionWidth +'px'}}>    
-                        <span className='question' >{topic.question}</span>
+                    <div className='row-topic-question-container'>    
+                        <span className='topic-question'>{topic.question}</span>
                     </div>
-                    {Object.values(topic.responses).map((response, index) => {
-                        return (
-                            <div className='table-data-container' style={{width: 100 / length +'%'}}>
-                                <button onClick={() => clickHandler(response, topic) } className={buttonClass(response, topic)} style={{'fontSize': 100 - (length / 5) +'%'}}>{response}</button>
-                            </div>    
-                        )})}
-                </div>        
+                    <div className="response-container">
+                        {Object.values(topic.responses).map((response, index) => {
+                            return (
+                                <div className='table-data-container' style={{flex: 100 / length +'%', 'fontSize': 100 - (length / 5) +'%'}}>
+                                    <button onClick={() => clickHandler(response, topic) } className={buttonClass(response, topic)}>{response}</button>
+                                </div>    
+                            )})}
+                    </div>
+                </div>      
             </div>
     )});
 

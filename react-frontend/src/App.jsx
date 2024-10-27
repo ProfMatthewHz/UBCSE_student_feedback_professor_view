@@ -30,6 +30,8 @@ function App() {
           })
           .catch((err) => {
             console.error('There was a problem with your fetch operation:', err);
+            // If we fail to get the user flag, redirect to the starting page
+            window.location.href = `${process.env.REACT_APP_API_START}`;
           });
   };
   useEffect(() => {
