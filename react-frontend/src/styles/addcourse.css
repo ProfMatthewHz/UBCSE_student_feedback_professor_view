@@ -40,11 +40,9 @@ h2.add-header {
   width: 65%;
 }
 
-
-
 .add-form__submit--container {
   display: flex;
-  justify-content: end !important;
+  justify-content: flex-end !important;
 }
 
 .form__submit:hover {

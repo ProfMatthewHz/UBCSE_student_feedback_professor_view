@@ -34,23 +34,20 @@ review_id -> x,
     ]
 */
 
-$postData = json_decode(file_get_contents('php://input'), true);
-
 //When submit button is pressed
-if (!empty($postData)) {
-    if (!isset($postData['review_id'], $postData['responses'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!isset($_POST['review_id'], $_POST['responses'])) {
         http_response_code(403);
         echo json_encode(array('error' => 'Bad request: Missing required POST data'));
         exit();
     }
 
-    $review_id = $postData['review_id'];
+    $review_id = $_POST['review_id'];
     $review_id = filter_var($review_id, FILTER_SANITIZE_NUMBER_INT);
     $eval_id = getEvalForReview($con, $review_id);
 
     if (empty($eval_id)) {
         $student_scores=array();
-        $eval_id = addNewEvaluation($con, $review_id);
     } else {
         // Get any existing scores
         $student_scores=getEvalScores($con, $eval_id);
@@ -59,7 +56,7 @@ if (!empty($postData)) {
     $mc_answers = $_SESSION['mc_answers'];
 
     // response array //
-    $response = $postData['responses'];
+    $response = json_decode($_POST['responses']);
 
     // for each response, update or add score //
     foreach ($response as $topic_id => $score) {
@@ -83,11 +80,14 @@ if (!empty($postData)) {
             echo json_encode(array('error' => 'Bad request: Request only valid from within app'));
             exit();
         }
-
         if (array_key_exists($topic_id, $student_scores)) {
             // Update the existing score if it exists
             updateExistingScore($con, $eval_id, $topic_id, $score_id);
         } else {
+            if (empty($eval_id)) {
+                // Create the new evaluation if it does not exist
+                $eval_id = addNewEvaluation($con, $review_id);
+            }
             // Insert a new score if it had not existed
             insertNewScore($con, $eval_id, $topic_id, $score_id);
         }

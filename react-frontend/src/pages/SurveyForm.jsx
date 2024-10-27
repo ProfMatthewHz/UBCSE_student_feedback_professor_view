@@ -16,27 +16,18 @@ const SurveyForm = () => {
   const navigate = useNavigate();
 
   const sendSurveyDataToBackend = async () => {
-    const requestData = {
-      review_id: reviewIDs[groupMemberIndex],
-      responses: surveyResults
-    };
+    const formdata = new FormData();
+    formdata.append('review_id', reviewIDs[groupMemberIndex]);
+    formdata.append('responses', JSON.stringify(surveyResults));
     
-    try {
-      const response = await fetch(process.env.REACT_APP_API_URL_STUDENT + 'buildPeerEvalForm.php', {
-        method: 'POST',
-        credentials: "include",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestData)
-      });
+    const response = await fetch(process.env.REACT_APP_API_URL_STUDENT + 'buildPeerEvalForm.php', {
+      method: 'POST',
+      credentials: "include",
+      body: formdata
+    });
   
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-  
-    } catch (error) {
-      console.error('Error:', error);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
   };
 
@@ -100,7 +91,6 @@ const SurveyForm = () => {
             console.error('Error:', error);
         }
     };
-
     fetchData();
   }, [location.state.survey_id]);
 
@@ -128,11 +118,11 @@ const SurveyForm = () => {
         }
       </div>
       {showPrevious && (
-        <button className="previousButton" onClick={previousButtonClickHandler}>PREVIOUS</button>
+        <button className="directional green previous" onClick={previousButtonClickHandler}>PREVIOUS</button>
       )}
       {surveyData != null && groupMembers != null && (
       <button 
-        className={Object.keys(surveyResults).length === Object.keys(surveyData.topics).length ? 'nextFinishButtonGreen': 'nextFinishButtonRed' }
+        className={Object.keys(surveyResults).length === Object.keys(surveyData.topics).length ? 'directional next green': 'directional next red' }
         onClick={nextButtonClickHandler}>
         {Object.keys(surveyResults).length === Object.keys(surveyData.topics).length ? buttonText: buttonText === 'FINISH' ? 'FINISH' : 'SKIP'}
       </button>)}
