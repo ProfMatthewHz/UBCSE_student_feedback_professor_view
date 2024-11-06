@@ -209,7 +209,7 @@ function getCurrentSurveys($con, $id) {
         $retVal[$row[2]] = array($row[0], $row[1], $e, true, $fully_submitted, false, false, $s);
     }
     $stmt->close();
-// Sort the array to be in chronological order
+    // Sort the array to be in chronological order
     uasort($retVal, 'chronologicalComparator');
     return $retVal;
 }
@@ -226,7 +226,7 @@ function getUpcomingSurveys($con, $id) {
         $retVal[$row[2]] = array($row[0], $row[1], $s, true, false, false, false, $e);
     }
     $stmt->close();
-// Sort the array to be in chronological order
+    // Sort the array to be in chronological order
     uasort($retVal, 'chronologicalComparator');
     return $retVal;
 }

@@ -2,7 +2,7 @@
 # Local development mode
 #define("SITE_HOME","http://localhost/StudentSurvey/backend/");
 #define("INSTRUCTOR_HOME","http://localhost/StudentSurvey/backend/instructor/");
-#define("FRONTEND_HOME","http://localhost:3000//teamwork/instructor/");
+#define("FRONTEND_HOME","http://localhost:3000/teamwork/instructor");
 
 # Local testing mode
 #define("SITE_HOME","http://localhost/StudentSurvey/backend/");

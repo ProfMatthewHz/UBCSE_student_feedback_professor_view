@@ -38,6 +38,13 @@ img.pairing-mode-img {
   float: right;
 }
 
+.form__item--file-label--optional {
+  display: flex;
+  flex-direction: row;
+  font-size: small;
+  color: rgba(34, 92, 181, 0.7);
+}
+
 @media screen and (max-width: 800px) {
 
   .add-survey--row-container {

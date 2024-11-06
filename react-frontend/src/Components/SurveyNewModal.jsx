@@ -19,6 +19,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
   const [multiplier, setMultiplier] = useState("1");
   const [useMultipler, setUseMultiplier] = useState(false);
   const [pairingImage, setPairingImage] = useState(Team);
+  const [CSVFileDescription, setCSVFileDescription] = useState("");
   const [emptyCSVFileError, setEmptyCSVFileError] = useState(false);
   const [emptySurveyNameError, setEmptyNameError] = useState(false);
   const [emptyStartTimeError, setEmptyStartTimeError] = useState(false);
@@ -28,7 +29,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
   const [startAfterCurrentError, setStartAfterCurrentError] = useState(false);
   const [startAfterEndError, setStartAfterEndError] = useState(false);
 
-  const handleUpdateImage = (pairing) => {
+  const updateImage = (pairing) => {
     switch (pairing) {
       case 'TEAM':
         setPairingImage(Team);
@@ -63,7 +64,8 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
   const handleChangePairing = (e) => {
     let pairing = parseInt(e.target.value);
     let pairingMode = findPairingData(pairing, pairing_modes);
-    handleUpdateImage(pairingMode.text);
+    setCSVFileDescription(pairingMode.file_organization);
+    updateImage(pairingMode.text);
     setValuePairing(pairing);
     setUseMultiplier(pairingMode.usesMultiplier);
   };
@@ -372,6 +374,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
           )}
           {pairing_modes && <label className="form__item--file-label" htmlFor="csv-file">
             CSV File Upload
+            <span className="form__item--file-label--optional">{CSVFileDescription}</span>
             <input
               className={emptyCSVFileError ? "form__item-input-error" : undefined}
               id="csv-file"
