@@ -4,14 +4,24 @@ import "../styles/survey.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const SurveyPreview = () => {
+    const [surveyResults, setSurveyResults] = useState([]);
     const location = useLocation();
     const [rubricData, setRubricData] = useState(null);
+    const [advanceButtonState, setAdvanceButtonState] = useState('red');
     const Navigate = useNavigate();
 
     const returnButtonClickHandler = async () => {
         Navigate("../");
         return; // Simulate the student survey view
     }
+
+    useEffect(() => {
+        if (rubricData && (Object.keys(surveyResults).length === Object.keys(rubricData.topics).length)) {
+         setAdvanceButtonState('green');
+        } else {
+         setAdvanceButtonState('red');
+        }
+    }, [rubricData, surveyResults]);
 
     useEffect(() => {
       const postData = async () => {
@@ -50,12 +60,12 @@ const SurveyPreview = () => {
             <div>
                 <SurveyFormRow
                     rubricData={rubricData}
-                    surveyResults={null}
-                    setSurveyResults={null}
+                    surveyResults={surveyResults}
+                    setSurveyResults={setSurveyResults}
                     survey_id={null}
                 />
             </div>
-            <button className='directional next green' onClick={returnButtonClickHandler}>
+            <button className={'directional next ' + advanceButtonState} onClick={returnButtonClickHandler}>
               FINISH
             </button>
         </div>
