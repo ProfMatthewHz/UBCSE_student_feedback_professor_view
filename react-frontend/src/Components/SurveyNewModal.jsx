@@ -244,12 +244,12 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               value={surveyName !== "" ? surveyName : ""}
               onChange={(e) => setSurveyName(e.target.value)}
             />
-            {emptySurveyNameError ? (
+            {emptySurveyNameError && (
               <label className="form__item--error-label">
                 <div className="form__item--red-warning-sign" />
                 Survey name cannot be empty
               </label>
-            ) : null}
+            )}
           </label>
           <div className="add-survey--row-with-errors-container">
             <div className="add-survey--row-container">
@@ -277,18 +277,26 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                     />
                   </label>
                 </div>
-                {startAfterEndError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  Start must be earlier than end</label> : null}
-                {startAfterCurrentError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  Start must be in the future</label> : null}
-                {emptyStartDateError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  Start date cannot be empty</label> : null}
-                {emptyStartTimeError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  Start time cannot be empty</label> : null}
+                {startAfterEndError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    Start must be earlier than end
+                  </label>)}
+                {startAfterCurrentError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    Start must be in the future
+                  </label>)}
+                {emptyStartDateError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    Start date cannot be empty
+                  </label>)}
+                {emptyStartTimeError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    Start time cannot be empty
+                  </label>)}
               </div>
 
               <div className="add-survey--col-with-error-container">
@@ -315,15 +323,21 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                     />
                   </label>
                 </div>
-                {startAfterEndError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  End must be later than start</label> : null}
-                {emptyEndDateError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  End date cannot be empty</label> : null}
-                {emptyEndTimeError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  End time cannot be empty</label> : null}
+                {startAfterEndError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    End must be later than start
+                  </label>)}
+                {emptyEndDateError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    End date cannot be empty
+                  </label>)}
+                {emptyEndTimeError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    End time cannot be empty
+                  </label>)}
               </div>
             </div>
           </div>
@@ -382,11 +396,11 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               placeholder="Upload The File"
               onChange={(e) => setCsvFile(e.target.files[0])}
             />
-            {emptyCSVFileError ? (
+            {emptyCSVFileError && (
               <label className="form__item--error-label">
                 <div className="form__item--red-warning-sign" />
-                Select a file</label>
-            ) : null}
+                Select a file
+              </label>)}
           </label>}
           <div className="form__item--confirm-btn-container">
             <button className="form__item--confirm-btn" onClick={verifyAndPostSurvey}>

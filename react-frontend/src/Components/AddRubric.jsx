@@ -484,7 +484,7 @@ const AddRubric = ({ updateRubrics, handleCloseModal, duplicatedRubricData }) =>
                       )}
                     </td>
                   ))}
-                  {rubricData["levels"] && rubricData["levels"].length < 5 ? (
+                  {rubricData["levels"] && rubricData["levels"].length < 5 && (
                     <td className="addrubric--add-level-btn-container">
                       <button
                         onClick={() => handleAddColumn()}
@@ -492,7 +492,7 @@ const AddRubric = ({ updateRubrics, handleCloseModal, duplicatedRubricData }) =>
                         + Add Level
                       </button>
                     </td>
-                  ) : null}
+                  )}
                 </tr>
                 {/* Rows of Criterion Names & Responses */}
                 {rubricData["topics"] &&
@@ -512,9 +512,9 @@ const AddRubric = ({ updateRubrics, handleCloseModal, duplicatedRubricData }) =>
                           />
                         </td>
                       ))}
-                      {rubricData["levels"] && rubricData["levels"].length < 5 ? (
+                      {rubricData["levels"] && rubricData["levels"].length < 5 && (
                         <td className="addrubric--add-column-input-container"></td>
-                      ) : null}
+                      )}
                     </tr>
                   ))}
               </tbody>
@@ -605,7 +605,7 @@ const AddRubric = ({ updateRubrics, handleCloseModal, duplicatedRubricData }) =>
                               )}
                           </td>
                         ))}
-                        {rubricData["topics"] && rubricData["topics"].length > 1 ? (
+                        {rubricData["topics"] && rubricData["topics"].length > 1 && (
                           <div
                             className={
                               deleteRowHovered[criterionIndex]
@@ -620,7 +620,7 @@ const AddRubric = ({ updateRubrics, handleCloseModal, duplicatedRubricData }) =>
                             >
                             </button>
                           </div>
-                        ) : null}
+                        )}
                       </tr>
                     ))}
                   <tr className="addrubric--criterion-row">

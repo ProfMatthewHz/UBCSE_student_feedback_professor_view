@@ -27,6 +27,11 @@
 
 select.surveyactions--select {
   width: 140px;
+  background-color: #EF6C22;
+  color: "white";
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
 }
 
 .courseContent {

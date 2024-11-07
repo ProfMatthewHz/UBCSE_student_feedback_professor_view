@@ -197,24 +197,36 @@ return (
                         />
                         </label>
                     </div>
-                    {emptyFieldsError ? <label className="form__item--error-label">
-                        <div className="form__item--red-warning-sign"/>
-                        New date and time must be entered</label> : null}
-                    {startDateGreater ? <label className="form__item--error-label">
-                        <div className="form__item--red-warning-sign"/>
-                        End date must be later than start date</label> : null}
-                    {startHourIsGreater ? <label className="form__item--error-label">
-                        <div className="form__item--red-warning-sign"/>
-                        New end time must be later than starting time</label> : null}
-                    {mustBeAfterCurrentTime ? <label className="form__item--error-label">
-                        <div className="form__item--red-warning-sign"/>
-                        End date cannot be in the past</label> : null}
-                    {newEndMustComeAfterOldEndDay ? <label className="form__item--error-label">
-                        <div className="form__item--red-warning-sign"/>
-                        New end date must be later than current end date</label> : null}
-                    {newEndMustComeAfterOldEndHour ? <label className="form__item--error-label">
-                        <div className="form__item--red-warning-sign"/>
-                        New end time must be later than current end time</label> : null}
+                    {emptyFieldsError && (
+                        <label className="form__item--error-label">
+                            <div className="form__item--red-warning-sign"/>
+                            New date and time must be entered
+                        </label>)}
+                    {startDateGreater && (
+                        <label className="form__item--error-label">
+                            <div className="form__item--red-warning-sign"/>
+                            End date must be later than start date
+                        </label>)}
+                    {startHourIsGreater && (
+                        <label className="form__item--error-label">
+                            <div className="form__item--red-warning-sign"/>
+                            New end time must be later than starting time
+                        </label>)}
+                    {mustBeAfterCurrentTime && (
+                        <label className="form__item--error-label">
+                            <div className="form__item--red-warning-sign"/>
+                            End date cannot be in the past
+                        </label>)}
+                    {newEndMustComeAfterOldEndDay && (
+                        <label className="form__item--error-label">
+                            <div className="form__item--red-warning-sign"/>
+                            New end date must be later than current end date
+                            </label>)}
+                    {newEndMustComeAfterOldEndHour && (
+                        <label className="form__item--error-label">
+                            <div className="form__item--red-warning-sign"/>
+                            New end time must be later than current end time
+                        </label>)}
                 </div>
             </div>
             <div className="form__item--confirm-btn-container">

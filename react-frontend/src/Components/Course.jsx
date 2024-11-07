@@ -13,14 +13,49 @@ import SurveyConfirmModal from "./SurveyConfirmModal";
 import SurveyNewModal from "./SurveyNewModal";
 import RosterUpdateModal from "./RosterUpdateModal";
 
-/**
- * @component
- * @param {Object} course 
- * @param {String} page // What page the component is being used on. Either Home or History
- * @returns 
- */
 const Course = ({course, page}) => {
     const [surveys, setSurveys] = useState([]);
+    const [extendModal, setExtendModal] = useState(false);
+    const [duplicateModal, setDuplicateModal] = useState(false);
+
+    const [deleteModal, setDeleteModal] = useState(false);
+    const [addSurveyModalIsOpen, setAddSurveyModalIsOpen] = useState(false);
+    const [errorModalIsOpen, setModalIsOpenError] = useState(false);
+    const [errorsList, setErrorsList] = useState([]);
+    const [modalIsOpenSurveyConfirm, setModalIsOpenSurveyConfirm] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [teamReviewModal, setTeamReviewModal] = useState(false);
+    const [currentSurvey, setCurrentSurvey] = useState("");
+
+    const [showViewResultsModal, setViewResultsModal] = useState(false);
+    const [viewingCurrentSurvey, setViewingCurrentSurvey] = useState(null);
+
+    const [updateRosterError, setUpdateRosterError] = useState([]);
+
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [rubrics, setRubrics] = useState([]);
+    const [pairingModesFull, setPairingModesFull] = useState([]);
+    const [survey_confirm_data, setSurveyConfirmData] = useState(null);
+
+    const processSurveys = (result) => {
+        const activeSurveys = result.active.map((survey_info) => ({
+            ...survey_info,
+            expired: false,
+            active : true,
+        }));
+        const expiredSurveys = result.expired.map((survey_info) => ({
+            ...survey_info,
+            expired: true,
+            active: false,
+        }));
+        const upcomingSurveys = result.upcoming.map((survey_info) => ({
+            ...survey_info,
+            expired: false,
+            active: false,
+        }));
+        setSurveys([...activeSurveys, ...expiredSurveys, ...upcomingSurveys]);
+    };
 
     /**
      * Perform a POST call to courseSurveysQueries 
@@ -37,50 +72,12 @@ const Course = ({course, page}) => {
             }),
         })
         .then((res) => res.json())
-        .then((result) => {
-            const activeSurveys = result.active.map((survey_info) => ({
-                ...survey_info,
-                expired: false,
-            }));
-            const expiredSurveys = result.expired.map((survey_info) => ({
-                ...survey_info,
-                expired: true,
-            }));
-            const upcomingSurveys = result.upcoming.map((survey_info) => ({
-                ...survey_info,
-                expired: false,
-            }));
-            setSurveys([...activeSurveys, ...expiredSurveys, ...upcomingSurveys]);
-        })
+        .then(processSurveys)
         .catch((err) => {
             console.log(err);
             throw err;
         });
     }
-
-    // MODAL CODE
-    const [actionsButtonValue, setActionsButtonValue] = useState("");
-    const [extendModal, setExtendModal] = useState(false);
-    const [duplicateModal, setDuplicateModal] = useState(false);
-
-    const [deleteModal, setDeleteModal] = useState(false);
-    const [addSurveyModalIsOpen, setAddSurveyModalIsOpen] = useState(false);
-    const [errorModalIsOpen, setModalIsOpenError] = useState(false);
-    const [errorsList, setErrorsList] = useState([]);
-    const [modalIsOpenSurveyConfirm, setModalIsOpenSurveyConfirm] = useState(false);
-    const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [currentSurvey, setCurrentSurvey] = useState("");
-
-    const [showViewResultsModal, setViewResultsModal] = useState(false);
-    const [viewingCurrentSurvey, setViewingCurrentSurvey] = useState(null);
-
-    const [updateRosterError, setUpdateRosterError] = useState([]);
-
-    const [showErrorModal, setShowErrorModal] = useState(false);
-    const [showToast, setShowToast] = useState(false);
-    const [rubrics, setRubrics] = useState([]);
-    const [pairingModesFull, setPairingModesFull] = useState([]);
-    const [survey_confirm_data, setSurveyConfirmData] = useState(null);
 
     /**
      * Create the effect which loads all of the potential rubrics from the system 
@@ -193,27 +190,27 @@ const Course = ({course, page}) => {
 
   let Navigate = useNavigate();
   async function handleActionButtonChange(e, survey) {
-        setActionsButtonValue(e.target.value);
-
         if (e.target.value === "Duplicate") {
             setCurrentSurvey(survey);
             setDuplicateModal(true);
         }
-        if (e.target.value === "Delete") {
+        else if (e.target.value === "Delete") {
             setCurrentSurvey(survey);
             setDeleteModal(true);
         }
-        if (e.target.value === "Extend") {
+        else if (e.target.value === "Extend") {
             setCurrentSurvey(survey);
             setExtendModal(true);
         }
-        if (e.target.value === "View Results") {
+        else if (e.target.value === "View Results") {
             handleViewResultsModalChange(survey);
         }
-        if (e.target.value === "Preview Survey") {
+        else if (e.target.value === "Preview Survey") {
             Navigate("/SurveyPreview", {state:{survey_name: survey.name, rubric_id: survey.rubric_id, course: course.code}});
+        } else if (e.target.value === "Team Review") {
+            setCurrentSurvey(survey);
+            setTeamReviewModal(true);
         }
-        setActionsButtonValue("");
     }
 
 
@@ -242,22 +239,7 @@ const Course = ({course, page}) => {
             }),
         })
             .then((res) => res.json())
-            .then((result) => {
-                const activeSurveys = result.active.map((survey_info) => ({
-                    ...survey_info,
-                    expired: false,
-                }));
-                const expiredSurveys = result.expired.map((survey_info) => ({
-                    ...survey_info,
-                    expired: true,
-                }));
-                const upcomingSurveys = result.upcoming.map((survey_info) => ({
-                    ...survey_info,
-                    expired: false,
-                }));
-
-                setSurveys([...activeSurveys, ...expiredSurveys, ...upcomingSurveys]);
-            })
+            .then(processSurveys)
             .catch((err) => {
                 console.log(err);
             });
@@ -347,6 +329,17 @@ const Course = ({course, page}) => {
                 rubric_id={rubrics[0].id}
                 rubrics_list={rubrics}/>
             )}
+            {/* Add Survey modal display */}
+            {teamReviewModal && (
+            <SurveyNewModal
+                modalClose={closeNewSurveyModalAdd}
+                modalReason="Add"
+                button_text="Verify Survey"
+                survey_data={ {course_name : course.code, course_id : course.id, survey_name : "", } }
+                pairing_modes ={pairingModesFull}
+                rubric_id={rubrics[0].id}
+                rubrics_list={rubrics}/>
+            )}
             {/* Add Survey to a course modal*/}
             {duplicateModal && (
             <SurveyNewModal
@@ -369,7 +362,7 @@ const Course = ({course, page}) => {
                     <h2>
                         {course.code}: {course.name}
                     </h2>
-                    {page === "home" ? (
+                    {page === "home" && (
                         <div className="courseHeader-btns">
                             <button className="btn add-btn" onClick={openAddSurveyModal}>
                                 + Add Survey
@@ -382,7 +375,7 @@ const Course = ({course, page}) => {
                                 Update Roster
                             </button>
                         </div>
-                    ) : null}
+                    )}
                 </div>
 
                 {surveys.length > 0 ? (
@@ -409,15 +402,8 @@ const Course = ({course, page}) => {
                                     {page === "home" ? (
                                         <select
                                             className="surveyactions--select"
-                                            style={{
-                                                backgroundColor: "#EF6C22",
-                                                color: "white",
-                                                fontSize: "18px",
-                                                fontWeight: "bold",
-                                                textAlign: "center",
-                                            }}
                                             onChange={(e) => handleActionButtonChange(e, survey)}
-                                            value={actionsButtonValue}
+                                            value=''
                                         >
                                             <option
                                                 className="surveyactions--option"
@@ -432,6 +418,15 @@ const Course = ({course, page}) => {
                                             >
                                                 Preview Survey
                                             </option>
+                                            {/* Future expansion to allow updating evaluation assignments */}
+                                            {!survey.active && false && (
+                                                <option
+                                                    className="surveyactions--option"
+                                                    value="Team Review"
+                                                >
+                                                    Update Evaluation Assignments
+                                                </option>
+                                            )}
                                             <option
                                                 className="surveyactions--option"
                                                 value="View Results"
@@ -457,14 +452,14 @@ const Course = ({course, page}) => {
                                                 Delete
                                             </option>
                                         </select>
-                                    ) : page === "history" ? (
+                                    ) : page === "history" && (
                                         <button
                                             className="viewresult-button"
                                             onClick={() => handleViewResultsModalChange(survey)}
                                         >
                                             View Results
                                         </button>
-                                    ) : null}
+                                    )}
                                     {/* Add more options as needed */}
                                 </td>
                             </tr>
