@@ -1,8 +1,8 @@
 <?php
 # Local development mode
-#define("SITE_HOME","http://localhost/StudentSurvey/backend/");
-#define("INSTRUCTOR_HOME","http://localhost/StudentSurvey/backend/instructor/");
-#define("FRONTEND_HOME","http://localhost:3000/teamwork/instructor");
+define("SITE_HOME","http://localhost/StudentSurvey/backend/");
+define("INSTRUCTOR_HOME","http://localhost/StudentSurvey/backend/instructor/");
+define("FRONTEND_HOME","http://localhost:3000/teamwork/instructor");
 
 # Local testing mode
 #define("SITE_HOME","http://localhost/StudentSurvey/backend/");
@@ -15,9 +15,9 @@
 #define("FRONTEND_HOME","http://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build/");
 
 # Production mode
-define("SITE_HOME","https://cse.buffalo.edu/teamwork/backend/");
-define("INSTRUCTOR_HOME","https://cse.buffalo.edu/teamwork/backend/instructor/");
-define("FRONTEND_HOME","https://cse.buffalo.edu/teamwork/react-frontend/build/");
+#define("SITE_HOME","https://cse.buffalo.edu/teamwork/backend/");
+#define("INSTRUCTOR_HOME","https://cse.buffalo.edu/teamwork/backend/instructor/");
+#define("FRONTEND_HOME","https://cse.buffalo.edu/teamwork/react-frontend/build/");
 
 define("SESSIONS_SALT", "session-salt");
 define("PBKDF2_ITERS", 50000);
