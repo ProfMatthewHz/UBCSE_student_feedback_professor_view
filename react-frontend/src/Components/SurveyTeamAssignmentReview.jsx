@@ -106,7 +106,7 @@ return (
                             sortable />
                           {surveyHeaders.map((header) => {
                               return <Column field={header} header={header} sortable />
-                            }
+                            })
                           }
                   </DataTable>
                 </div>
