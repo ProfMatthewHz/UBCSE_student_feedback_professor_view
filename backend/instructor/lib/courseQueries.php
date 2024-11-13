@@ -1,4 +1,6 @@
 <?php
+require_once '../lib/constants.php';
+
 function addCourse($con, $course_code, $course_name, $semester, $course_year) {
   $stmt = $con->prepare('INSERT INTO courses (code, name, semester, year) VALUES (?, ?, ?, ?)');
   $stmt->bind_param('ssii', $course_code, $course_name, $semester, $course_year);
@@ -92,10 +94,10 @@ function getSurveysFromSingleCourse($con, $course_id){
   // Set expected key-value pairs (survey availability)  and error if there is one.
   $retVal["error"] = "";
   $retVal["upcoming"] = array();
-  $retVal["active"] = array();
+  $retVal["active"] = array(); 
   $retVal["expired"] = array();
   
-  $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
+  $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, surveys.survey_type_id, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
                          FROM surveys
                          LEFT JOIN reviews ON reviews.survey_id=surveys.id
                          LEFT JOIN evals ON evals.review_id=reviews.id
@@ -112,8 +114,7 @@ function getSurveysFromSingleCourse($con, $course_id){
 
     $today = new DateTime();
 
-    foreach ($surveys as $s){
-
+    foreach ($surveys as $s) {
       $survey_info = array();
       $survey_info['course_id'] = $course_id;
       $survey_info['name'] = $s['name'];
@@ -121,6 +122,8 @@ function getSurveysFromSingleCourse($con, $course_id){
       $survey_info['end_date'] = $s['end_date'];
       $survey_info['rubric_id'] = $s['rubric_id'];
       $survey_info['id'] = $s['id'];
+      $survey_info['survey_type'] = $s['survey_type_id'];
+
       // Generate and store that progress as text
       $percentage = 0;
       if ($s['total'] != 0) {
@@ -129,25 +132,22 @@ function getSurveysFromSingleCourse($con, $course_id){
       $survey_info['completion'] = $percentage . '% completed';
 
       // determine status of survey. then adjust dates to more friendly format
-      $s = new DateTime($survey_info['start_date']);
-      $e = new DateTime($survey_info['end_date']);
+      $start = new DateTime($survey_info['start_date']);
+      $end = new DateTime($survey_info['end_date']);
 
       $survey_info['sort_start_date'] = $survey_info['start_date'];
       $survey_info['sort_expiration_date'] = $survey_info['end_date'];
-      $survey_info['start_date'] = $s->format('M j').' at '. $s->format('g:i A');
-      $survey_info['end_date'] = $e->format('M j').' at '. $e->format('g:i A');
+      $survey_info['start_date'] = $start->format('M j').' at '. $start->format('g:i A');
+      $survey_info['end_date'] = $end->format('M j').' at '. $end->format('g:i A');
 
-      if ($today < $s) {
+      if ($today < $start) {
         $retVal['upcoming'][] = $survey_info;
-      } else if ($today < $e) {
+      } else if ($today < $end) {
         $retVal['active'][] = $survey_info;
       } else {
         $retVal['expired'][] = $survey_info;
       }
-
     }
-    unset($s);
-    
   } else {
     $retVal['error'] = "There is no survey data for course [" . $course_id . "]";
   }
@@ -155,9 +155,6 @@ function getSurveysFromSingleCourse($con, $course_id){
   
   return $retVal;
 }
-
-
-require_once '../lib/constants.php';
 
 function getInstructorHistoricalTerms($con, $instructor_id) {
   // Get the current semester and year

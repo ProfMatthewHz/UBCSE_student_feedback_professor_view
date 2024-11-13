@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/course.css";
 import "../styles/modal.css";
 import "../styles/duplicatesurvey.css";
@@ -12,8 +12,9 @@ import ErrorsModal from "./ErrorsModal";
 import SurveyConfirmModal from "./SurveyConfirmModal";
 import SurveyNewModal from "./SurveyNewModal";
 import RosterUpdateModal from "./RosterUpdateModal";
+import SurveyTeamAssignmentReviewModal from "./SurveyTeamAssignmentReviewModal";
 
-const Course = ({course, page}) => {
+const Course = ({ course, page }) => {
     const [surveys, setSurveys] = useState([]);
     const [extendModal, setExtendModal] = useState(false);
     const [duplicateModal, setDuplicateModal] = useState(false);
@@ -42,7 +43,7 @@ const Course = ({course, page}) => {
         const activeSurveys = result.active.map((survey_info) => ({
             ...survey_info,
             expired: false,
-            active : true,
+            active: true,
         }));
         const expiredSurveys = result.expired.map((survey_info) => ({
             ...survey_info,
@@ -71,12 +72,12 @@ const Course = ({course, page}) => {
                 "course-id": course.id,
             }),
         })
-        .then((res) => res.json())
-        .then(processSurveys)
-        .catch((err) => {
-            console.log(err);
-            throw err;
-        });
+            .then((res) => res.json())
+            .then(processSurveys)
+            .catch((err) => {
+                console.log(err);
+                throw err;
+            });
     }
 
     /**
@@ -87,17 +88,17 @@ const Course = ({course, page}) => {
             method: "GET",
             credentials: "include",
         })
-        .then((res) => res.json())
-        .then((result) => {
-            //this is an array of objects of example elements {id: 1, description: 'exampleDescription'}
-            let rubricIDandDescriptions = result.rubrics.map((element) => element);
-            // An array of just the descriptions of the rubrics
-            setRubrics(rubricIDandDescriptions);
-        })
-        .catch((err) => {
-            console.log(err);
-            throw err;
-        });
+            .then((res) => res.json())
+            .then((result) => {
+                //this is an array of objects of example elements {id: 1, description: 'exampleDescription'}
+                let rubricIDandDescriptions = result.rubrics.map((element) => element);
+                // An array of just the descriptions of the rubrics
+                setRubrics(rubricIDandDescriptions);
+            })
+            .catch((err) => {
+                console.log(err);
+                throw err;
+            });
     }, []);
 
     /**
@@ -108,14 +109,14 @@ const Course = ({course, page}) => {
             method: "GET",
             credentials: "include"
         })
-        .then((res) => res.json())
-        .then((result) => {
-            setPairingModesFull(result.survey_types);
-        })
-        .catch((err) => {
-            console.log(err);
-            throw err;
-        });
+            .then((res) => res.json())
+            .then((result) => {
+                setPairingModesFull(result.survey_types);
+            })
+            .catch((err) => {
+                console.log(err);
+                throw err;
+            });
     };
 
     const openAddSurveyModal = () => {
@@ -136,9 +137,9 @@ const Course = ({course, page}) => {
                 let endDateObject = new Date(dataObject["survey_data"]["end"].date);
                 let surveyName = dataObject["survey_data"]["name"];
                 let rubric_name = dataObject["survey_data"]["rubric_name"];
-                let start = startDateObject.toLocaleString('default', {month: 'short', day: '2-digit'}) + " at " +  startDateObject.toLocaleString('default', {timeStyle: 'short'});
-                let end = endDateObject.toLocaleString('default', {month: 'short', day: '2-digit'}) + " at " +  endDateObject.toLocaleString('default', {timeStyle: 'short'});
-                let survey_data = {course_code: course.code, survey_name: surveyName, rubric_name: rubric_name, start_date: start, end_date: end};
+                let start = startDateObject.toLocaleString('default', { month: 'short', day: '2-digit' }) + " at " + startDateObject.toLocaleString('default', { timeStyle: 'short' });
+                let end = endDateObject.toLocaleString('default', { month: 'short', day: '2-digit' }) + " at " + endDateObject.toLocaleString('default', { timeStyle: 'short' });
+                let survey_data = { course_code: course.code, survey_name: surveyName, rubric_name: rubric_name, start_date: start, end_date: end };
                 setSurveyConfirmData(survey_data);
                 setModalIsOpenSurveyConfirm(true);
             } else {
@@ -163,13 +164,18 @@ const Course = ({course, page}) => {
     };
 
 
-  const closeNewSurveyModalDuplicate = (result) => {
-    // Response is either the onclick event or the new survey response object
-    if (result) {
-      updateAllSurveys();
+    const closeNewSurveyModalDuplicate = (result) => {
+        // Response is either the onclick event or the new survey response object
+        if (result) {
+            let errorsObject = result.errors;
+            if (errorsObject.length === 0) {
+                updateAllSurveys();
+            } else {
+                // TODO: Display the errors in a modal or something.
+            }
+        }
+        setDuplicateModal(false);
     }
-    setDuplicateModal(false);
-  }
 
     const closeModalError = () => {
         setModalIsOpenError(false);
@@ -178,7 +184,7 @@ const Course = ({course, page}) => {
     const closeModalSurveyConfirm = (success) => {
         setSurveyConfirmData(null);
         if (success) {
-          updateAllSurveys();
+            updateAllSurveys();
         }
         setModalIsOpenSurveyConfirm(false);
     };
@@ -188,8 +194,8 @@ const Course = ({course, page}) => {
         setShowUpdateModal(true); // open the update modal again
     };
 
-  let Navigate = useNavigate();
-  async function handleActionButtonChange(e, survey) {
+    let Navigate = useNavigate();
+    async function handleActionButtonChange(e, survey) {
         if (e.target.value === "Duplicate") {
             setCurrentSurvey(survey);
             setDuplicateModal(true);
@@ -206,13 +212,12 @@ const Course = ({course, page}) => {
             handleViewResultsModalChange(survey);
         }
         else if (e.target.value === "Preview Survey") {
-            Navigate("/SurveyPreview", {state:{survey_name: survey.name, rubric_id: survey.rubric_id, course: course.code}});
+            Navigate("/SurveyPreview", { state: { survey_name: survey.name, rubric_id: survey.rubric_id, course: course.code } });
         } else if (e.target.value === "Team Review") {
             setCurrentSurvey(survey);
             setTeamReviewModal(true);
         }
     }
-
 
     const handleUpdateRosterSubmit = (result) => {
         setShowUpdateModal(false);
@@ -247,15 +252,15 @@ const Course = ({course, page}) => {
 
     const extendModalClose = (errorList) => {
         if (errorList && errorList.length > 0) {
-          setErrorsList(errorList);
-          setModalIsOpenError(true);
+            setErrorsList(errorList);
+            setModalIsOpenError(true);
         } else {
-          updateAllSurveys();
+            updateAllSurveys();
         }
         setExtendModal(false);
     }
 
-    const deleteModalClose = (errorList) =>{
+    const deleteModalClose = (errorList) => {
         if (errorList && errorList.length > 0) {
             setErrorsList(errorList);
             setModalIsOpenError(true);
@@ -278,84 +283,84 @@ const Course = ({course, page}) => {
         <div id={course.code} className="courseContainer">
             {/* Survey extendsion modal*/}
             {extendModal &&
-            (<SurveyExtendModal
-                modalClose={extendModalClose}
-                course={course}
-                survey_data={currentSurvey} />
-            )}
+                (<SurveyExtendModal
+                    modalClose={extendModalClose}
+                    course={course}
+                    survey_data={currentSurvey} />
+                )}
             {/* Survey deletion modal*/}
             {deleteModal &&
-            (<SurveyDeleteModal
-                modalClose={deleteModalClose}
-                course={course}
-                survey_data={currentSurvey} />
-            )}
+                (<SurveyDeleteModal
+                    modalClose={deleteModalClose}
+                    course={course}
+                    survey_data={currentSurvey} />
+                )}
             {/* Survey creation errors modal*/}
             {errorModalIsOpen && (
-            <ErrorsModal
-                modalClose={closeModalError}
-                error_type={"Survey"}
-                errors={errorsList} />
+                <ErrorsModal
+                    modalClose={closeModalError}
+                    error_type={"Survey"}
+                    errors={errorsList} />
             )}
             {/* Survey creation confirmation modal*/}
             {modalIsOpenSurveyConfirm && (
-            <SurveyConfirmModal
-                modalClose={closeModalSurveyConfirm}
-                survey_data={survey_confirm_data}/>
+                <SurveyConfirmModal
+                    modalClose={closeModalSurveyConfirm}
+                    survey_data={survey_confirm_data} />
             )}
             {/* View Results Modal*/}
             {showViewResultsModal && (
-            <ViewResults
-                closeViewResultsModal={handleViewResultsModalChange}
-                surveyToView={viewingCurrentSurvey}
-                course={course}
-            />
+                <ViewResults
+                    closeViewResultsModal={handleViewResultsModalChange}
+                    surveyToView={viewingCurrentSurvey}
+                    course={course}
+                />
             )}
             {/* Roster error display */}
             {showErrorModal && (
-            <ErrorsModal
+                <ErrorsModal
                     modalClose={handleErrorModalClose}
                     error_type={"Roster Update"}
                     errors={updateRosterError} />
             )}
             {/* Add Survey modal display */}
             {addSurveyModalIsOpen && (
-            <SurveyNewModal
-                modalClose={closeNewSurveyModalAdd}
-                modalReason="Add"
-                button_text="Verify Survey"
-                survey_data={ {course_name : course.code, course_id : course.id, survey_name : "", } }
-                pairing_modes ={pairingModesFull}
-                rubric_id={rubrics[0].id}
-                rubrics_list={rubrics}/>
-            )}
-            {/* Add Survey modal display */}
-            {teamReviewModal && (
-            <SurveyNewModal
-                modalClose={closeNewSurveyModalAdd}
-                modalReason="Add"
-                button_text="Verify Survey"
-                survey_data={ {course_name : course.code, course_id : course.id, survey_name : "", } }
-                pairing_modes ={pairingModesFull}
-                rubric_id={rubrics[0].id}
-                rubrics_list={rubrics}/>
+                <SurveyNewModal
+                    modalClose={closeNewSurveyModalAdd}
+                    modalReason="Add"
+                    button_text="Verify Survey"
+                    survey_data={{ course_name: course.code, course_id: course.id, survey_name: "", pairing_mode: ""}}
+                    pairing_modes={pairingModesFull}
+                    rubric_id={rubrics[0].id}
+                    rubrics_list={rubrics} />
             )}
             {/* Add Survey to a course modal*/}
             {duplicateModal && (
-            <SurveyNewModal
-                modalClose={closeNewSurveyModalDuplicate}
-                modalReason="Duplicate"
-                button_text="Duplicate Survey"
-                survey_data={ {course_name : course.code, course_id : course.id, survey_name : currentSurvey.name + " copy", original_id: currentSurvey.id } }
-                pairing_modes={null}
-                rubric_id={currentSurvey.rubric_id}
-                rubrics_list={rubrics}/>
+                <SurveyNewModal
+                    modalClose={closeNewSurveyModalDuplicate}
+                    modalReason="Duplicate"
+                    button_text="Duplicate Survey"
+                    survey_data={{ course_name: course.code, course_id: course.id, survey_name: currentSurvey.name + " copy", original_id: currentSurvey.id, pairing_mode: currentSurvey.survey_type }}
+                    pairing_modes={pairingModesFull}
+                    rubric_id={currentSurvey.rubric_id}
+                    rubrics_list={rubrics} />
+            )}
+            {/* Review survey's team pairings modal display */}
+            {teamReviewModal && (
+                <SurveyTeamAssignmentReviewModal
+                    modalClose={closeNewSurveyModalAdd}
+                    modalReason="Add"
+                    button_text="Verify Survey"
+                    survey_data={{ course_name: course.code, course_id: course.id, survey_name: "", }}
+                    pairing_modes={pairingModesFull}
+                    rubric_id={rubrics[0].id}
+                    rubrics_list={rubrics} />
             )}
             {/* Show modal to update the roster */}
             {showUpdateModal && (
-            <RosterUpdateModal
-                modalClose={handleUpdateRosterSubmit}
-                course={course}/>
+                <RosterUpdateModal
+                    modalClose={handleUpdateRosterSubmit}
+                    course={course} />
             )}
             <div className="courseContent">
                 <div className="courseHeader">
@@ -381,89 +386,89 @@ const Course = ({course, page}) => {
                 {surveys.length > 0 ? (
                     <table className="surveyTable">
                         <thead>
-                        <tr>
-                            <th>Survey Name</th>
-                            <th>Dates Available</th>
-                            <th>Completion Rate</th>
-                            <th>Survey Actions</th>
-                        </tr>
+                            <tr>
+                                <th>Survey Name</th>
+                                <th>Dates Available</th>
+                                <th>Completion Rate</th>
+                                <th>Survey Actions</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {surveys.map((survey) => (
-                            <tr className="survey-row" key={survey.id}>
-                                <td>{survey.name}</td>
-                                <td>
-                                    Begins: {survey.start_date}
-                                    <br/>
-                                    Ends: {survey.end_date}
-                                </td>
-                                <td>{survey.completion}</td>
-                                <td>
-                                    {page === "home" ? (
-                                        <select
-                                            className="surveyactions--select"
-                                            onChange={(e) => handleActionButtonChange(e, survey)}
-                                            value=''
-                                        >
-                                            <option
-                                                className="surveyactions--option"
-                                                value=""
-                                                disabled
+                            {surveys.map((survey) => (
+                                <tr className="survey-row" key={survey.id}>
+                                    <td>{survey.name}</td>
+                                    <td>
+                                        Begins: {survey.start_date}
+                                        <br />
+                                        Ends: {survey.end_date}
+                                    </td>
+                                    <td>{survey.completion}</td>
+                                    <td>
+                                        {page === "home" ? (
+                                            <select
+                                                className="surveyactions--select"
+                                                onChange={(e) => handleActionButtonChange(e, survey)}
+                                                value=''
                                             >
-                                                Actions
-                                            </option>
-                                            <option
-                                                className="surveyactions--option"
-                                                value="Preview Survey"
-                                            >
-                                                Preview Survey
-                                            </option>
-                                            {/* Future expansion to allow updating evaluation assignments */}
-                                            {!survey.active && false && (
                                                 <option
                                                     className="surveyactions--option"
-                                                    value="Team Review"
+                                                    value=""
+                                                    disabled
                                                 >
-                                                    Update Evaluation Assignments
+                                                    Actions
                                                 </option>
-                                            )}
-                                            <option
-                                                className="surveyactions--option"
-                                                value="View Results"
+                                                <option
+                                                    className="surveyactions--option"
+                                                    value="Preview Survey"
+                                                >
+                                                    Preview Survey
+                                                </option>
+                                                {/* Future expansion to allow updating evaluation assignments */}
+                                                {!survey.active && false && (
+                                                    <option
+                                                        className="surveyactions--option"
+                                                        value="Team Review"
+                                                    >
+                                                        Update Evaluation Assignments
+                                                    </option>
+                                                )}
+                                                <option
+                                                    className="surveyactions--option"
+                                                    value="View Results"
+                                                >
+                                                    View Results
+                                                </option>
+                                                <option
+                                                    className="surveyactions--option"
+                                                    value="Duplicate"
+                                                >
+                                                    Duplicate
+                                                </option>
+                                                <option
+                                                    className="surveyactions--option"
+                                                    value="Extend"
+                                                >
+                                                    Extend
+                                                </option>
+                                                <option
+                                                    className="surveyactions--option"
+                                                    value="Delete"
+                                                >
+                                                    Delete
+                                                </option>
+                                            </select>
+                                        ) : page === "history" && (
+                                            <button
+                                                className="viewresult-button"
+                                                onClick={() => handleViewResultsModalChange(survey)}
                                             >
                                                 View Results
-                                            </option>
-                                            <option
-                                                className="surveyactions--option"
-                                                value="Duplicate"
-                                            >
-                                                Duplicate
-                                            </option>
-                                            <option
-                                                className="surveyactions--option"
-                                                value="Extend"
-                                            >
-                                                Extend
-                                            </option>
-                                            <option
-                                                className="surveyactions--option"
-                                                value="Delete"
-                                            >
-                                                Delete
-                                            </option>
-                                        </select>
-                                    ) : page === "history" && (
-                                        <button
-                                            className="viewresult-button"
-                                            onClick={() => handleViewResultsModalChange(survey)}
-                                        >
-                                            View Results
-                                        </button>
-                                    )}
-                                    {/* Add more options as needed */}
-                                </td>
-                            </tr>
-                        ))}
+                                            </button>
+                                        )}
+                                        {/* Add more options as needed */}
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 ) : (

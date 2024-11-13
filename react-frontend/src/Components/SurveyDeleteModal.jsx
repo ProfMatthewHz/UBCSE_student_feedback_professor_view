@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "../styles/modal.css";
-import "../styles/deletesurvey.css";
 
 /* Todo: Update the onchange method to enable the delete survey button if (and only if) it is a perfect match */
 const SurveyDeleteModal = ({ modalClose, course, survey_data }) => {

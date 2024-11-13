@@ -15,7 +15,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
   const [endDate, setEndDate] = useState("");
   const [csvFile, setCsvFile] = useState("");
   const [rubric, setRubric] = useState(rubric_id);
-  const [valuePairing, setValuePairing] = useState("2");
+  const [valuePairing, setValuePairing] = useState(survey_data.pairing_mode ? survey_data.pairing_mode : "2");
   const [multiplier, setMultiplier] = useState("1");
   const [useMultipler, setUseMultiplier] = useState(false);
   const [pairingImage, setPairingImage] = useState(Team);
@@ -77,7 +77,8 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       method: "POST",
       credentials: "include",
       body: formData,
-    }).then((res) => res.text());
+    })
+    .then((res) => res.text());
     return result; // Return the result directly
   }
 
@@ -89,7 +90,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       credentials: "include",
       body: formData,
     })
-      .then((res) => res.json());
+    .then((res) => res.json());
     return result; // Return the result directly
   }
 
@@ -213,8 +214,8 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       modalClose(response);
     } else if (modalReason === "Duplicate") {
       // Form data is set. post the new survey and get the responses
-      await duplicateSurveyBackend(formData);
-      modalClose(true);
+      let response = await duplicateSurveyBackend(formData);
+      modalClose(response);
     }
   }
 
@@ -355,24 +356,25 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               ))}
             </select>
           </label>
-          {pairing_modes && <label className="form__item--label add-survey--label-pairing" htmlFor="pairing">
-            <div className="drop-down-wrapper">
-              Pairing Modes
-              <select className="pairing"
-                value={valuePairing}
-                onChange={handleChangePairing}
-                id="pairing-mode"
-              >
-                {pairing_modes.map((pairing) => (
-                  <option className="pairing-option" value={pairing.id}>{pairing.text}</option>
-                ))}
-              </select>
-            </div>
-            <div className="pairing-mode-img-wrapper">
-              <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
-            </div>
-          </label>}
-          {useMultipler && (
+          {(modalReason !== "Duplicate") && (
+            <label className="form__item--label add-survey--label-pairing" htmlFor="pairing">
+              <div className="drop-down-wrapper">
+                Pairing Modes
+                <select className="pairing"
+                  value={valuePairing}
+                  onChange={handleChangePairing}
+                  id="pairing-mode"
+                >
+                  {pairing_modes.map((pairing) => (
+                    <option className="pairing-option" value={pairing.id}>{pairing.text}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="pairing-mode-img-wrapper">
+                <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
+              </div>
+          </label>)}
+          {(modalReason !== "Duplicate") && useMultipler && (
             <label className="form__item--label" htmlFor="multiplier">
               Multiplier
               <select className="multiplier"
@@ -386,7 +388,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               </select>
             </label>
           )}
-          {pairing_modes && <label className="form__item--file-label" htmlFor="csv-file">
+          {(modalReason !== "Duplicate") && <label className="form__item--file-label" htmlFor="csv-file">
             CSV File Upload
             <span className="form__item--file-label--optional">{CSVFileDescription}</span>
             <input

@@ -183,9 +183,8 @@ if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset
     } else{
       $response['data']['survey-update'] = "Failed: Adding reviews to survey: " . $survey_name;
     }
-  } else {
-    $response['errors'] = $errorMsg;
   }
+  $response['errors'] = $errorMsg;
 
   header("Content-Type: application/json; charset=UTF-8");
   $responseJSON = json_encode($response);
