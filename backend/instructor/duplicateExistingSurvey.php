@@ -69,9 +69,9 @@ if (empty($survey_info)) {
     exit();
 }
 
-$course_id = $survey_info['course_id'];
-$course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
-if (empty($course_info)) {
+// Verify that the original survey is associated with the instructor
+$has_access = isSurveyInstructor($con, $survey_id, $instructor_id);
+if (!$has_access) {
   http_response_code(403);
   header('Content-Type: application/json');
   echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));

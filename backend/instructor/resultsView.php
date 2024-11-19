@@ -69,7 +69,7 @@ if (empty($survey_info)) {
 }
 
 // make sure the survey is for a course the current instructor actually teaches
-if (!isCourseInstructor($con, $survey_info['course_id'], $instructor_id)) {
+if (!isSurveyInstructor($con, $survey_id, $instructor_id)) {
   http_response_code(403);
   $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
   echo $json_out;
