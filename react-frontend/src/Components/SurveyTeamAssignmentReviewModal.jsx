@@ -6,7 +6,7 @@ import "primereact/resources/primereact.min.css";
 import "../styles/modal.css";
 import "../styles/extendsurvey.css";
 
-const SurveyTeamAssignmentReview = ({modalClose, course, survey_data}) => {
+const SurveyTeamAssignmentReviewModal = ({modalClose, course, survey_data}) => {
   const [survey_id,] = useState(survey_data.id);
   const [survey_name,] = useState(survey_data.name);
   const [surveyAssigns, setSurveyAssigns] = useState([]);
@@ -122,4 +122,4 @@ return (
   );
 }
 
-export default SurveyTeamAssignmentReview;
+export default SurveyTeamAssignmentReviewModal;

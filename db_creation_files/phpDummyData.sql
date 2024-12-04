@@ -361,7 +361,7 @@ INSERT INTO `rubric_topics` (`id`, `rubric_id`, `question`, `question_response`)
 (3, 1, 'Participation', 'multiple_choice'),
 (4, 1, 'Professionalism', 'multiple_choice'),
 (5, 1, 'Quality', 'multiple_choice'),
-(6, 2, 'My Project Manager set clear expectation for what they expect each of us to accomplish each week', 'multiple_choice'),
+(6, 2, 'My Project Manager set clear expectation for what they expect each member of the team to accomplish each week', 'multiple_choice'),
 (7, 2, 'My Project Manager practiced open communication with the group', 'multiple_choice'),
 (8, 2, 'My Project Manager gave constructive feedback', 'multiple_choice'),
 (9, 2, 'My Project Manager demanded and maintained accountability from everyone, including themselves', 'multiple_choice'),

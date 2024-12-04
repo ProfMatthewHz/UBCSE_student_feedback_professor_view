@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Team from "../assets/pairingmodes/TEAM.png"
 import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
 import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
@@ -15,11 +15,11 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
   const [endDate, setEndDate] = useState("");
   const [csvFile, setCsvFile] = useState("");
   const [rubric, setRubric] = useState(rubric_id);
-  const [valuePairing, setValuePairing] = useState(survey_data.pairing_mode ? survey_data.pairing_mode : "2");
+  const [valuePairing, setValuePairing] = useState(survey_data.pairing_mode ? survey_data.pairing_mode : 2);
   const [multiplier, setMultiplier] = useState("1");
   const [useMultipler, setUseMultiplier] = useState(false);
   const [pairingImage, setPairingImage] = useState(Team);
-  const [CSVFileDescription, setCSVFileDescription] = useState("One row per team. Each row contains the email addresses for all team members.");
+  const [CSVFileDescription, setCSVFileDescription] = useState("");
   const [emptyCSVFileError, setEmptyCSVFileError] = useState(false);
   const [emptySurveyNameError, setEmptyNameError] = useState(false);
   const [emptyStartTimeError, setEmptyStartTimeError] = useState(false);
@@ -63,12 +63,17 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
 
   const handleChangePairing = (e) => {
     let pairing = parseInt(e.target.value);
-    let pairingMode = findPairingData(pairing, pairing_modes);
-    setCSVFileDescription(pairingMode.file_organization);
-    updateImage(pairingMode.text);
     setValuePairing(pairing);
-    setUseMultiplier(pairingMode.usesMultiplier);
-  };
+  }
+
+  useEffect(() => {
+    let pairingMode = findPairingData(valuePairing, pairing_modes);
+    if (pairingMode != null) {
+      setCSVFileDescription(pairingMode.file_organization);
+      updateImage(pairingMode.text);
+      setUseMultiplier(pairingMode.usesMultiplier);
+    }
+  }, [valuePairing, pairing_modes]);
 
   function duplicateSurveyBackend(formData) {
     formData.append("survey-id", survey_data.original_id);

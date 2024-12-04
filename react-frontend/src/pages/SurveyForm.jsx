@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import SurveyFormRow from "../Components/SurveyFormRow";
-import Toast from "./Toast";
 import "../styles/surveyForm.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -27,7 +26,7 @@ const SurveyForm = () => {
       credentials: "include",
       body: formdata
     });
-    resolve(response.ok);
+    return response.ok;
   };
 
   const nextButtonClickHandler = async () => {
@@ -40,9 +39,9 @@ const SurveyForm = () => {
       setShowToast(true);
     } else {
       if (groupMemberIndex >= (groupMembers.length - 1)) {
-        setSurveyResults([]);
         navigate(location.state.return_to);
       } else {
+        setShowToast(false);
         setSurveyResults([]);
         setGroupMemberIndex(groupMemberIndex + 1);
         setShowPrevious(true);
@@ -59,6 +58,7 @@ const SurveyForm = () => {
     if (response === false) {
       setShowToast(true);
     } else {
+      setShowToast(false);
       if (groupMemberIndex === 1) {
         setShowPrevious(false);
         setGroupMemberIndex(0);
@@ -112,11 +112,11 @@ const SurveyForm = () => {
 
   return (
     <div>
-      <Toast
-        message={`Could not submit evaluation! Please try again later.`}
-        isVisible={showToast}
-        onClose={() => setShowToast(false)}
-      />
+      {showToast && (
+      <div className="top-error-bar">
+        Could not submit evaluation! Please try again later.
+      </div>
+     )}
      {surveyData != null && groupMembers != null ? (
       <div className="Header">
         <h1 className="Survey-Name">{location.state.course} {location.state.survey_name}</h1>

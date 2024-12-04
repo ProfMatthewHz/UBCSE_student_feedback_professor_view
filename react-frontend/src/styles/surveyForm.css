@@ -1,3 +1,10 @@
+div.top-error-bar {
+    background-color: #DD281D;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+}
+
 div.survey-table-container {
     margin-top: 20px;
     margin-left: 20px;
