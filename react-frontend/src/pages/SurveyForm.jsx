@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SurveyFormRow from "../Components/SurveyFormRow";
+import Toast from "./Toast";
 import "../styles/surveyForm.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -12,6 +13,7 @@ const SurveyForm = () => {
   const [showPrevious, setShowPrevious] = useState(false)
   const [surveyResults, setSurveyResults] = useState([]);
   const [advanceButtonState, setAdvanceButtonState] = useState('red');
+  const [showToast, setShowToast] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -25,37 +27,44 @@ const SurveyForm = () => {
       credentials: "include",
       body: formdata
     });
-  
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
+    resolve(response.ok);
   };
 
   const nextButtonClickHandler = async () => {
+    let response = true;
     // Only send results if the survey was completely filled out
     if (Object.keys(surveyResults).length === Object.keys(surveyData.topics).length) {
-      await sendSurveyDataToBackend();
+      response = await sendSurveyDataToBackend();
     }
-    if (groupMemberIndex >= (groupMembers.length - 1)) {
-      setSurveyResults([]);
-      navigate(location.state.return_to);
+    if (response === false) {
+      setShowToast(true);
     } else {
-      setSurveyResults([]);
-      setGroupMemberIndex(groupMemberIndex + 1);
-      setShowPrevious(true);
+      if (groupMemberIndex >= (groupMembers.length - 1)) {
+        setSurveyResults([]);
+        navigate(location.state.return_to);
+      } else {
+        setSurveyResults([]);
+        setGroupMemberIndex(groupMemberIndex + 1);
+        setShowPrevious(true);
+      }
     }
   }
 
   const previousButtonClickHandler = async () => {
+    let response = true;
     // Only send results if the survey was completely filled out
     if (Object.keys(surveyResults).length === Object.keys(surveyData.topics).length) {
-      await sendSurveyDataToBackend();
+      response = await sendSurveyDataToBackend();
     }
-    if (groupMemberIndex === 1) {
-      setShowPrevious(false);
-      setGroupMemberIndex(0);
+    if (response === false) {
+      setShowToast(true);
     } else {
-      setGroupMemberIndex(groupMemberIndex - 1);
+      if (groupMemberIndex === 1) {
+        setShowPrevious(false);
+        setGroupMemberIndex(0);
+      } else {
+        setGroupMemberIndex(groupMemberIndex - 1);
+      }
     }
   }
 
@@ -103,6 +112,11 @@ const SurveyForm = () => {
 
   return (
     <div>
+      <Toast
+        message={`Could not submit evaluation! Please try again later.`}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
      {surveyData != null && groupMembers != null ? (
       <div className="Header">
         <h1 className="Survey-Name">{location.state.course} {location.state.survey_name}</h1>
