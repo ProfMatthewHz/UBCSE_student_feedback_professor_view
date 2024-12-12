@@ -54,8 +54,8 @@ function calculateNormalizedSurveyResults($students, $scores, $topics, $team_dat
       if (($team_data[$reviewer_id][$team]["completion"]) && ($weight != 0)) {
         // Handle the degenerate case where nobody on the team was assigned points
         if ($reviewer_total_points == 0) {
-          // Assign everyone a result of 0   
-          $ret_val[$student_id][$reviewer_id] = 0;
+          // Assign everyone a result of 1
+          $ret_val[$student_id][$reviewer_id] = 1;
         } else {
           $total = 0;
           // Loop through each topic -- this will eventually allow the option to weight topics differently
