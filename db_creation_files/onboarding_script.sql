@@ -119,7 +119,7 @@ CREATE TABLE `team_members` (
  PRIMARY KEY (`id`),
  KEY `teams_members_teams_idx` (`team_id`),
  KEY `teams_members_student_idx` (`student_id`),
- CONSTRAINT `team_members_team_constraint` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+ CONSTRAINT `team_members_team_constraint` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
  CONSTRAINT `team_members_student_constraint` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
