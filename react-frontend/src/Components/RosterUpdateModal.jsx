@@ -57,11 +57,11 @@ const RosterUpdateModal = ({ modalClose, course }) => {
                                 className="form__item--file-input"
                                 onChange={(e) => setRosterFile(e.target.files[0])}
                             />
-                        {noRosterFileError ? (
+                        {noRosterFileError && (
                             <label className="form__item--error-label">
                                 <div className="form__item--red-warning-sign" />
                                 Select a file</label>
-                        ) : null}
+                        )}
                                                 </label>
 
                     {/* Radio Buttons */}

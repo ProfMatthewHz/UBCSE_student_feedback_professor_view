@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Team from "../assets/pairingmodes/TEAM.png"
 import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
 import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
@@ -15,10 +15,11 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
   const [endDate, setEndDate] = useState("");
   const [csvFile, setCsvFile] = useState("");
   const [rubric, setRubric] = useState(rubric_id);
-  const [valuePairing, setValuePairing] = useState("2");
+  const [valuePairing, setValuePairing] = useState(survey_data.pairing_mode ? survey_data.pairing_mode : 2);
   const [multiplier, setMultiplier] = useState("1");
   const [useMultipler, setUseMultiplier] = useState(false);
   const [pairingImage, setPairingImage] = useState(Team);
+  const [CSVFileDescription, setCSVFileDescription] = useState("");
   const [emptyCSVFileError, setEmptyCSVFileError] = useState(false);
   const [emptySurveyNameError, setEmptyNameError] = useState(false);
   const [emptyStartTimeError, setEmptyStartTimeError] = useState(false);
@@ -28,7 +29,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
   const [startAfterCurrentError, setStartAfterCurrentError] = useState(false);
   const [startAfterEndError, setStartAfterEndError] = useState(false);
 
-  const handleUpdateImage = (pairing) => {
+  const updateImage = (pairing) => {
     switch (pairing) {
       case 'TEAM':
         setPairingImage(Team);
@@ -62,11 +63,17 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
 
   const handleChangePairing = (e) => {
     let pairing = parseInt(e.target.value);
-    let pairingMode = findPairingData(pairing, pairing_modes);
-    handleUpdateImage(pairingMode.text);
     setValuePairing(pairing);
-    setUseMultiplier(pairingMode.usesMultiplier);
-  };
+  }
+
+  useEffect(() => {
+    let pairingMode = findPairingData(valuePairing, pairing_modes);
+    if (pairingMode != null) {
+      setCSVFileDescription(pairingMode.file_organization);
+      updateImage(pairingMode.text);
+      setUseMultiplier(pairingMode.usesMultiplier);
+    }
+  }, [valuePairing, pairing_modes]);
 
   function duplicateSurveyBackend(formData) {
     formData.append("survey-id", survey_data.original_id);
@@ -75,7 +82,8 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       method: "POST",
       credentials: "include",
       body: formData,
-    }).then((res) => res.text());
+    })
+    .then((res) => res.json());
     return result; // Return the result directly
   }
 
@@ -87,7 +95,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       credentials: "include",
       body: formData,
     })
-      .then((res) => res.json());
+    .then((res) => res.json());
     return result; // Return the result directly
   }
 
@@ -134,7 +142,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
     } else {
       setEmptyEndDateError(false);
     }
-    if ((pairing_modes != null) && (csvFile === "")) {
+    if ((modalReason !== "Duplicate") && (csvFile === "")) {
       setEmptyCSVFileError(true);
       missingData = true;
     } else {
@@ -211,8 +219,8 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       modalClose(response);
     } else if (modalReason === "Duplicate") {
       // Form data is set. post the new survey and get the responses
-      await duplicateSurveyBackend(formData);
-      modalClose(true);
+      let response = await duplicateSurveyBackend(formData);
+      modalClose(response);
     }
   }
 
@@ -242,12 +250,12 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               value={surveyName !== "" ? surveyName : ""}
               onChange={(e) => setSurveyName(e.target.value)}
             />
-            {emptySurveyNameError ? (
+            {emptySurveyNameError && (
               <label className="form__item--error-label">
                 <div className="form__item--red-warning-sign" />
                 Survey name cannot be empty
               </label>
-            ) : null}
+            )}
           </label>
           <div className="add-survey--row-with-errors-container">
             <div className="add-survey--row-container">
@@ -275,18 +283,26 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                     />
                   </label>
                 </div>
-                {startAfterEndError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  Start must be earlier than end</label> : null}
-                {startAfterCurrentError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  Start must be in the future</label> : null}
-                {emptyStartDateError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  Start date cannot be empty</label> : null}
-                {emptyStartTimeError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  Start time cannot be empty</label> : null}
+                {startAfterEndError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    Start must be earlier than end
+                  </label>)}
+                {startAfterCurrentError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    Start must be in the future
+                  </label>)}
+                {emptyStartDateError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    Start date cannot be empty
+                  </label>)}
+                {emptyStartTimeError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    Start time cannot be empty
+                  </label>)}
               </div>
 
               <div className="add-survey--col-with-error-container">
@@ -313,15 +329,21 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                     />
                   </label>
                 </div>
-                {startAfterEndError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  End must be later than start</label> : null}
-                {emptyEndDateError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  End date cannot be empty</label> : null}
-                {emptyEndTimeError ? <label className="form__item--error-label">
-                  <div className="form__item--red-warning-sign" />
-                  End time cannot be empty</label> : null}
+                {startAfterEndError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    End must be later than start
+                  </label>)}
+                {emptyEndDateError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    End date cannot be empty
+                  </label>)}
+                {emptyEndTimeError && (
+                  <label className="form__item--error-label">
+                    <div className="form__item--red-warning-sign" />
+                    End time cannot be empty
+                  </label>)}
               </div>
             </div>
           </div>
@@ -339,24 +361,25 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               ))}
             </select>
           </label>
-          {pairing_modes && <label className="form__item--label add-survey--label-pairing" htmlFor="pairing">
-            <div className="drop-down-wrapper">
-              Pairing Modes
-              <select className="pairing"
-                value={valuePairing}
-                onChange={handleChangePairing}
-                id="pairing-mode"
-              >
-                {pairing_modes.map((pairing) => (
-                  <option className="pairing-option" value={pairing.id}>{pairing.text}</option>
-                ))}
-              </select>
-            </div>
-            <div className="pairing-mode-img-wrapper">
-              <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
-            </div>
-          </label>}
-          {useMultipler && (
+          {(modalReason !== "Duplicate") && (
+            <label className="form__item--label add-survey--label-pairing" htmlFor="pairing">
+              <div className="drop-down-wrapper">
+                Pairing Modes
+                <select className="pairing"
+                  value={valuePairing}
+                  onChange={handleChangePairing}
+                  id="pairing-mode"
+                >
+                  {pairing_modes.map((pairing) => (
+                    <option className="pairing-option" value={pairing.id}>{pairing.text}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="pairing-mode-img-wrapper">
+                <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
+              </div>
+          </label>)}
+          {(modalReason !== "Duplicate") && useMultipler && (
             <label className="form__item--label" htmlFor="multiplier">
               Multiplier
               <select className="multiplier"
@@ -370,8 +393,9 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               </select>
             </label>
           )}
-          {pairing_modes && <label className="form__item--file-label" htmlFor="csv-file">
+          {(modalReason !== "Duplicate") && <label className="form__item--file-label" htmlFor="csv-file">
             CSV File Upload
+            <span className="form__item--file-label--optional">{CSVFileDescription}</span>
             <input
               className={emptyCSVFileError ? "form__item-input-error" : undefined}
               id="csv-file"
@@ -379,11 +403,11 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               placeholder="Upload The File"
               onChange={(e) => setCsvFile(e.target.files[0])}
             />
-            {emptyCSVFileError ? (
+            {emptyCSVFileError && (
               <label className="form__item--error-label">
                 <div className="form__item--red-warning-sign" />
-                Select a file</label>
-            ) : null}
+                Select a file
+              </label>)}
           </label>}
           <div className="form__item--confirm-btn-container">
             <button className="form__item--confirm-btn" onClick={verifyAndPostSurvey}>

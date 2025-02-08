@@ -5,13 +5,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const SurveyForm = () => {
   const [surveyData, setSurveyData] = useState(null);
-  const [groupMembers, setGroupMembers] = useState(null);
+  const [groupMembers, setGroupMembers] = useState([]);
   const [groupMemberIndex, setGroupMemberIndex] = useState(0);
   const [reviewIDs, setReviewIDs] = useState(null);
   const [buttonText, setButtonText] = useState('NEXT');
   const [showPrevious, setShowPrevious] = useState(false)
-  const [surveyResults, setSurveyResults] = useState("");
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [surveyResults, setSurveyResults] = useState([]);
+  const [advanceButtonState, setAdvanceButtonState] = useState('red');
+  const [showToast, setShowToast] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -25,51 +26,66 @@ const SurveyForm = () => {
       credentials: "include",
       body: formdata
     });
-  
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
+    return response.ok;
   };
 
   const nextButtonClickHandler = async () => {
-    setSurveyResults([]);
-
-    if (buttonText === 'FINISH') {
-      await sendSurveyDataToBackend();
-      navigate(location.state.return_to);
-      return; // Return early if the button text is already 'FINISH'
-    } 
-
-    setGroupMemberIndex(groupMemberIndex + 1);
-    setShowPrevious(true);
-    
-    if (groupMemberIndex >= groupMembers.length - 2) {
-      setButtonText('FINISH');
+    let response = true;
+    // Only send results if the survey was completely filled out
+    if (Object.keys(surveyResults).length === Object.keys(surveyData.topics).length) {
+      response = await sendSurveyDataToBackend();
     }
-    
-    setRefreshKey(prevKey => prevKey + 1);
-    await sendSurveyDataToBackend();
+    if (response === false) {
+      setShowToast(true);
+    } else {
+      if (groupMemberIndex >= (groupMembers.length - 1)) {
+        navigate(location.state.return_to);
+      } else {
+        setShowToast(false);
+        setSurveyResults([]);
+        setGroupMemberIndex(groupMemberIndex + 1);
+        setShowPrevious(true);
+      }
+    }
   }
 
   const previousButtonClickHandler = async () => {
-    await sendSurveyDataToBackend();
-
-    setButtonText('NEXT');
-    if (groupMemberIndex === 1) {
-      setShowPrevious(false);
-      setGroupMemberIndex(0);
-    } else {
-      setGroupMemberIndex(groupMemberIndex - 1);
+    let response = true;
+    // Only send results if the survey was completely filled out
+    if (Object.keys(surveyResults).length === Object.keys(surveyData.topics).length) {
+      response = await sendSurveyDataToBackend();
     }
-    setRefreshKey(prevKey => prevKey + 1);
+    if (response === false) {
+      setShowToast(true);
+    } else {
+      setShowToast(false);
+      if (groupMemberIndex === 1) {
+        setShowPrevious(false);
+        setGroupMemberIndex(0);
+      } else {
+        setGroupMemberIndex(groupMemberIndex - 1);
+      }
+    }
   }
 
   useEffect(() => {
-    // Check if groupMembers has been set
-    if (groupMembers && groupMembers.length === 1) {
-      setButtonText('FINISH');
+    if (surveyData && (Object.keys(surveyResults).length === Object.keys(surveyData.topics).length)) {
+      setAdvanceButtonState('green');
+      if (groupMemberIndex >= (groupMembers.length - 1))  {
+        setButtonText('FINISH');
+      } else {
+        setButtonText('NEXT');
+      }
+    } else {
+      setAdvanceButtonState('red');
+      if (!groupMembers || (groupMemberIndex >= (groupMembers.length - 1)))  {
+        setButtonText('CLOSE');
+      } else {
+        setButtonText('SKIP');
+      }
     }
-  }, [groupMembers]); // Run the effect whenever groupMembers changes
+  }, [groupMemberIndex, groupMembers, surveyData, surveyResults]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,10 +112,18 @@ const SurveyForm = () => {
 
   return (
     <div>
+      {showToast && (
+      <div className="top-error-bar">
+        Could not submit evaluation! Please try again later.
+      </div>
+     )}
      {surveyData != null && groupMembers != null ? (
       <div className="Header">
         <h1 className="Survey-Name">{location.state.course} {location.state.survey_name}</h1>
-        <h2 className="Evaluation-Name">Evaluating Team Member {groupMemberIndex+1}/{groupMembers.length}: {groupMembers[groupMemberIndex]}</h2>
+        { groupMembers.length > 1 ? 
+          (<h2 className="Evaluation-Name">Evaluating Team Member {groupMemberIndex+1}/{groupMembers.length}: {groupMembers[groupMemberIndex]}</h2> ) :
+          (<h2 className="Evaluation-Name">Evaluating: {groupMembers[groupMemberIndex]}</h2> )
+        }
       </div> ) : 
       (<div className="Header">
         <h1 className="Survey-Name">{location.state.course} {location.state.survey_name}</h1>
@@ -112,8 +136,7 @@ const SurveyForm = () => {
             rubricData={surveyData}
             surveyResults={surveyResults}
             setSurveyResults={setSurveyResults}
-            survey_id={reviewIDs[groupMemberIndex]}
-            key={refreshKey}/>
+            survey_id={reviewIDs[groupMemberIndex]}/>
         ) : (<div>Survey loading...</div> )
         }
       </div>
@@ -122,12 +145,12 @@ const SurveyForm = () => {
       )}
       {surveyData != null && groupMembers != null && (
       <button 
-        className={Object.keys(surveyResults).length === Object.keys(surveyData.topics).length ? 'directional next green': 'directional next red' }
+        className={'directional next ' + advanceButtonState}
         onClick={nextButtonClickHandler}>
-        {Object.keys(surveyResults).length === Object.keys(surveyData.topics).length ? buttonText: buttonText === 'FINISH' ? 'FINISH' : 'SKIP'}
+        {buttonText}
       </button>)}
     </div>
   )
 }
 
-export default SurveyForm
+export default SurveyForm;

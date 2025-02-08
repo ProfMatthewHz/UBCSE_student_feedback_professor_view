@@ -8,12 +8,14 @@ const SidebarList = ({ list, emptyMessage }) => {
   useEffect(() => {
     const handleScroll = () => {
       if (list.length > 0) {
-        const scrollPosition = window.scrollY;
-        let name = list[0];
+        let name = undefined;
+        let closest_to_top = 0;
         for (let item_name of list) {
           const connected_course = document.getElementById(item_name);
-          if (connected_course && connected_course.offsetTop < scrollPosition) {
+          const course_top = connected_course.getBoundingClientRect().y;
+          if (connected_course && (!name || closest_to_top < 0 || course_top <= closest_to_top)) {
             name = item_name;
+            closest_to_top = course_top;
           }
         }
         const connector = document.getElementById(name + "-Option");
@@ -23,7 +25,6 @@ const SidebarList = ({ list, emptyMessage }) => {
         }
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);

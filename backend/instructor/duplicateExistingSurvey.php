@@ -69,9 +69,9 @@ if (empty($survey_info)) {
     exit();
 }
 
-$course_id = $survey_info['course_id'];
-$course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
-if (empty($course_info)) {
+// Verify that the original survey is associated with the instructor
+$has_access = isSurveyInstructor($con, $survey_id, $instructor_id);
+if (!$has_access) {
   http_response_code(403);
   header('Content-Type: application/json');
   echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
@@ -79,6 +79,7 @@ if (empty($course_info)) {
 }
 
 $survey_type = $survey_info['survey_type_id'];
+$course_id = getSurveyCourse($con, $survey_id);
 
 // make sure values exist
 if (!isset($_POST['start-date']) || !isset($_POST['start-time']) || 
@@ -183,9 +184,8 @@ if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset
     } else{
       $response['data']['survey-update'] = "Failed: Adding reviews to survey: " . $survey_name;
     }
-  } else {
-    $response['errors'] = $errorMsg;
   }
+  $response['errors'] = $errorMsg;
 
   header("Content-Type: application/json; charset=UTF-8");
   $responseJSON = json_encode($response);

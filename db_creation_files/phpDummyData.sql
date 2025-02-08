@@ -361,7 +361,7 @@ INSERT INTO `rubric_topics` (`id`, `rubric_id`, `question`, `question_response`)
 (3, 1, 'Participation', 'multiple_choice'),
 (4, 1, 'Professionalism', 'multiple_choice'),
 (5, 1, 'Quality', 'multiple_choice'),
-(6, 2, 'My Project Manager set clear expectation for what they expect each of us to accomplish each week', 'multiple_choice'),
+(6, 2, 'My Project Manager set clear expectation for what they expect each member of the team to accomplish each week', 'multiple_choice'),
 (7, 2, 'My Project Manager practiced open communication with the group', 'multiple_choice'),
 (8, 2, 'My Project Manager gave constructive feedback', 'multiple_choice'),
 (9, 2, 'My Project Manager demanded and maintained accountability from everyone, including themselves', 'multiple_choice'),
@@ -832,11 +832,11 @@ INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rub
 (46, 42358, '2023-12-15 23:00:00', '2023-12-20 23:00:00', 'Delete this survey 1', 1, 2);
 
 INSERT INTO `survey_types` (`id`, `description`, `file_organization`, `display_multiplier`) VALUES
-(1, 'TEAM', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0),
+(5, 'TEAM', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0),
 (2, 'TEAM + SELF', 'One row per team. Each row contains the email addresses for all team members. Blank columns are ignored', 0),
 (3, 'TEAM + SELF + MANAGER', 'One row per team. Each row contains the email addresses for all team members with the manager email address listed last. Blank columns are ignored', 1),
 (4, 'PM', 'One row per individual being reviewed. Every row contains the email addresses of the reviewers and the person being reviewed. The person being reviewed MUST be in the final column in the row.', 0),
-(5, 'Single Pairs', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0);
+(1, 'Single Pairs', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0);
 
 INSERT INTO `student_visit_data` (`student_id`, `survey_id`, `visit_count`, `last_visit`) VALUES
 (50243490, 42, 11, '2024-02-29 14:30:06');

@@ -125,7 +125,7 @@ function getSurveyParticipantData($con, $survey_id, $retrieved_field) {
 function getReviewerResultReviewsCount($con, $survey_id) {
   $ret_val = array();
   // This survey should roughly parallel the completion results in getReviewerPerTeamResults
-  $stmt = $con->prepare('SELECT DISTINCT students.email, visit_count
+  $stmt = $con->prepare('SELECT students.email, visit_count
                          FROM student_visit_data
                          INNER JOIN students ON students.id=student_id
                          WHERE survey_id=?');

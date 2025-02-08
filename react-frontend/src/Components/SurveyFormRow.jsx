@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import "../styles/surveyForm.css";
 
-const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id, key}) => {
-    const [answered, setAnswered] = useState(0);
+const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id}) => {
     const [topicQuestionElements, setTopicQuestionElements] = useState([]);
     const [topicQuestionWidth, setTopicQuestionWidth] = useState(30);
     const [clickedButtons, setClickedButtons] = useState({});
@@ -11,7 +10,7 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id, 
         if (surveyResults != null && setSurveyResults != null) {
             setSurveyResults(clickedButtons);
         }
-    }, [answered, clickedButtons, setSurveyResults, surveyResults]);
+    }, [clickedButtons, setSurveyResults, surveyResults]);
 
     useEffect(() => {
         // Apply width of 250px to each element
@@ -23,7 +22,6 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id, 
     const clickHandler = (response, topic) => {
         const rowID = topic.topic_id !== undefined ? topic.topic_id : topic.question;
         // Set the clicked state for the clicked button in the corresponding row
-        setAnswered(answered+1);
         if (clickedButtons[rowID] === response) {
             setClickedButtons(prevState => {
                 const newState = { ...prevState };
@@ -81,7 +79,7 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id, 
         }
         return (
             <div className='row-container' id={topic.question}>
-                <div className={verticalLineClass(topic)}>
+                <div className={verticalLineClass(topic)} id={topic.question+"line"}>
                     <div className='row-topic-question-container'>    
                         <span className='topic-question'>{topic.question}</span>
                     </div>

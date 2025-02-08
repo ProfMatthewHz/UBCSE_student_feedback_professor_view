@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "../styles/modal.css";
-import "../styles/deletesurvey.css";
 
 /* Todo: Update the onchange method to enable the delete survey button if (and only if) it is a perfect match */
 const SurveyDeleteModal = ({ modalClose, course, survey_data }) => {
@@ -71,12 +70,12 @@ const SurveyDeleteModal = ({ modalClose, course, survey_data }) => {
                                 id="delete-name" 
                                 type="text" 
                                 onChange={updateAndCheckSurveyName} />
-                        {emptyOrWrongDeleteNameError ? (
+                        {emptyOrWrongDeleteNameError && (
                             <label className="form__item--error-label">
                                 <div className="form__item--red-warning-sign" />
                                 Must be identical to the survey name
                             </label>
-                        ) : null}
+                        )}
                         </label>
                     <div className="form__item--confirm-btn-container">
                         <button

@@ -299,11 +299,10 @@ useEffect(() => {
                         </DataTable>
                     </div>
                 </div>
-                ) : surveyType === "raw-full" && !rawSurveys ? (
+                ) : surveyType === "raw-full" && !rawSurveys && (
                     <div className="viewresults-modal--no-options-selected-text">
                         No Results Found
-                    </div>
-                ) : null}
+                    </div>)}
                 {surveyType === "average" && normalizedResults ? (
                     <div>
                         <div className="viewresults-modal--other-button-container">
@@ -372,11 +371,10 @@ useEffect(() => {
                             </DataTable>
                         </div>
                     </div>
-                ) : surveyType === "average" && !normalizedResults ? (
+                ) : surveyType === "average" && !normalizedResults && (
                     <div className="viewresults-modal--no-options-selected-text">
                         No Results Found
-                    </div>
-                ) : null}
+                    </div>)}
             </div>
         </div>
     );

@@ -5,7 +5,7 @@ CREATE TABLE `instructors` (
   `name` TEXT NOT NULL,
   `email` VARCHAR(20) NOT NULL,
   `session_expiration` INT, -- future expansion
-  `csrf_token` VARCHAR(255),
+  `csrf_token` VARCHAR(255), -- future expansion
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `csrf_token` (`csrf_token`)
@@ -98,7 +98,30 @@ CREATE TABLE `surveys` (
  CONSTRAINT `surveys_survey_type_constraint` FOREIGN KEY (`survey_type_id`) REFERENCES `survey_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
+-- teams TABLE
+-- each row represents a team of students in a survey. Each team must only appear once in a survey.
+CREATE TABLE `teams` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `survey_id` int(11) NOT NULL,
+ `team_name` text NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `teams_survey_idx` (`survey_id`),
+ CONSTRAINT `teams_survey_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB;
 
+-- teams TABLE
+-- each row represents a team of students in a survey. Each team must only appear once in a survey.
+CREATE TABLE `team_members` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `team_id` int(11) NOT NULL,
+ `student_id` int(11) NOT NULL,
+ `role` enum('member','manager') NOT NULL DEFAULT 'member',
+ PRIMARY KEY (`id`),
+ KEY `teams_members_teams_idx` (`team_id`),
+ KEY `teams_members_student_idx` (`student_id`),
+ CONSTRAINT `team_members_team_constraint` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+ CONSTRAINT `team_members_student_constraint` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB;
 
 -- reviews TABLE
 -- each row represents a set of evaluations that will need to be completed
