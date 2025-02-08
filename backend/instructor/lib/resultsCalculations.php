@@ -60,7 +60,7 @@ function calculateNormalizedSurveyResults($students, $scores, $topics, $team_dat
           $total = 0;
           // Loop through each topic -- this will eventually allow the option to weight topics differently
           foreach (array_keys($topics) as $topic_id) {
-            $total = $total + $responses[$topic_id];
+            $total = $total + (array_key_exists($topic_id, $responses) ? $responses[$topic_id] : 0);
           }
           // Now normalize the total against the total score for this reviewer to this team
           $total = $total / $reviewer_total_points;

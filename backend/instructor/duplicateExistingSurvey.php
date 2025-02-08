@@ -79,6 +79,7 @@ if (!$has_access) {
 }
 
 $survey_type = $survey_info['survey_type_id'];
+$course_id = getSurveyCourse($con, $survey_id);
 
 // make sure values exist
 if (!isset($_POST['start-date']) || !isset($_POST['start-time']) || 

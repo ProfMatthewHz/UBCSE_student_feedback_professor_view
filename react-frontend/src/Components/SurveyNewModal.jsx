@@ -83,7 +83,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       credentials: "include",
       body: formData,
     })
-    .then((res) => res.text());
+    .then((res) => res.json());
     return result; // Return the result directly
   }
 
@@ -142,7 +142,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
     } else {
       setEmptyEndDateError(false);
     }
-    if ((pairing_modes != null) && (csvFile === "")) {
+    if ((modalReason !== "Duplicate") && (csvFile === "")) {
       setEmptyCSVFileError(true);
       missingData = true;
     } else {
