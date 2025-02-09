@@ -20,8 +20,10 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
   const [useMultipler, setUseMultiplier] = useState(false);
   const [pairingImage, setPairingImage] = useState(Team);
   const [CSVFileDescription, setCSVFileDescription] = useState("");
+  const [surveyNameError, setSurveyNameError] = useState(false);
   const [emptyCSVFileError, setEmptyCSVFileError] = useState(false);
-  const [emptySurveyNameError, setEmptyNameError] = useState(false);
+  const [emptySurveyNameError, setEmptySurveyNameError] = useState(false);
+  const [longSurveyNameError, setLongSurveyNameError] = useState(false);
   const [emptyStartTimeError, setEmptyStartTimeError] = useState(false);
   const [emptyEndTimeError, setEmptyEndTimeError] = useState(false);
   const [emptyStartDateError, setEmptyStartDateError] = useState(false);
@@ -105,58 +107,65 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
     setStartAfterCurrentError(false);
   };
 
-  const checkForMissingData = () => {
-    let missingData = false;
+  const checkForInvalidData = () => {
+    let invalidData = false;
 
     if (surveyName === "") {
-      setEmptyNameError(true);
-      missingData = true;
+      setSurveyNameError(true);
+      setEmptySurveyNameError(true);
+      invalidData = true;
+    } else if (surveyName.length > 89) {
+      setSurveyNameError(true);
+      setLongSurveyNameError(true);
+      invalidData = true;
     } else {
-      setEmptyNameError(false);
+      setSurveyNameError(false);
+      setEmptySurveyNameError(false);
     }
 
     if (startTime === "") {
       setEmptyStartTimeError(true);
-      missingData = true;
+      invalidData = true;
     } else {
       setEmptyStartTimeError(false);
     }
 
     if (endTime === "") {
       setEmptyEndTimeError(true);
-      missingData = true;
+      invalidData = true;
     } else {
       setEmptyEndTimeError(false);
     }
 
     if (startDate === "") {
       setEmptyStartDateError(true);
-      missingData = true;
+      invalidData = true;
     } else {
       setEmptyStartDateError(false);
     }
 
     if (endDate === "") {
       setEmptyEndDateError(true);
-      missingData = true;
+      invalidData = true;
     } else {
       setEmptyEndDateError(false);
     }
     if ((modalReason !== "Duplicate") && (csvFile === "")) {
       setEmptyCSVFileError(true);
-      missingData = true;
+      invalidData = true;
     } else {
       setEmptyCSVFileError(false);
     }
-    return missingData;
+    return invalidData;
   }
 
   const checkStartAndEndDateTimes = () => {
     // Check that the starting date is legal
     let startDateObject = new Date(startDate + "T" + startTime + ":00");
     // Get the current time, but then set the hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
-    let timestamp = new Date(Date.now());
-    if (startDateObject < timestamp) {
+    let timestamp = new Date();
+    let startOfDay = new Date(timestamp.getFullYear(), timestamp.getMonth(), timestamp.getDate());
+    if (startDateObject < startOfDay) {
       setStartAfterCurrentError(true);
       return true;
     }
@@ -184,7 +193,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
     clearErrors();
 
     // Report errors due to missing data
-    if (checkForMissingData()) {
+    if (checkForInvalidData()) {
       return;
     }
 
@@ -243,7 +252,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
           <label className="form__item--label" htmlFor="survey-name">
             Survey Name
             <input
-              className={emptySurveyNameError ? "form__item--input-error" : undefined}
+              className={surveyNameError ? "form__item--input-error" : undefined}
               id="survey-name"
               type="text"
               placeholder="Survey Name"
@@ -254,6 +263,12 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               <label className="form__item--error-label">
                 <div className="form__item--red-warning-sign" />
                 Survey name cannot be empty
+              </label>
+            )}
+            {longSurveyNameError && (
+              <label className="form__item--error-label">
+                <div className="form__item--red-warning-sign" />
+                Survey name is too long
               </label>
             )}
           </label>

@@ -174,15 +174,19 @@ if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset
 
   // Update the survey details in the database
   if (empty($errorMsg)) {
-    $pairings = getReviewsForSurvey($con, $survey_id);
-    $survey_id = insertSurvey($con, $course_id, $survey_name, $s, $e, $rubric_id, $survey_type);
+    try {
+      $pairings = getReviewsForSurvey($con, $survey_id);
+      $survey_id = insertSurvey($con, $course_id, $survey_name, $s, $e, $rubric_id, $survey_type);
     
-    $success = addReviewsToSurvey($con, $survey_id, $pairings);
-
-    if ($success) {
-      $response['data']['survey-update'] = "Success: Added reviews to survey: " . $survey_name;
-    } else{
-      $response['data']['survey-update'] = "Failed: Adding reviews to survey: " . $survey_name;
+      $success = addReviewsToSurvey($con, $survey_id, $pairings);
+      if ($success) {
+        $response['data']['survey-update'] = "Success: Survey duplicated into: " . $survey_name;
+      } else {
+        $response['data']['survey-update'] = "Failed to duplicate survey: " . $survey_name;
+      }  
+    } catch (Exception $e) {
+      $response['data']['survey-update'] = "Database failure duplicating survey: " . $survey_name;
+      $errorMsg['survey-duplicate'] = $e->getMessage();
     }
   }
   $response['errors'] = $errorMsg;

@@ -87,7 +87,7 @@ CREATE TABLE `surveys` (
  `course_id` int(11) NOT NULL,
  `start_date` datetime NOT NULL,
  `end_date` datetime NOT NULL,
- `name` VARCHAR(30) NOT NULL,
+ `name` VARCHAR(90) NOT NULL,
  `rubric_id` int(11) NOT NULL,
  `survey_type_id` tinyint NOT NULL,
  PRIMARY KEY (`id`),
