@@ -11,7 +11,7 @@ import ErrorsModal from "./ErrorsModal";
 import SurveyConfirmModal from "./SurveyConfirmModal";
 import SurveyNewModal from "./SurveyNewModal";
 import RosterUpdateModal from "./RosterUpdateModal";
-import PreviewSurveyModal from "./PreviewSurveyModal";
+import SurveyPreviewModal from "./SurveyPreviewModal";
 import SurveyTeamAssignmentReviewModal from "./SurveyTeamAssignmentReviewModal";
 
 const Course = ({ course, page }) => {
@@ -357,7 +357,7 @@ const Course = ({ course, page }) => {
             )}
             {/* Show modal to preview a survey */}
             {previewSurveyModal && (
-                <PreviewSurveyModal
+                <SurveyPreviewModal
                     modalClose={closePreviewModal}
                     surveyData = {currentSurvey} />
             )}

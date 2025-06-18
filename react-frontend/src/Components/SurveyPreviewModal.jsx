@@ -3,7 +3,7 @@ import SurveyFormRow from "./SurveyFormRow";
 import "../styles/modal.css";
 import "../styles/surveyForm.css";
 
-const PreviewSurveyModal = ({modalClose, surveyData}) => {
+const SurveyPreviewModal = ({modalClose, surveyData}) => {
     const [surveyResults, setSurveyResults] = useState([]);
     const [rubricData, setRubricData] = useState(null);
     const [advanceButtonState, setAdvanceButtonState] = useState('red');
@@ -64,4 +64,4 @@ const PreviewSurveyModal = ({modalClose, surveyData}) => {
     )
 }
 
-export default PreviewSurveyModal;
+export default SurveyPreviewModal;
