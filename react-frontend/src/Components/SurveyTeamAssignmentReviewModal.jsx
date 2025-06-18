@@ -42,20 +42,19 @@ const SurveyTeamAssignmentReviewModal = ({modalClose, course, survey_data}) => {
 
   
   async function updateAssignments(formdata) {
-    let fetchHTTP =
-        process.env.REACT_APP_API_URL + "updateAssignments.php";
-    
-    try {
-        const response = await fetch(fetchHTTP, {
-            method: "POST",
-            credentials: "include",
-            body: formdata,
-        });
-        const result = await response.json();
-        return result; // Return the result directly
-    } catch (err) {
-        throw err; // Re-throw to be handled by the caller
-    }
+    let fetchHTTP = process.env.REACT_APP_API_URL + "updateAssignments.php";
+    fetch(fetchHTTP, {
+        method: "POST",
+        credentials: "include",
+        body: formdata,
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      return data;
+    })
+    .catch((err) => {
+        console.log(err);
+    });
   }
 
   async function verifyAndSubmit() {

@@ -39,16 +39,15 @@ const SurveyConfirmModal = ({ modalClose, survey_data }) => {
         fetchRosterNonRosterInfo();
     }, [fetchRosterNonRosterInfo]);
 
-
     function quitModal() {
-        modalClose(false);
+        modalClose(false, false);
     }
 
-    function verifyConfirm() {
+    async function verifyConfirm() {
         let formData2 = new FormData();
         formData2.append("save-survey", "1");
-        confirmSurveyPost(formData2);
-        modalClose(true);
+        await confirmSurveyPost(formData2);
+        modalClose(false, true);
     }
 
     return (
@@ -135,15 +134,14 @@ const SurveyConfirmModal = ({ modalClose, survey_data }) => {
                         className="form__item--cancel-btn"
                         onClick={quitModal}
                     >
-                        Cancel
+                        Cancel Survey
                     </button>
-                        <button
-                            className="form__item--confirm-btn"
-                            onClick={verifyConfirm}
-
-                        >
-                            Confirm Survey
-                        </button>
+                    <button
+                        className="form__item--confirm-btn"
+                        onClick={verifyConfirm}
+                    >
+                        Confirm Survey
+                    </button>
                     </div>
                 </div>
             </div>

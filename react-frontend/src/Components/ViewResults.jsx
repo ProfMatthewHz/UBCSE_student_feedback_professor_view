@@ -281,6 +281,7 @@ useEffect(() => {
                                 return header === "Reviewee" ||
                                 header === "Reviewer" ? (
                                     <Column
+                                        key={header}
                                         field={header}
                                         header={header}
                                         sortable
@@ -290,6 +291,7 @@ useEffect(() => {
                                     ></Column>
                                 ) : (
                                     <Column
+                                        key={header}
                                         field={header}
                                         header={header}
                                         sortable
@@ -353,6 +355,7 @@ useEffect(() => {
                                 {normalizedTableHeaders.map((header) => {
                                     return header === "Name" || header === "Email" ? (
                                         <Column
+                                            key={header}
                                             field={header}
                                             header={header}
                                             sortable
@@ -362,6 +365,7 @@ useEffect(() => {
                                         ></Column>
                                     ) : (
                                         <Column
+                                            key={header}
                                             field={header}
                                             header={header}
                                             sortable

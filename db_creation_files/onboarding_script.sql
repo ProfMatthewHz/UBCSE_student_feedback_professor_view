@@ -90,6 +90,8 @@ CREATE TABLE `surveys` (
  `name` VARCHAR(90) NOT NULL,
  `rubric_id` int(11) NOT NULL,
  `survey_type_id` tinyint NOT NULL,
+ `default_weight` int(11) NOT NULL DEFAULT 1,
+ `pm_weight` int(11) NOT NULL DEFAULT 1,
  PRIMARY KEY (`id`),
  KEY `surveys_course_idx` (`course_id`),
  KEY `surveys_rubric_idx` (`rubric_id`),
@@ -128,8 +130,8 @@ CREATE TABLE `team_members` (
 CREATE TABLE `reviews` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `survey_id` int(11) NOT NULL,
- `reviewer_id` int(11) NOT NULL,
  `team_id` int(11) NOT NULL,
+ `reviewer_id` int(11) NOT NULL,
  `reviewed_id` int(11) NOT NULL,
  `eval_weight` int(11) NOT NULL DEFAULT 1,
  PRIMARY KEY (`id`),
