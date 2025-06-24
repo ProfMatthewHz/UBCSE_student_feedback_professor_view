@@ -5,3 +5,4 @@ lib/database.php
 react-frontend/yarn.lock
 .idea/
 .vscode/
+node_modules/
