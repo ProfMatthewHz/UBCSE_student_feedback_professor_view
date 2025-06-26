@@ -33,14 +33,14 @@ function processFileRows($rows, $pairing_mode) {
 
 function getSurveyTypes($con) {
   $ret_val = array();
-  $stmt = $con->prepare('SELECT id, description, file_organization, display_multiplier, text
+  $stmt = $con->prepare('SELECT id, description, file_organization, display_multiplier, text, review_class
                          FROM survey_types
                          ORDER BY id');
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    $key = $row[0];
-    $ret_val[$key] = array($row[1], $row[2], $row[3], $row[4]);
+    $key = array_shift($row);
+    $ret_val[$key] = $row;
   }
   $stmt->close();
   return $ret_val;

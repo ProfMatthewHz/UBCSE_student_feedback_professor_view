@@ -76,6 +76,7 @@ CREATE TABLE `survey_types` (
   `description` text NOT NULL,
   `file_organization` text NOT NULL,
   `display_multiplier` tinyint NOT NULL,
+  `review_class` enum('peer','managed','unmanaged','aggregate') NOT NULL DEFAULT 'peer',
    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
