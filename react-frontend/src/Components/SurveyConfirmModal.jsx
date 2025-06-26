@@ -9,8 +9,10 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
     const [survey_name,] = useState(survey_data.survey_name);
     const [start_date,] = useState(survey_data.start_date);
     const [start_time,] = useState(survey_data.start_time);
+    const [start_display,setStartDisplay ] = useState(null);
     const [end_date,] = useState(survey_data.end_date);
     const [end_time,] = useState(survey_data.end_time);
+    const [end_display,setEndDisplay ] = useState(null);
     const [course_code,] = useState(survey_data.course_code);
     const [course_name,] = useState(survey_data.course_name);
     const [rubric_name,] = useState(survey_data.rubric_name);
@@ -155,6 +157,14 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         setTeamData({...survey_roster.teams});
     }, [survey_roster, survey_data]);
 
+    useEffect(() => {
+        let start = new Date(start_date+"T"+start_time);
+        let end = new Date(end_date+"T"+end_time);
+
+        setStartDisplay(start.toLocaleString('default', {month: 'short', day: 'numeric'}) + " at " + start.toLocaleString('default', {hour: 'numeric', minute: 'numeric'}));
+        setEndDisplay(end.toLocaleString('default', {month: 'short', day: 'numeric'}) + " at " + end.toLocaleString('default', {hour: 'numeric', minute: 'numeric'}));
+    }, [start_date, start_time, end_date, end_time]);
+
     function hideStudentSelector(event) {
         // Hide the select widget when a student is selected
         let widget = event.target;
@@ -298,7 +308,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                         Rubric Used: {rubric_name}
                     </h3>
                     <h3 className="form__item--info">
-                        Survey Active: {start_date} to {end_date}
+                        Survey Active: {start_display} to {end_display}
                     </h3>
                 </div>
                 <div className="viewresults-modal--main-button-container">
