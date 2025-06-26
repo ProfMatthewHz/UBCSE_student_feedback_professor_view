@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import "../styles/course.css";
 import "../styles/modal.css";
 import "../styles/duplicatesurvey.css";
 import "../styles/addsurvey.css";
 import Toast from "./Toast";
-import ViewResults from "./ViewResults";
-import { useNavigate } from "react-router-dom";
+import SurveyResultsView from "./SurveyResultsView";
 import SurveyExtendModal from "./SurveyExtendModal";
 import SurveyDeleteModal from "./SurveyDeleteModal";
 import ErrorsModal from "./ErrorsModal";
 import SurveyConfirmModal from "./SurveyConfirmModal";
 import SurveyNewModal from "./SurveyNewModal";
 import RosterUpdateModal from "./RosterUpdateModal";
-import SurveyTeamAssignmentReviewModal from "./SurveyTeamAssignmentReviewModal";
+import SurveyPreviewModal from "./SurveyPreviewModal";
 
 const Course = ({ course, page }) => {
     const [surveys, setSurveys] = useState([]);
@@ -20,24 +19,24 @@ const Course = ({ course, page }) => {
     const [duplicateModal, setDuplicateModal] = useState(false);
 
     const [deleteModal, setDeleteModal] = useState(false);
-    const [addSurveyModalIsOpen, setAddSurveyModalIsOpen] = useState(false);
-    const [errorModalIsOpen, setModalIsOpenError] = useState(false);
-    const [errorsList, setErrorsList] = useState([]);
-    const [modalIsOpenSurveyConfirm, setModalIsOpenSurveyConfirm] = useState(false);
-    const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [teamReviewModal, setTeamReviewModal] = useState(false);
+    const [addSurveyModal, setAddSurveyModal] = useState(false);
+    const [surveyErrorModal, setSurveyModalError] = useState(false);
+    const [surveyErrorsList, setSurveyErrorsList] = useState([]);
+    const [surveyConfirmModal, setSurveyConfirmModal] = useState(false);
+    const [updateRosterModal, setUpdateRosterModal] = useState(false);
+    const [errorRosterModal, setErrorRosterModal] = useState(false);
+    const [updateRosterErrorsList, setUpdateRosterErrorsList] = useState([]);
+    const [previewSurveyModal, setPreviewSurveyModal] = useState(false);
+
     const [currentSurvey, setCurrentSurvey] = useState("");
+    const [viewResultsModal, setViewResultsModal] = useState(false);
 
-    const [showViewResultsModal, setViewResultsModal] = useState(false);
-    const [viewingCurrentSurvey, setViewingCurrentSurvey] = useState(null);
-
-    const [updateRosterError, setUpdateRosterError] = useState([]);
-
-    const [showErrorModal, setShowErrorModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [rubrics, setRubrics] = useState([]);
     const [pairingModesFull, setPairingModesFull] = useState([]);
     const [survey_confirm_data, setSurveyConfirmData] = useState(null);
+    const [survey_confirm_roster, setSurveyConfirmRoster] = useState(null);
+    const [survey_new_data, setSurveyNewData] = useState(null);
 
     const processSurveys = (result) => {
         const activeSurveys = result.active.map((survey_info) => ({
@@ -58,10 +57,11 @@ const Course = ({ course, page }) => {
         setSurveys([...activeSurveys, ...expiredSurveys, ...upcomingSurveys]);
     };
 
+
     /**
      * Perform a POST call to courseSurveysQueries 
      */
-    function updateAllSurveys() {
+    const updateAllSurveys = useCallback(() => {
         fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
             method: "POST",
             credentials: "include",
@@ -76,9 +76,13 @@ const Course = ({ course, page }) => {
             .then(processSurveys)
             .catch((err) => {
                 console.log(err);
-                throw err;
             });
-    }
+    }, [course.id]);
+
+    //MODAL CODE
+    useEffect(() => {
+        updateAllSurveys();
+    }, [updateAllSurveys]);
 
     /**
      * Create the effect which loads all of the potential rubrics from the system 
@@ -97,14 +101,14 @@ const Course = ({ course, page }) => {
             })
             .catch((err) => {
                 console.log(err);
-                throw err;
             });
     }, []);
 
     /**
-     * Perform a GET call to getSurveyTypes.php to fetch all possible survey pairing modes
+     * Get all of the pairing modes we might need to use
      */
-    const fetchPairingModes = () => {
+    useEffect(() => {
+        // Fetch the survey types from the API
         fetch(process.env.REACT_APP_API_URL + "getSurveyTypes.php", {
             method: "GET",
             credentials: "include"
@@ -117,31 +121,30 @@ const Course = ({ course, page }) => {
                 console.log(err);
                 throw err;
             });
-    };
+    }, []);
 
     const openAddSurveyModal = () => {
-        fetchPairingModes();
-        setAddSurveyModalIsOpen(true);
+        setSurveyNewData({course_code: course.code, course_name: course.name, course_id: course.id, rubric_id: rubrics[0].id, reason: "Add"});
+        setAddSurveyModal(true);
     };
+    
+    const openUpdateRosterModal = () => {
+        setUpdateRosterModal(true);
+    }
 
-    const closeNewSurveyModalAdd = async (result) => {
-        setAddSurveyModalIsOpen(false);
+    const closeNewSurveyReview = (result, surveyData) => {
+        // Close the modal (only one will have been used, but this is safe and simple)
+        setAddSurveyModal(false);
+        setDuplicateModal(false);
         // Response is either the onclick event or the add survey response object
         if (result) {
             let errorsObject = result.errors;
             let dataObject = result.data;
             if (errorsObject.length === 0) {
-                // valid survey subitted
-                console.log(dataObject)
-                let startDateObject = new Date(dataObject["survey_data"]["start"].date);
-                let endDateObject = new Date(dataObject["survey_data"]["end"].date);
-                let surveyName = dataObject["survey_data"]["name"];
-                let rubric_name = dataObject["survey_data"]["rubric_name"];
-                let start = startDateObject.toLocaleString('default', { month: 'short', day: '2-digit' }) + " at " + startDateObject.toLocaleString('default', { timeStyle: 'short' });
-                let end = endDateObject.toLocaleString('default', { month: 'short', day: '2-digit' }) + " at " + endDateObject.toLocaleString('default', { timeStyle: 'short' });
-                let survey_data = { course_code: course.code, survey_name: surveyName, rubric_name: rubric_name, start_date: start, end_date: end };
-                setSurveyConfirmData(survey_data);
-                setModalIsOpenSurveyConfirm(true);
+                setSurveyNewData(null)
+                setSurveyConfirmData(surveyData);
+                setSurveyConfirmRoster(dataObject);
+                setSurveyConfirmModal(true);
             } else {
                 let errorKeys = Object.keys(errorsObject);
                 let pairingFileStrings = [];
@@ -157,47 +160,40 @@ const Course = ({ course, page }) => {
                     i++;
                 }
                 const allErrorStrings = pairingFileStrings.concat(anyOtherStrings);
-                setErrorsList(allErrorStrings);
-                setModalIsOpenError(true);
+                setSurveyErrorsList(allErrorStrings);
+                setSurveyModalError(true);
             }
         }
-    };
-
-
-    const closeNewSurveyModalDuplicate = (result) => {
-        // Response is either the onclick event or the new survey response object
-        if (result) {
-            let errorsObject = result.errors;
-            if (errorsObject.length === 0) {
-                updateAllSurveys();
-            } else {
-                // TODO: Display the errors in a modal or something.
-            }
-        }
-        setDuplicateModal(false);
     }
 
-    const closeModalError = () => {
-        setModalIsOpenError(false);
-    };
+    const closeSurveyModalError = () => {
+        setSurveyModalError(false);
+    }
 
-    const closeModalSurveyConfirm = (success) => {
-        setSurveyConfirmData(null);
-        if (success) {
-            updateAllSurveys();
+    const closeSurveyConfirm = (goBack, success) => {
+        if (goBack) {
+            setSurveyConfirmModal(false);
+            setSurveyNewData(survey_confirm_data);
+            setSurveyConfirmData(null);
+            setAddSurveyModal(true);
+        } else {
+            setSurveyConfirmData(null);
+            if (success) {
+                updateAllSurveys();
+            }
+            setSurveyConfirmModal(false);
         }
-        setModalIsOpenSurveyConfirm(false);
     };
 
-    const handleErrorModalClose = () => {
-        setShowErrorModal(false); // close the error modal
-        setShowUpdateModal(true); // open the update modal again
+    const closeErrorLists = () => {
+        setErrorRosterModal(false); // close the error modal
+        setUpdateRosterModal(true); // open the update modal again
     };
 
-    let Navigate = useNavigate();
-    async function handleActionButtonChange(e, survey) {
+    function handleActionButtonChange(e, survey) {
         if (e.target.value === "Duplicate") {
             setCurrentSurvey(survey);
+            setSurveyNewData({ course_code: course.code, course_name: course.name, course_id: course.id, survey_name: survey.name + " copy", original_id: survey.id, pairing_mode: survey.survey_type, rubric_id: survey.rubric_id, pm_mult: survey.pm_weight, reason: "Duplicate" });
             setDuplicateModal(true);
         }
         else if (e.target.value === "Delete") {
@@ -209,74 +205,53 @@ const Course = ({ course, page }) => {
             setExtendModal(true);
         }
         else if (e.target.value === "View Results") {
-            handleViewResultsModalChange(survey);
+            setCurrentSurvey(survey);
+            setViewResultsModal(true);
         }
         else if (e.target.value === "Preview Survey") {
-            Navigate("/SurveyPreview", { state: { survey_name: survey.name, rubric_id: survey.rubric_id, course: course.code } });
-        } else if (e.target.value === "Team Review") {
             setCurrentSurvey(survey);
-            setTeamReviewModal(true);
+            setPreviewSurveyModal(true);
         }
     }
 
-    const handleUpdateRosterSubmit = (result) => {
-        setShowUpdateModal(false);
+    const closeUpdateRoster = (result) => {
+        setUpdateRosterModal(false);
         if (result) {
             if (result.error !== "") {
-                setUpdateRosterError(result.error);
-                setShowErrorModal(true); // show the error modal
+                setUpdateRosterErrorsList(result.error);
+                setErrorRosterModal(true); // show the error modal
             } else {
                 setShowToast(true);
             }
         }
     }
 
-    //MODAL CODE
-    useEffect(() => {
-        fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: new URLSearchParams({
-                "course-id": course.id,
-            }),
-        })
-            .then((res) => res.json())
-            .then(processSurveys)
-            .catch((err) => {
-                console.log(err);
-            });
-    }, [course.id]);
-
-    const extendModalClose = (errorList) => {
+    const closeExtendSurvey = (errorList) => {
         if (errorList && errorList.length > 0) {
-            setErrorsList(errorList);
-            setModalIsOpenError(true);
+            setSurveyErrorsList(errorList);
+            setSurveyModalError(true);
         } else {
             updateAllSurveys();
         }
         setExtendModal(false);
     }
 
-    const deleteModalClose = (errorList) => {
+    const closeDeleteSurvey = (errorList) => {
         if (errorList && errorList.length > 0) {
-            setErrorsList(errorList);
-            setModalIsOpenError(true);
+            setSurveyErrorsList(errorList);
+            setSurveyModalError(true);
         } else {
             updateAllSurveys();
         }
         setDeleteModal(false);
     }
 
-    function handleUpdateModalChange() {
-        setShowUpdateModal((prev) => !prev);
+    function closeViewResults(survey) {
+        setViewResultsModal(false);
     }
-
-    function handleViewResultsModalChange(survey) {
-        setViewResultsModal((prev) => !prev);
-        setViewingCurrentSurvey(survey);
+    
+    function closePreviewModal() {
+        setPreviewSurveyModal(false);
     }
 
     return (
@@ -284,83 +259,75 @@ const Course = ({ course, page }) => {
             {/* Survey extendsion modal*/}
             {extendModal &&
                 (<SurveyExtendModal
-                    modalClose={extendModalClose}
+                    modalClose={closeExtendSurvey}
                     course={course}
                     survey_data={currentSurvey} />
                 )}
             {/* Survey deletion modal*/}
             {deleteModal &&
                 (<SurveyDeleteModal
-                    modalClose={deleteModalClose}
+                    modalClose={closeDeleteSurvey}
                     course={course}
                     survey_data={currentSurvey} />
                 )}
             {/* Survey creation errors modal*/}
-            {errorModalIsOpen && (
+            {surveyErrorModal && (
                 <ErrorsModal
-                    modalClose={closeModalError}
+                    modalClose={closeSurveyModalError}
                     error_type={"Survey"}
-                    errors={errorsList} />
+                    errors={surveyErrorsList} />
             )}
             {/* Survey creation confirmation modal*/}
-            {modalIsOpenSurveyConfirm && (
+            {surveyConfirmModal && (
                 <SurveyConfirmModal
-                    modalClose={closeModalSurveyConfirm}
-                    survey_data={survey_confirm_data} />
+                    modalClose={closeSurveyConfirm}
+                    survey_data={survey_confirm_data} 
+                    survey_roster={survey_confirm_roster}/>
             )}
             {/* View Results Modal*/}
-            {showViewResultsModal && (
-                <ViewResults
-                    closeViewResultsModal={handleViewResultsModalChange}
-                    surveyToView={viewingCurrentSurvey}
+            {viewResultsModal && (
+                <SurveyResultsView
+                    closeViewResultsModal={closeViewResults}
+                    surveyToView={currentSurvey}
                     course={course}
                 />
             )}
             {/* Roster error display */}
-            {showErrorModal && (
+            {errorRosterModal && (
                 <ErrorsModal
-                    modalClose={handleErrorModalClose}
+                    modalClose={closeErrorLists}
                     error_type={"Roster Update"}
-                    errors={updateRosterError} />
+                    errors={updateRosterErrorsList} />
             )}
             {/* Add Survey modal display */}
-            {addSurveyModalIsOpen && (
+            {addSurveyModal && (
                 <SurveyNewModal
-                    modalClose={closeNewSurveyModalAdd}
-                    modalReason="Add"
+                    modalClose={closeNewSurveyReview}
                     button_text="Verify Survey"
-                    survey_data={{ course_name: course.code, course_id: course.id, survey_name: "", pairing_mode: ""}}
+                    survey_data={ survey_new_data }
                     pairing_modes={pairingModesFull}
-                    rubric_id={rubrics[0].id}
                     rubrics_list={rubrics} />
             )}
             {/* Add Survey to a course modal*/}
             {duplicateModal && (
                 <SurveyNewModal
-                    modalClose={closeNewSurveyModalDuplicate}
-                    modalReason="Duplicate"
+                    modalClose={closeNewSurveyReview}
                     button_text="Duplicate Survey"
-                    survey_data={{ course_name: course.code, course_id: course.id, survey_name: currentSurvey.name + " copy", original_id: currentSurvey.id, pairing_mode: currentSurvey.survey_type }}
+                    survey_data={survey_new_data}
                     pairing_modes={pairingModesFull}
-                    rubric_id={currentSurvey.rubric_id}
-                    rubrics_list={rubrics} />
-            )}
-            {/* Review survey's team pairings modal display */}
-            {teamReviewModal && (
-                <SurveyTeamAssignmentReviewModal
-                    modalClose={closeNewSurveyModalAdd}
-                    modalReason="Add"
-                    button_text="Verify Survey"
-                    survey_data={{ course_name: course.code, course_id: course.id, survey_name: "", }}
-                    pairing_modes={pairingModesFull}
-                    rubric_id={rubrics[0].id}
                     rubrics_list={rubrics} />
             )}
             {/* Show modal to update the roster */}
-            {showUpdateModal && (
+            {updateRosterModal && (
                 <RosterUpdateModal
-                    modalClose={handleUpdateRosterSubmit}
+                    modalClose={closeUpdateRoster}
                     course={course} />
+            )}
+            {/* Show modal to preview a survey */}
+            {previewSurveyModal && (
+                <SurveyPreviewModal
+                    modalClose={closePreviewModal}
+                    surveyData = {currentSurvey} />
             )}
             <div className="courseContent">
                 <div className="courseHeader">
@@ -375,7 +342,7 @@ const Course = ({ course, page }) => {
                             <button
                                 className="btn update-btn"
                                 type="button"
-                                onClick={handleUpdateModalChange}
+                                onClick={openUpdateRosterModal}
                             >
                                 Update Roster
                             </button>
@@ -460,7 +427,7 @@ const Course = ({ course, page }) => {
                                         ) : page === "history" && (
                                             <button
                                                 className="viewresult-button"
-                                                onClick={() => handleViewResultsModalChange(survey)}
+                                                onClick={() => handleActionButtonChange({target: {value: "View Results"}}, survey)}
                                             >
                                                 View Results
                                             </button>

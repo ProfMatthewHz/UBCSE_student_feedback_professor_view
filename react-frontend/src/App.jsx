@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import History from "./pages/History";
@@ -7,13 +7,12 @@ import Library from "./pages/Library";
 import StudentHome from "./pages/studentHome";
 import ProfStudentHome from "./pages/profStudentHome";
 import SurveyForm from "./pages/SurveyForm"
-import SurveyPreview from "./pages/SurveyPreview"
 
 function App() {
     const [userFlag, setUserFlag] = useState(1);  // userFlag = 1 -> prof    userFlag = 2 -> student
 
     //Find who is logging in and load page accordingly
-    const fetchFlag = () => {
+    const fetchFlag = useCallback(() => {
       const url = `${process.env.REACT_APP_API_URL_STUDENT}redirectEndpoint.php`;
     
       fetch(url, {
@@ -33,10 +32,11 @@ function App() {
             // If we fail to get the user flag, redirect to the starting page
             window.location.href = `${process.env.REACT_APP_API_START}`;
           });
-  };
+  }, []);
+
   useEffect(() => {
     fetchFlag()
-}, []);
+}, [fetchFlag]);
 
     return (
       <BrowserRouter basename={process.env.REACT_APP_BASE_URL}>
@@ -51,7 +51,6 @@ function App() {
                   <Route path="/history" element={<History />} />
                   <Route path="/student" element={<ProfStudentHome />} /> 
                   <Route path="/about" element={<About />} />
-                  <Route path ="/surveyPreview" element={<SurveyPreview />} />
                   <Route path ="/surveyForm" element={<SurveyForm />} />
                   </>
               )}

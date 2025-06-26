@@ -4,9 +4,8 @@ import Modal from "./Modal";
 import "../styles/rubric.css";
 
 const Rubric = ({rubric_id, updateRubrics}) => {
-
     // IMPORTANT: rubricData contains rubric name, levels, and criterions
-    const [duplicatedRubricData, setDuplicatedRubricData] = useState({});
+    const [duplicatedRubricData, setDuplicatedRubricData] = useState({}); // Contains the duplicated rubric data
     const [criterions, setCriterions] = useState({}) // Contains the criterions
     const [levels, setLevels] = useState({}) // Contains the levels
     const [rubricName, setRubricName] = useState("") // Contains the rubric name
@@ -23,9 +22,8 @@ const Rubric = ({rubric_id, updateRubrics}) => {
      * Fetches the rubric info from the API.
      * @param filename
      */
-    const fetchRubricInfo = useCallback((filename) => {
-        fetch(
-            process.env.REACT_APP_API_URL + filename,
+    const fetchRubricInfo = useCallback(() => {
+        fetch(process.env.REACT_APP_API_URL + "getInstructorRubrics.php",
             {
                 method: "POST",
                 credentials: "include",
@@ -39,14 +37,11 @@ const Rubric = ({rubric_id, updateRubrics}) => {
         )
             .then((res) => res.json())
             .then((result) => {
-                if (filename === "getInstructorRubrics.php") { // Initial Rubric Info
-                    setRubricName(result.data.name)
-                    setLevels(Object.values(result.data.levels))
-                    setCriterions(result.data.topics)
-                } else if (filename === "rubricDuplicate.php") { // Duplicate Rubric Info
-                    setDuplicatedRubricData(result.data)
-                }
-
+                setRubricName(result.data.name);
+                setLevels(Object.values(result.data.levels));
+                setCriterions(result.data.topics);
+                result.data.name = result.data.name + " copy";
+                setDuplicatedRubricData(result.data);
             })
             .catch((err) => {
                 console.log(err);
@@ -54,8 +49,7 @@ const Rubric = ({rubric_id, updateRubrics}) => {
     }, [rubric_id]);
 
     useEffect(() => {
-        fetchRubricInfo("getInstructorRubrics.php") // Displaying Rubric for Library Page
-        fetchRubricInfo("rubricDuplicate.php") // Duplicating Rubric
+        fetchRubricInfo();
     }, [fetchRubricInfo]);
 
     /**

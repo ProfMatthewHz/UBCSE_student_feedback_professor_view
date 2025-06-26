@@ -8,9 +8,8 @@ function getIdsFromEmails($con, $line_num, $emails) {
     if (empty($id_and_name)) {
       $retVal['error'] = $retVal['error'] . 'Line '. $line_num . '  column ' . $column . ' includes an unknown email (' . $email . ')<br>';
     } else {
-      $id = $id_and_name[0];
       $name = $id_and_name[1];
-      $retVal['student_data'][$email] = array($name, $id);
+      $retVal['student_data'][$email] = $name;
     }
   }
   return $retVal;
@@ -35,82 +34,6 @@ function clean_to_ascii($str) {
   // Finally, clean up the results by removing any extra whitespace
   $str = trim($str);
   return $str;
-}
-
-function parse_review_pairs($rows, $student_data) {
-  // return array
-  $ret_val = array();
-  foreach ($rows as $idx => $row) {
-    // Get the reviewer infomation
-    $reviewer = $row[0];
-    $reviewer_id = $student_data[$reviewer][1];
-    // Get the person being reviewed's info
-    $reviewed = $row[1];
-    $reviewed_id = $student_data[$reviewed][1];
-    // Create the pairing.
-    $ret_val[] = array($reviewer_id, $reviewed_id, $idx, 1);
-  }
-  return $ret_val;
-}
-
-function parse_review_teams($rows, $student_data) {
-  // return array
-  $ret_val = array();
-  foreach ($rows as $idx => $row) {
-    // We will need to create a review of each student for every other student.
-    $id_len = count($row);
-    foreach ($row as $reviewer_email) {
-      $reviewer_id = $student_data[$reviewer_email][1];
-      for ($k = 0; $k < $id_len; $k++) {
-        $reviewed_email = $row[$k];
-        $reviewed_id = $student_data[$reviewed_email][1];
-        // Append pairings to our array; defaults to each team being independent and each review is equally weighted
-        $ret_val[] = array($reviewer_id, $reviewed_id, $idx, 1);
-      }
-    }
-  }
-  return $ret_val;
-}
-
-function parse_managed_teams($rows, $student_data, $pm_mult) {
-  // return array
-  $ret_val = array();
-  foreach ($rows as $idx => $row) {
-    // Remove the manager from the list of students
-    $manager_email = array_pop($row);
-    $manager_id = $student_data[$manager_email][1];
-    // We will need to create a review of each student for every other student.
-    $id_len = count($row);
-    foreach ($row as $reviewer_email) {
-      $reviewer_id = $student_data[$reviewer_email][1];
-      // Add the manager's review of this stuent
-      $ret_val[] = array($manager_id, $reviewer_id, $idx, $pm_mult);
-      for ($k = 0; $k < $id_len; $k++) {
-        $reviewed_email = $row[$k];
-        $reviewed_id = $student_data[$reviewed_email][1];
-        // Append pairings to our array; defaults to each team being independent and each review is equally weighted
-        $ret_val[] = array($reviewer_id, $reviewed_id, $idx, 1);
-      }
-    }
-  }
-  return $ret_val;
-}
-
-function parse_manager_review($rows, $student_data) {
-  $ret_val = array();
-  foreach ($rows as $idx => $row) {
-    // We will need to create a review of each student for every other student.
-    $id_len = count($row);
-    // Remove the manager from the list of students
-    $manager_email = array_pop($row);
-    $manager_id = $student_data[$manager_email][1];
-    foreach ($row as $reviewer_email) {
-      $reviewer_id = $student_data[$reviewer_email][1];
-      // Add the manager's review of this stuent
-      $ret_val[] = array($reviewer_id, $manager_id, $idx, 1);
-    }
-  }
-  return $ret_val;
 }
 
 function parse_roster_file($file_handle) {
@@ -191,7 +114,4 @@ function processReviewFile($con, $require_pairs, $file_handle) {
   }
   return $ret_val;
 }
-
-
-
 ?>

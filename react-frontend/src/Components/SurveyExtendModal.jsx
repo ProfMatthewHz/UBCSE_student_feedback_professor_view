@@ -131,12 +131,10 @@ const SurveyExtendModal = ({modalClose, course, survey_data}) => {
     formData5.append('end-date', newEndDate);
     formData5.append('end-time', newEndTime);
     let post = await extendSurveyPost(formData5);
-    if (
-        post.errors["end-date"] ||
+    if (post.errors["end-date"] ||
         post.errors["end-time"] ||
         post.errors["start-date"] ||
-        post.errors["start-time"]
-    ) {
+        post.errors["start-time"]) {
         //there are errors
         let errorList = [];
         if (post.errors["end-date"]) {

@@ -33,10 +33,30 @@
   justify-content: space-between;
 }
 
-.confirm--bottom-container table {
+.confirm--bottom-container .p-datatable {
   border-collapse: collapse;
   width: 50%;
   margin: 0px 10px;
+}
+
+
+.confirm--bottom-container table {
+  border-collapse: collapse;
+  width: 90%;
+  margin: 0px 10px;
+}
+
+
+.delete-team {
+  pointer-events: auto;
+  background-image: url('../assets/redtrashcan.png');
+  background-position: center center;
+  background-size: 30px 30px;
+  background-repeat: no-repeat;
+  color: #af0e0e;
+  padding-left: 28px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .confirm--bottom-container th, .confirm--bottom-container td {
@@ -45,14 +65,113 @@
   text-align: left;
 }
 
-.confirm--bottom-container th {
-  background-color: #f2f2f2;
-}
-
 .confirm--empty-text {
   text-align: center;
   font-size: 20px;
   color: grey;
   margin: 10px;
   padding: 20px;
+}
+
+.p-datatable-header {
+  background-color: #fff;
+  font-weight: bold;
+  font-size: large;
+  border: 0px;
+  text-align: center;
+}
+
+.teammembers {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: stretch;
+  width: 100%;
+}
+
+.removable {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.close {
+  pointer-events: auto;
+  font-size: small;
+  margin-top: -3px;
+  margin-left: 5px;
+}
+
+.notremovable .close {
+  display: none;
+}
+
+.fixedLabel {
+    background-color: #ddd;
+}
+
+
+.notremovable {
+  border-color: #a04b4b;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.add-member-container {
+  margin-left: auto;
+}
+
+.addition {
+  background-color: #fff;
+  color: #57803C ;
+  border: 1px solid #57803C ;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.addition:hover {
+  background-color: #6da04b;
+  color: #fff;
+}
+
+.confirm--bottom-container td:not(:has(.delete-team:hover)) {
+  padding: 9px;
+}
+
+.confirm--bottom-container tr:has(.delete-team:hover) {
+  cursor: pointer;
+  border: 2px solid #a04b4b !important;
+  background-color: rgb(160, 75, 75, 0.2);
+}
+
+.removable:has(.close:hover) {
+  cursor: pointer;
+  background-color: #a04b4b;
+  color: #fff 
+}
+
+.p-confirm-popup {
+  padding: 3px;
+}
+
+.p-confirm-popup-message {
+  padding-bottom: 5px;
+  color:#af0e0e;
+  font-weight: bold;
+}
+
+.visible + select {
+  display: none;
+}
+
+.invisible {
+  display: none;
+}
+
+.add-member-select {
+  width: 75%;
+  margin-left: 20%;
+
 }

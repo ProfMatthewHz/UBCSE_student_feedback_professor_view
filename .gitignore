@@ -4,3 +4,5 @@ lib/database.php
 .DS_Store
 react-frontend/yarn.lock
 .idea/
+.vscode/
+node_modules/

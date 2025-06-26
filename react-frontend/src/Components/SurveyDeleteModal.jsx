@@ -5,9 +5,9 @@ import "../styles/modal.css";
 const SurveyDeleteModal = ({ modalClose, course, survey_data }) => {
     const [survey_id,] = useState(survey_data.id);
     const [survey_name,] = useState(survey_data.name);
-    const [emptyOrWrongDeleteNameError, setEmptyOrWrongDeleteNameError] = useState(false);
+    const [emptyOrWrongDeleteNameError, setEmptyOrWrongDeleteNameError] = useState(true);
     const [deleteName, setDeleteName] = useState("");
-    const [updated, setUpdated] = useState(false);
+    const [started, setStarted] = useState(false);
 
     async function postSurveyDelete(formdata) {
         let fetchHTTP =
@@ -23,7 +23,7 @@ const SurveyDeleteModal = ({ modalClose, course, survey_data }) => {
     }
 
     async function verifyAndSubmit() {
-        if (!emptyOrWrongDeleteNameError) {
+        if (deleteName === survey_name) {
             let form = new FormData();
             form.append("survey_id", survey_id);
             form.append("agreement", 1);
@@ -37,19 +37,17 @@ const SurveyDeleteModal = ({ modalClose, course, survey_data }) => {
     }
 
     const updateAndCheckSurveyName = (e) => {
-        setUpdated(true);
         setDeleteName(e.target.value);
+        setStarted(true);
     }
 
     useEffect(() => {
-        if (updated) {
-            if (deleteName !== survey_name) {
-                setEmptyOrWrongDeleteNameError(true);
-            } else {
-                setEmptyOrWrongDeleteNameError(false);
-            }
+        if (deleteName !== survey_name) {
+            setEmptyOrWrongDeleteNameError(true);
+        } else {
+            setEmptyOrWrongDeleteNameError(false);
         }
-    }, [deleteName, survey_name, updated]);
+    }, [deleteName, survey_name]);
 
     return (
         <div className="modal">
@@ -66,11 +64,11 @@ const SurveyDeleteModal = ({ modalClose, course, survey_data }) => {
                         <label className="form__item--label" htmlFor="delete-name">
                             Type survey name to confirm:
                             <input
-                                className={emptyOrWrongDeleteNameError ? "form__item--input-error" : undefined}
+                                className={emptyOrWrongDeleteNameError && started ? "form__item--input-error" : undefined}
                                 id="delete-name" 
                                 type="text" 
                                 onChange={updateAndCheckSurveyName} />
-                        {emptyOrWrongDeleteNameError && (
+                        {emptyOrWrongDeleteNameError && started && (
                             <label className="form__item--error-label">
                                 <div className="form__item--red-warning-sign" />
                                 Must be identical to the survey name

@@ -7,21 +7,26 @@ import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
 import "../styles/modal.css";
 import "../styles/addsurvey.css";
 
-const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pairing_modes, rubric_id, rubrics_list }) => {
+const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, rubrics_list }) => {
   const [surveyName, setSurveyName] = useState(survey_data.survey_name);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startTime, setStartTime] = useState(survey_data.start_time ? survey_data.start_time : "");
+  const [endTime, setEndTime] = useState(survey_data.end_time ? survey_data.end_time : "");
+  const [startDate, setStartDate] = useState(survey_data.start_date ? survey_data.start_date : "");
+  const [endDate, setEndDate] = useState(survey_data.end_date ? survey_data.end_date : "");
+  const [modalReason,] = useState(survey_data.reason ? survey_data.reason : "Add");
   const [csvFile, setCsvFile] = useState("");
-  const [rubric, setRubric] = useState(rubric_id);
-  const [valuePairing, setValuePairing] = useState(survey_data.pairing_mode ? survey_data.pairing_mode : 2);
-  const [multiplier, setMultiplier] = useState("1");
+  const [pairingModes, setPairingModes] = useState([]);
+  const [rubric, setRubric] = useState(survey_data.rubric_id);
+  const [rubricName, setRubricName] = useState("");
+  const [pairingModeValue, setPairingModeValue] = useState(survey_data.pairing_mode ? survey_data.pairing_mode : 2);
+  const [multiplier, setMultiplier] = useState(survey_data.pm_mult ? survey_data.pm_mult : 1);
   const [useMultipler, setUseMultiplier] = useState(false);
   const [pairingImage, setPairingImage] = useState(Team);
   const [CSVFileDescription, setCSVFileDescription] = useState("");
+  const [surveyNameError, setSurveyNameError] = useState(false);
   const [emptyCSVFileError, setEmptyCSVFileError] = useState(false);
-  const [emptySurveyNameError, setEmptyNameError] = useState(false);
+  const [emptySurveyNameError, setEmptySurveyNameError] = useState(false);
+  const [longSurveyNameError, setLongSurveyNameError] = useState(false);
   const [emptyStartTimeError, setEmptyStartTimeError] = useState(false);
   const [emptyEndTimeError, setEmptyEndTimeError] = useState(false);
   const [emptyStartDateError, setEmptyStartDateError] = useState(false);
@@ -43,7 +48,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       case 'Single Pairs':
         setPairingImage(SinglePairs);
         break;
-      case 'PM':
+      case 'MANAGER':
         setPairingImage(PM);
         break;
       default:
@@ -63,21 +68,40 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
 
   const handleChangePairing = (e) => {
     let pairing = parseInt(e.target.value);
-    setValuePairing(pairing);
+    setPairingModeValue(pairing);
   }
 
   useEffect(() => {
-    let pairingMode = findPairingData(valuePairing, pairing_modes);
+    let pairingMode = findPairingData(pairingModeValue, pairingModes);
     if (pairingMode != null) {
       setCSVFileDescription(pairingMode.file_organization);
       updateImage(pairingMode.text);
       setUseMultiplier(pairingMode.usesMultiplier);
     }
-  }, [valuePairing, pairing_modes]);
+  }, [pairingModeValue, pairingModes]);
+
+  useEffect(() => {
+    if (survey_data.reason === "Add") {
+      setPairingModes(pairing_modes);
+    } else if (survey_data.pairing_mode === 1) {
+      setPairingModes(pairing_modes.filter((mode) => mode.id === 1));
+    } else if ((survey_data.pairing_mode === 2) || (survey_data.pairing_mode === 5)) {
+      setPairingModes(pairing_modes.filter((mode) => mode.id === 2 || mode.id === 5));
+    } else if ((survey_data.pairing_mode === 3) || (survey_data.pairing_mode === 4)) {
+      setPairingModes(pairing_modes.filter((mode) => mode.id === 3 || mode.id === 4));
+    }
+}, [survey_data.reason, survey_data.pairing_mode, pairing_modes])
+
+  useEffect(() => {
+    for(let rub of rubrics_list) {
+      if (rub.id === rubric) {
+        setRubricName(rub.description);
+      }
+    }
+  }, [rubric, rubrics_list]);
 
   function duplicateSurveyBackend(formData) {
-    formData.append("survey-id", survey_data.original_id);
-    let fetchHTTP = process.env.REACT_APP_API_URL + "duplicateExistingSurvey.php";
+    let fetchHTTP = process.env.REACT_APP_API_URL + "getSurveyRosterFromSurvey.php";
     const result = fetch(fetchHTTP, {
       method: "POST",
       credentials: "include",
@@ -89,7 +113,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
 
   function addSurveyBackend(formData) {
     let fetchHTTP =
-      process.env.REACT_APP_API_URL + "addSurveyToCourse.php";
+      process.env.REACT_APP_API_URL + "getSurveyRosterFromFile.php";
     const result = fetch(fetchHTTP, {
       method: "POST",
       credentials: "include",
@@ -105,58 +129,65 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
     setStartAfterCurrentError(false);
   };
 
-  const checkForMissingData = () => {
-    let missingData = false;
+  const checkForInvalidData = () => {
+    let invalidData = false;
 
     if (surveyName === "") {
-      setEmptyNameError(true);
-      missingData = true;
+      setSurveyNameError(true);
+      setEmptySurveyNameError(true);
+      invalidData = true;
+    } else if (surveyName.length > 89) {
+      setSurveyNameError(true);
+      setLongSurveyNameError(true);
+      invalidData = true;
     } else {
-      setEmptyNameError(false);
+      setSurveyNameError(false);
+      setEmptySurveyNameError(false);
     }
 
     if (startTime === "") {
       setEmptyStartTimeError(true);
-      missingData = true;
+      invalidData = true;
     } else {
       setEmptyStartTimeError(false);
     }
 
     if (endTime === "") {
       setEmptyEndTimeError(true);
-      missingData = true;
+      invalidData = true;
     } else {
       setEmptyEndTimeError(false);
     }
 
     if (startDate === "") {
       setEmptyStartDateError(true);
-      missingData = true;
+      invalidData = true;
     } else {
       setEmptyStartDateError(false);
     }
 
     if (endDate === "") {
       setEmptyEndDateError(true);
-      missingData = true;
+      invalidData = true;
     } else {
       setEmptyEndDateError(false);
     }
     if ((modalReason !== "Duplicate") && (csvFile === "")) {
       setEmptyCSVFileError(true);
-      missingData = true;
+      invalidData = true;
     } else {
       setEmptyCSVFileError(false);
     }
-    return missingData;
+    return invalidData;
   }
 
   const checkStartAndEndDateTimes = () => {
     // Check that the starting date is legal
     let startDateObject = new Date(startDate + "T" + startTime + ":00");
     // Get the current time, but then set the hours/minutes/seconds/etc to be 0. Just want to deal with the calendar date
-    let timestamp = new Date(Date.now());
-    if (startDateObject < timestamp) {
+    let timestamp = new Date();
+    let startOfDay = new Date(timestamp.getFullYear(), timestamp.getMonth(), timestamp.getDate());
+    if (startDateObject < startOfDay) {
       setStartAfterCurrentError(true);
       return true;
     }
@@ -184,7 +215,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
     clearErrors();
 
     // Report errors due to missing data
-    if (checkForMissingData()) {
+    if (checkForInvalidData()) {
       return;
     }
 
@@ -202,30 +233,43 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
       multInt = 1;
     }
 
-    formData.append("survey-name", surveyName);
-    formData.append("course-id", survey_data.course_id);
-    formData.append("rubric-id", rubric);
-    formData.append("start-date", startDate);
-    formData.append("start-time", startTime);
-    formData.append("end-date", endDate);
-    formData.append("end-time", endTime);
-    formData.append("pairing-mode", valuePairing);
-    formData.append("pm-mult", multInt);
-    formData.append("pairing-file", csvFile);
+    // Create the survey data object that will be passed along to the next screen
+    let surveyData = {
+      survey_name: surveyName,
+      course_id: survey_data.course_id,
+      course_code: survey_data.course_code,
+      course_name: survey_data.course_name,
+      rubric_id: rubric,
+      rubric_name: rubricName,
+      start_date: startDate,
+      start_time: startTime,
+      end_date: endDate,
+      end_time: endTime,
+      pairing_mode: pairingModeValue,
+      pm_mult: multInt,
+      reason: modalReason
+    };
 
+    formData.append("course-id", survey_data.course_id);
+    formData.append("pairing-mode", pairingModeValue);
     if (modalReason === "Add") {
-      // Form data is set. post the new survey and get the responses
+      // Post the CSV file so that we get student and team information
+      formData.append("pairing-file", csvFile);
       let response = await addSurveyBackend(formData);
-      modalClose(response);
+      // Pass along all of the survey data the user entered so it can be used later
+      modalClose(response, surveyData);
     } else if (modalReason === "Duplicate") {
+      // Record the survey ID of the original survey
+      formData.append("survey-id", survey_data.original_id);
       // Form data is set. post the new survey and get the responses
       let response = await duplicateSurveyBackend(formData);
-      modalClose(response);
+      // Pass along all of the survey data the user entered so it can be used later
+      modalClose(response, surveyData);
     }
   }
 
   const quitModal = () => {
-    modalClose(false);
+    modalClose(false, null);
   }
 
   return (
@@ -238,12 +282,12 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
         </div>
         <div className="modal--contents-container">
           <h2 className="modal--main-title">
-            {modalReason} Survey for {survey_data.course_name}
+            {modalReason} Survey for {survey_data.course_code + ": " + survey_data.course_name}
           </h2>
           <label className="form__item--label" htmlFor="survey-name">
             Survey Name
             <input
-              className={emptySurveyNameError ? "form__item--input-error" : undefined}
+              className={surveyNameError ? "form__item--input-error" : undefined}
               id="survey-name"
               type="text"
               placeholder="Survey Name"
@@ -254,6 +298,12 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
               <label className="form__item--error-label">
                 <div className="form__item--red-warning-sign" />
                 Survey name cannot be empty
+              </label>
+            )}
+            {longSurveyNameError && (
+              <label className="form__item--error-label">
+                <div className="form__item--red-warning-sign" />
+                Survey name is too long
               </label>
             )}
           </label>
@@ -267,6 +317,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                       className={(startAfterEndError || startAfterCurrentError || emptyStartDateError) ? "form__item--input-error" : undefined}
                       id="start-date"
                       type="date"
+                      defaultValue={startDate}
                       placeholder="Enter Start Date"
                       onChange={(e) => setStartDate(e.target.value)}
                     />
@@ -278,6 +329,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                       className={(startAfterCurrentError || startAfterEndError || emptyStartTimeError) ? "form__item--input-error" : undefined}
                       id="start-time"
                       type="time"
+                      defaultValue={startTime}
                       placeholder="Enter Start Time"
                       onChange={(e) => setStartTime(e.target.value)}
                     />
@@ -314,6 +366,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                       id="end-date"
                       type="date"
                       placeholder="Enter End Date"
+                      defaultValue={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
                     />
                   </label>
@@ -325,6 +378,7 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
                       id="end-time"
                       type="time"
                       placeholder="Enter End Time"
+                      defaultValue={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
                     />
                   </label>
@@ -356,30 +410,29 @@ const SurveyNewModal = ({ modalClose, modalReason, button_text, survey_data, pai
             >
               {rubrics_list.map((rubric_info) => (
                 (rubric === rubric_info.id) ?
-                <option value={rubric_info.id} selected>{rubric_info.description}</option> :
-                <option value={rubric_info.id}>{rubric_info.description}</option>
+                <option key={rubric_info.id} value={rubric_info.id}>{rubric_info.description}</option> :
+                <option key={rubric_info.id} value={rubric_info.id}>{rubric_info.description}</option>
               ))}
             </select>
           </label>
-          {(modalReason !== "Duplicate") && (
-            <label className="form__item--label add-survey--label-pairing" htmlFor="pairing">
-              <div className="drop-down-wrapper">
-                Pairing Modes
-                <select className="pairing"
-                  value={valuePairing}
-                  onChange={handleChangePairing}
-                  id="pairing-mode"
-                >
-                  {pairing_modes.map((pairing) => (
-                    <option className="pairing-option" value={pairing.id}>{pairing.text}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="pairing-mode-img-wrapper">
-                <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
-              </div>
-          </label>)}
-          {(modalReason !== "Duplicate") && useMultipler && (
+          <label className="form__item--label add-survey--label-pairing" htmlFor="pairing">
+            <div className="drop-down-wrapper">
+              Pairing Modes
+              <select className="pairing"
+                value={pairingModeValue}
+                onChange={handleChangePairing}
+                id="pairing-mode"
+              >
+                {pairingModes.map((pairing) => (
+                  <option className="pairing-option" key={pairing.id} value={pairing.id}>{pairing.text}</option>
+                ))}
+              </select>
+            </div>
+            <div className="pairing-mode-img-wrapper">
+              <img className="pairing-mode-img" src={pairingImage} alt="team pairing mode" />
+            </div>
+        </label>
+          {useMultipler && (
             <label className="form__item--label" htmlFor="multiplier">
               Multiplier
               <select className="multiplier"
