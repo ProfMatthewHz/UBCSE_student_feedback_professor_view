@@ -149,6 +149,8 @@ CREATE TABLE `reviews` (
 CREATE TABLE `evals` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `review_id` int(11) NOT NULL,
+ `completed` tinyint(1) NOT NULL DEFAULT 0,
+ `last_update` timestamp NULL DEFAULT current_timestamp(),
  PRIMARY KEY (`id`),
  KEY `evals_review_idx` (`review_id`),
  CONSTRAINT `evals_review_constraint` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION

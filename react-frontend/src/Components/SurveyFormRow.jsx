@@ -48,11 +48,14 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id})
     }
 
     const fetchData = useCallback(() =>  {
+        let body = new FormData();
+        body.append('reviewed', survey_id);
         fetch(
-            process.env.REACT_APP_API_URL_STUDENT + 'getEvalResults.php?reviewed=' + survey_id,
+            process.env.REACT_APP_API_URL_STUDENT + 'getEvalResults.php',
              {
-                method: 'GET',
-                credentials: 'include'
+                method: 'POST',
+                credentials: 'include',
+                body: body
             })
                 .then((res) => res.json())
                 .then((result) => {
