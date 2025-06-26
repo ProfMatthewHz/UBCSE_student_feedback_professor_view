@@ -117,7 +117,7 @@ CREATE TABLE `team_members` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `team_id` int(11) NOT NULL,
  `student_id` int(11) NOT NULL,
- `role` enum('member','manager') NOT NULL DEFAULT 'member',
+ `role` enum('member','manager','reviewed', 'reviewer') NOT NULL DEFAULT 'member',
  PRIMARY KEY (`id`),
  KEY `teams_members_teams_idx` (`team_id`),
  KEY `teams_members_student_idx` (`student_id`),

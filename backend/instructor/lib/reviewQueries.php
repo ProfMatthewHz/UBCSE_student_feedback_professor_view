@@ -16,7 +16,7 @@ function getReviewsForSurvey($con, $survey_id) {
   return $retVal;
 }
 
-function addReviewsToSurvey($con, $survey_id, $emails) {
+function addReviewsToSurvey($con, $survey_id, $pairings) {
   // Optimistically assume everything works
   $retVal = true;
   // prepare SQL statements
@@ -26,7 +26,7 @@ function addReviewsToSurvey($con, $survey_id, $emails) {
   $stmt_add = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_weight) VALUES (?, ?, ?, ?, ?)');
 
   // loop over each pairing
-  foreach ($emails as $pairing) {
+  foreach ($pairings as $pairing) {
     // check if the pairing already exists
     $stmt_check->bind_param('iii', $survey_id, $pairing[0], $pairing[1]);
     $stmt_check->execute();

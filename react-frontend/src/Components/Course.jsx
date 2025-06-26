@@ -4,7 +4,7 @@ import "../styles/modal.css";
 import "../styles/duplicatesurvey.css";
 import "../styles/addsurvey.css";
 import Toast from "./Toast";
-import ViewResults from "./ViewResults";
+import SurveyResultsView from "./SurveyResultsView";
 import SurveyExtendModal from "./SurveyExtendModal";
 import SurveyDeleteModal from "./SurveyDeleteModal";
 import ErrorsModal from "./ErrorsModal";
@@ -12,7 +12,6 @@ import SurveyConfirmModal from "./SurveyConfirmModal";
 import SurveyNewModal from "./SurveyNewModal";
 import RosterUpdateModal from "./RosterUpdateModal";
 import SurveyPreviewModal from "./SurveyPreviewModal";
-import SurveyTeamAssignmentReviewModal from "./SurveyTeamAssignmentReviewModal";
 
 const Course = ({ course, page }) => {
     const [surveys, setSurveys] = useState([]);
@@ -25,7 +24,6 @@ const Course = ({ course, page }) => {
     const [surveyErrorsList, setSurveyErrorsList] = useState([]);
     const [surveyConfirmModal, setSurveyConfirmModal] = useState(false);
     const [updateRosterModal, setUpdateRosterModal] = useState(false);
-    const [reviewTeamModal, setTeamReviewModal] = useState(false);
     const [errorRosterModal, setErrorRosterModal] = useState(false);
     const [updateRosterErrorsList, setUpdateRosterErrorsList] = useState([]);
     const [previewSurveyModal, setPreviewSurveyModal] = useState(false);
@@ -37,6 +35,8 @@ const Course = ({ course, page }) => {
     const [rubrics, setRubrics] = useState([]);
     const [pairingModesFull, setPairingModesFull] = useState([]);
     const [survey_confirm_data, setSurveyConfirmData] = useState(null);
+    const [survey_confirm_roster, setSurveyConfirmRoster] = useState(null);
+    const [survey_new_data, setSurveyNewData] = useState(null);
 
     const processSurveys = (result) => {
         const activeSurveys = result.active.map((survey_info) => ({
@@ -105,9 +105,10 @@ const Course = ({ course, page }) => {
     }, []);
 
     /**
-     * Perform a GET call to getSurveyTypes.php to fetch all possible survey pairing modes
+     * Get all of the pairing modes we might need to use
      */
-    const fetchPairingModes = useCallback(() => {
+    useEffect(() => {
+        // Fetch the survey types from the API
         fetch(process.env.REACT_APP_API_URL + "getSurveyTypes.php", {
             method: "GET",
             credentials: "include"
@@ -123,7 +124,7 @@ const Course = ({ course, page }) => {
     }, []);
 
     const openAddSurveyModal = () => {
-        fetchPairingModes();
+        setSurveyNewData({course_code: course.code, course_name: course.name, course_id: course.id, rubric_id: rubrics[0].id, reason: "Add"});
         setAddSurveyModal(true);
     };
     
@@ -131,22 +132,18 @@ const Course = ({ course, page }) => {
         setUpdateRosterModal(true);
     }
 
-    const closeNewSurveyReview = (result) => {
+    const closeNewSurveyReview = (result, surveyData) => {
+        // Close the modal (only one will have been used, but this is safe and simple)
         setAddSurveyModal(false);
+        setDuplicateModal(false);
         // Response is either the onclick event or the add survey response object
         if (result) {
             let errorsObject = result.errors;
             let dataObject = result.data;
             if (errorsObject.length === 0) {
-                // valid survey subitted
-                let startDateObject = new Date(dataObject["survey_data"]["start"].date);
-                let endDateObject = new Date(dataObject["survey_data"]["end"].date);
-                let surveyName = dataObject["survey_data"]["name"];
-                let rubric_name = dataObject["survey_data"]["rubric_name"];
-                let start = startDateObject.toLocaleString('default', { month: 'short', day: '2-digit' }) + " at " + startDateObject.toLocaleString('default', { timeStyle: 'short' });
-                let end = endDateObject.toLocaleString('default', { month: 'short', day: '2-digit' }) + " at " + endDateObject.toLocaleString('default', { timeStyle: 'short' });
-                let survey_data = { course_code: course.code, survey_name: surveyName, rubric_name: rubric_name, start_date: start, end_date: end };
-                setSurveyConfirmData(survey_data);
+                setSurveyNewData(null)
+                setSurveyConfirmData(surveyData);
+                setSurveyConfirmRoster(dataObject);
                 setSurveyConfirmModal(true);
             } else {
                 let errorKeys = Object.keys(errorsObject);
@@ -168,19 +165,6 @@ const Course = ({ course, page }) => {
             }
         }
     }
-    
-    const closeDuplicateSurvey = (result) => {
-        // Response is either the onclick event or the new survey response object
-        if (result) {
-            let errorsObject = result.errors;
-            if (errorsObject.length === 0) {
-                updateAllSurveys();
-            } else {
-                // TODO: Display the errors in a modal or something.
-            }
-        }
-        setDuplicateModal(false);
-    }
 
     const closeSurveyModalError = () => {
         setSurveyModalError(false);
@@ -189,6 +173,8 @@ const Course = ({ course, page }) => {
     const closeSurveyConfirm = (goBack, success) => {
         if (goBack) {
             setSurveyConfirmModal(false);
+            setSurveyNewData(survey_confirm_data);
+            setSurveyConfirmData(null);
             setAddSurveyModal(true);
         } else {
             setSurveyConfirmData(null);
@@ -207,6 +193,7 @@ const Course = ({ course, page }) => {
     function handleActionButtonChange(e, survey) {
         if (e.target.value === "Duplicate") {
             setCurrentSurvey(survey);
+            setSurveyNewData({ course_code: course.code, course_name: course.name, course_id: course.id, survey_name: survey.name + " copy", original_id: survey.id, pairing_mode: survey.survey_type, rubric_id: survey.rubric_id, pm_mult: survey.pm_weight, reason: "Duplicate" });
             setDuplicateModal(true);
         }
         else if (e.target.value === "Delete") {
@@ -224,11 +211,6 @@ const Course = ({ course, page }) => {
         else if (e.target.value === "Preview Survey") {
             setCurrentSurvey(survey);
             setPreviewSurveyModal(true);
-            // Navigate("/SurveyPreview", { state: { survey_name: survey.name, rubric_id: survey.rubric_id, course: course.code } });
-        }
-        else if (e.target.value === "Team Review") {
-            setCurrentSurvey(survey);
-            setTeamReviewModal(true);
         }
     }
 
@@ -299,11 +281,12 @@ const Course = ({ course, page }) => {
             {surveyConfirmModal && (
                 <SurveyConfirmModal
                     modalClose={closeSurveyConfirm}
-                    survey_data={survey_confirm_data} />
+                    survey_data={survey_confirm_data} 
+                    survey_roster={survey_confirm_roster}/>
             )}
             {/* View Results Modal*/}
             {viewResultsModal && (
-                <ViewResults
+                <SurveyResultsView
                     closeViewResultsModal={closeViewResults}
                     surveyToView={currentSurvey}
                     course={course}
@@ -320,33 +303,18 @@ const Course = ({ course, page }) => {
             {addSurveyModal && (
                 <SurveyNewModal
                     modalClose={closeNewSurveyReview}
-                    modalReason="Add"
                     button_text="Verify Survey"
-                    survey_data={{ course_name: course.code, course_id: course.id, survey_name: "", pairing_mode: ""}}
+                    survey_data={ survey_new_data }
                     pairing_modes={pairingModesFull}
-                    rubric_id={rubrics[0].id}
                     rubrics_list={rubrics} />
             )}
             {/* Add Survey to a course modal*/}
             {duplicateModal && (
                 <SurveyNewModal
-                    modalClose={closeDuplicateSurvey}
-                    modalReason="Duplicate"
-                    button_text="Duplicate Survey"
-                    survey_data={{ course_name: course.code, course_id: course.id, survey_name: currentSurvey.name + " copy", original_id: currentSurvey.id, pairing_mode: currentSurvey.survey_type }}
-                    pairing_modes={pairingModesFull}
-                    rubric_id={currentSurvey.rubric_id}
-                    rubrics_list={rubrics} />
-            )}
-            {/* Review survey's team pairings modal display */}
-            {reviewTeamModal && (
-                <SurveyTeamAssignmentReviewModal
                     modalClose={closeNewSurveyReview}
-                    modalReason="Add"
-                    button_text="Verify Survey"
-                    survey_data={{ course_name: course.code, course_id: course.id, survey_name: "", }}
+                    button_text="Duplicate Survey"
+                    survey_data={survey_new_data}
                     pairing_modes={pairingModesFull}
-                    rubric_id={rubrics[0].id}
                     rubrics_list={rubrics} />
             )}
             {/* Show modal to update the roster */}

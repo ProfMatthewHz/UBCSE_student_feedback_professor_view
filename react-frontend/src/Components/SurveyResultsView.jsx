@@ -7,7 +7,7 @@ import "primereact/resources/primereact.min.css";
 import BarChart from "./Barchart";
 import "../styles/viewresults.css";
 
-const ViewResults = ({closeViewResultsModal, surveyToView, course}) => {
+const SurveyResultsView = ({closeViewResultsModal, surveyToView, course}) => {
     /* Viewing Types of Survey Results */
     const [rawSurveysHeaders, setRawSurveysHeaders] = useState(null); // For Raw Results
     const [rawSurveys, setRawSurveys] = useState(null); // For Raw Results
@@ -206,38 +206,38 @@ useEffect(() => {
                     </button>
                 </div>
             <h2 className="modal--main-title">
-            Results for {course.code} Survey: {surveyToView.name}
+                Results for {course.code} Survey: {surveyToView.name}
             </h2>
-                <div className="viewresults-modal--main-button-container">
-                    <button
-                        className={
-                            surveyType === "raw-full"
-                                ? "survey-result--option-active"
-                                : "survey-result--option"
+            <div className="viewresults-modal--main-button-container">
+                <button
+                    className={
+                        surveyType === "raw-full"
+                            ? "survey-result--option-active"
+                            : "survey-result--option"
+                    }
+                    onClick={() =>{
+                        setSurveyType("raw-full");
+                    }
+                    }
+                >
+                    Raw Surveys
+                </button>
+                
+                <button
+                    className={
+                        surveyType === "average"
+                            ? "survey-result--option-active"
+                            : "survey-result--option"
                         }
-                        onClick={() =>{
-                            setSurveyType("raw-full");
-                        }
-                        }
-                    >
-                        Raw Surveys
-                    </button>
-                   
-                    <button
-                        className={
-                            surveyType === "average"
-                                ? "survey-result--option-active"
-                                : "survey-result--option"
-                            }
-                            onClick={() => {
-                                setSurveyType("average")
-                            } 
-                        }
-                    >
-                        Individual Results
-                    </button>
-                </div>
-                {surveyType === "raw-full" && rawSurveys && rawSurveysHeaders ? (
+                        onClick={() => {
+                            setSurveyType("average")
+                        } 
+                    }
+                >
+                    Individual Results
+                </button>
+            </div>
+            {surveyType === "raw-full" && rawSurveys && rawSurveysHeaders ? (
                 <div>
                     <div className="viewresults-modal--other-button-container">
                         <div className="viewresults-modal--download-button">
@@ -278,25 +278,24 @@ useEffect(() => {
                             emptyMessage="No results found"
                         >
                             {rawSurveysHeaders.map((header) => {
-                                return header === "Reviewee" ||
-                                header === "Reviewer" ? (
-                                    <Column
-                                        key={header}
-                                        field={header}
-                                        header={header}
-                                        sortable
-                                        filter
-                                        filterPlaceholder="Search by name or email"
-                                        filterMatchMode="contains"
-                                    ></Column>
-                                ) : (
-                                    <Column
-                                        key={header}
-                                        field={header}
-                                        header={header}
-                                        sortable
-                                    ></Column>
-                                );
+                                return header === "Reviewee" || header === "Reviewer" ? (
+                                        <Column
+                                            key={header}
+                                            field={header}
+                                            header={header}
+                                            sortable
+                                            filter
+                                            filterPlaceholder="Search by name or email"
+                                            filterMatchMode="contains"
+                                        ></Column>
+                                    ) : (
+                                        <Column
+                                            key={header}
+                                            field={header}
+                                            header={header}
+                                            sortable
+                                        ></Column>
+                                    );
                             })}
                         </DataTable>
                     </div>
@@ -305,7 +304,7 @@ useEffect(() => {
                     <div className="viewresults-modal--no-options-selected-text">
                         No Results Found
                     </div>)}
-                {surveyType === "average" && normalizedResults ? (
+            {surveyType === "average" && normalizedResults ? (
                     <div>
                         <div className="viewresults-modal--other-button-container">
                             <div className="viewresults-modal--download-button">
@@ -384,4 +383,4 @@ useEffect(() => {
     );
 };
 
-export default ViewResults;
+export default SurveyResultsView;

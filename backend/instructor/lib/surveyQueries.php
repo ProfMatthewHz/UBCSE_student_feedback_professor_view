@@ -7,11 +7,11 @@ function deleteSurvey($con, $survey_id) {
   return $retVal;
 }
 
-function insertSurvey($con, $course_id, $name, $start, $end, $rubric_id, $survey_type) {
+function insertSurvey($con, $course_id, $name, $start, $end, $rubric_id, $survey_type, $pm_mult) {
   $start_string = $start->format('Y-m-d H:i:s');
   $end_string = $end->format('Y-m-d H:i:s');
-  $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, end_date, rubric_id, survey_type_id) VALUES (?, ?, ?, ?, ?, ?)');
-  $stmt->bind_param('isssii', $course_id, $name, $start_string, $end_string, $rubric_id, $survey_type);
+  $stmt = $con->prepare('INSERT INTO surveys (course_id, name, start_date, end_date, rubric_id, survey_type_id, pm_weight) VALUES (?, ?, ?, ?, ?, ?, ?)');
+  $stmt->bind_param('isssiii', $course_id, $name, $start_string, $end_string, $rubric_id, $survey_type, $pm_mult);
   $stmt->execute();
   $survey_id = $con->insert_id;
   $stmt->close();
@@ -82,7 +82,7 @@ function getSurveyCourse($con, $survey_id){
 function getSurveyData($con, $survey_id) {
   // Pessimistically assume that this fails
   $retVal = null;
-  $stmt = $con->prepare('SELECT course_id, start_date, end_date, name, rubric_id, survey_type_id 
+  $stmt = $con->prepare('SELECT course_id, start_date, end_date, name, rubric_id, survey_type_id, pm_weight 
                          FROM surveys 
                          WHERE id=?');
   $stmt->bind_param('i', $survey_id);

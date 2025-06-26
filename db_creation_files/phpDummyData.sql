@@ -835,7 +835,7 @@ INSERT INTO `survey_types` (`id`, `description`, `file_organization`, `display_m
 (5, 'TEAM', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0),
 (2, 'TEAM + SELF', 'One row per team. Each row contains the email addresses for all team members. Blank columns are ignored', 0),
 (3, 'TEAM + SELF + MANAGER', 'One row per team. Each row contains the email addresses for all team members with the manager email address listed last. Blank columns are ignored', 1),
-(4, 'PM', 'One row per individual being reviewed. Every row contains the email addresses of the reviewers and the person being reviewed. The person being reviewed MUST be in the final column in the row.', 0),
+(4, 'MANAGER', 'One row per individual being reviewed. Every row contains the email addresses of the reviewers and the person being reviewed. The person being reviewed MUST be in the final column in the row.', 0),
 (1, 'Single Pairs', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0);
 
 INSERT INTO `student_visit_data` (`student_id`, `survey_id`, `visit_count`, `last_visit`) VALUES

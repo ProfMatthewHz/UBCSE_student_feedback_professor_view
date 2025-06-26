@@ -1,4 +1,30 @@
 <?php
+function getSurveyIndividuals($roster, $full_list) {
+  $ret_val = array();
+  // Loop through the roster and add each student to the return value
+  foreach ($roster as $email => $student) {
+    $name = $student['name'];
+    // Add the student to the survey info
+    $ret_val[$email] = array(
+      'name' => $name,
+      'email' => $email,
+      'rostered' => true
+    );
+  }
+  // Now loop through the full list of students and add any students who are not in the roster
+  foreach ($full_list as $email => $name) {
+    // If the student is not in the roster, add them to the return value
+    if (!array_key_exists($email, $ret_val)) {
+      $ret_val[$email] = array(
+        'name' => $name,
+        'email' => $email,
+        'rostered' => false
+      );
+    }
+  }
+  return $ret_val;
+}
+
 function breakoutRosters($old_roster, $new_roster) {
   // Setup the return value
   $ret_val = array("new" => array(), "continuing" => array(), "remaining" => array());
@@ -29,7 +55,7 @@ function getRoster($con, $course_id) {
   $stmt->bind_param('i', $course_id);
   $stmt->execute();
   $result = $stmt->get_result();
-  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+  while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
     $email = array_shift($row);
     $ret_val[$email] = $row;
   }
