@@ -99,11 +99,11 @@ if (empty($teams)) {
     $successMembers = updateTeamMembersAndPruneReviews($con, $survey_id, $team_data['teams']);
     // Generate all the pairings that will be used in the survey and then add any missing reviews
     $pairings = generatePairingsFromTeams($team_data['teams'], $pm_mult, $pairing_mode);
-    //$successReviews = addReviewsToSurvey($con, $survey_id, $pairings);
-    // // Report any errors that occurred when updating the reviews
-    // if (!$successReviews || !$successTeams || !$successMembers) {
-    //   $errorMsg['db'] = "An error occured when updating the survey in the database. Please try again.";
-    // }
+    $successReviews = addReviewsToSurvey($con, $survey_id, $pairings);
+    // Report any errors that occurred when updating the reviews
+    if (!$successReviews || !$successTeams || !$successMembers) {
+       $errorMsg['db'] = "An error occured when updating the survey in the database. Please try again.";
+    }
   }
 }
 // Create the response
