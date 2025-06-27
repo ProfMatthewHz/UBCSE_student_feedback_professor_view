@@ -22,13 +22,13 @@ function addReviewsToSurvey($con, $survey_id, $pairings) {
   // prepare SQL statements
   $stmt_check = $con->prepare('SELECT id 
                                FROM reviews
-                               WHERE survey_id=? AND reviewer_id=? AND reviewed_id=?');
+                               WHERE survey_id=? AND team_id=? AND reviewer_id=? AND reviewed_id=?');
   $stmt_add_review = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_weight) VALUES (?, ?, ?, ?, ?)');
   $stmt_add_evaluation = $con->prepare('INSERT INTO evals (review_id) VALUES (?)');
   // loop over each pairing
   foreach ($pairings as $pairing) {
     // check if the pairing already exists
-    $stmt_check->bind_param('iii', $survey_id, $pairing[0], $pairing[1]);
+    $stmt_check->bind_param('iiii', $survey_id, $pairing[2], $pairing[0], $pairing[1]);
     $stmt_check->execute();
     $result = $stmt_check->get_result();
     $data = $result->fetch_all(MYSQLI_ASSOC);

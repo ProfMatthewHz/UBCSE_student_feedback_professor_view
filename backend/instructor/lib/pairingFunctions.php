@@ -26,7 +26,7 @@ function processFileRows($rows, $pairing_mode) {
     // Create a team name which, for now, is based on the index
     $teamname = 'team '.$team_num;
     $team_num++;
-    $ret_val[$teamname] = $team;
+    $ret_val[$teamname] = array("roster" => $team);
   }
   return $ret_val;
 }

@@ -20,6 +20,8 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
     const [pm_mult,] = useState(survey_data.pm_mult);
     const [course_id,] = useState(survey_data.course_id);
     const [rubric_id,] = useState(survey_data.rubric_id);
+    const [reasonShown,] = useState(survey_data.reason);
+    const [survey_id,] = useState(survey_data.survey_id);
     const [listingType, setListingType] = useState("individual");
     const [team_data, setTeamData] = useState(null);
     const [individual_data, setIndividualData] = useState(null);
@@ -27,7 +29,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
     const [nonroster_array, setNonRosterArray] = useState([]);
     const [unassigned_students, setUnassignedStudents] = useState([]);
 
-    async function confirmSurveyPost() {
+    async function postSurvey() {
         let formData = new FormData();
         formData.append("survey-name", survey_name);
         formData.append("course-id", course_id);
@@ -40,6 +42,20 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         formData.append("pm-mult", pm_mult);
         formData.append("rubric-id", rubric_id);
         let fetchHTTP = process.env.REACT_APP_API_URL + "surveyAdd.php";
+        const result = await fetch(fetchHTTP, {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+        })
+            .then((res) => res.json());
+        return result; // Return the result directly
+    }
+    async function postUpdate() {
+        let formData = new FormData();
+        formData.append("course-id", course_id);
+        formData.append("survey-id", survey_id);
+        formData.append("team-data", JSON.stringify(team_data));
+        let fetchHTTP = process.env.REACT_APP_API_URL + "assignmentUpdate.php";
         const result = await fetch(fetchHTTP, {
             method: "POST",
             credentials: "include",
@@ -65,7 +81,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         let ret_val = false;
         // Check each team to see if the student is being reviewed
         for (let team of Object.values(teamData)) {
-            if (team.some((element) => element.email === email && element.role === role)) {
+            if (team["roster"].some((element) => element.email === email && element.role === role)) {
                 ret_val = true;
             }
         }
@@ -78,7 +94,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         if ((mode === 2) || (mode === 3) || (mode === 5)) {
             // In these modes, they only need to be on a team to be reviewing
         for (let team of Object.values(teamData)) {
-                if (team.some((element) => element.email === email)) {
+                if (team["roster"].some((element) => element.email === email)) {
                     ret_val = true;
                 }
             }
@@ -109,7 +125,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
             if ((mode === 2) || (mode === 3) || (mode === 5)) {
                 // In these modes, they only need to be on a team to be reviewing
                 for (let team of Object.values(teamData)) {
-                    if (team.some((element) => element.email === email)) {
+                    if (team["roster"].some((element) => element.email === email)) {
                         ret_val = true;
                     }
                 }
@@ -122,6 +138,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
             }
             return ret_val;
         }
+        
         let roster_students = [];
         let non_roster_students = [];
         let unassigned_students = [];
@@ -180,7 +197,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         let selectedEmail = widget.value;
         if (selectedEmail) {
             // Add the selected student to the team roster
-            team_data[teamIndex] = [{email: selectedEmail, role : "member"}, ...team_data[teamIndex]];
+            team_data[teamIndex]["roster"] = [{email: selectedEmail, role : "member"}, ...team_data[teamIndex]["roster"]];
             setTeamData({...team_data});
             // Remove the student from unassigned_students
             setUnassignedStudents(prevStudents => prevStudents.filter(student => student.email !== selectedEmail));
@@ -208,8 +225,8 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
     
     function removeMember(teamKey, member) {
         // Sanity check that this is a member who can be removed
-        if ((member.role === 'member') && team_data[teamKey].length > 2) {
-            team_data[teamKey] = team_data[teamKey].filter(m => m !== member);
+        if ((member.role === 'member') && team_data[teamKey]["roster"].length > 2) {
+            team_data[teamKey]["roster"] = team_data[teamKey]["roster"].filter(m => m !== member);
             setTeamData({...team_data});
 
             let newArray = addStudentToOrderedArray(member.email, unassigned_students);
@@ -230,7 +247,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
 
             // Now we need to process each member of the team
             let unassigned = [...unassigned_students];
-            for (let student of team ) {
+            for (let student of team["roster"]) {
                 updateStatus(student.email, pairing_mode, team_data);
                 if (!unassigned.some((element) => element.email === student.email)) {
                     unassigned = addStudentToOrderedArray(student.email, unassigned);
@@ -267,6 +284,10 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         return className;
     }
 
+    function confirmationForNewSurvey() {
+        return ((reasonShown === "Add") || (reasonShown === "Duplicate"));
+    }
+
     function quitModal() {
         modalClose(false, false);
     }
@@ -277,7 +298,17 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
 
     async function verifyConfirm() {
         // Send data to the server
-        let result = await confirmSurveyPost();
+        let result = await postSurvey();
+        if (Object.keys(result["errors"]).length > 0) {
+            console.log("Errors occurred while confirming survey: ", result["errors"]);
+        } else {
+           modalClose(false, true);
+        }
+    }
+
+    async function verifyUpdate() {
+        // Send data to the server
+        let result = await postUpdate();
         if (Object.keys(result["errors"]).length > 0) {
             console.log("Errors occurred while confirming survey: ", result["errors"]);
         } else {
@@ -296,7 +327,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                 </div>
                 <div className="modal--contents-container">
                     <h2 className="modal--main-title">
-                        Confirm Survey Information
+                        {confirmationForNewSurvey() ? "Confirm Survey Information" : "Review Assignments"}
                     </h2>
                 </div>
                 <div className="confirm--top-container">
@@ -304,12 +335,15 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                         Survey Name: {survey_name}
                     </h3>
                     <h3 className="form__item--info">For Course: {course_code + ": " + course_name}</h3>
-                    <h3 className="form__item--info">
-                        Rubric Used: {rubric_name}
-                    </h3>
-                    <h3 className="form__item--info">
-                        Survey Active: {start_display} to {end_display}
-                    </h3>
+                    {confirmationForNewSurvey() && (
+                        <h3 className="form__item--info">
+                            Rubric Used: {rubric_name}
+                        </h3>)}
+                    {confirmationForNewSurvey() && (
+                        <h3 className="form__item--info">
+                            Survey Active: {start_display} to {end_display}
+                        </h3>)
+                    }
                 </div>
                 <div className="viewresults-modal--main-button-container">
                 <button
@@ -415,13 +449,13 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                                     <tr key={teamKey}>
                                         <td>
                                             <div className="teammembers">
-                                            {team_data[teamKey].map((member, memberIndex) => (
-                                                <label className={calculateLabelClass(member, team_data[teamKey].length)} key={memberIndex}>
+                                            {team_data[teamKey]["roster"].map((member, memberIndex) => (
+                                                <label className={calculateLabelClass(member, team_data[teamKey]["roster"].length)} key={memberIndex}>
                                                     <div className="name">
                                                     {individual_data[member.email]["name"]}</div> <div className="close" onClick={() => removeMember(teamKey, member)}>x</div>
                                                 </label>
                                             ))}
-                                            {pairing_mode !== 1 && 
+                                            {pairing_mode !== 1 && reasonShown !== "Review" &&
                                             (<div className="add-member-container">
                                                 <label className="string-list-item addition visible" onClick={allowAddMember}>
                                                     + Add members
@@ -447,20 +481,35 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                     )}
                 </div>
                 )}
-                    <div className="confirm--btn-container form__item--confirm-btn-container">
-                    <button
-                        className="form__item--cancel-btn"
-                        onClick={backModal}
-                    >
-                        Back to New Survey
-                    </button>
-                    <button
-                        className="form__item--confirm-btn"
-                        onClick={verifyConfirm}
-                    >
-                        Confirm Survey
-                    </button>
-                    </div>
+                {confirmationForNewSurvey() ?
+                    (<div className="confirm--btn-container form__item--confirm-btn-container">
+                        <button
+                            className="form__item--cancel-btn"
+                            onClick={backModal}
+                        >
+                            Back to New Survey
+                        </button>
+                        <button
+                            className="form__item--confirm-btn"
+                            onClick={verifyConfirm}
+                        >
+                            Confirm Survey
+                        </button>
+                    </div>) :
+                    (<div className="confirm--btn-container form__item--confirm-btn-container">
+                        <button
+                            className="form__item--cancel-btn"
+                            onClick={quitModal}
+                        >
+                            Cancel Changes
+                        </button>
+                        <button
+                            className="form__item--confirm-btn"
+                            onClick={verifyUpdate}
+                        >
+                            Update Assigmments
+                        </button>
+                    </div>)}
                 </div>
             </div>
     );
