@@ -83,14 +83,12 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
   useEffect(() => {
     if (survey_data.reason === "Add") {
       setPairingModes(pairing_modes);
-    } else if (survey_data.pairing_mode === 1) {
-      setPairingModes(pairing_modes.filter((mode) => mode.id === 1));
-    } else if ((survey_data.pairing_mode === 2) || (survey_data.pairing_mode === 5)) {
-      setPairingModes(pairing_modes.filter((mode) => mode.id === 2 || mode.id === 5));
-    } else if ((survey_data.pairing_mode === 3) || (survey_data.pairing_mode === 4)) {
-      setPairingModes(pairing_modes.filter((mode) => mode.id === 3 || mode.id === 4));
+    } else {
+      let pairingMode = findPairingData(survey_data.pairing_mode, pairing_modes);
+      let review_class = pairingMode ? pairingMode.review_class : "peer";
+      setPairingModes(pairing_modes.filter((mode) => mode.review_class === review_class));
     }
-}, [survey_data.reason, survey_data.pairing_mode, pairing_modes])
+  }, [survey_data.reason, survey_data.pairing_mode, pairing_modes])
 
   useEffect(() => {
     for(let rub of rubrics_list) {

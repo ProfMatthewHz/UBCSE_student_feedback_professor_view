@@ -123,6 +123,28 @@ const Course = ({ course, page }) => {
             });
     }, []);
 
+    function getSurveyAssignmentData(formData) {
+        let fetchHTTP = process.env.REACT_APP_API_URL + "getSurveyRosterFromSurvey.php";
+        const result = fetch(fetchHTTP, {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+        })
+            .then((res) => res.json());
+        return result; // Return the result directly
+    }
+
+    async function setRosterForConfirmation(courseID, pairingMode, surveyID) {
+        // Create a FormData object to send the course ID, pairing mode, and survey ID
+        let formData = new FormData();
+        formData.append("course-id", courseID);
+        formData.append("pairing-mode", pairingMode);
+        formData.append("survey-id", surveyID);
+        // Call the function to get the survey assignment data
+        let result = await getSurveyAssignmentData(formData);
+        setSurveyConfirmRoster(result["data"]);
+    }
+
     const openAddSurveyModal = () => {
         setSurveyNewData({course_code: course.code, course_name: course.name, course_id: course.id, rubric_id: rubrics[0].id, reason: "Add"});
         setAddSurveyModal(true);
@@ -141,7 +163,7 @@ const Course = ({ course, page }) => {
             let errorsObject = result.errors;
             let dataObject = result.data;
             if (errorsObject.length === 0) {
-                setSurveyNewData(null)
+                setSurveyNewData(null);
                 setSurveyConfirmData(surveyData);
                 setSurveyConfirmRoster(dataObject);
                 setSurveyConfirmModal(true);
@@ -195,8 +217,17 @@ const Course = ({ course, page }) => {
             setCurrentSurvey(survey);
             setSurveyNewData({ course_code: course.code, course_name: course.name, course_id: course.id, survey_name: survey.name + " copy", original_id: survey.id, pairing_mode: survey.survey_type, rubric_id: survey.rubric_id, pm_mult: survey.pm_weight, reason: "Duplicate" });
             setDuplicateModal(true);
-        }
-        else if (e.target.value === "Delete") {
+        } else if (e.target.value === "Team Review") {
+            setCurrentSurvey(survey);
+            setSurveyConfirmData({ course_code: course.code, course_name: course.name, course_id: course.id, survey_name: survey.name, survey_id: survey.id, pairing_mode: survey.survey_type, reason: "Review" });
+            setRosterForConfirmation(course.id, survey.survey_type, survey.id);
+            setSurveyConfirmModal(true);
+        } else if (e.target.value === "Team Update") {
+            setCurrentSurvey(survey);
+            setSurveyConfirmData({ course_code: course.code, course_name: course.name, course_id: course.id, survey_name: survey.name, survey_id: survey.id, pairing_mode: survey.survey_type, reason: "Update" });
+            setRosterForConfirmation(course.id, survey.survey_type, survey.id);
+            setSurveyConfirmModal(true);
+        } else if (e.target.value === "Delete") {
             setCurrentSurvey(survey);
             setDeleteModal(true);
         }
@@ -390,15 +421,7 @@ const Course = ({ course, page }) => {
                                                 >
                                                     Preview Survey
                                                 </option>
-                                                {/* Future expansion to allow updating evaluation assignments */}
-                                                {!survey.active && false && (
-                                                    <option
-                                                        className="surveyactions--option"
-                                                        value="Team Review"
-                                                    >
-                                                        Update Evaluation Assignments
-                                                    </option>
-                                                )}
+
                                                 <option
                                                     className="surveyactions--option"
                                                     value="View Results"
@@ -417,6 +440,22 @@ const Course = ({ course, page }) => {
                                                 >
                                                     Extend
                                                 </option>
+                                                {survey.active && (
+                                                    <option
+                                                        className="surveyactions--option"
+                                                        value="Team Review"
+                                                    >
+                                                        Review Assignments
+                                                    </option>
+                                                )}
+                                                {!survey.active && !survey.expired && (
+                                                    <option
+                                                        className="surveyactions--option"
+                                                        value="Team Update"
+                                                    >
+                                                        Update Assignments
+                                                    </option>
+                                                )}
                                                 <option
                                                     className="surveyactions--option"
                                                     value="Delete"

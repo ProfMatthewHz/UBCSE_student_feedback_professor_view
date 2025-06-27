@@ -12,12 +12,12 @@ session_start();
 if (!isset($_SESSION['student_id']) || !isset($_SESSION['survey_id']) || !isset($_SESSION['course_name']) || 
     !isset($_SESSION['survey_name']) || !isset($_SESSION['group_members']) ||
     !isset($_SESSION['mc_topics']) || !isset($_SESSION['mc_answers']) || !isset($_SESSION['ff_topics'])) {
-    
-    header("Location: " . SITE_HOME . "index.php");
+    http_response_code(400);
+    echo json_encode(array('error' => 'Bad request: Request only valid from within app'));
     exit();
 } else {
-    if (!empty($_GET) && isset($_GET) && isset($_GET['reviewed'])) {
-        $reviewed = $_GET['reviewed'];
+    if (!empty($_POST) && isset($_POST['reviewed'])) {
+        $reviewed = $_POST['reviewed'];
         
         $con = connectToDatabase();
         $course = $_SESSION['course_name'];

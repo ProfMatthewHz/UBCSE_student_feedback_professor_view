@@ -101,7 +101,7 @@ function createActiveQueryReviewer($con, $date_clause) {
             FROM surveys
             INNER JOIN courses ON courses.id = surveys.course_id 
             INNER JOIN reviews ON reviews.survey_id = surveys.id
-            LEFT JOIN evals ON evals.review_id = reviews.id
+            LEFT JOIN evals ON evals.review_id = reviews.id AND evals.completed = 1
             WHERE reviews.reviewer_id=?';
     if (!empty($date_clause)) {
         $sql .= ' AND ' . $date_clause;
@@ -116,7 +116,7 @@ function createClosedQueryReviewer($con, $date_clause) {
             FROM surveys
             INNER JOIN courses ON courses.id = surveys.course_id 
             INNER JOIN reviews ON reviews.survey_id = surveys.id
-            LEFT JOIN evals ON evals.review_id = reviews.id
+            LEFT JOIN evals ON evals.review_id = reviews.id AND evals.completed = 1
             WHERE reviews.reviewer_id=? AND courses.semester=? AND courses.year=?';
     if (!empty($date_clause)) {
         $sql .= ' AND ' . $date_clause;
@@ -131,7 +131,7 @@ function createQueryReviewed($con, $date_clause) {
             FROM surveys
             INNER JOIN courses ON courses.id = surveys.course_id 
             INNER JOIN reviews ON reviews.survey_id = surveys.id
-            LEFT JOIN evals ON evals.review_id = reviews.id
+            LEFT JOIN evals ON evals.review_id = reviews.id AND evals.completed = 1
             WHERE reviews.reviewed_id=? AND reviews.reviewer_id<>? AND courses.semester=? AND courses.year=?';
     if (!empty($date_clause)) {
         $sql .= ' AND ' . $date_clause;
@@ -247,7 +247,7 @@ function getCompletionRate($con, $survey_id, $student_id) {
     // get an array of review_ids within reviews table that correspond to survey_id //
     $sql = "SELECT COUNT(reviews.id) reviews, COUNT(evals.id) completed
             FROM reviews
-            LEFT JOIN evals ON reviews.id = evals.review_id
+            LEFT JOIN evals ON reviews.id = evals.review_id AND evals.completed = 1
             WHERE survey_id = ? AND reviewer_id = ?";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("ii", $survey_id, $student_id);

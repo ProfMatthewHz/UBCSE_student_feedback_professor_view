@@ -100,7 +100,7 @@ function getSurveysFromSingleCourse($con, $course_id){
   $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, surveys.survey_type_id, surveys.pm_weight, COUNT(reviews.id) AS total, COUNT(evals.id) AS completed
                          FROM surveys
                          LEFT JOIN reviews ON reviews.survey_id=surveys.id
-                         LEFT JOIN evals ON evals.review_id=reviews.id
+                         LEFT JOIN evals ON evals.review_id=reviews.id AND evals.completed=1
                          WHERE course_id=?
                          GROUP BY name, start_date, end_date, rubric_id, surveys.id
                          ORDER BY start_date DESC, end_date DESC');

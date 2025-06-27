@@ -15,6 +15,22 @@ function getIdsForRoster($con, $line_num, $roster) {
   return $retVal;
 }
 
+function getTeamMemberIds($con, $team_id) {
+  $retVal = array();
+  // Get the ids of the members of the team
+  $stmt = $con->prepare('SELECT student_id FROM team_members WHERE team_id = ?');
+  $stmt->bind_param('i', $team_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $rows = $result->fetch_all(MYSQLI_ASSOC);
+  foreach ($rows as $row) {
+    $retVal[] = $row['student_id'];
+  }
+  // Clean up after our query
+  $stmt->close();
+  return $retVal;
+}
+
 function getSurveyStudents($con, $survey_id, $roster) {
   $retVal = array();
   // Add all the students in the course roster to the return value
@@ -62,10 +78,8 @@ function getSurveyTeams($con, $survey_id) {
   $stmt_team->execute();
   $result = $stmt_team->get_result();
   $rows = $result->fetch_all(MYSQLI_ASSOC);
-  $team_data = array();
   foreach ($rows as $row) {
-    $team_data[$row['id']] = $row['team_name'];
-    $retVal[$row['team_name']] = array();
+    $retVal[$row['team_name']] = array('id' => $row['id'], 'roster' => array());
   }
   $stmt_team->close();
   // Get the members of each team
@@ -73,14 +87,15 @@ function getSurveyTeams($con, $survey_id) {
                                  FROM team_members
                                  INNER JOIN students ON team_members.student_id = students.id
                                  WHERE team_id = ?');
-  foreach ($team_data as $team_id => $team_name) {
+  foreach ($retVal as $team_name => $team_data) {
+    $team_id = $team_data['id'];
     $stmt_members->bind_param('i', $team_id);
     $stmt_members->execute();
     $result_members = $stmt_members->get_result();
     $members = $result_members->fetch_all(MYSQLI_ASSOC);
     // Add the members to the team
     foreach ($members as $member) {
-      $retVal[$team_name][] = array(
+      $retVal[$team_name]['roster'][] = array(
         'email' => $member['email'],
         'role' => $member['role']
       );
@@ -91,9 +106,9 @@ function getSurveyTeams($con, $survey_id) {
   return $retVal;
 }
 
-function getTeamsInSurvey($con, $survey_id) {
+function getSurveyTeamIds($con, $survey_id) {
   $retVal = array();
-  $stmt_team = $con->prepare('SELECT id, team_name
+  $stmt_team = $con->prepare('SELECT id
                               FROM teams
                               WHERE survey_id = ?');
   $stmt_team->bind_param('i', $survey_id);
@@ -101,66 +116,91 @@ function getTeamsInSurvey($con, $survey_id) {
   $result = $stmt_team->get_result();
   $rows = $result->fetch_all(MYSQLI_ASSOC);
   foreach ($rows as $row) {
-    $retVal[] = $row;
+    $team_id = $row['id'];
+    $retVal[] = $team_id;
   }
   // Clean up after out query
   $stmt_team->close();
   return $retVal;
 }
 
-function deleteTeamsInSurvey($con, $survey_id, $team_ids) {
+function checkArrayForKey($array, $key, $value) {
+  foreach ($array as $item) {
+    if ($item[$key] == $value) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function updateTeamMembersAndPruneReviews($con, $survey_id, $teams) {
   // Optimistically assume everything works
   $retVal = true;
-  $stmt_del = $con->prepare('DELETE FROM teams WHERE survey_id = ? AND id = ?');
+  $stmt_del_member = $con->prepare('DELETE FROM team_members WHERE team_id = ? AND student_id = ?');
+  $stmt_del_reviews = $con->prepare('DELETE FROM reviews WHERE survey_id = ? AND team_id = ? AND (? in (reviewer_id, reviewed_id))');
   // Loop over each team and delete it from the database
-  foreach ($team_ids as $team_id) {
-    $stmt_del->bind_param('ii', $survey_id, $team_id);
-    if (!$stmt_del->execute()) {
-      $retVal = false;
+  foreach ($teams as $team) {
+    $team_id = $team['id'];
+    $roster = $team['roster'];
+    $existing_ids = getTeamMemberIds($con, $team_id);
+    insertMissingMembersToTeam($con, $team_id, $roster, $existing_ids);
+    // Check if the team is in the remaining teams
+    foreach ($existing_ids as $student_id) {
+      $found = checkArrayForKey($roster, 'id', $student_id);
+ 
+      // If the member was not found, they have been pruned and so we need to delete
+      //  * the member but only for this specific team
+      //  * the reviews including that member associated with this team (which automatically results in the evals being deleted)
+      if (!$found) {
+        $stmt_del_member->bind_param('ii', $team_id, $student_id);
+        if (!$stmt_del_member->execute()) {
+          $retVal = false;
+        }
+        $stmt_del_reviews->bind_param('iii', $survey_id, $team_id, $student_id);
+        if (!$stmt_del_reviews->execute()) {
+          $retVal = false;
+        }
+      }
     }
   }
   // Clean up our database work
-  $stmt_del->close();
+  $stmt_del_member->close();
+  $stmt_del_reviews->close();
   // Return if we were successful
   return $retVal;
 }
 
-function updateTeamsInSurvey($con, $survey_id, &$teams) {
+function updateTeamsAndPruneReviews($con, $survey_id, &$teams) {
   // Optimistically assume everything works
   $retVal = true;
-  $stmt_check = $con->prepare('SELECT id
-                               FROM teams
-                               WHERE survey_id = ? AND id = ?');
-  $stmt_update = $con->prepare('UPDATE teams SET team_name = ? WHERE survey_id = ? AND id = ?');
-  $stmt_add = $con->prepare('INSERT INTO teams (survey_id, team_name) VALUES (?, ?)');
-  // loop over each team and add it to the database
-  foreach ($teams as &$team) {
-    // First we check to see if the team already exists
-    $stmt_check->bind_param('ii', $survey_id, $team['id']);
-    $stmt_check->execute();
-    $result = $stmt_check->get_result();
-    $data = $result->fetch_all(MYSQLI_ASSOC);
-    // If the team already exists....
-    if ($result->num_rows()) {
-      // It does exist, so we just need to update it
-      $stmt_update->bind_param('sii', $team['name'], $survey_id, $team['id']);
-      if (!$stmt_update->execute()) {
+
+  // TODO: Insert any new teams (e.g., entries in teams not containing "id" as a key) into the database
+  // TODO: This will require modifying the teams array to include the new team ids
+
+  $existing_ids = getSurveyTeamIds($con, $survey_id);
+  $stmt_del_team = $con->prepare('DELETE FROM teams WHERE survey_id = ? AND id = ?');
+  $stmt_del_reviews = $con->prepare('DELETE FROM reviews WHERE survey_id = ? AND team_id = ?');
+  // Loop over each team and delete it from the database
+  foreach ($existing_ids as $team_id) {
+    $found = checkArrayForKey($teams, 'id', $team_id);
+
+    // If the team was not found, the team has been pruned and so we need to delete
+    //  * the team (which automatically results in the team members being deleted)
+    //  * the reviews for the team (which automatically results in the evals being deleted)
+    if (!$found) {
+      $stmt_del_team->bind_param('ii', $survey_id, $team_id);
+      if (!$stmt_del_team->execute()) {
         $retVal = false;
       }
-    } else {
-      $stmt_add->bind_param('is', $survey_id, $team['name']);
-      if (!$stmt_add->execute()) {
+      $stmt_del_reviews->bind_param('ii', $survey_id, $team_id);
+      if (!$stmt_del_reviews->execute()) {
         $retVal = false;
-      } else {
-        $team['id'] = $con->insert_id;
-      }
+     }
     }
   }
-  // Remove the reference to the team now that we do not need it
-  unset($tean);
   // Clean up our database work
-  $stmt_check->close();
-  $stmt_update->close();
+  $stmt_del_team->close();
+  $stmt_del_reviews->close();
   // Return if we were successful
   return $retVal;
 }
@@ -187,7 +227,26 @@ function insertTeams($con, $survey_id, &$teams) {
   return $retVal;
 }
 
-function addTeamMembers($con, $team_id, $roster) {
+function insertMissingMembersToTeam($con, $team_id, $roster, $existing_ids) {
+  // Optimistically assume everything works
+  $retVal = true;
+  foreach ($roster as $member) {
+    // If the member is not already a member of this team, we need to insert them into the list
+    if (!in_array($member['id'], $existing_ids)) {
+      $stmt_add_member = $con->prepare('INSERT INTO team_members (team_id, student_id, role) VALUES (?, ?, ?)');
+      $stmt_add_member->bind_param('iis', $team_id, $member['id'], $member['role']);
+      echo "Adding member " . $member['email'] . " to team " . $team_id . "<br>";
+
+      if (!$stmt_add_member->execute()) {
+        $retVal = false;
+      }
+      $stmt_add_member->close();
+    }
+  }
+  return $retVal;
+}
+
+function insertTeamMembers($con, $team_id, $roster) {
   // Optimistically assume everything works
   $retVal = true;
   $stmt_add = $con->prepare('INSERT INTO team_members (team_id, student_id, role) VALUES (?, ?, ?)');
@@ -208,7 +267,7 @@ function insertMembers($con, $teams) {
   // Optimistically assume everything works
   $retVal = false;
   foreach ($teams as $team) {
-    $result = addTeamMembers($con, $team['id'], $team['roster']);
+    $result = insertTeamMembers($con, $team['id'], $team['roster']);
     if ($result) {
       $retVal = true;
     }
@@ -220,14 +279,17 @@ function insertMembers($con, $teams) {
 function getIdsForAllRosters($con, $teams) {
   $ret_val = array('error' => array(), 'teams' => array());
   // Loop through each team in the teams array
-  foreach ($teams as $name => $roster) {
+  foreach ($teams as $name => $team_data) {
     // Verify the entries on the current line
-    $line_data = getIdsForRoster($con, $name, $roster);
+    $line_data = getIdsForRoster($con, $name, $team_data['roster']);
     if (!empty($line_data['error'])) {
       $ret_val['error'][] = $ret_val['error'] . $line_data['error'];
     } else {
-      // Add the row to our list of (valid) rows
       $ret_val['teams'][$name] = array('roster' => $line_data['roster']);
+      // Add the row to our list of (valid) rows
+      if (array_key_exists('id', $team_data)) {
+        $ret_val['teams'][$name]['id'] = $team_data['id'];
+      }
     }
   }
   return $ret_val;

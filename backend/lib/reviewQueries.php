@@ -3,7 +3,7 @@ function getReviewSources($db_connection, $survey_id, $id) {
   $ret_val = array();
   $stmt = $db_connection->prepare('SELECT review_id, eval_weight
                                    FROM reviews
-                                   INNER JOIN evals ON evals.review_id = reviews.id
+                                   INNER JOIN evals ON evals.review_id = reviews.id AND evals.completed = 1
                                    WHERE reviews.survey_id =? AND reviews.reviewed_id=?');
   $stmt->bind_param('ii',$survey_id,$id);
   $stmt->execute();
@@ -28,6 +28,14 @@ function getReviewTargets($db_connection, $survey_id, $id) {
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
     $ret_val[$row[0]] = $row[1];
   }
+  $stmt->close();
+  return $ret_val;
+}
+
+function markEvaluationCompleted($con, $eval_id) {
+  $stmt = $con->prepare('UPDATE evals SET completed=1,last_update=current_timestamp WHERE id=?');
+  $stmt->bind_param('i', $eval_id);
+  $ret_val = $stmt->execute();
   $stmt->close();
   return $ret_val;
 }

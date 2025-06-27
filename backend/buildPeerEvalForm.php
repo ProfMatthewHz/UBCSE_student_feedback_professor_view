@@ -84,15 +84,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Update the existing score if it exists
             updateExistingScore($con, $eval_id, $topic_id, $score_id);
         } else {
-            if (empty($eval_id)) {
-                // Create the new evaluation if it does not exist
-                $eval_id = addNewEvaluation($con, $review_id);
-            }
             // Insert a new score if it had not existed
             insertNewScore($con, $eval_id, $topic_id, $score_id);
+            $student_scores[$topic_id] = $score_id;
         }
     }
-    echo json_encode(array("success" => "Submitted"));
+    // Update the evals table to mark it as completed
+    $result = markEvaluationCompleted($con, $eval_id);
+    echo json_encode(array("success" => "Submitted", "update"=>$result));
 }
 
 
