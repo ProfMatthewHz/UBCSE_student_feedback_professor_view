@@ -1,4 +1,16 @@
 <?php
+function deleteEvalsForSurvey($con, $survey_id) {
+  $stmt = $con->prepare('DELETE evals 
+                         FROM evals
+                         INNER JOIN reviews on reviews.eval_id=evals.id
+                         WHERE survey_id=?');
+  $stmt->bind_param('i', $survey_id);
+  $retVal = $stmt->execute();
+  $stmt->close();
+  return $retVal;
+}
+
+
 function deleteSurvey($con, $survey_id) {
   $stmt = $con->prepare('DELETE FROM surveys WHERE id=?');
   $stmt->bind_param('i', $survey_id);

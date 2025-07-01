@@ -1,5 +1,4 @@
 import React, {useEffect, useState, useCallback} from "react";
-//import { useNavigate } from 'react-router-dom';
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
 import "../styles/sidebar.css";
@@ -19,19 +18,17 @@ const SurveyListing = (props) => {
  const [surveyFuture, setSurveyFuture] = useState([]);
  const [surveyFormModal, setSurveyFormModal] = useState(false);
  const [surveyFormData, setSurveyFormData] = useState(null);
- //const navigate = useNavigate();
 
   //redirects to temporary page for open action buton
   const showSurveyForm = (surveyData) => {
-    console.log("Survey Data:", surveyData);
     setSurveyFormData(surveyData);
     setSurveyFormModal(true);
-    /*navigate("/surveyForm", {state: stateData});*/
   };
 
   const closeSurveyFormModal = () => {
     setSurveyFormModal(false);
     setSurveyFormData(null);
+    fetchSurveys();
   };
 
   //reformat time to 00:00:00 PM/AM

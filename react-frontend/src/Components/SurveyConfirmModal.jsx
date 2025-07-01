@@ -63,6 +63,10 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         formData.append("course-id", course_id);
         formData.append("survey-id", survey_id);
         formData.append("team-data", JSON.stringify(team_data));
+        if (pairing_mode === 6) {
+            // If pairing mode is 6, we need to send the pairings as well
+            formData.append("collective-pairings", JSON.stringify(pairings));
+        }
         let fetchHTTP = process.env.REACT_APP_API_URL + "assignmentUpdate.php";
         const result = await fetch(fetchHTTP, {
             method: "POST",
@@ -158,7 +162,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
 
         if (survey_data.pairing_mode !== 6) {
             reviewed_teams = survey_roster.teams;
-            reviewed_teams = survey_roster.teams;
+            reviewing_teams = survey_roster.teams;
         } else {
             for (let pairing of survey_roster.pairings) {
                 reviewing_teams.push(survey_roster.teams[pairing.reviewing]);
@@ -257,6 +261,18 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
     function removeTeam(deleteKey) {
         // Precondition: deleteKey is a valid key in team_data
 
+        // If we are dealing with collective reviews, we also need to remove any pairings involving this team
+        if (pairing_mode === 6) {
+            for (let index in pairings) {
+                let pairing = pairings[index];
+                // If the team is either the reviewing or reviewed team, we need to remove this pairing
+                if (pairing.reviewing === deleteKey || pairing.reviewed === deleteKey) {
+                    // Remove this pairing from our data
+                    removePairing(index);
+                }
+            }
+        }
+
         let team = team_data[deleteKey];
         // Now remove the team from the team_data state
         delete team_data[deleteKey];
@@ -275,9 +291,9 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
     function removePairing(deleteIdx) {
         // Precondition: deleteIdx is a valid index in pairings
 
-        const new_pair = pairings.splice(deleteIdx, 1);
-        const new_reviewed = reviewed_teams.splice(deleteIdx, 1);
-        const new_reiewing = reviewing_teams.splice(deleteIdx, 1);
+        const new_pair = pairings.toSpliced(deleteIdx, 1);
+        const new_reviewed = reviewed_teams.toSpliced(deleteIdx, 1);
+        const new_reiewing = reviewing_teams.toSpliced(deleteIdx, 1);
         setPairings(new_pair);
         setReviewedTeams(new_reviewed);
         setReviewingTeams(new_reiewing);
@@ -543,18 +559,34 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                                 {pairings.map((pairing, index) => (
                                     <tr key={index}>
                                         <td>
-                                            <div classname="reviewing-team">
-                                             {pairing.reviewing}
+                                            <div className="whole-team">
+                                                <span className="team-name">
+                                                    {pairing.reviewing}
+                                                </span>
+                                                <div className="teamlisting reviewing-team">
+                                                {team_data[pairing.reviewing]["roster"].map(member => (
+                                                    <span key={member.email} className="string-list-item">
+                                                        {individual_data[member.email]["name"]}
+                                                    </span>))}
+                                                </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="conection-arrow">
+                                            <div className="connection-arrow">
                                                 &mdash; is reviewing &rarr;
                                             </div>
                                         </td>
                                         <td>
-                                            <div classname="reviewed-team">
-                                             {pairing.reviewed}
+                                            <div className="whole-team">
+                                                <span className="team-name">
+                                                    {pairing.reviewed}
+                                                </span>
+                                                <div className="teamlisting reviewed-team">
+                                                {team_data[pairing.reviewed]["roster"].map(member => (
+                                                    <span key={member.email} className="string-list-item">
+                                                        {individual_data[member.email]["name"]}
+                                                    </span>))}
+                                                </div>
                                             </div>
                                         </td>
                                         <td>

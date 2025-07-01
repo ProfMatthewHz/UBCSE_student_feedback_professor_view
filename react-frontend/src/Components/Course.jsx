@@ -84,6 +84,12 @@ const Course = ({ course, page }) => {
         updateAllSurveys();
     }, [updateAllSurveys]);
 
+    useEffect(() => {
+        if (survey_confirm_roster != null) {
+            setSurveyConfirmModal(true);
+        }
+    }, [survey_confirm_roster]);
+
     /**
      * Create the effect which loads all of the potential rubrics from the system 
      */
@@ -166,7 +172,6 @@ const Course = ({ course, page }) => {
                 setSurveyNewData(null);
                 setSurveyConfirmData(surveyData);
                 setSurveyConfirmRoster(dataObject);
-                setSurveyConfirmModal(true);
             } else {
                 let allErrorStrings = [];
                 for (let key in errorsObject) {
@@ -216,12 +221,10 @@ const Course = ({ course, page }) => {
             setCurrentSurvey(survey);
             setSurveyConfirmData({ course_code: course.code, course_name: course.name, course_id: course.id, survey_name: survey.name, survey_id: survey.id, pairing_mode: survey.survey_type, reason: "Review" });
             setRosterForConfirmation(course.id, survey.survey_type, survey.id);
-            setSurveyConfirmModal(true);
         } else if (e.target.value === "Team Update") {
             setCurrentSurvey(survey);
             setSurveyConfirmData({ course_code: course.code, course_name: course.name, course_id: course.id, survey_name: survey.name, survey_id: survey.id, pairing_mode: survey.survey_type, reason: "Update" });
             setRosterForConfirmation(course.id, survey.survey_type, survey.id);
-            setSurveyConfirmModal(true);
         } else if (e.target.value === "Delete") {
             setCurrentSurvey(survey);
             setDeleteModal(true);
