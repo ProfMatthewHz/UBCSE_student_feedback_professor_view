@@ -25,8 +25,6 @@ if (!isset($_SESSION['id'])) {
 }
 $instructor_id = $_SESSION['id'];
 
-// In case of error, remove that we are reviewing a rubric
-unset($_SESSION['rubric_reviewed']);
 
 // Verify that we are handling a POST request
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -42,7 +40,6 @@ if (!isset($_POST["rubric"]) || !ctype_digit($_POST["rubric"])) {
 }
 $rubric_id = intval($_POST["rubric"]);
 $data = getRubricData($con, $rubric_id);
-$_SESSION['rubric_reviewed'] = $rubric_id;
 $json_data = json_encode($data);
 echo $json_data;
 ?>

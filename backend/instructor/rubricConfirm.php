@@ -37,9 +37,7 @@ $rubric_name = $_SESSION['rubric-preview']['name'];
 $rubric_levels = $_SESSION['rubric-preview']['levels'];
 $rubric_criteria = $_SESSION['rubric-preview']['criteria'];
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
   if (!isset($_POST['save-rubric'])){
     http_response_code(400);
     $json_out = json_encode(array("errors" => "Bad Request: Missing parameters to save rubric"));

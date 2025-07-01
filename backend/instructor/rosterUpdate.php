@@ -96,10 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           $course_roster = getRoster($con, $course_id);
           $breakOutRos = breakoutRosters($course_roster, $names_emails["ids"]);
           $remove_students = $breakOutRos['remaining'];
-          foreach ($remove_students as $email => $student) {
-           // var_dump($email); // This will output the email (key)
-           // var_dump($name);  // This will output the name (value)
-          }
           $new_students = $breakOutRos['new'];
           addStudents($con, $course_id, $new_students);
           removeFromRoster($con, $course_id, $remove_students);
@@ -112,10 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           addStudents($con, $course_id, $new_students);
          // echo "Students have been successfully added. \n" ;
         }
-
-        $_SESSION["roster_data"] = breakoutRosters($course_roster, $names_emails["ids"]);
-        $_SESSION["roster_course_id"] = $course_id;
-        $_SESSION["roster_update_type"] = $update_type;
       }
     }
   }
