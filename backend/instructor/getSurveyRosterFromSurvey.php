@@ -73,7 +73,6 @@ if (!$has_access) {
 
 $survey_type = $survey_info['survey_type_id'];
 
-
 $errorMsg = array();
 
 // Get the course's roster
@@ -83,8 +82,14 @@ $roster = getRoster($con, $course_id);
 $individual_data = getSurveyStudents($con, $survey_id, $roster);
 $team_info = getSurveyTeams($con, $survey_id);
 
+$team_pairings = null;
+if ($survey_type == 6) {
+  // For aggregated surveys, we need to get the team pairings
+  $team_pairings = getTeamPairings($con, $survey_id);
+}
+
 // Create the response
-$survey_info = array( 'individuals' => $individual_data, 'teams' => $team_info );
+$survey_info = array( 'individuals' => $individual_data, 'teams' => $team_info, 'pairings' => $team_pairings );
 $response = array( 'data' => $survey_info, 'errors' => $errorMsg );
 header("Content-Type: application/json; charset=UTF-8");
 $responseJSON = json_encode($response);

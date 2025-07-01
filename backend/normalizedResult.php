@@ -23,10 +23,10 @@ $id = $_SESSION['student_id'];
 $con = connectToDatabase();
 $responseArray = [];
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Verify that the survey exists
-    if (isset($_GET['survey'])) {
-        $survey = $_GET['survey'];
+    if (isset($_POST['survey'])) {
+        $survey = $_POST['survey'];
     } else {
         http_response_code(400);
         echo json_encode($responseArray);

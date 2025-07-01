@@ -1,4 +1,19 @@
 <?php
+function getTeamPairings($con, $survey_id) {
+  $retVal = array();
+  // Get the team pairings for the survey
+  $stmt = $con->prepare('SELECT team1.team_name reviewing, team2.team_name reviewed 
+                         FROM collective_reviews
+                         INNER JOIN teams AS team1 ON collective_reviews.reviewer_id = team1.id AND collective_reviews.survey_id=team1.survey_id
+                         INNER JOIN teams AS team2 ON collective_reviews.reviewed_id = team2.id AND collective_reviews.survey_id=team2.survey_id
+                         WHERE collective_reviews.survey_id = ?');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $rows = $result->fetch_all(MYSQLI_ASSOC);
+  return $rows;
+}
+
 function getIdsForRoster($con, $line_num, $roster) {
   // Otherwise we have a valid team and can try getting the ids
   $retVal = array('error' => '', 'roster' => array());

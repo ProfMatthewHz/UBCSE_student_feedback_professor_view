@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
 import "../styles/sidebar.css";
-import Modal from "./RubricModal";
+import RubricModal from "./RubricModal";
 
 /**
  * This will be rendered for students
@@ -130,8 +130,8 @@ const SurveyListing = (props) => {
                 credentials: "include",
                 headers: {
                   "Content-Type": "application/x-www-form-urlencoded",
-              },
-              body: new URLSearchParams({
+                },
+                body: new URLSearchParams({
                   "survey-id": survey_id,
               }),
             })
@@ -149,7 +149,7 @@ const SurveyListing = (props) => {
 
     return (
       <>
-        {modalData && <Modal open={openModal} onClose={() => setOpenModal(false)} modalData={modalData} />}
+        {modalData && <RubricModal open={openModal} onClose={() => setOpenModal(false)} modalData={modalData} />}
         <div className="home--container">
           <div className="containerOfCourses">
             <div id="Open Surveys" className="courseContainer">

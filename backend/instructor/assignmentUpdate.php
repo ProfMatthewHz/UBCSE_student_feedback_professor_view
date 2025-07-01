@@ -81,6 +81,10 @@ $errorMsg = array();
 
 // Convert the team data from JSON
 $teams = json_decode($_POST['team-data'], true);
+$collective_pairings = null;
+if (isset($_POST['collective-pairings'])) {
+  $collective_pairings = json_decode($_POST['collective-pairings'], true);
+}
 if (empty($teams)) {
   $errorMsg['team-data'] = "Please provide valid team data.";
 } else {

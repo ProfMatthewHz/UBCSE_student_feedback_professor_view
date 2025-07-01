@@ -160,8 +160,12 @@ if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset
 $pm_mult = intval($_POST['pm-mult']);
 
 $teams = json_decode($_POST['team-data'], true);
-if (empty($teams)) {
-  $errorMsg['team-data'] = "Please provide valid team data.";
+$collective_pairings = null;
+if (isset($_POST['collective-pairings'])) {
+  $collective_pairings = json_decode($_POST['collective-pairings'], true);
+}
+if (empty($teams) || ($pairing_mode == 6 && (($collective_pairings == null) || empty($collective_pairings)))) {
+  $errorMsg['team-data'] = "Please provide valid team and pairing data.";
 } else {
   // Verify that the team data is valid
   $team_data = getIdsForAllRosters($con, $teams);
@@ -176,9 +180,12 @@ if (empty($teams)) {
     $survey_id = insertSurvey($con, $course_id, $survey_name, $survey_start, $survey_end, $rubric_id, $pairing_mode, $pm_mult);
     $success = insertTeams($con, $survey_id, $team_data['teams']);
     $success = insertMembers($con, $team_data['teams']);
-    if ($success) {
+    if ($success && $pairing_mode != 6) {
       $pairings = generatePairingsFromTeams($team_data['teams'], $pm_mult, $pairing_mode);
       $success = addReviewsToSurvey($con, $survey_id, $pairings);
+    } else if ($success) {
+      // If this is a collective review, then we need to add the collective reviews
+      $success = addCollectiveReviewsToSurvey($con, $survey_id, $team_data['teams'], $collective_pairings);
     }
     if (!$success) {
       $errorMsg['db'] = "An error occured when adding the survey to the database. Please try again.";

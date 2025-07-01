@@ -144,9 +144,9 @@ function getReviewerResultReviewsCount($con, $survey_id) {
 function getReviewerCompletionResults($con, $survey_id) {
   $ret_val = array();
   // This survey should roughly parallel the completion results in getReviewerPerTeamResults
-  $stmt = $con->prepare('SELECT students.name, students.email, COUNT(reviews.id), COUNT(evals.id)
+  $stmt = $con->prepare('SELECT students.name, students.email, COUNT(reviews.eval_id), COUNT(evals.id)
                          FROM reviews
-                         LEFT JOIN evals ON evals.review_id=reviews.id AND evals.completed = 1
+                         LEFT JOIN evals ON evals.id=reviews.eval_id AND evals.completed = 1
                          LEFT JOIN scores ON evals.id=scores.eval_id
                          LEFT JOIN students ON students.id=reviews.reviewer_id
                          WHERE survey_id=?
@@ -169,7 +169,7 @@ function getReviewerPerTeamResults($con, $survey_id) {
 
   $stmt = $con->prepare('SELECT reviews.reviewer_id, reviews.team_id, COUNT(DISTINCT reviews.id), COUNT(reviews.id), COUNT(evals.id), SUM(score)
                          FROM reviews
-                         LEFT JOIN evals ON evals.review_id=reviews.id AND evals.completed = 1
+                         LEFT JOIN evals ON evals.id=reviews.eval_id AND evals.completed = 1
                          LEFT JOIN scores ON evals.id=scores.eval_id
                          LEFT JOIN rubric_scores ON rubric_scores.id=scores.rubric_score_id
                          LEFT JOIN rubric_topics ON rubric_topics.id=scores.topic_id
@@ -200,7 +200,7 @@ function getSurveyScores($con, $survey_id, $teammates) {
   $ret_val = array();
   $stmt = $con->prepare('SELECT reviewer_id, team_id, eval_weight, topic_id, score
                          FROM reviews
-                         INNER JOIN evals on evals.review_id=reviews.id AND evals.completed=1
+                         INNER JOIN evals on evals.id=reviews.eval_id AND evals.completed=1
                          INNER JOIN scores ON evals.id=scores.eval_id
                          INNER JOIN rubric_scores ON rubric_scores.id=scores.rubric_score_id
                          WHERE survey_id=? AND reviews.reviewed_id=?');

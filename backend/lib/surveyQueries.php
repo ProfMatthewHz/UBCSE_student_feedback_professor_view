@@ -21,7 +21,7 @@ function getActiveSurveyInfo($db_connection, $survey_id, $student_id) {
 function handleSurveyQuery($db_connection, $survey_id, $student_id, $student_id_field, $addl_query) {
     // Pessimistically assume this fails
     $ret_val = null;
-    $query = 'SELECT DISTINCT courses.name course_name, surveys.name survey_name 
+    $query = 'SELECT DISTINCT courses.name course_name, surveys.name survey_name, survey_type_id survey_type 
               FROM surveys
               INNER JOIN reviews ON reviews.survey_id = surveys.id 
               INNER JOIN courses on courses.id = surveys.course_id 
@@ -31,7 +31,7 @@ function handleSurveyQuery($db_connection, $survey_id, $student_id, $student_id_
     $stmt->execute();
     $result = $stmt->get_result();
     if ($row = $result->fetch_row()) {
-        $ret_val = array("survey_id" => $survey_id, "course_name" => $row[0], "survey_name" => $row[1]);
+        $ret_val = array("survey_id" => $survey_id, "course_name" => $row[0], "survey_name" => $row[1], "survey_type" => $row[2]);
     }
     $stmt->close();
     return $ret_val;
@@ -101,7 +101,7 @@ function createActiveQueryReviewer($con, $date_clause) {
             FROM surveys
             INNER JOIN courses ON courses.id = surveys.course_id 
             INNER JOIN reviews ON reviews.survey_id = surveys.id
-            LEFT JOIN evals ON evals.review_id = reviews.id AND evals.completed = 1
+            LEFT JOIN evals ON evals.id = reviews.eval_id AND evals.completed = 1
             WHERE reviews.reviewer_id=?';
     if (!empty($date_clause)) {
         $sql .= ' AND ' . $date_clause;
@@ -116,7 +116,7 @@ function createClosedQueryReviewer($con, $date_clause) {
             FROM surveys
             INNER JOIN courses ON courses.id = surveys.course_id 
             INNER JOIN reviews ON reviews.survey_id = surveys.id
-            LEFT JOIN evals ON evals.review_id = reviews.id AND evals.completed = 1
+            LEFT JOIN evals ON evals.id = reviews.eval_id AND evals.completed = 1
             WHERE reviews.reviewer_id=? AND courses.semester=? AND courses.year=?';
     if (!empty($date_clause)) {
         $sql .= ' AND ' . $date_clause;
@@ -131,7 +131,7 @@ function createQueryReviewed($con, $date_clause) {
             FROM surveys
             INNER JOIN courses ON courses.id = surveys.course_id 
             INNER JOIN reviews ON reviews.survey_id = surveys.id
-            LEFT JOIN evals ON evals.review_id = reviews.id AND evals.completed = 1
+            LEFT JOIN evals ON evals.id = reviews.eval_id AND evals.completed = 1
             WHERE reviews.reviewed_id=? AND reviews.reviewer_id<>? AND courses.semester=? AND courses.year=?';
     if (!empty($date_clause)) {
         $sql .= ' AND ' . $date_clause;
@@ -243,11 +243,10 @@ function wasReviewedInSurvey($con, $survey_id, $student_id) {
 }
 
 function getCompletionRate($con, $survey_id, $student_id) {
-    $reviewIds = [];
-    // get an array of review_ids within reviews table that correspond to survey_id //
+    // Calculate the completion rate for a given student in a survey
     $sql = "SELECT COUNT(reviews.id) reviews, COUNT(evals.id) completed
             FROM reviews
-            LEFT JOIN evals ON reviews.id = evals.review_id AND evals.completed = 1
+            LEFT JOIN evals ON reviews.eval_id = evals.id AND evals.completed = 1
             WHERE survey_id = ? AND reviewer_id = ?";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("ii", $survey_id, $student_id);

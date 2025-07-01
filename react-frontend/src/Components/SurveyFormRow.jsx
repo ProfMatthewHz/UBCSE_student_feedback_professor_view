@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import "../styles/surveyForm.css";
 
-const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id}) => {
+const SurveyFormRow = ({rubricData, setSurveyResults, survey_id}) => {
     const [topicQuestionElements, setTopicQuestionElements] = useState([]);
     const [topicQuestionWidth, setTopicQuestionWidth] = useState(30);
     const [clickedButtons, setClickedButtons] = useState({});
 
     useEffect(() => {
-        if (surveyResults != null && setSurveyResults != null) {
+        if (setSurveyResults != null) {
             setSurveyResults(clickedButtons);
         }
-    }, [clickedButtons, setSurveyResults, surveyResults]);
+    }, [clickedButtons, setSurveyResults]);
 
     useEffect(() => {
         // Apply width of 250px to each element
@@ -19,26 +19,22 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id})
         });
     }, [topicQuestionElements, topicQuestionWidth]);
 
-    const clickHandler = (response, topic) => {
+    const clickHandler = (key, topic) => {
         const rowID = topic.topic_id !== undefined ? topic.topic_id : topic.question;
         // Set the clicked state for the clicked button in the corresponding row
-        if (clickedButtons[rowID] === response) {
-            setClickedButtons(prevState => {
-                const newState = { ...prevState };
-                delete newState[rowID];
-                return newState;
-            });
+        if (clickedButtons[rowID] && clickedButtons[rowID].toString() === key) {
+            clickedButtons[rowID] = null;
+            setClickedButtons({...clickedButtons});
         } else {
-        setClickedButtons(prevState => ({
-          ...prevState,
-          [rowID]: response
-        }))
-    }};
+            clickedButtons[rowID] = key;
+            setClickedButtons({...clickedButtons});
+        }
+    };
     
-    const buttonClass = (response, topic) => {
+    const buttonClass = (key, topic) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
         const rowID = topic.topic_id !== undefined ? topic.topic_id: topic.question;
-        return clickedButtons[rowID] === response ? 'response clicked' : 'response unclicked';
+        return clickedButtons[rowID] && clickedButtons[rowID].toString() === key ? 'response clicked' : 'response unclicked';
     };
 
     const verticalLineClass = (topic) => {
@@ -47,7 +43,7 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id})
         return clickedButtons[rowID] != null ? 'vertical-line green-vertical-line' : 'vertical-line red-vertical-line';
     }
 
-    const fetchData = useCallback(() =>  {
+    const fetchData = useCallback((survey_id) =>  {
         let body = new FormData();
         body.append('reviewed', survey_id);
         fetch(
@@ -60,16 +56,16 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id})
                 .then((res) => res.json())
                 .then((result) => {
                     setClickedButtons(result);
-                    setSurveyResults(result);
                 })
                 .catch((error) => {
                     console.error('Error:', error);
                 });
-    }, [setSurveyResults, survey_id]);
+    }, []);
 
     useEffect(() => {
+        // Fetch data when the component mounts or when survey_id changesfimction         
         if (survey_id != null) {
-            fetchData();
+            fetchData(survey_id);
         }
     }, [fetchData, survey_id]);
 
@@ -87,10 +83,10 @@ const SurveyFormRow = ({rubricData, surveyResults, setSurveyResults, survey_id})
                         <span className='topic-question'>{topic.question}</span>
                     </div>
                     <div className="response-container">
-                        {Object.values(topic.responses).map((response, index) => {
+                        {Object.keys(topic.responses).map((key, index) => {
                             return (
                                 <div className='table-data-container' style={{flex: 100 / length +'%', 'fontSize': 100 - (length / 5) +'%'}}>
-                                    <button onClick={() => clickHandler(response, topic) } className={buttonClass(response, topic)}>{response}</button>
+                                    <button onClick={() => clickHandler(key, topic) } className={buttonClass(key, topic)}>{topic.responses[key]}</button>
                                 </div>    
                             )})}
                     </div>

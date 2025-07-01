@@ -21,7 +21,6 @@
 .confirm--bottom-container {
   display: flex;
   justify-content: space-around;
-  border-bottom: thin solid #225cb5;
   overflow-x: auto; /* Enables horizontal scrolling */
   max-height: 390px; /* Set a maximum height */
   overflow-y: auto; /* Enables vertical scrolling */
@@ -39,13 +38,20 @@
   margin: 0px 10px;
 }
 
-
 .confirm--bottom-container table {
   border-collapse: collapse;
   width: 90%;
   margin: 0px 10px;
 }
 
+.confirm--pairing-table {
+  border: 1px solid #225cb5;
+}
+
+.confirm--pairing-table td {
+  border-left: none !important;
+  border-right: none !important;
+}
 
 .delete-team {
   pointer-events: auto;
@@ -57,6 +63,8 @@
   padding-left: 28px;
   margin-top: 5px;
   margin-bottom: 5px;
+  height: 30px;
+  width: 30px;
 }
 
 .confirm--bottom-container th, .confirm--bottom-container td {
@@ -111,7 +119,6 @@
 .fixedLabel {
     background-color: #ddd;
 }
-
 
 .notremovable {
   border-color: #a04b4b;
@@ -173,5 +180,4 @@
 .add-member-select {
   width: 75%;
   margin-left: 20%;
-
 }

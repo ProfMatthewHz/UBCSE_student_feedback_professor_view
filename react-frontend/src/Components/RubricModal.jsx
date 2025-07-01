@@ -4,7 +4,7 @@ import "../styles/rubricModal.css";
 const RubricModal = ({open,onClose,modalData}) => {
    
     // eslint-disable-next-line no-unused-vars
-    const { student_id, survey_id, survey_name } = modalData; //obtrains the student_id, survey_id,and survey_name from modalData 
+    const { student_id, survey_id, survey_name } = modalData; //obtains the student_id, survey_id,and survey_name from modalData 
     //Fetches data for the feedback form/ viewing results
    
     const [feedback, setFeedback] = useState([]);
@@ -13,9 +13,12 @@ const RubricModal = ({open,onClose,modalData}) => {
 
     //GET request to backend to retrieve the feedback results using survey_id
     const fetchFeedback = useCallback(() => {
-        fetch(process.env.REACT_APP_API_URL_STUDENT + "resultsEndpoint.php?survey=" + survey_id, {
-            method: "GET",
+        fetch(process.env.REACT_APP_API_URL_STUDENT + "resultsEndpoint.php", {
+            method: "POST",
             credentials: "include",
+            body: new URLSearchParams({
+                survey: survey_id,
+                }),            
         })
             .then((res) => res.json())
             .then((result) => {
@@ -26,18 +29,23 @@ const RubricModal = ({open,onClose,modalData}) => {
             });
     }, [survey_id]);
 
-    //GET request to backend to retrieve the feedback results using survey_id
+    //POST request to backend to retrieve the feedback results using survey_id
     const fetchOverall = useCallback(() => {
-            fetch(process.env.REACT_APP_API_URL_STUDENT + "normalizedResult.php?survey=" + survey_id, {
-                method: "GET",
+            fetch(process.env.REACT_APP_API_URL_STUDENT + "normalizedResult.php", {
+                method: "POST",
                 credentials: "include",
+                body: new URLSearchParams({
+                    survey: survey_id,
+                }),
             })
                 .then((res) => res.json())
                 .then((result) => {
-                    if (isNaN(result["data"])) {
-                        setOverall(1.0);
-                    } else {
-                        setOverall(parseFloat(result["data"]).toFixed(4));
+                    if ("data" in result) {
+                        if (isNaN(result["data"])) {
+                            setOverall(1.0);
+                        } else {
+                            setOverall(parseFloat(result["data"]).toFixed(4));
+                        }
                     }
                 })
                 .catch((err) => {
@@ -92,9 +100,9 @@ const RubricModal = ({open,onClose,modalData}) => {
                                     )}
                             </tbody>
                     </table>
-                    <div className="summary">
+                    {overall != null && (<div className="summary">
                         <div className="normalizedAnnounce">Normalized Result:</div> <div className="normalResult">{overall}</div>
-                    </div>
+                    </div>)}
                  </div>
             </div>
          </div>
