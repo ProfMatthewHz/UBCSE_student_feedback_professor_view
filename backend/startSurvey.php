@@ -10,7 +10,9 @@
   require "lib/surveyQueries.php";
   
   if(!isset($_SESSION['student_id'])) {
-    header("Location: ".SITE_HOME."index.php");
+    http_response_code(405);
+    header('Content-Type: application/json');
+    echo ('{"error": "Improper access to the endpoint."}');
     exit();
   }
   $id = $_SESSION['student_id'];

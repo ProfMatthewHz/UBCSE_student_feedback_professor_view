@@ -13,7 +13,9 @@ require "instructor/lib/surveyQueries.php";
 require "instructor/lib/resultsCalculations.php";
 
 if(!isset($_SESSION['student_id'])) {
-    header("Location: ".SITE_HOME."index.php"); // edit this header redirect to correct location //
+    http_response_code(405);
+    header('Content-Type: application/json');
+    echo ('{"error": "Improper access to the endpoint."}');
     exit();
 }
 
@@ -29,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $survey = $_POST['survey'];
     } else {
         http_response_code(400);
-        echo json_encode($responseArray);
+        echo ('{"error": "Should be using the frontend to access the endpoint."}');
         exit();
     }
     // Verify that the survey is a valid one for this student to view their results

@@ -11,7 +11,9 @@ require "lib/reviewQueries.php";
 require "lib/scoreQueries.php";
 
 if(!isset($_SESSION['student_id'])) {
-    header("Location: ".SITE_HOME."index.php"); // edit this header redirect to correct location //
+    http_response_code(405);
+    header('Content-Type: application/json');
+    echo ('{"error": "Improper access to the endpoint."}');
     exit();
 }
 
@@ -35,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!isset($survey_info)) {
         // This is not a valid survey for this student
         http_response_code(400);
-        echo json_encode($responseArray);
+        echo ('{"error": "Improper access to the endpoint."}');
         exit();
     }
 
