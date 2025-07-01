@@ -235,7 +235,7 @@ const Course = ({ course, page }) => {
             setViewResultsModal(true);
         }
         else if (e.target.value === "Preview Survey") {
-            setCurrentSurvey(survey);
+            setCurrentSurvey({ ...survey, survey_name: survey['name'], course: course.name });
             setPreviewSurveyModal(true);
         }
     }
@@ -353,7 +353,7 @@ const Course = ({ course, page }) => {
             {previewSurveyModal && (
                 <SurveyPreviewModal
                     modalClose={closePreviewModal}
-                    surveyData = {currentSurvey} />
+                    surveyData={currentSurvey} />
             )}
             <div className="courseContent">
                 <div className="courseHeader">

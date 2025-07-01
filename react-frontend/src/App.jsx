@@ -6,7 +6,6 @@ import History from "./pages/History";
 import Library from "./pages/Library";
 import StudentHome from "./pages/studentHome";
 import ProfStudentHome from "./pages/profStudentHome";
-import SurveyForm from "./pages/SurveyForm"
 
 function App() {
     const [userFlag, setUserFlag] = useState(1);  // userFlag = 1 -> prof    userFlag = 2 -> student
@@ -51,17 +50,15 @@ function App() {
                   <Route path="/history" element={<History />} />
                   <Route path="/student" element={<ProfStudentHome />} /> 
                   <Route path="/about" element={<About />} />
-                  <Route path ="/surveyForm" element={<SurveyForm />} />
                   </>
               )}
               {/* Student Paths */}
               {userFlag === 2 && (
                 <>
                   <Route path="/" element={<StudentHome />} /> 
-                  <Route path="/surveyForm" element={<SurveyForm />} />
                 </>
               )}
-              </Routes>    
+              </Routes>
         </div>
       </BrowserRouter>
     );

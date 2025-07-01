@@ -1,28 +1,37 @@
 import React, {useEffect, useState, useCallback} from "react";
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
 import "../styles/sidebar.css";
-import RubricModal from "./RubricModal";
+import StudentSurveyFeedbackModal from "./StudentSurveyFeedbackModal";
+import SurveyFormModal from "./SurveyFormModal";
+
 
 /**
  * This will be rendered for students
  */
 const SurveyListing = (props) => {
  // State to store the list of courses
- const [openModal, setOpenModal] = useState(false);
- const [modalData, setModalData] = useState(null); 
+ const [surveyFeedbackModal, setSurveyFeedbackModal] = useState(false);
+ const [feedbackData, setFeedbackData] = useState(null); 
  const [surveyCurrent, setSurveyCurrent] = useState([]);
  const [surveyPast, setSurveyPast] = useState([]);
  const [surveyFuture, setSurveyFuture] = useState([]);
-
- const navigate = useNavigate();
+ const [surveyFormModal, setSurveyFormModal] = useState(false);
+ const [surveyFormData, setSurveyFormData] = useState(null);
+ //const navigate = useNavigate();
 
   //redirects to temporary page for open action buton
-  const completeSurveyButtonHandler = (surveyData) => {
-    console.log(surveyData);
-    const stateData = {...surveyData, return_to: props.return_to};
-    navigate("/surveyForm", {state: stateData});
+  const showSurveyForm = (surveyData) => {
+    console.log("Survey Data:", surveyData);
+    setSurveyFormData(surveyData);
+    setSurveyFormModal(true);
+    /*navigate("/surveyForm", {state: stateData});*/
+  };
+
+  const closeSurveyFormModal = () => {
+    setSurveyFormModal(false);
+    setSurveyFormData(null);
   };
 
   //reformat time to 00:00:00 PM/AM
@@ -141,15 +150,25 @@ const SurveyListing = (props) => {
             });
         };
 
-    const combinedClickHandler = (postData) => { //updates feedback count and opens feedback modal
+    const showSurveyFeedback = (postData) => { //updates feedback count and opens feedback modal
       updateFeedbackCount(postData["survey_id"])
-      setOpenModal(true); 
-      setModalData(postData); //sends postData to rubric modal
+      setSurveyFeedbackModal(true); 
+      setFeedbackData(postData); //sends postData to rubric modal
+    };
+
+    const closeSurveyFeedback = () => {
+      setSurveyFeedbackModal(false);
+      setFeedbackData(null);
     };
 
     return (
       <>
-        {modalData && <RubricModal open={openModal} onClose={() => setOpenModal(false)} modalData={modalData} />}
+        {surveyFeedbackModal &&
+          <StudentSurveyFeedbackModal onClose={closeSurveyFeedback} modalData={feedbackData} />
+        }
+        {surveyFormModal &&
+          <SurveyFormModal closeModal={closeSurveyFormModal} surveyInfo={surveyFormData} />
+        }
         <div className="home--container">
           <div className="containerOfCourses">
             <div id="Open Surveys" className="courseContainer">
@@ -195,7 +214,7 @@ const SurveyListing = (props) => {
                                   <td>{item.courseName}</td>
                                   <td>{item.surveyName}</td>
                                   <td>{item.completionRate*100}% Completed</td>
-                                  <td><button onClick={() => completeSurveyButtonHandler({course: item.courseName, survey_name: item.surveyName, survey_id: item.surveyID})}>{openChooseAction(item.completionRate*100)}</button></td>
+                                  <td><button onClick={() => showSurveyForm({course: item.courseName, survey_name: item.surveyName, survey_id: item.surveyID})}>{openChooseAction(item.completionRate*100)}</button></td>
                                 </tr>
                               ))}
                             </tbody>
@@ -298,7 +317,7 @@ const SurveyListing = (props) => {
                                   <td>{item.surveyName}</td>
                                   {/* <td><button>View Submission</button></td> */}
                                   {/* <td></td> */}
-                                 <td><button onClick={() => combinedClickHandler({"survey_name":item.surveyName,"survey_id":item.surveyID})}>View Feedback</button></td>
+                                 <td><button onClick={() => showSurveyFeedback({"survey_name":item.surveyName,"survey_id":item.surveyID})}>View Feedback</button></td>
                                 </tr>
                               ))}
                             </tbody>
