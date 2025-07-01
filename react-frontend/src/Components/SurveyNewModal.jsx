@@ -4,6 +4,7 @@ import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
 import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"
 import PM from "../assets/pairingmodes/PM.png"
 import SinglePairs from "../assets/pairingmodes/SinglePairs.png"
+import Collective from "../assets/pairingmodes/COLLECTIVE.png"
 import "../styles/modal.css";
 import "../styles/addsurvey.css";
 
@@ -14,7 +15,8 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
   const [startDate, setStartDate] = useState(survey_data.start_date ? survey_data.start_date : "");
   const [endDate, setEndDate] = useState(survey_data.end_date ? survey_data.end_date : "");
   const [modalReason,] = useState(survey_data.reason ? survey_data.reason : "Add");
-  const [csvFile, setCsvFile] = useState("");
+  const [csvFile, setCsvFile] = useState(survey_data.csv_file ? survey_data.csv_file : "");
+  const [teamFile, setTeamFile] = useState(survey_data.team_file ? survey_data.team_file : "");
   const [pairingModes, setPairingModes] = useState([]);
   const [rubric, setRubric] = useState(survey_data.rubric_id);
   const [rubricName, setRubricName] = useState("");
@@ -25,6 +27,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
   const [CSVFileDescription, setCSVFileDescription] = useState("");
   const [surveyNameError, setSurveyNameError] = useState(false);
   const [emptyCSVFileError, setEmptyCSVFileError] = useState(false);
+  const [emptyTeamFileError, setEmptyTeamFileError] = useState(false);
   const [emptySurveyNameError, setEmptySurveyNameError] = useState(false);
   const [longSurveyNameError, setLongSurveyNameError] = useState(false);
   const [emptyStartTimeError, setEmptyStartTimeError] = useState(false);
@@ -50,6 +53,9 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
         break;
       case 'MANAGER':
         setPairingImage(PM);
+        break;
+      case 'COLLECTIVE':
+        setPairingImage(Collective);
         break;
       default:
         console.log('Unexpected pairing mode: ' + pairing);
@@ -130,7 +136,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
   const checkForInvalidData = () => {
     let invalidData = false;
 
-    if (surveyName === "") {
+    if (surveyName == null || surveyName === "") {
       setSurveyNameError(true);
       setEmptySurveyNameError(true);
       invalidData = true;
@@ -175,6 +181,13 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
       invalidData = true;
     } else {
       setEmptyCSVFileError(false);
+    }
+
+    if ((modalReason !== "Duplicate") && (pairingModeValue === 6) && (teamFile === "")) {
+      setEmptyTeamFileError(true);
+      invalidData = true;
+    } else {
+      setEmptyTeamFileError(false);
     }
     return invalidData;
   }
@@ -237,6 +250,8 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
       course_id: survey_data.course_id,
       course_code: survey_data.course_code,
       course_name: survey_data.course_name,
+      team_file: teamFile,
+      csv_file: csvFile,
       rubric_id: rubric,
       rubric_name: rubricName,
       start_date: startDate,
@@ -253,6 +268,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
     if (modalReason === "Add") {
       // Post the CSV file so that we get student and team information
       formData.append("pairing-file", csvFile);
+      formData.append("team-file", teamFile);
       let response = await addSurveyBackend(formData);
       // Pass along all of the survey data the user entered so it can be used later
       modalClose(response, surveyData);
@@ -289,7 +305,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
               id="survey-name"
               type="text"
               placeholder="Survey Name"
-              value={surveyName !== "" ? surveyName : ""}
+              value={surveyName}
               onChange={(e) => setSurveyName(e.target.value)}
             />
             {emptySurveyNameError && (
@@ -444,14 +460,32 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
               </select>
             </label>
           )}
+          {(modalReason !== "Duplicate") && (pairingModeValue === 6) && <label className="form__item--file-label" htmlFor="team-file">
+            Team Roster Upload
+            <span className="form__item--file-label--optional">One row per team. The first column of each row is the team's name. Each of the following columns should the email addresses of its members separatived by commas. Blank columns are ignored</span>
+            <input
+              className={emptyCSVFileError ? "form__item-input-error" : undefined}
+              id="team-file"
+              type="file"
+              accept="text/plain,text/csv"
+              placeholder={csvFile ? csvFile.name : "Upload The File"}
+              onChange={(e) => setTeamFile(e.target.files[0])}
+            />
+            {emptyTeamFileError && (
+              <label className="form__item--error-label">
+                <div className="form__item--red-warning-sign" />
+                Select a file
+              </label>)}
+          </label>}
           {(modalReason !== "Duplicate") && <label className="form__item--file-label" htmlFor="csv-file">
-            CSV File Upload
+            Review Assignment File Upload
             <span className="form__item--file-label--optional">{CSVFileDescription}</span>
             <input
               className={emptyCSVFileError ? "form__item-input-error" : undefined}
               id="csv-file"
               type="file"
-              placeholder="Upload The File"
+              accept="text/plain,text/csv"
+              placeholder={csvFile ? csvFile.name : "Upload The File"}
               onChange={(e) => setCsvFile(e.target.files[0])}
             />
             {emptyCSVFileError && (

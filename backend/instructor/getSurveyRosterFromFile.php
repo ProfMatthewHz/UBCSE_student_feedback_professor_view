@@ -1,4 +1,108 @@
 <?php
+function processIndividualSurvey($con, $course_id, $pairing_mode) {
+  $retval = array( 'errors' => array() );
+
+  // Process the pairing file and return the student and tean information
+  if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE) {
+    $retval['errors']['pairing-file'] = array('The evaluation file is too large.');
+  } else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK) {
+    $retval['errors']['pairing-file'] = array('An error occured when uploading the evaluation file. Please try again.');
+  } else {
+    // If there are no errors, then we can process and return the student and team info
+    $roster = getRoster($con, $course_id);
+
+    // start parsing the file
+    $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
+
+    // Catch errors when the file cannot be opened
+    if (!$file_handle) {
+      $retval['errors']['pairing-file'] = array('An error occured when uploading the evaluation file. Please try again.');
+    } else {
+
+      // Get the data from the review file 
+      $file_data = processReviewFile($con, ($pairing_mode == 1),  $file_handle, $roster);
+      
+      // Clean up our file handling
+      fclose($file_handle);
+
+      // check for any errors
+      if (!empty($file_data['error'])) { #
+        $retval['errors']['pairing-file'] = $file_data['error'];
+      } else {  
+        // Process the file rows to calculate complete individual & team data
+        $team_info = processFileRows($file_data['rows'], $pairing_mode);
+
+        // Use the team info to add the reviewing and reviewed information to the individual data
+        $retval["data"] = array('individuals' => $file_data['individuals'], 'teams' => $team_info);
+      }
+    }
+  }
+  return $retval;
+}
+
+function processAggregatedSurvey($con, $course_id, $pairing_mode) {
+  $retval = array( 'errors' => array() );
+
+  // Check that we have the (otherwise unusued) file with team assignments
+  if (!isset($_FILES['team-file']['name'])) {
+      http_response_code(400);
+      echo "Bad Request: Missing parameters.";
+      exit();
+  }
+  // Process the file of teams' rosters
+  if ($_FILES['team-file']['error'] == UPLOAD_ERR_INI_SIZE) {
+    $retval['errors']['team-file'] = array('The team roster file is too large.');
+  } else if ($_FILES['team-file']['error'] != UPLOAD_ERR_OK) {
+    $retval['errors']['team-file'] = array('An error occured when uploading the team roster file. Please try again.');
+  } else {
+    // If there are no errors, then we can process and return the student and team info
+    $roster = getRoster($con, $course_id);
+    // Parsing the team file
+    $file_handle = @fopen($_FILES['team-file']['tmp_name'], "r");
+    // Catch errors when the file cannot be opened
+    if (!$file_handle) {
+      $retval['errors']['team-file'] = array('An error occured when uploading the team roster file. Please try again.');
+    } else {
+      $team_data = processTeamFile($con, $file_handle, $roster);
+
+      // Clean up our file handling
+      fclose($file_handle);
+      // check for any errors
+      if (!empty($team_data['error'])) { #
+        $retval['errors']['team-file'] = $team_data['error'];
+      }
+    }
+  }
+  // Process the pairing file
+  if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE) {
+    $retval['errors']['pairing-file'] = array('The team evaluation assignment file is too large.');
+  } else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK) {
+    $retval['errors']['pairing-file'] = array('An error occured when uploading the team evaluation assignment file. Please try again.');
+  } else {
+    // start parsing the file
+    $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
+
+    // Catch errors when the file cannot be opened
+    if (!$file_handle) {
+      $retval['errors']['pairing-file'] = array('An error occured when uploading the team evaluation assignment file. Please try again.');
+    } else {
+      // Get the data from the review file
+      $pairing_data = processAggregateReviewFile($con, $file_handle, $team_data['teams']); 
+      
+      // Clean up our file handling
+      fclose($file_handle);
+
+      // check for any errors
+      if (!empty($pairing_data['error'])) {
+        $retval['errors']['pairing-file'] = $pairing_data['error'];
+      } else {
+        // Use the team info to add the reviewing and reviewed information to the individual data
+        $retval["data"] = array('individuals' => $team_data['individuals'], 'teams' => $team_data['teams'], 'pairings' => $pairing_data['matchups']);
+      }
+    }
+  }
+  return $retval;
+}
 
 //error logging
 error_reporting(-1); // reports all errors
@@ -40,6 +144,7 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST') {
   exit();
 }
 
+
 // make sure the required values exist
 if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) ||
     !isset($_POST['course-id']) ) {
@@ -51,153 +156,43 @@ if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) ||
 // query information about the requester
 $con = connectToDatabase();
 
-
 //stores error messages corresponding to form fields
 $errorMsg = array();
-
-// // get the name of this survey
-// $survey_name = trim($_POST['survey-name']);
-
-// // check rubric is not empty
-// $rubric_id = $_POST['rubric-id'];
-// $rubric_id = intval($rubric_id);
-// if (($rubric_id === 0) or (!array_key_exists($rubric_id, $rubrics))){
-//   $errorMsg['rubric-id'] = "Please choose a valid rubric.";
-// } 
 
 // check course is not empty
 $course_id = intval($_POST['course-id']);
 if ($course_id === 0) {
-  $errorMsg['course-id'] = "Please choose a valid course.";
+  http_response_code(400);
+  echo "Bad Request: Incorrect parameters.";
+  exit();
 }
 
 // Verify that this is a valid course for this instructor
 if (!isCourseInstructor($con, $course_id, $instructor_id)) {
-  $errorMsg['course-id'] = "Please choose a valid course.";
+  http_response_code(400);
+  echo "Bad Request: Do not have permission for this action.";
+  exit();
 }
 
 // Verify that the pairing mode is valid
 $pairing_mode = intval($_POST['pairing-mode']);
 $surveyTypes = getSurveyTypes($con);
 if (!array_key_exists($pairing_mode, $surveyTypes)) {
-  $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
+  http_response_code(400);
+  echo "Bad Request: Incorrect parameters.";
+  exit();
 }
 
-// Get the dates and verify that they are valid
-// $start_date = trim($_POST['start-date']);
-// $end_date = trim($_POST['end-date']);
-// if (empty($start_date)) {
-//   $errorMsg['start-date'] = "Please choose a start date.";
-// }
-// if (empty($end_date)) {
-//   $errorMsg['end-date'] = "Please choose a end date.";
-// }
+$response = null;
 
-// // check the date's validity
-// if (!isset($errorMsg['start-date']) and !isset($errorMsg['end-date'])) {
-//   $start = DateTime::createFromFormat('Y-m-d', $start_date);
-//   if (!$start) {
-//     $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
-//   } else if ($start->format('Y-m-d') != $start_date) {
-//     $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
-//   }
-
-//   $end = DateTime::createFromFormat('Y-m-d', $end_date);
-//   if (!$end) {
-//     $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
-//   } else if ($end->format('Y-m-d') != $end_date) {
-//     $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
-//   }
-// }
-
-// // Get the starting and ending times and verify that they are valid
-// $start_time = trim($_POST['start-time']);
-// $end_time = trim($_POST['end-time']);
-// if (empty($start_time)) {
-//   $errorMsg['start-time'] = "Please choose a start time.";
-// }
-// if (empty($end_time)) {
-//   $errorMsg['end-time'] = "Please choose a end time.";
-// }
-
-// if (!isset($errorMsg['start-time']) && !isset($errorMsg['end-time'])) {
-//   $start = DateTime::createFromFormat('H:i', $start_time);
-//   if (!$start) {
-//     $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
-//   } else if ($start->format('H:i') != $start_time) {
-//     $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
-//   }
-
-//   $end = DateTime::createFromFormat('H:i', $end_time);
-//   if (!$end) {
-//     $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
-//   } else if ($end->format('H:i') != $end_time) {
-//     $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
-//   }
-// }
-
-// // sanity check that the start and end of the survey
-// if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset($errorMsg['end-date']) && !isset($errorMsg['end-time'])) {
-//   $s = new DateTime($start_date . ' ' . $start_time);
-//   $e = new DateTime($end_date . ' ' . $end_time);
-//   $today = new DateTime();
-
-//   if ($e < $s) {
-//     $errorMsg['end-date'] = "End date and time cannot be before start date and time.";
-//     $errorMsg['end-time'] = "End date and time cannot be before start date and time.";
-//     $errorMsg['start-date'] = "End date and time cannot be before start date and time.";
-//     $errorMsg['start-time'] = "End date and time cannot be before start date and time.";
-//   } else if ($e < $today) {
-//     $errorMsg['end-date'] = "End date and time must occur in the future.";
-//     $errorMsg['end-time'] = "End date and time must occur in the future.";
-//   }
-// }
-
-// // Get the multiplier used for pm evaluations
-// $pm_mult = intval($_POST['pm-mult']);
-
-$surveyInfo = null;
-
-// Process the pairing file and return the student and tean information
-if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE) {
-  $errorMsg['pairing-file'] = 'The selected file is too large.';
-} else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_PARTIAL) {
-  $errorMsg['pairing-file'] = 'The selected file was only paritally uploaded. Please try again.';
-} else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_NO_FILE) {
-  $errorMsg['pairing-file'] = 'A pairing file must be provided.';
-} else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK)  {
-  $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
+// We split out when we have aggregated surveys and individual surveys.
+if ($pairing_mode == 6) {
+  $response = processAggregatedSurvey($con, $course_id, $pairing_mode);
 } else {
-  // start parsing the file
-  $file_handle = @fopen($_FILES['pairing-file']['tmp_name'], "r");
-
-  // Catch errors when the file cannot be opened
-  if (!$file_handle) {
-    $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
-  } else {
-    // Get the data from the review file 
-    $file_data = processReviewFile($con, ($pairing_mode == 1),  $file_handle);
-    
-    // Clean up our file handling
-    fclose($file_handle);
-
-    // check for any errors
-    if (!empty($file_data['error'])) { #
-      $errorMsg['pairing-file'] = $file_data['error'];
-    } else {
-      // If there are no errors, then we can process and return the student and team info
-      $roster = getRoster($con, $course_id);
-      // Convert the roster into the format the front-end expects
-      $student_data = getSurveyIndividuals($roster, $file_data['individuals']);
-      // Process the file rows to calculate complete individual & team data
-      $team_info = processFileRows($file_data['rows'], $pairing_mode);
-      // Use the team info to add the reviewing and reviewed information to the individual data
-      $surveyInfo = array('individuals' => $student_data, 'teams' => $team_info);
-    }
-  }
+  // We are not in aggregated survey mode, so we only have the pairing file to process
+  $response = processIndividualSurvey($con, $course_id, $pairing_mode);
 }
-// Create the response
-$response = array( 'data' => $surveyInfo, 'errors' => $errorMsg );
+// Emit the response
 header("Content-Type: application/json; charset=UTF-8");
 $responseJSON = json_encode($response);
 echo $responseJSON;

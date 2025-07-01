@@ -29,16 +29,16 @@
     return $retVal;
   }
 
-  function getReviewPoints($db_connection, $review_id, $topics) {
+  function getEvalPoints($db_connection, $eval_id, $topics) {
     $query_str = 'SELECT topic_id, score 
                   FROM scores
                   INNER JOIN rubric_scores ON scores.rubric_score_id=rubric_scores.id 
                   INNER JOIN evals ON scores.eval_id=evals.id and evals.completed=1
-                  WHERE evals.review_id=?';
+                  WHERE evals.id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
-    $stmt->bind_param('i', $review_id);
+    $stmt->bind_param('i', $eval_id);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
@@ -56,11 +56,11 @@
     return $retVal;
   }
 
-  function getReviewScores($db_connection, $review_id, $topics) {
+  function getReviewScores($db_connection, $review_id) {
     $query_str = 'SELECT topic_id, rubric_score_id 
                   FROM scores
-                  INNER JOIN evals ON scores.eval_id=evals.id AND evals.completed=1
-                  WHERE evals.review_id=?';
+                  INNER JOIN evals ON scores.eval_id=evals.id
+                  WHERE evals.id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
@@ -70,27 +70,22 @@
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
       $topic_id = $row[0];
       $score = $row[1];
-      if (!array_key_exists($topic_id, $topics)) {
-        // This should not ever be able to happen
-        echo "ERROR: Survey submission was invalid. Talk to your instructor about this error.";
-        http_response_code(400);
-        exit();
-      }
       $retVal[$topic_id] = $score;
     }
     $stmt->close();
     return $retVal;
   }
 
-  function getReviewText($db_connection, $review_id, $topics) {
+  function getReviewText($db_connection, $eval_id, $topics) {
     $query_str = 'SELECT topic_id, response 
                   FROM freeforms
                   INNER JOIN evals ON freeforms.eval_id=evals.id AND evals.completed=1
-                  WHERE evals.review_id=?';
+                  INNER JOIN reviews ON evals.id=reviews.eval_id
+                  WHERE evals.id=?';
     $retVal = array();
     // Prepare the next selection statement
     $stmt = $db_connection->prepare($query_str);
-    $stmt->bind_param('i', $review_id);
+    $stmt->bind_param('i', $eval_id);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
@@ -120,8 +115,9 @@
     $query_str = 'UPDATE scores SET rubric_score_id=? WHERE eval_id=? AND topic_id=?';
     $stmt = $db_connection->prepare($query_str);
     $stmt->bind_param('iii',$score_id, $eval_id, $topic_id);
-    $stmt->execute();
+    $ret_val = $stmt->execute();
     $stmt->close();
+    return $ret_val;
   }
 
   function insertNewText($db_connection, $eval_id, $topic_id, $text) {

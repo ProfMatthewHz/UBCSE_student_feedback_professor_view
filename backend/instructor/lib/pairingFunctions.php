@@ -11,9 +11,9 @@ function processFileRows($rows, $pairing_mode) {
       if ($pure_pairs) {
         // If we are in pure pairing mode, we only have two emails per row
         if ($idx == 0) {
-          $role = 'reviewed';
-        } else {
           $role = 'reviewer';
+        } else {
+          $role = 'reviewed';
         }
       }
       else if ( !$manager_mode || ($idx !== $last_index) ) {
@@ -110,6 +110,22 @@ function validateManagedTeams($team_data) {
   }
   return $ret_val;
 }
+
+function validateCollectiveTeams($team_data) {
+  $ret_val = array();
+  // Check that each team has exactly two members
+  foreach ($team_data as $name => $team) {
+    // Get the team's roster
+    $roster = $team['roster'];
+    foreach ($roster as $member) {
+      // Check that each member has the role of member
+      if ($member['role'] != 'member') {
+        $ret_val[] = 'Team '.$name.' has a member with an invalid role: '.$member['email'];
+      }
+    }
+  }
+  return $ret_val;
+}
  
 function validateTeams($pairing_mode, $team_data) {
   switch ($pairing_mode) {
@@ -123,6 +139,9 @@ function validateTeams($pairing_mode, $team_data) {
     case 3: // Team + SELF + MANAGER
     case 4: // PM
       $ret_val = validateManagedTeams($team_data);  
+      break;
+    case 6: // Collective
+      $ret_val = validateCollectiveTeams($team_data);
       break;
     }
   return $ret_val;

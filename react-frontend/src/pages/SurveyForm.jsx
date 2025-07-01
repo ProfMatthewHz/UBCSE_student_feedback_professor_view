@@ -7,26 +7,28 @@ const SurveyForm = () => {
   const [surveyData, setSurveyData] = useState(null);
   const [groupMembers, setGroupMembers] = useState([]);
   const [groupMemberIndex, setGroupMemberIndex] = useState(0);
-  const [reviewIDs, setReviewIDs] = useState(null);
+  const [evalIDs, setEvalIDs] = useState(null);
   const [buttonText, setButtonText] = useState('NEXT');
   const [showPrevious, setShowPrevious] = useState(false)
   const [surveyResults, setSurveyResults] = useState([]);
   const [advanceButtonState, setAdvanceButtonState] = useState('red');
   const [showToast, setShowToast] = useState(false);
+  const [prompt, setPrompt] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
 
   const sendSurveyDataToBackend = async () => {
     const formdata = new FormData();
-    formdata.append('review_id', reviewIDs[groupMemberIndex]);
+    formdata.append('eval_id', evalIDs[groupMemberIndex]);
     formdata.append('responses', JSON.stringify(surveyResults));
     
     const response = await fetch(process.env.REACT_APP_API_URL_STUDENT + 'buildPeerEvalForm.php', {
       method: 'POST',
       credentials: "include",
       body: formdata
-    });
-    return response.ok;
+    }).then(res => res.json());
+    console.log("Response from backend:", response);
+    return response.success;
   };
 
   const nextButtonClickHandler = async () => {
@@ -90,9 +92,15 @@ const SurveyForm = () => {
   useEffect(() => {
     const fetchData = async () => {
         try {
-            const response = await fetch(process.env.REACT_APP_API_URL + '../startSurvey.php?survey=' + location.state.survey_id, {
-                method: 'GET',
-                credentials: 'include'
+            const response = await fetch(process.env.REACT_APP_API_URL_STUDENT + 'startSurvey.php', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                  "survey": location.state.survey_id,
+                })
             });
 
             if (!response.ok) {
@@ -102,7 +110,8 @@ const SurveyForm = () => {
             const jsonData = await response.json();
             setSurveyData(jsonData);
             setGroupMembers(Object.values(jsonData.group_members));
-            setReviewIDs(Object.keys(jsonData.group_members));
+            setEvalIDs(Object.keys(jsonData.group_members));
+            setPrompt(jsonData.prompt);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -121,22 +130,21 @@ const SurveyForm = () => {
       <div className="Header">
         <h1 className="Survey-Name">{location.state.course} {location.state.survey_name}</h1>
         { groupMembers.length > 1 ? 
-          (<h2 className="Evaluation-Name">Evaluating Team Member {groupMemberIndex+1}/{groupMembers.length}: {groupMembers[groupMemberIndex]}</h2> ) :
+          (<h2 className="Evaluation-Name">Evaluating {prompt} {groupMemberIndex+1}/{groupMembers.length}: {groupMembers[groupMemberIndex]}</h2> ) :
           (<h2 className="Evaluation-Name">Evaluating: {groupMembers[groupMemberIndex]}</h2> )
         }
       </div> ) : 
       (<div className="Header">
         <h1 className="Survey-Name">{location.state.course} {location.state.survey_name}</h1>
-        <h2 className="Evaluation-Name">Evaluating Team Member</h2>
+        <h2 className="Evaluation-Name">Evaluating {prompt}</h2>
       </div>)
       }
       <div>
         {surveyData != null && groupMembers != null ? (
         <SurveyFormRow
             rubricData={surveyData}
-            surveyResults={surveyResults}
             setSurveyResults={setSurveyResults}
-            survey_id={reviewIDs[groupMemberIndex]}/>
+            survey_id={evalIDs[groupMemberIndex]}/>
         ) : (<div>Survey loading...</div> )
         }
       </div>

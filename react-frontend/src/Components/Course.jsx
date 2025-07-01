@@ -168,20 +168,15 @@ const Course = ({ course, page }) => {
                 setSurveyConfirmRoster(dataObject);
                 setSurveyConfirmModal(true);
             } else {
-                let errorKeys = Object.keys(errorsObject);
-                let pairingFileStrings = [];
-                let anyOtherStrings = [];
-                let i = 0;
-                while (i < errorKeys.length) {
-                    if (errorKeys[i] === "pairing-file") {
-                        pairingFileStrings = errorsObject["pairing-file"].split("<br>");
+                let allErrorStrings = [];
+                for (let key in errorsObject) {
+                    if ((key === "pairing-file") || (key === "team-file")) {
+                        allErrorStrings = [...allErrorStrings, ...errorsObject[key]];
                     } else {
-                        let error = errorKeys[i];
-                        anyOtherStrings.push(errorsObject[error]);
+                        // If the key is not "pairing-file", we just add the error string directly
+                        allErrorStrings.push(errorsObject[key]);
                     }
-                    i++;
                 }
-                const allErrorStrings = pairingFileStrings.concat(anyOtherStrings);
                 setSurveyErrorsList(allErrorStrings);
                 setSurveyModalError(true);
             }

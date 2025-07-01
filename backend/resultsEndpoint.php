@@ -21,10 +21,10 @@ $id = $_SESSION['student_id'];
 $con = connectToDatabase();
 $responseArray = [];
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Verify that the survey exists
-    if (isset($_GET['survey'])) {
-        $survey = $_GET['survey'];
+    if (isset($_POST['survey'])) {
+        $survey = $_POST['survey'];
     } else {
         http_response_code(400);
         echo json_encode($responseArray);
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit();
     }
 
-    $reviews = getReviewSources($con, $survey, $id);
+    $evals = getEvalSources($con, $survey, $id);
 
     // Get the multiple choice questions and responses for this survey.
     $mc_topics = getSurveyMultipleChoiceTopics($con, $survey);
@@ -54,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     // Store the scores submitted by each teammate
     $scores = array();
     $texts = array();
-    foreach ($reviews as $review_info) {
-        $reviewer_id = $review_info['id'];
-        $multiplier = $review_info['weight'];
-        $answers = getReviewPoints($con, $reviewer_id, $mc_topics);
+    foreach ($evals as $eval_info) {
+        $eval_id = $eval_info['id'];
+        $multiplier = $eval_info['weight'];
+        $answers = getEvalPoints($con, $eval_id, $mc_topics);
         $scores[] = array("answers" => $answers, "multiplier" => $multiplier);
-        $texts[] = getReviewText($con, $reviewer_id, $ff_topics);
+        $texts[] = getReviewText($con, $eval_id, $ff_topics);
     }
 
     // fill out the response array, criterion -> [AvgScore, Median]

@@ -22,12 +22,15 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
     const [rubric_id,] = useState(survey_data.rubric_id);
     const [reasonShown,] = useState(survey_data.reason);
     const [survey_id,] = useState(survey_data.survey_id);
-    const [listingType, setListingType] = useState("individual");
+    const [listingType, setListingType] = useState("team_roster");
     const [team_data, setTeamData] = useState(null);
     const [individual_data, setIndividualData] = useState(null);
     const [roster_array, setRosterArray] = useState([]);
     const [nonroster_array, setNonRosterArray] = useState([]);
     const [unassigned_students, setUnassignedStudents] = useState([]);
+    const [reviewing_teams, setReviewingTeams] = useState([]);
+    const [reviewed_teams, setReviewedTeams] = useState([]);
+    const [pairings, setPairings] = useState(survey_roster.pairings ? survey_roster.pairings : []);
 
     async function postSurvey() {
         let formData = new FormData();
@@ -39,6 +42,10 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         formData.append("end-date", end_date);
         formData.append("end-time", end_time);
         formData.append("team-data", JSON.stringify(team_data));
+        if (pairing_mode === 6) {
+            // If pairing mode is 6, we need to send the pairings as well
+            formData.append("collective-pairings", JSON.stringify(pairings));
+        }
         formData.append("pm-mult", pm_mult);
         formData.append("rubric-id", rubric_id);
         let fetchHTTP = process.env.REACT_APP_API_URL + "surveyAdd.php";
@@ -50,6 +57,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
             .then((res) => res.json());
         return result; // Return the result directly
     }
+
     async function postUpdate() {
         let formData = new FormData();
         formData.append("course-id", course_id);
@@ -69,7 +77,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         // Determine the role based on pairing mode
         if (pairing_mode === 1) {
             return "reviewed";
-        } else if (pairing_mode === 2 || pairing_mode === 3 || pairing_mode === 5) {
+        } else if (pairing_mode === 2 || pairing_mode === 3 || pairing_mode === 5 || pairing_mode === 6) {
             return "member";
         } else if (pairing_mode === 4) {
             return "manager";
@@ -108,11 +116,11 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         return ret_val;
     };
 
-    const updateStatus = (email, mode, teamData) => {
+    const updateStatus = (email, mode, reviewed_teams, reviewing_teams) => {
          // Now recalculate if this student is a reviewer and/or being reviewed
         let role = calcReviewedRole(mode);
-        let reviewed = checkForRole(email, role, teamData);
-        let reviewing = calculateReviewing(email, mode, teamData);
+        let reviewed = checkForRole(email, role, reviewed_teams);
+        let reviewing = calculateReviewing(email, mode, reviewing_teams);
         individual_data[email].reviewed_unicode = reviewed ? "✅" : "❌";
         individual_data[email].reviewing_unicode = reviewing ? "✅" : "❌";
         return individual_data[email];
@@ -129,7 +137,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                         ret_val = true;
                     }
                 }
-            } else if (mode === 4) {
+            } else if ( (mode === 4) || (mode === 6) ) {
                 // In this mode, they need to be a member to be reviewing
                 ret_val = checkForRole(email, "member", teamData);
             } else if (mode === 1) {
@@ -143,9 +151,20 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         let non_roster_students = [];
         let unassigned_students = [];
         let assigned_students = [];
-
         let mode = survey_data.pairing_mode;
+        let reviewed_teams = [];
+        let reviewing_teams = [];
         let role = calcReviewedRole(mode);
+
+        if (survey_data.pairing_mode !== 6) {
+            reviewed_teams = survey_roster.teams;
+            reviewed_teams = survey_roster.teams;
+        } else {
+            for (let pairing of survey_roster.pairings) {
+                reviewing_teams.push(survey_roster.teams[pairing.reviewing]);
+                reviewed_teams.push(survey_roster.teams[pairing.reviewed]);
+            }
+        }
 
         // Create the lists of individual students
         for (let email in survey_roster.individuals) {
@@ -156,8 +175,8 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
             } else {
                 non_roster_students.push(student);
             }
-            let reviewed = checkForRole(email, role, survey_roster.teams);
-            let reviewing = calculateReviewing(email, mode, survey_roster.teams);
+            let reviewed = checkForRole(email, role, reviewed_teams);
+            let reviewing = calculateReviewing(email, mode, reviewing_teams);
             student.reviewed_unicode = reviewed ? "✅" : "❌" ;
             student.reviewing_unicode = reviewing ? "✅" : "❌" ;
             if (!reviewed && !reviewing) {
@@ -171,7 +190,9 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         setUnassignedStudents(unassigned_students);
         assigned_students.sort((a, b) => a.name.localeCompare(b.name));
         setIndividualData(survey_roster.individuals);
-        setTeamData({...survey_roster.teams});
+        setTeamData(survey_roster.teams);
+        setReviewedTeams(reviewed_teams);
+        setReviewingTeams(reviewing_teams);
     }, [survey_roster, survey_data]);
 
     useEffect(() => {
@@ -197,14 +218,13 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         let selectedEmail = widget.value;
         if (selectedEmail) {
             // Add the selected student to the team roster
-            team_data[teamIndex]["roster"] = [{email: selectedEmail, role : "member"}, ...team_data[teamIndex]["roster"]];
-            setTeamData({...team_data});
+            team_data[teamIndex]["roster"].splice(0, 0, {email: selectedEmail, role : "member"});
             // Remove the student from unassigned_students
             setUnassignedStudents(prevStudents => prevStudents.filter(student => student.email !== selectedEmail));
             // Hide the select widget
             hideStudentSelector(event);
             // Record that the student will be reviewing someone but may also be a reviewer
-            updateStatus(selectedEmail, pairing_mode, team_data);
+            updateStatus(selectedEmail, pairing_mode, reviewed_teams, reviewing_teams);
         }
     }
 
@@ -223,41 +243,57 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         return array;
     }
     
-    function removeMember(teamKey, member) {
-        // Sanity check that this is a member who can be removed
-        if ((member.role === 'member') && team_data[teamKey]["roster"].length > 2) {
-            team_data[teamKey]["roster"] = team_data[teamKey]["roster"].filter(m => m !== member);
-            setTeamData({...team_data});
+    function removeMember(teamKey, memberIndex) {
+        // Get the member to be removed
+        let member = team_data[teamKey]["roster"][memberIndex];
+        team_data[teamKey]["roster"].splice(memberIndex, 1);
+        setTeamData({...team_data});
 
-            let newArray = addStudentToOrderedArray(member.email, unassigned_students);
-            setUnassignedStudents(newArray);
-            updateStatus(member.email, pairing_mode, team_data);
-        } else {
-            console.log("Cannot remove member: " + member + " from team " + teamKey + ".");
-        }
+        let newArray = addStudentToOrderedArray(member.email, unassigned_students);
+        setUnassignedStudents(newArray);
+        updateStatus(member.email, pairing_mode, reviewed_teams, reviewing_teams);
     }
 
     function removeTeam(deleteKey) {
-        // Sanity check to ensure deleteIndex is set
-        if (deleteKey != null) {
-            let team = team_data[deleteKey];
-            // Now remove the team from the team_data state
-            delete team_data[deleteKey];
-            setTeamData({...team_data});
+        // Precondition: deleteKey is a valid key in team_data
 
-            // Now we need to process each member of the team
-            let unassigned = [...unassigned_students];
-            for (let student of team["roster"]) {
-                updateStatus(student.email, pairing_mode, team_data);
-                if (!unassigned.some((element) => element.email === student.email)) {
-                    unassigned = addStudentToOrderedArray(student.email, unassigned);
-                }
+        let team = team_data[deleteKey];
+        // Now remove the team from the team_data state
+        delete team_data[deleteKey];
+
+        // Now we need to process each member of the team
+        let unassigned = [...unassigned_students];
+        for (let student of team["roster"]) {
+            updateStatus(student.email, pairing_mode, reviewed_teams, reviewing_teams);
+            if (!unassigned.some((element) => element.email === student.email)) {
+                unassigned = addStudentToOrderedArray(student.email, unassigned);
             }
-            setUnassignedStudents([...unassigned]);
         }
+        setUnassignedStudents([...unassigned]);
     }
 
-    const verifyDeleteRow = (event, teamIndex) => {
+    function removePairing(deleteIdx) {
+        // Precondition: deleteIdx is a valid index in pairings
+
+        const new_pair = pairings.splice(deleteIdx, 1);
+        const new_reviewed = reviewed_teams.splice(deleteIdx, 1);
+        const new_reiewing = reviewing_teams.splice(deleteIdx, 1);
+        setPairings(new_pair);
+        setReviewedTeams(new_reviewed);
+        setReviewingTeams(new_reiewing);
+    }
+
+    const verifyDeletePairing = (event, teamIndex) => {
+        confirmPopup({
+            target: event.currentTarget,
+            message: 'Are you sure you want to delete this evaluation?', 
+            icon: 'pi pi-exclamation-triangle',
+            dismissable: 'false',
+            accept: () => {removePairing(teamIndex)},
+        });
+    }
+
+    const verifyDeleteTeam = (event, teamIndex) => {
         confirmPopup({
             target: event.currentTarget,
             message: 'Are you sure you want to delete this team?', 
@@ -276,7 +312,8 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         let className = "string-list-item";
         if (member.role !== "member") {
             className += " notremovable fixedLabel";
-        } else if (teamLength <= 2) {
+        } else if ( ((pairing_mode === 6) && (teamLength === 1)) ||
+                    ((pairing_mode !== 6) && (teamLength <= 2)) ) {
             className += " notremovable";
         } else {
             className += " removable";
@@ -354,22 +391,33 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                     }
                     onClick={() => {setListingType("individual");}}
                 >
-                    Survey Participants 
+                    Individual Participants 
                 </button>
                 
                 <button
                     className={
-                        listingType === "team"
+                        listingType === "team_roster"
                             ? "survey-result--option-active"
                             : "survey-result--option"
                         }
-                        onClick={() => {setListingType("team");}}
+                        onClick={() => {setListingType("team_roster");}}
                 >
-                    Teams
+                    Team Rosters
                 </button>
+                { pairing_mode === 6 && (
+                <button
+                    className={
+                        listingType === "team_pairing"
+                            ? "survey-result--option-active"
+                            : "survey-result--option"
+                        }
+                        onClick={() => {setListingType("team_pairing");}}
+                >
+                    Team Evaluation Assignments
+                </button>)}
             </div>
-            <h3 className="confirm--bottom-label form__item--info">{listingType==="individual"? "Survey Participants" : "Survey Teams"}</h3>
-            {listingType === "individual" ? (
+            <h3 className="confirm--bottom-label form__item--info">{listingType==="individual"? "Survey Participants" : listingType==="individual" ? "Survey Teams" : "Evaluation Assignments"}</h3>
+            {listingType === "individual" && (
                 <div className="confirm--bottom-container">
                     {roster_array && roster_array.length > 0 ? (
                         <DataTable
@@ -440,19 +488,25 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                     ) : (
                         <div className="confirm--empty-text">Only includes roster students</div>
                     )}
-                </div>) : (
+                </div>)}
+                { listingType === "team_roster" && (
                 <div className="confirm--bottom-container">
                     {team_data && Object.keys(team_data).length > 0 ? (
                         <table>
                             <tbody>
                                 {Object.keys(team_data).map((teamKey, index) => (
                                     <tr key={teamKey}>
+                                        {pairing_mode === 6 && (
+                                            <td className="team-name">
+                                                {teamKey}
+                                            </td>
+                                        )}
                                         <td>
                                             <div className="teammembers">
                                             {team_data[teamKey]["roster"].map((member, memberIndex) => (
                                                 <label className={calculateLabelClass(member, team_data[teamKey]["roster"].length)} key={memberIndex}>
                                                     <div className="name">
-                                                    {individual_data[member.email]["name"]}</div> <div className="close" onClick={() => removeMember(teamKey, member)}>x</div>
+                                                    {individual_data[member.email]["name"]}</div> <div className="close" onClick={() => removeMember(teamKey, memberIndex)}>x</div>
                                                 </label>
                                             ))}
                                             {pairing_mode !== 1 && reasonShown !== "Review" &&
@@ -469,7 +523,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                                                     ))}
                                                 </select>
                                             </div>)}
-                                            <label className="delete-team" onClick={(e) => verifyDeleteRow(e, teamKey)}></label>
+                                            <label className="delete-team" onClick={(e) => verifyDeleteTeam(e, teamKey)}></label>
                                             </div>
                                         </td>
                                     </tr>
@@ -481,6 +535,39 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                     )}
                 </div>
                 )}
+                { listingType === "team_pairing" && (
+                <div className="confirm--bottom-container">
+                    {pairings && (pairings.length > 0) ? (
+                        <table className="confirm--pairing-table">
+                            <tbody>
+                                {pairings.map((pairing, index) => (
+                                    <tr key={index}>
+                                        <td>
+                                            <div classname="reviewing-team">
+                                             {pairing.reviewing}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="conection-arrow">
+                                                &mdash; is reviewing &rarr;
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div classname="reviewed-team">
+                                             {pairing.reviewed}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <label className="delete-team" onClick={(e) => verifyDeletePairing(e, index)}></label>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="confirm--empty-text">No evaluations provided</div>
+                    )}
+                </div>)}
                 {confirmationForNewSurvey() ?
                     (<div className="confirm--btn-container form__item--confirm-btn-container">
                         <button

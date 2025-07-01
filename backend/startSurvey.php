@@ -17,11 +17,11 @@
   $con = connectToDatabase();
 
   // Verify that the survey exists
-  if (!empty($_GET) && isset($_GET) && isset($_GET['survey'])) {
-    $survey = $_GET['survey'];
+  if (!empty($_POST) && isset($_POST['survey'])) {
+    $survey = $_POST['survey'];
     // $survey = '47';
   } else {
-    echo "Bad Request: Missing GET parameters";
+    echo "Bad Request: Missing POST parameters";
     http_response_code(400);
     exit();
   }
@@ -39,43 +39,45 @@
     exit();
   }
 
-  // Get the list of students being evaluated and initialize the variable count
-  $_SESSION['group_member_number'] = 0;
-
-  // Setup the names and ids for the student's to review
-  $_SESSION['group_members'] = getReviewTargets($con, $survey, $id);
+  $members = null;
+  $prompt = null;
+  if ($survey_info['survey_type'] != 6) {
+    // Setup the names and ids for the student's to review
+    $members = getIndividualEvaluationTargets($con, $survey, $id);
+    $prompt = "Team Member";
+  } else {
+    // This is a team survey, so we need to get the team members
+    $members = getTeamEvaluationTargets($con, $survey, $id);
+    $prompt = "Team";
+  }
 
   // Get the questions and responses for this survey. For now, this will be hard coded.
-  $_SESSION['mc_topics'] = getSurveyMultipleChoiceTopics($con, $survey);
+  $mcTopics = getSurveyMultipleChoiceTopics($con, $survey);
 	$_SESSION['mc_answers'] = array();
-  $_SESSION['mc_topics_id'] = array();
-  foreach ($_SESSION['mc_topics'] as $topic_id => $topic) {
-    // $_SESSION['mc_answers'][$topic_id] = getSurveyMultipleChoiceResponses($con, $topic_id, false);
+  foreach ($mcTopics as $topic_id => $topic) {
     $_SESSION['mc_answers'][$topic_id] = getSurveyMultipleChoiceResponses($con, $topic_id, false);
-    $_SESSION['mc_topics_id'][$topic_id] = $topic_id;
   }
 
   // Get the freeform questions and responses for this survey.
-  $_SESSION['ff_topics'] = getSurveyFreeformTopics($con, $survey);
+  $ffTopics = getSurveyFreeformTopics($con, $survey);
 
-  // Now redirect the user to the peer evaluation form
-  $loc_string = "Location: ".SITE_HOME."/peerEvalForm.php";
-  // header($loc_string);
   $topics = array();
-  foreach ($_SESSION['mc_topics'] as $index => $topic) {
+  foreach ($mcTopics as $topic_id => $topic) {
     $topic_data = array(
-      'topic_id' => $_SESSION['mc_topics_id'][$index],
+      'topic_id' => $topic_id,
       'question' => $topic,
-      'responses' => $_SESSION['mc_answers'][$index]
+      'responses' => $_SESSION['mc_answers'][$topic_id]
     );
     $topics[] = $topic_data;
   }
   
+  
   $data = array(
     'topics' => $topics,
-    'freeform' => $_SESSION['ff_topics'],
-    'group_members' => $_SESSION['group_members']
+    'freeform' => $ffTopics,
+    'group_members' => $members,
+    'prompt' => $prompt
   );
+  
   echo json_encode($data);
-  exit();
 ?>

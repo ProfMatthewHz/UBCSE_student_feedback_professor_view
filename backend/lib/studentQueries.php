@@ -1,4 +1,16 @@
 <?php
+function isStudentsEval($db_connection, $eval_id, $student_id) {
+  $stmt = $db_connection->prepare('SELECT reviews.id 
+                                   FROM reviews 
+                                   WHERE eval_id=? AND reviewer_id=?');
+  $stmt->bind_param('ii', $eval_id, $student_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $exists = $result->num_rows > 0;
+  $stmt->close();
+  return $exists;
+}
+
 function getStudentInfoFromEmail($db_connection, $email) {
   $ret_val = null;
   $stmt = $db_connection->prepare('SELECT id, name FROM students WHERE email=?');

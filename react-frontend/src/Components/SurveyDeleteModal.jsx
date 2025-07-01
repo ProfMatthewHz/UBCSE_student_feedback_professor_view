@@ -61,20 +61,20 @@ const SurveyDeleteModal = ({ modalClose, course, survey_data }) => {
                     <h2 className="modal--main-title">
                         Delete {course.code}: {survey_name}
                     </h2>
-                        <label className="form__item--label" htmlFor="delete-name">
-                            Type survey name to confirm:
-                            <input
-                                className={emptyOrWrongDeleteNameError && started ? "form__item--input-error" : undefined}
-                                id="delete-name" 
-                                type="text" 
-                                onChange={updateAndCheckSurveyName} />
-                        {emptyOrWrongDeleteNameError && started && (
-                            <label className="form__item--error-label">
-                                <div className="form__item--red-warning-sign" />
-                                Must be identical to the survey name
-                            </label>
-                        )}
+                    <label className="form__item--label" htmlFor="delete-name">
+                        Type survey name to confirm:
+                        <input
+                            className={emptyOrWrongDeleteNameError && started ? "form__item--input-error" : undefined}
+                            id="delete-name" 
+                            type="text" 
+                            onChange={updateAndCheckSurveyName} />
+                    {emptyOrWrongDeleteNameError && started && (
+                        <label className="form__item--error-label">
+                            <div className="form__item--red-warning-sign" />
+                            Must be identical to the survey name
                         </label>
+                    )}
+                    </label>
                     <div className="form__item--confirm-btn-container">
                         <button
                             className={emptyOrWrongDeleteNameError ? "form__item--confirm-btn-disabled": "form__item--confirm-btn"}

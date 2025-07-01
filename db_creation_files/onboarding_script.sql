@@ -135,10 +135,13 @@ CREATE TABLE `reviews` (
  `reviewer_id` int(11) NOT NULL,
  `reviewed_id` int(11) NOT NULL,
  `eval_weight` int(11) NOT NULL DEFAULT 1,
+ `eval_id` int(11) DEFAULT NULL, -- this is the eval that has been created for this review
  PRIMARY KEY (`id`),
  KEY `reviews_survey_idx` (`survey_id`),
  KEY `reviews_reviewer_idx` (`reviewer_id`),
  KEY `reviews_reviewed_idx` (`reviewed_id`),
+ KEY `reviews_eval_idx` (`eval_id`),
+ CONSTRAINT `reviews_eval_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
  CONSTRAINT `reviews_survey_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
  CONSTRAINT `reviews_reviewer_constraint` FOREIGN KEY (`reviewer_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
  CONSTRAINT `reviews_reviewed_constraint` FOREIGN KEY (`reviewed_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -149,12 +152,9 @@ CREATE TABLE `reviews` (
 -- each row defines a single peer- or self-evaluation. Rows are added/updated only as students complete their evaluations
 CREATE TABLE `evals` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
- `review_id` int(11) NOT NULL,
  `completed` tinyint(1) NOT NULL DEFAULT 0,
- `last_update` timestamp NULL DEFAULT current_timestamp(),
+ `last_update` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(), -- this should automatically update to the current time whenever the row is updated
  PRIMARY KEY (`id`),
- KEY `evals_review_idx` (`review_id`),
- CONSTRAINT `evals_review_constraint` FOREIGN KEY (`review_id`) REFERENCES `reviews` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
 
@@ -231,4 +231,21 @@ CREATE TABLE `freeforms` (
  KEY `freeforms_topic_idx` (`topic_id`),
  CONSTRAINT `freeforms_eval_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
  CONSTRAINT `freeforms_topic_constraint` FOREIGN KEY (`topic_id`) REFERENCES `rubric_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE `collective_reviews` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `survey_id` int(11) NOT NULL,
+ `reviewer_id` int(11) NOT NULL,
+ `reviewed_id` int(11) NOT NULL,
+ `eval_id` int(11) NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `collective_reviews_survey_idx` (`survey_id`),
+ KEY `collective_reviews_reviewer_idx` (`reviewer_id`),
+ KEY `collective_reviews_reviewed_idx` (`reviewed_id`),
+ KEY `collective_reviews_eval_idx` (`eval_id`),
+ CONSTRAINT `collective_reviews_eval_constraints` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `collective_reviews_reviewed_constraints` FOREIGN KEY (`reviewed_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `collective_reviews_reviewer_constraints` FOREIGN KEY (`reviewer_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `collective_reviews_survey_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
