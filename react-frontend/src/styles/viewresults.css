@@ -18,10 +18,11 @@
 .viewresults-modal--other-button-container a.downloadbtn {
     background-color: #6da04b;
     color: #fff;
-    padding: 5px 10px;
-    border-radius: 2px;
+    padding: 5px 12px;
+    border-radius: 5px;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 18px;
+    font-weight: bold;
     transition-duration: 0.4s;
     transition-property: background-color;
     margin-bottom: 12px;
@@ -35,11 +36,12 @@
 .viewresults-modal--main-button-container .survey-result--option {
     background-color: #fff;
     color: #225cb5;
-    padding: 5px 10px;
-    border-radius: 3px;
+    border-radius: 5px;
     border: solid 1.5px #225cb5;
-    font-size: 20px;
+    font-size: 18px;
+    font-weight: bold;
     transition-duration: 0.4s;
+    padding: 5px 12px;
     transition-property: background-color;
 }
 
@@ -51,10 +53,11 @@
 .viewresults-modal--main-button-container .survey-result--option-active {
     background-color: #225cb5;
     color: #fff;
-    padding: 5px 10px;
-    border-radius: 3px;
+    border-radius: 5px;
     border: solid 1.5px #225cb5;
-    font-size: 20px;
+    font-size: 18px;
+    padding: 5px 12px;
+    font-weight: bold;
     transition-duration: 0.4s;
     transition-property: background-color;
 }
