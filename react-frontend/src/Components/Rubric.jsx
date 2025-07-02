@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from "react";
-import RubricAddModal from "./RubricAdd";
+import Modal from "./Modal";
 import "../styles/rubric.css";
+import RubricAdd from "./RubricAdd";
 
 const Rubric = ({rubric_id, updateRubrics}) => {
     // IMPORTANT: rubricData contains rubric name, levels, and criterions
@@ -13,12 +14,8 @@ const Rubric = ({rubric_id, updateRubrics}) => {
     /**
      * Toggles the visibility of the duplicate rubric modal.
      */
-    const closeDuplicateRubricModal = () => {
-        setShowDuplicateRubricModal(false);
-    }
-
-    const openDuplicateRubricModal = () => {
-        setShowDuplicateRubricModal(true);
+    const handleDuplicateRubricModal = () => {
+        setShowDuplicateRubricModal(prevState => !prevState);
     }
 
     /**
@@ -60,12 +57,23 @@ const Rubric = ({rubric_id, updateRubrics}) => {
      */
     return (
         <>
-            {showDuplicateRubricModal && 
-            <RubricAddModal
-                handleAddRubricModal={closeDuplicateRubricModal}
-                updateRubrics={updateRubrics}
-                duplicatedRubricData={duplicatedRubricData}
-            />}
+            <Modal
+                open={showDuplicateRubricModal}
+                onRequestClose={handleDuplicateRubricModal}
+                width={"auto"}
+                maxWidth={"90%"}
+            >
+                <div className="CancelContainer">
+                    <button className="CancelButton" onClick={handleDuplicateRubricModal}>
+                        ×
+                    </button>
+                </div>
+                <RubricAdd
+                    handleAddRubricModal={handleDuplicateRubricModal}
+                    updateRubrics={updateRubrics}
+                    duplicatedRubricData={duplicatedRubricData}
+                />
+            </Modal>
             <div id={rubricName} className="rubric--container">
                 <div className="rubric--content">
                     <div className="rubric--header">
@@ -75,7 +83,7 @@ const Rubric = ({rubric_id, updateRubrics}) => {
                         <div className="rubric--header-btns">
                             <button
                                 className="btn duplicate-btn"
-                                onClick={openDuplicateRubricModal}
+                                onClick={handleDuplicateRubricModal}
                             >
                                 + Duplicate Rubric
                             </button>
