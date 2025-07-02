@@ -4,8 +4,8 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import History from "./pages/History";
 import Library from "./pages/Library";
-import StudentHome from "./pages/studentHome";
-import ProfStudentHome from "./pages/profStudentHome";
+import StudentHome from "./pages/StudentHome";
+import ProfStudentHome from "./pages/ProfStudentHome";
 
 function App() {
     const [userFlag, setUserFlag] = useState(1);  // userFlag = 1 -> prof    userFlag = 2 -> student
