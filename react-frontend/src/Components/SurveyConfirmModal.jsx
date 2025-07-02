@@ -383,7 +383,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                         {confirmationForNewSurvey() ? "Confirm Survey Information" : "Review Assignments"}
                     </h2>
                 </div>
-                <div className="confirm--top-container">
+                <div className="modal--top-container">
                     <h3 className="form__item--info">
                         Survey Name: {survey_name}
                     </h3>

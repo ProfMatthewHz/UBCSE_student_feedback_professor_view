@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import "../styles/course.css";
 import "../styles/modal.css";
-import "../styles/duplicatesurvey.css";
 import "../styles/addsurvey.css";
 import Toast from "./Toast";
 import SurveyResultsView from "./SurveyResultsView";

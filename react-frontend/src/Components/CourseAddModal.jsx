@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from "react";
-import "../styles/addcourse.css";
 import "../styles/modal.css";
 import "../styles/course.css";
 import Select from "./Select";
@@ -275,11 +274,11 @@ const CourseAddModal = ({closeModal, updateCourseListing}) => {
                         Add Course
                     </h2>
                     {/* Section for course code and name with potential duplicate error messages. */}
-                    <div className="add-survey--row-with-errors-container">
+                    <div className="modal-form--row-with-errors-container">
                         {/* Input fields for course code and name. */}
-                        <div className="add-survey--row-container">
-                            <div className="add-survey--col-with-error">
-                                <div className="add-survey--col">
+                        <div className="modal-form--row-container">
+                            <div className="modal-form--col-with-error">
+                                <div className="modal-form--col">
                                     <label className="form__item--label" htmlFor="course-code">
                                         Course Code
                                         <input
@@ -302,8 +301,8 @@ const CourseAddModal = ({closeModal, updateCourseListing}) => {
                                     </label>
                                 )}
                             </div>
-                            <div className="add-survey--col-with-error">
-                                <div className="add-survey--col">
+                            <div className="modal-form--col-with-error">
+                                <div className="modal-form--col">
                                     <label className=" form__item--label" htmlFor="course-name">
                                         Course Name
                                         <input
@@ -336,8 +335,8 @@ const CourseAddModal = ({closeModal, updateCourseListing}) => {
                         )}
                     </div>
                     {/* File input for course roster CSV file with specific requirements. */}
-                    <div className="add-survey--row-with-errors-container">
-                        <div className="add-survey--row-container">
+                    <div className="modal-form--row-with-errors-container">
+                        <div className="modal-form--row-container">
                             <label className="form__item--file-label" htmlFor="addcourse-file-input">
                                 Roster File
                                 <span className="form__item--file-label--optional">One row per student. The columns in each row should be (in order): stuent's  email, first name, last name</span>
@@ -358,13 +357,12 @@ const CourseAddModal = ({closeModal, updateCourseListing}) => {
                             </label>
                         )}
                     </div>
-                    <div className="add-survey--row-container add-survey--row-container-missing-top-padding">
-                        <div className="add-survey--col">
+                    <div className="modal-form--row-container modal-form--row-container-missing-top-padding">
+                        <div className="modal-form--col">
                             {/*{div className="sem-year--additional-instructor--container"}*/}
                             {/* Dropdown for selecting the course's semester and year. */}
                             <label className="form__item--label" htmlFor="semester">
                                 Course Semester and Year
-                            </label>
                             <select
                                 className="add-course--select"
                                 onChange={handleSemesterChange}
@@ -383,8 +381,9 @@ const CourseAddModal = ({closeModal, updateCourseListing}) => {
                                     );
                                 })}
                             </select>
+                            </label>
                         </div>
-                        <div className="add-survey--col">
+                        <div className="modal-form--col">
                             {/* Select component for choosing additional instructors. */}
                             <label className="form__item--label" htmlFor="additional-instructors">
                                 Additional Instructor(s)

@@ -122,6 +122,52 @@ h3.form__item--info {
   font-weight: bold;
 }
 
+.modal-form--row-with-errors-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modal-form--col {
+  flex: 1 1 100%;
+}
+
+.modal-form--col-with-error {
+  flex: 1 1 100%;
+}
+
+.modal-form--row-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%
+}
+
+.modal-form--row-container-missing-top-padding {
+  padding-top: 10px;
+}
+
+.modal-form--col-container {
+  display: flex;
+  gap: 10px;
+}
+
+label.modal-form--label-pairing {
+  flex-direction: row;
+}
+
+label.modal-form--label-pairing div.pairing-mode-img-wrapper {
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+}
+
+label.modal-form--label-pairing div.drop-down-wrapper {
+  flex-direction: column;
+  gap: 5px;
+}
+
 label.form__item--label,
 label.form__item--file-label {
   color: #225cb5;
@@ -221,6 +267,16 @@ label.form__item--error-label {
   width: 18px;
 }
 
+.form__item--select {
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #225cb5;
+  border-radius: 5px;
+  color: #000;
+  width: 100%;
+  outline: none;
+  font-size: 16px;
+}
 
 .add__form .form__item input {
   border: solid 1.5px #225cb5;
@@ -378,6 +434,26 @@ button.form__item--confirm-btn {
   width: 100%;
 }
 
+.form__item--file-label--optional {
+  display: flex;
+  flex-direction: row;
+  font-size: small;
+  color: rgba(34, 92, 181, 0.7);
+}
+
+.modal--top-container {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 20px;
+  width: 100%;
+  background-color: #225cb5;
+  border-radius: 5px 5px 0px 0px;
+  color: #fff;
+  gap: 5px;
+}
+
 @media screen and (max-width: 550px){
   .modal-phone {
     max-width: 90%;
@@ -392,5 +468,17 @@ button.form__item--confirm-btn {
     justify-content: center;
     margin-top: 20px;
     width: 100%;
+  }
+
+  .modal__form--row-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+  }
+
+  .modal__form--col-container {
+    display: flex;
+    gap: 20px;
   }
 }

@@ -321,10 +321,10 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
               </label>
             )}
           </label>
-          <div className="add-survey--row-with-errors-container">
-            <div className="add-survey--row-container">
-              <div className="add-survey--col-with-error-container">
-                <div className="add-survey--col-container">
+          <div className="modal-form--row-with-errors-container">
+            <div className="modal-form--row-container">
+              <div className="modal-form--col-with-error-container">
+                <div className="modal-form--col-container">
                   <label className="form__item--label" htmlFor="start-date">
                     Start Date
                     <input
@@ -371,8 +371,8 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
                   </label>)}
               </div>
 
-              <div className="add-survey--col-with-error-container">
-                <div className="add-survey--col-container">
+              <div className="modal-form--col-with-error-container">
+                <div className="modal-form--col-container">
                   <label className="form__item--label" htmlFor="end-date">
                     End Date
                     <input
