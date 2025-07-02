@@ -6,6 +6,9 @@ import Course from "../Components/Course";
 const Home = () => {
   const [courses, setCourses] = useState([]);
   const [sidebar_content, setSidebarContent] = useState({});
+  const [rubrics, setRubrics] = useState([]);
+  const [pairingModes, setPairingModes] = useState([]);
+
 
   const getCurrentYear = () => {
     const date = new Date();
@@ -60,23 +63,62 @@ const Home = () => {
       }
     )
       .then((res) => res.json())
-      .then((result) => {
-        setCourses(result);
-      })
+      .then((result) => setCourses(result))
       .catch((err) => {
         console.log(err);
       });
   }, []);
 
   useEffect(() => {
-    fetchCourses()
-  }, [fetchCourses]);
+    if (pairingModes.length !== 0 && rubrics.length !== 0) {
+      fetchCourses()
+    }
+  }, [fetchCourses, pairingModes, rubrics]);
   
   useEffect(() => {
     setSidebarContent({
       Courses: courses.length > 0 ? courses.map((course) => course.code) : [],
     })
   }, [courses]);
+
+
+    /**
+     * Create the effect which loads all of the potential rubrics from the system 
+     */
+    useEffect(() => {
+        fetch(process.env.REACT_APP_API_URL + "getInstructorRubrics.php", {
+            method: "GET",
+            credentials: "include",
+        })
+            .then((res) => res.json())
+            .then((result) => {
+                //this is an array of objects of example elements {id: 1, description: 'exampleDescription'}
+                let rubricIDandDescriptions = result.rubrics.map((element) => element);
+                // An array of just the descriptions of the rubrics
+                setRubrics(rubricIDandDescriptions);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
+    /**
+     * Get all of the pairing modes we might need to use
+     */
+    useEffect(() => {
+        // Fetch the survey types from the API
+        fetch(process.env.REACT_APP_API_URL + "getSurveyTypes.php", {
+            method: "GET",
+            credentials: "include"
+        })
+            .then((res) => res.json())
+            .then((result) => {
+                setPairingModes(result.survey_types);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
   
   return (
     <>
@@ -85,7 +127,7 @@ const Home = () => {
         <div className="containerOfCourses">
           {courses.length > 0 ? (
             courses.map((course) => (
-              <Course key={course.id} course={course} page="home" />
+              <Course key={course.id} course={course} rubricList={rubrics} pairingModes={pairingModes} page="home" />
             ))
           ) : (
             <div className="no-course">

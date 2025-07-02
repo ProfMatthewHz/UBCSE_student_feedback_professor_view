@@ -13,7 +13,7 @@ import SurveyNewModal from "./SurveyNewModal";
 import RosterUpdateModal from "./RosterUpdateModal";
 import SurveyPreviewModal from "./SurveyPreviewModal";
 
-const Course = ({ course, page }) => {
+const Course = ({ course, page, rubricList, pairingModes }) => {
     const [surveys, setSurveys] = useState([]);
     const [extendModal, setExtendModal] = useState(false);
     const [duplicateModal, setDuplicateModal] = useState(false);
@@ -32,8 +32,8 @@ const Course = ({ course, page }) => {
     const [viewResultsModal, setViewResultsModal] = useState(false);
 
     const [showToast, setShowToast] = useState(false);
-    const [rubrics, setRubrics] = useState([]);
-    const [pairingModesFull, setPairingModesFull] = useState([]);
+    const [rubrics, ] = useState(rubricList);
+    const [pairingModesFull, ] = useState(pairingModes);
     const [survey_confirm_data, setSurveyConfirmData] = useState(null);
     const [survey_confirm_roster, setSurveyConfirmRoster] = useState(null);
     const [survey_new_data, setSurveyNewData] = useState(null);
@@ -90,44 +90,6 @@ const Course = ({ course, page }) => {
         }
     }, [survey_confirm_roster]);
 
-    /**
-     * Create the effect which loads all of the potential rubrics from the system 
-     */
-    useEffect(() => {
-        fetch(process.env.REACT_APP_API_URL + "getInstructorRubrics.php", {
-            method: "GET",
-            credentials: "include",
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                //this is an array of objects of example elements {id: 1, description: 'exampleDescription'}
-                let rubricIDandDescriptions = result.rubrics.map((element) => element);
-                // An array of just the descriptions of the rubrics
-                setRubrics(rubricIDandDescriptions);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
-
-    /**
-     * Get all of the pairing modes we might need to use
-     */
-    useEffect(() => {
-        // Fetch the survey types from the API
-        fetch(process.env.REACT_APP_API_URL + "getSurveyTypes.php", {
-            method: "GET",
-            credentials: "include"
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                setPairingModesFull(result.survey_types);
-            })
-            .catch((err) => {
-                console.log(err);
-                throw err;
-            });
-    }, []);
 
     function getSurveyAssignmentData(formData) {
         let fetchHTTP = process.env.REACT_APP_API_URL + "getSurveyRosterFromSurvey.php";
