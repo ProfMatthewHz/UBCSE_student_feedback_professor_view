@@ -4,10 +4,24 @@
   width: 100%;
 }
 
+.add-survey--col {
+  flex: 1 1 100%;
+}
+
+.add-survey--col-with-error {
+  flex: 1 1 100%;
+}
+
 .add-survey--row-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  gap: 10px;
+  width: 100%
+}
+
+.add-survey--row-container-missing-top-padding {
+  padding-top: 10px;
 }
 
 .add-survey--col-container {

@@ -461,7 +461,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
             </label>
           )}
           {(modalReason !== "Duplicate") && (pairingModeValue === 6) && <label className="form__item--file-label" htmlFor="team-file">
-            Team Roster Upload
+            Team Roster File
             <span className="form__item--file-label--optional">One row per team. The first column of each row is the team's name. Each of the following columns should the email addresses of its members separatived by commas. Blank columns are ignored</span>
             <input
               className={emptyCSVFileError ? "form__item-input-error" : undefined}
@@ -478,7 +478,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
               </label>)}
           </label>}
           {(modalReason !== "Duplicate") && <label className="form__item--file-label" htmlFor="csv-file">
-            Review Assignment File Upload
+            Review Assignment File
             <span className="form__item--file-label--optional">{CSVFileDescription}</span>
             <input
               className={emptyCSVFileError ? "form__item-input-error" : undefined}

@@ -195,12 +195,12 @@ function getReviewerPerTeamResults($con, $survey_id) {
     $team_id = $row[1];
     $reviews = $row[2];
     $completed = ($row[3] == $row[4]);
-    $sum_weighted_score = $row[5];
-    $team_result = array("completion" => $completed, "total_score" => $sum_weighted_score, "total_people" => $reviews);
+    $sum_score = $row[5];
+    $team_result = array("completion" => $completed, "total_score" => $sum_score, "total_people" => $reviews);
     if (!array_key_exists($reviewer_id, $ret_val)) {
       $ret_val[$reviewer_id] = array($team_id => $team_result);
     } else {
-      // Add the current team's resultions to our results
+      // Add the current team's results for this team to our results
       $ret_val[$reviewer_id][$team_id] = $team_result;
     }
   }
