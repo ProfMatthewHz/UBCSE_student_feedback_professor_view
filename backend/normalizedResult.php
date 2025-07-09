@@ -39,12 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
+    $use_team_scores = ($survey_info['survey_type_id'] === 6);
+
     // Get the scores from all of the evaluations that were completed in this survey
     $eval_totals = getEvalsTotalPoints($con, $survey_id);
     // Get the list of evaluations that should be included in the calculations
     $eval_info = getValidEvalsOfStudentByTeam($con, $survey_id);
     // Get reviewers' total points for each team
-    $reviewer_totals = getReviewersTotalPoints($con, $survey_id);
+    $reviewer_totals = getReviewersTotalPoints($con, $survey_id, $use_team_scores);
     // Do the work needed to get the normalized score of each evaluation
     $normalized_averages = calculateAllNormalizedAverages($eval_info['valid_evals'], $eval_totals, $reviewer_totals);
 
