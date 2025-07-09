@@ -4,22 +4,17 @@ ini_set("display_errors", "1");
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-session_start();
 require_once "../lib/database.php";
 require_once "../lib/surveyQueries.php";
 require_once "../lib/visitCountQueries.php";
+require "lib/loginRoutine.php";
+
+$student_id = getStudentId();
 
 // Ensure the database connection is established
 $con = connectToDatabase();
 if (!$con) {
     die("Connection failed: " . mysqli_connect_error());
-}
-
-// Ensure the user is logged in
-if (!isset($_SESSION['student_id'])) {
-    http_response_code(403);
-    echo json_encode(["error" => "Bad Request: Only requests from within the app are valid."]);
-    exit();
 }
 
 if (!isset($_POST['survey-id'])) {
@@ -28,7 +23,6 @@ if (!isset($_POST['survey-id'])) {
     exit();
 }
 
-$student_id = $_SESSION['student_id'];
 $survey_id = intval($_POST['survey-id']);
 
 if (!wasReviewedInSurvey($con, $survey_id, $student_id)) {

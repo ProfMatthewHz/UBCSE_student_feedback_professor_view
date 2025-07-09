@@ -5,9 +5,6 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-// start the session variable
-session_start();
-
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
@@ -16,18 +13,12 @@ require_once "lib/fileParse.php";
 require_once "lib/courseQueries.php";
 require_once "lib/enrollmentFunctions.php";
 require_once "lib/instructorQueries.php";
+require_once "lib/loginStatus.php";
+
+$instructor_id = getInstructorId();
 
 //query information about the requester
 $con = connectToDatabase();
-
-//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-if (!isset($_SESSION['id'])) {
-  http_response_code(403);
-  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
-  echo $json_out;
-  exit();
-}
-$instructor_id = $_SESSION['id'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!isset($_FILES['roster-file']) || !isset($_POST['course-id']) || !isset($_POST['update-type'])) {

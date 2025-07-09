@@ -1,4 +1,40 @@
 <?php
+function getValidReviewsOfStudentByTeam($con, $survey_id) {
+  // We calculate to related sets of results: 
+  // One array maps student id to array of all eval ids to include in the normalized average calc
+  $valid_evals = array();
+  // The other maps an eval id to if it should be included in the normalized average
+  $eval_normalized = array();
+
+  // Select all of the evaluations 
+  $stmt = $con->prepare('SELECT reviewed_id, eval_id, eval_weight
+                         FROM reviews
+                         LEFT JOIN (SELECT survey_id `valid_survey`, reviewer_id `valid_reviewer`, team_id `valid_team`
+                                    FROM reviews 
+                                    INNER JOIN evals ON reviews.eval_id = evals.id
+                                    WHERE survey_id = ? AND completed = 0) validate ON survey_id=valid_survey AND reviewer_id=valid_reviewer AND team_id=valid_team 
+                         WHERE survey_id=? AND valid_reviewer is null AND eval_weight <> 0');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $student = $row[0];
+    $eval_id = $row[1];
+    $eval_weight = $row[2];
+    // Make certain we have an array in our results for this student
+    if (!array_key_exists($student, $valid_evals)) {
+      $valid_evals[$student] = array($eval_id => $eval_weight);
+    } else {
+      $valid_evals[$student][$eval_id] = $eval_weight;
+    }
+    // Now add that this evaluation will be inclued in the normalized average calculations
+    $eval_normalized[$eval_id] = true;
+  }
+  $stmt->close();
+  $retVal = array('valid_evals' => $valid_evals, 'eval_normalized' => $eval_normalized);
+  return $retVal;
+}
+
 function getReviewsForSurvey($con, $survey_id) {
   // Get the pairings used in the original survey 
   $retVal = array();
@@ -77,7 +113,6 @@ function ensureReviewExists($con, $survey_id, $eval_id, $team_id, $reviewer_id, 
   return $retVal;
 }
 
-
 function addCollectiveReviewsToSurvey($con, $survey_id, $teams, $pairings) {
   // Optimistically assume everything works
   $retVal =true;
@@ -108,8 +143,6 @@ function addCollectiveReviewsToSurvey($con, $survey_id, $teams, $pairings) {
   }
   return $retVal;
 }
-
-
 
 function addReviewsToSurvey($con, $survey_id, $pairings) {
   // Optimistically assume everything works

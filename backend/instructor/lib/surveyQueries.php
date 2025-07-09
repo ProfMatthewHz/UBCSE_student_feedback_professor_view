@@ -10,7 +10,6 @@ function deleteEvalsForSurvey($con, $survey_id) {
   return $retVal;
 }
 
-
 function deleteSurvey($con, $survey_id) {
   $stmt = $con->prepare('DELETE FROM surveys WHERE id=?');
   $stmt->bind_param('i', $survey_id);
@@ -153,28 +152,7 @@ function getReviewerResultReviewsCount($con, $survey_id) {
   return $ret_val;
 }
 
-function getReviewerCompletionResults($con, $survey_id) {
-  $ret_val = array();
-  // This survey should roughly parallel the completion results in getReviewerPerTeamResults
-  $stmt = $con->prepare('SELECT students.name, students.email, COUNT(reviews.eval_id), COUNT(evals.id)
-                         FROM reviews
-                         LEFT JOIN evals ON evals.id=reviews.eval_id AND evals.completed = 1
-                         LEFT JOIN scores ON evals.id=scores.eval_id
-                         LEFT JOIN students ON students.id=reviews.reviewer_id
-                         WHERE survey_id=?
-                         GROUP BY students.name, students.email');
-  $stmt->bind_param('i', $survey_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    $name = $row[0];
-    $email = $row[1];
-    $completed = ($row[2] == $row[3]) ? "Completed" : "Not completed";
-    $ret_val[] = array("name" => $name, "email" => $email, "completed" => $completed);
-  }
-  $stmt->close();
-  return $ret_val;
-}
+
 
 function getReviewerPerTeamResults($con, $survey_id) {
   $ret_val = array();

@@ -6,9 +6,6 @@ ini_set("display_errors", 1); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-//start the session variable
-session_start();
-
 //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
@@ -17,17 +14,14 @@ require_once "lib/instructorQueries.php";
 require_once "lib/fileParse.php";
 require_once "lib/enrollmentFunctions.php";
 require_once "lib/courseQueries.php";
+require_once "lib/loginStatus.php";
+
+$instructor_id = getInstructorId();
 
 //query information about the requester
 $con = connectToDatabase();
 header("Content-Type: application/json; charset=UTF-8");
 
-//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-if (!isset($_SESSION['id'])) {
-  http_response_code(403);
-  echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
-  exit();
-}
 
 $instructor_ids = getAllInstructorIds($con);
 

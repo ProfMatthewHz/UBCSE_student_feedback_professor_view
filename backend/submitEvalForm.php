@@ -2,7 +2,6 @@
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
-session_start();
 
 require "lib/constants.php";
 require "lib/database.php";
@@ -10,17 +9,19 @@ require "lib/reviewQueries.php";
 require "lib/studentQueries.php";
 require "lib/surveyQueries.php";
 require "lib/scoreQueries.php";
+require "lib/loginRoutine.php";
+
+$student_id = getStudentId();
 
 header('Content-Type: application/json');
 
-if(!isset($_SESSION['student_id']) || !isset($_SESSION['mc_answers'])) {
+if(!isset($_SESSION['mc_answers'])) {
     http_response_code(400);
     echo json_encode(array('error' => 'Bad request: Request only valid from within app'));
     exit();
 }
 
 $responseArray = [];
-$id = $_SESSION['student_id'];
 $con = connectToDatabase();
 
 /* expected response :
@@ -51,7 +52,7 @@ if (empty($_POST['eval_id']) || empty($_POST['responses'])) {
 $eval_id = $_POST['eval_id'];
 $eval_id = filter_var($eval_id, FILTER_SANITIZE_NUMBER_INT);
 
-if (empty($eval_id) || !isStudentsEval($con, $eval_id, $id)) {
+if (empty($eval_id) || !isStudentsEval($con, $eval_id, $student_id)) {
     http_response_code(403);
     echo json_encode(array('error' => 'Bad request: Missing or incorrect POST data'));
     exit();

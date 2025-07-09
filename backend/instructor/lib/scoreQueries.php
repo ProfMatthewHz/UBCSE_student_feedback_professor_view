@@ -1,0 +1,99 @@
+<?php
+// This function is not used currently, but being kept for future use as it should be a huge improvement
+function getEvalCriterionScores($con, $survey_id) {
+  // Get the averages for each student in the course
+  $retVal = array();
+  // prepare SQL statements
+  $stmt = $con->prepare('SELECT evals.id, topic_id, score
+                         FROM reviews
+                         INNER JOIN evals ON reviews.eval_id = evals.id
+                         INNER JOIN scores ON scores.eval_id = reviews.eval_id
+                         INNER JOIN rubric_scores ON rubric_scores.id = scores.rubric_score_id
+                         WHERE reviews.survey_id=?;');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $eval_id = $row[0];
+    $topic_id = $row[1];
+    $score = $row[2];
+    // Make certain we have an array in our results for this student
+    if (!array_key_exists($eval_id, $retVal)) {
+      $retVal[$eval_id] = array($topic_id => $score);
+    } else {
+      $retVal[$eval_id][$topic_id] = $score;
+    }
+  }
+  $stmt->close();
+  return $retVal;
+}
+
+function getCompletionResults($con, $survey_id) {
+  $ret_val = array();
+  // This survey should roughly parallel the completion results in getReviewerPerTeamResults
+  $stmt = $con->prepare('SELECT students.name, students.email, MIN(completed)
+                         FROM reviews
+                         LEFT JOIN evals ON evals.id=reviews.eval_id
+                         LEFT JOIN students ON students.id=reviews.reviewer_id
+                         WHERE survey_id=?
+                         GROUP BY students.name, students.email');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $name = $row[0];
+    $email = $row[1];
+    $completed = ($row[2] === 1) ? "Completed" : "Not completed";
+    $ret_val[] = array("name" => $name, "email" => $email, "completed" => $completed);
+  }
+  $stmt->close();
+  return $ret_val;
+}
+
+function getReviewersTotalPoints($con, $survey_id) {
+  $ret_val = array();
+  // This survey should roughly parallel the completion results in getReviewerPerTeamResults
+  $stmt = $con->prepare('SELECT reviews.eval_id, total_reviewer_points
+                         FROM reviews
+                         INNER JOIN (SELECT survey_id, reviewer_id, team_id, SUM(score * eval_weight) total_reviewer_points
+                                     FROM reviews
+                                     INNER JOIN evals ON reviews.eval_id = evals.id
+                                     INNER JOIN scores ON scores.eval_id = reviews.eval_id
+                                     INNER JOIN rubric_scores ON rubric_scores.id = scores.rubric_score_id
+                                     GROUP BY survey_id, reviewer_id, team_id) AS totals ON totals.survey_id=reviews.survey_id AND totals.reviewer_id = reviews.reviewer_id AND totals.team_id = reviews.team_id
+                         WHERE reviews.survey_id=?;');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $eval_id = $row[0];
+    $total = $row[1];
+    $ret_val[$eval_id] = $total;
+  }
+  $stmt->close();
+  return $ret_val;
+}
+
+function getEvalsTotalPoints($con, $survey_id) {
+  $ret_val = array();
+  // This survey should roughly parallel the completion results in getReviewerPerTeamResults
+  $stmt = $con->prepare('SELECT evals.id, SUM(score * eval_weight) total_points
+                         FROM reviews
+                         INNER JOIN evals ON reviews.eval_id = evals.id
+                         INNER JOIN scores ON scores.eval_id = reviews.eval_id
+                         INNER JOIN rubric_scores ON rubric_scores.id = scores.rubric_score_id
+                         WHERE reviews.survey_id=? AND evals.completed = 1
+                         GROUP BY evals.id;');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $eval_id = $row[0];
+    $total = $row[1];
+    $ret_val[$eval_id] = $total;
+  }
+  $stmt->close();
+  return $ret_val;
+}
+
+?>

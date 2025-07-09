@@ -4,20 +4,14 @@ ini_set("display_errors", "1");
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-session_start();
-
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "lib/courseQueries.php";
+require_once "lib/loginStatus.php";
+
+$instructor_id = getInstructorId();
 
 $con = connectToDatabase();
-
-if (!isset($_SESSION['id'])) {
-    http_response_code(403);
-    echo "Forbidden: You must be logged in to access this page.";
-    exit();
-}
-$instructor_id = $_SESSION['id'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!isset($_POST['course-id'])) {

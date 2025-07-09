@@ -1,13 +1,9 @@
 <?php
-
 //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", ""); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
-
-// start the session variable
-session_start();
 
 // bring in required code
 require_once "../lib/database.php";
@@ -15,22 +11,17 @@ require_once "../lib/constants.php";
 require_once "../lib/surveyQueries.php";
 require_once "lib/courseQueries.php";
 require_once "lib/surveyQueries.php";
+require_once "lib/scoreQueries.php";
 require_once "lib/resultsCalculations.php";
 require_once "lib/resultsFunctions.php";
+require_once "lib/loginStatus.php";
+
+$instructor_id = getInstructorId();
 
 // query information about the requester
 $con = connectToDatabase();
 
 header("Content-Type: application/json; charset=UTF-8");
-
-//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-if (!isset($_SESSION['id'])) {
-  http_response_code(403);
-  $json_out = json_encode(array("error" => "Forbidden: Access is only allowed through the application."));
-  echo $json_out;
-  exit();
-}
-$instructor_id = $_SESSION['id'];
 
 // respond not found on no query string parameters
 $survey_id = NULL;
@@ -78,7 +69,7 @@ if (!isSurveyInstructor($con, $survey_id, $instructor_id)) {
 
 // Check if we are just getting survey completion data
 if ($_POST['type'] === 'completion') {
-  $results = getReviewerCompletionResults($con, $survey_id);
+  $results = getCompletionResults($con, $survey_id);
   $json_encode = json_encode($results);
   echo $json_encode;
   exit();

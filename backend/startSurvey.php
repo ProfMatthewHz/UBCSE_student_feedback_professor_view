@@ -2,20 +2,15 @@
   error_reporting(-1); // reports all errors
   ini_set("display_errors", "1"); // shows all errors
   ini_set("log_errors", 1);
-  session_start();
 
   require "lib/constants.php";
   require "lib/database.php";
   require "lib/reviewQueries.php";
   require "lib/surveyQueries.php";
-  
-  if(!isset($_SESSION['student_id'])) {
-    http_response_code(405);
-    header('Content-Type: application/json');
-    echo ('{"error": "Improper access to the endpoint."}');
-    exit();
-  }
-  $id = $_SESSION['student_id'];
+  require "lib/loginRoutine.php";
+
+  $student_id = getStudentId();
+
   $con = connectToDatabase();
 
   // Verify that the survey exists
@@ -29,7 +24,7 @@
   }
 
   // Verify that the survey is a valid one for this student to be taking
-  $survey_info = getActiveSurveyInfo($con, $survey, $id);
+  $survey_info = getActiveSurveyInfo($con, $survey, $student_id);
   if (isset($survey_info)) {
     foreach ($survey_info as $key => $value) {
       $_SESSION[$key] = $value;
@@ -45,11 +40,11 @@
   $prompt = null;
   if ($survey_info['survey_type'] != 6) {
     // Setup the names and ids for the student's to review
-    $members = getIndividualEvaluationTargets($con, $survey, $id);
+    $members = getIndividualEvaluationTargets($con, $survey, $student_id);
     $prompt = "Team Member";
   } else {
     // This is a team survey, so we need to get the team members
-    $members = getTeamEvaluationTargets($con, $survey, $id);
+    $members = getTeamEvaluationTargets($con, $survey, $student_id);
     $prompt = "Team";
   }
 
