@@ -3,7 +3,7 @@ import "../styles/course.css";
 import "../styles/modal.css";
 import "../styles/addsurvey.css";
 import Toast from "./Toast";
-import SurveyResultsView from "./SurveyResultsView";
+import SurveyResultsModal from "./SurveyResultsModal";
 import SurveyExtendModal from "./SurveyExtendModal";
 import SurveyDeleteModal from "./SurveyDeleteModal";
 import ErrorsModal from "./ErrorsModal";
@@ -276,7 +276,7 @@ const Course = ({ course, page, rubricList, pairingModes }) => {
             )}
             {/* View Results Modal*/}
             {viewResultsModal && (
-                <SurveyResultsView
+                <SurveyResultsModal
                     closeViewResultsModal={closeViewResults}
                     surveyToView={currentSurvey}
                     course={course}

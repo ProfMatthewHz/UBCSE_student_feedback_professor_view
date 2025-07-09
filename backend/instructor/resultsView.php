@@ -14,6 +14,7 @@ require_once "lib/surveyQueries.php";
 require_once "lib/scoreQueries.php";
 require_once "lib/resultsCalculations.php";
 require_once "lib/resultsFunctions.php";
+require_once "lib/reviewQueries.php";
 require_once "lib/loginStatus.php";
 
 $instructor_id = getInstructorId();
@@ -32,13 +33,6 @@ if ((!isset($_POST['survey'])) || (!isset($_POST['type']))) {
   exit();
 }
 
-// make sure the type query is one of the valid types. if not, respond not found
-if ($_POST['type'] !== 'raw-full' && $_POST['type'] !== 'individual' && $_POST['type'] !== 'average' && $_POST['type'] !== 'completion') {
-  http_response_code(404);
-  $json_out = json_encode(array("error" => "Unknown request: Request is for unknown results format."));
-  echo $json_out;
-  exit();
-}
 
 // make sure the query string is an integer, reply 404 otherwise
 $survey_id = intval($_POST['survey']);
@@ -67,40 +61,70 @@ if (!isSurveyInstructor($con, $survey_id, $instructor_id)) {
   exit();
 }
 
+$results_wanted = $_POST['type'];
+
 // Check if we are just getting survey completion data
-if ($_POST['type'] === 'completion') {
+if ($results_wanted === 'completion') {
   $results = getCompletionResults($con, $survey_id);
   $json_encode = json_encode($results);
   echo $json_encode;
   exit();
-} else {
-  // Retrieves the ids, names, & emails of everyone who was reviewed in this survey.
-  $teammates = getReviewedData($con, $survey_id);
-
-  // Get the survey results organized by the student being reviewed since this is how we actually do our calculations
-  $scores = getSurveyScores($con, $survey_id, $teammates);
-
-  // Averages only exist for multiple-choice topics, so that is all we get for now
+} else if ($results_wanted === 'raw-full') {
+  // Get the scores from all of the evaluations that were completed in this survey
+  $scores = getEvalCriterionScores($con, $survey_id);
+  // Do the work needed to get the normalized score of each evaluation
+  $normalized_total = getEvalNormalizedScores($con, $survey_id);
+  // Now get the student information for each eval
+  $students = getEvalStudentInformation($con, $survey_id);
+  // Get the names of the topics that were evaluated in this survey
   $topics = getSurveyMultipleChoiceTopics($con, $survey_id);
-
-  // Retrieves the ids, names, & emails of everyone who was a reviewer in this survey.
-  $reviewers = getReviewerData($con, $survey_id);
-
-  // Retrieves the per-team records organized by reviewer
-  $team_data = getReviewerPerTeamResults($con, $survey_id);
-
-  $results = NULL;
-  // now generate the raw scores output
-  if ($_POST['type'] === 'individual') {
-    $results = getIndividualsAverages($teammates, $scores, $topics);
-  } else if ($_POST['type'] === 'raw-full') {
-    $results = getRawResults($teammates, $scores, $topics, $reviewers, $team_data);
-  } else {
-    $views = getReviewerResultReviewsCount($con, $survey_id);
-    $results = getNormalizedResults($teammates, $scores, $topics, $team_data, $views);
-  }
+  // Zip all this data together as a single array ready for CSV output
+  $results = createRawDataResult($students, $scores, $normalized_total, $topics);
   // Now output the results
   $json_results = json_encode($results);
   echo $json_results;
+  exit();
+} else if ($results_wanted === 'individual') {
+  // Get the topics that were evaluated in this survey
+  $topics = getSurveyMultipleChoiceTopics($con, $survey_id);
+  // Get the scores for each evaluation in the study
+  $scores = getEvalCriterionScores($con, $survey_id);
+  // Get the list of evaluations that should be included in the calculations
+  $eval_info = getValidEvalsOfStudentByTeam($con, $survey_id);
+  // Calculate the averages for each student in the course
+  $averages = calculateAllCriterionAverages($eval_info['valid_evals'], $scores, $topics);
+  // Retrieves the ids, names, & emails of everyone who was reviewed in this survey.
+  $teammates = getReviewedData($con, $survey_id);
+  // Now generate the array of results to output
+  $results = createIndividualAverageResult($teammates, $averages, $topics);
+  // And output the results
+  $json_results = json_encode($results);
+  echo $json_results;
+  exit();
+} else if ($results_wanted === 'average') {
+  // Get the scores from all of the evaluations that were completed in this survey
+  $eval_totals = getEvalsTotalPoints($con, $survey_id);
+  // Get the list of evaluations that should be included in the calculations
+  $eval_info = getValidEvalsOfStudentByTeam($con, $survey_id);
+  // Get reviewers' total points for each team
+  $reviewer_totals = getReviewersTotalPoints($con, $survey_id);
+  // Do the work needed to get the normalized score of each evaluation
+  $normalized_averages = calculateAllNormalizedAverages($eval_info['valid_evals'], $eval_totals, $reviewer_totals);
+  // Now get the student information for each eval
+  $teammates = getReviewedData($con, $survey_id);
+  // Get the names of the topics that were evaluated in this survey
+  $result_views = getReviewerResultViewsCount($con, $survey_id);
+  // Get the names of the topics that were evaluated in this survey
+  // Zip all this data together as a single array ready for CSV output
+  $results = createNormalizedAveragesResult($teammates, $normalized_averages, $result_views);
+  // Now output the results
+  $json_results = json_encode($results);
+  echo $json_results;
+  exit();
+} else {
+  http_response_code(404);
+  $json_out = json_encode(array("error" => "Unknown request: Request is for unknown results format."));
+  echo $json_out;
+  exit();
 }
 ?>

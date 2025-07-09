@@ -53,11 +53,10 @@ function getCompletionResults($con, $survey_id) {
 function getReviewersTotalPoints($con, $survey_id) {
   $ret_val = array();
   // This survey should roughly parallel the completion results in getReviewerPerTeamResults
-  $stmt = $con->prepare('SELECT reviews.eval_id, total_reviewer_points
+  $stmt = $con->prepare('SELECT reviews.eval_id, total_reviewer_points / total_reviews review_factor
                          FROM reviews
-                         INNER JOIN (SELECT survey_id, reviewer_id, team_id, SUM(score * eval_weight) total_reviewer_points
+                         INNER JOIN (SELECT survey_id, reviewer_id, team_id, SUM(score * eval_weight) total_reviewer_points, COUNT(DISTINCT reviews.eval_id) total_reviews
                                      FROM reviews
-                                     INNER JOIN evals ON reviews.eval_id = evals.id
                                      INNER JOIN scores ON scores.eval_id = reviews.eval_id
                                      INNER JOIN rubric_scores ON rubric_scores.id = scores.rubric_score_id
                                      GROUP BY survey_id, reviewer_id, team_id) AS totals ON totals.survey_id=reviews.survey_id AND totals.reviewer_id = reviews.reviewer_id AND totals.team_id = reviews.team_id
@@ -67,8 +66,8 @@ function getReviewersTotalPoints($con, $survey_id) {
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
     $eval_id = $row[0];
-    $total = $row[1];
-    $ret_val[$eval_id] = $total;
+    $review_factor = $row[1];
+    $ret_val[$eval_id] = $review_factor;
   }
   $stmt->close();
   return $ret_val;
@@ -77,13 +76,12 @@ function getReviewersTotalPoints($con, $survey_id) {
 function getEvalsTotalPoints($con, $survey_id) {
   $ret_val = array();
   // This survey should roughly parallel the completion results in getReviewerPerTeamResults
-  $stmt = $con->prepare('SELECT evals.id, SUM(score * eval_weight) total_points
+  $stmt = $con->prepare('SELECT reviews.eval_id, SUM(score * eval_weight) total_points
                          FROM reviews
-                         INNER JOIN evals ON reviews.eval_id = evals.id
                          INNER JOIN scores ON scores.eval_id = reviews.eval_id
                          INNER JOIN rubric_scores ON rubric_scores.id = scores.rubric_score_id
-                         WHERE reviews.survey_id=? AND evals.completed = 1
-                         GROUP BY evals.id;');
+                         WHERE reviews.survey_id=?
+                         GROUP BY reviews.eval_id;');
   $stmt->bind_param('i', $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -95,5 +93,4 @@ function getEvalsTotalPoints($con, $survey_id) {
   $stmt->close();
   return $ret_val;
 }
-
 ?>

@@ -1,31 +1,30 @@
 <?php
-function getValidReviewsOfStudentByTeam($con, $survey_id) {
+function getValidEvalsOfStudentByTeam($con, $survey_id) {
   // We calculate to related sets of results: 
   // One array maps student id to array of all eval ids to include in the normalized average calc
   $valid_evals = array();
   // The other maps an eval id to if it should be included in the normalized average
   $eval_normalized = array();
-
   // Select all of the evaluations 
   $stmt = $con->prepare('SELECT reviewed_id, eval_id, eval_weight
                          FROM reviews
                          LEFT JOIN (SELECT survey_id `valid_survey`, reviewer_id `valid_reviewer`, team_id `valid_team`
                                     FROM reviews 
                                     INNER JOIN evals ON reviews.eval_id = evals.id
-                                    WHERE survey_id = ? AND completed = 0) validate ON survey_id=valid_survey AND reviewer_id=valid_reviewer AND team_id=valid_team 
+                                    WHERE completed = 0) validate ON survey_id=valid_survey AND reviewer_id=valid_reviewer AND team_id=valid_team 
                          WHERE survey_id=? AND valid_reviewer is null AND eval_weight <> 0');
   $stmt->bind_param('i', $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    $student = $row[0];
+    $student_id = $row[0];
     $eval_id = $row[1];
     $eval_weight = $row[2];
     // Make certain we have an array in our results for this student
-    if (!array_key_exists($student, $valid_evals)) {
-      $valid_evals[$student] = array($eval_id => $eval_weight);
+    if (!array_key_exists($student_id, $valid_evals)) {
+      $valid_evals[$student_id] = array($eval_id => $eval_weight);
     } else {
-      $valid_evals[$student][$eval_id] = $eval_weight;
+      $valid_evals[$student_id][$eval_id] = $eval_weight;
     }
     // Now add that this evaluation will be inclued in the normalized average calculations
     $eval_normalized[$eval_id] = true;
@@ -35,18 +34,22 @@ function getValidReviewsOfStudentByTeam($con, $survey_id) {
   return $retVal;
 }
 
-function getReviewsForSurvey($con, $survey_id) {
-  // Get the pairings used in the original survey 
+// This function is not used currently, but being kept for future use as it should be a huge improvement
+function getEvalStudentInformation($con, $survey_id) {
+  // Get the averages for each student in the course
   $retVal = array();
   // prepare SQL statements
-  $stmt = $con->prepare('SELECT reviewer_id, reviewed_id, team_id, eval_weight 
+  $stmt = $con->prepare('SELECT reviews.eval_id, reviewer.name, reviewer.email, reviewed.name, reviewed.email
                          FROM reviews
-                         WHERE survey_id=?');
+                         INNER JOIN students reviewer ON reviews.reviewer_id = reviewer.id
+                         INNER JOIN students reviewed ON reviews.reviewed_id = reviewed.id
+                         WHERE reviews.survey_id=?;');
   $stmt->bind_param('i', $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    $retVal[] = $row;
+    $eval_id = array_shift($row);
+    $retVal[$eval_id] = $row;
   }
   $stmt->close();
   return $retVal;

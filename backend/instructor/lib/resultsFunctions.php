@@ -1,97 +1,94 @@
 <?php
-function getIndividualsAverages($students, $scores, $topics) {
-  // Calculate the per-topic averages for each student
-  $averages = calculateAverages(array_keys($students), $scores, $topics);
-
-  // Now generate the array of results to output
+function createNormalizedAveragesResult($students, $averages, $views) {
   $ret_val = array();
-
-  // Create the header row
-  $header = array("Name", "Email");
-  foreach ($topics as $question) {
-    $header[] = $question;
-  }
+  // Create the header row for this data
+  $header = array("Name", "Email", "Norm. Avg.", "Feedback Views");
   $ret_val[] = $header;
-
-  // Then add one row per student who was reviewed
-  foreach ($students as $id => $name_and_email) {
-    $line = array($name_and_email['name'], $name_and_email['email']);
-    foreach ($topics as $topic_id => $question) {
-      $line[] = $averages[$id][$topic_id];
+  foreach ($students as $student_id => $email_and_name) {
+    $row = array($email_and_name['name'], $email_and_name['email']);
+    if (array_key_exists($student_id, $averages)) {
+      $row[] = $averages[$student_id];
+    } else {
+      // If there are no results for this student, fill in with NO_SCORE_MARKER
+      $row[] = NO_SCORE_MARKER;
     }
-    $ret_val[] = $line;
+    // Add in the number of views by this student
+    $row[] = $views[$student_id];
+    // And add this row to our results
+    $ret_val[] = $row;
   }
   return $ret_val;
 }
 
-function getRawResults($teammates, $scores, $topics, $reviewers, $team_data) {
-  // Calculate the normalized score for each survey that was completed
-  $normalized = calculateNormalizedSurveyResults(array_keys($teammates), $scores, $topics, $team_data);
-
-  // Now generate the array of results to output
+function createIndividualAverageResult($students, $averages, $column_names) {
   $ret_val = array();
+  // Create the header row for this data
+  $header = array("Name", "Email");
+  foreach ($column_names as $question) {
+    $header[] = $question;
+  }
+  $ret_val[] = $header;
+  foreach ($students as $student_id => $email_and_name) {
+    $row = array($email_and_name['name'], $email_and_name['email']);
+    if (array_key_exists($student_id, $averages)) {
+      // Loop through each of the results for this student
+      foreach (array_keys($column_names) as $topic_id) {
+        $row[]= $averages[$student_id][$topic_id];
+      }
+    } else {
+      foreach (array_keys($column_names) as $topic_id) {
+        $row[]= NO_SCORE_MARKER;
+      }
+    }
+    $ret_val[] = $row;
+  }
+  return $ret_val;
+}
 
-  // Create the header row
-  $header = array("Reviewee", "Reviewer");
-  foreach ($topics as $question) {
+function createRawDataResult($students, $scores, $normalized_total, $column_names) {
+  $ret_val = array();
+  // Create the header row for this data
+  $header = array("Reviewer", "Reviewee");
+  foreach ($column_names as $question) {
     $header[] = $question;
   }
   $header[] = "Norm. Avg.";
   $ret_val[] = $header;
-
-  // Then add one row per student who was reviewed
-  foreach ($teammates as $id => $name_and_email) {      
-    foreach ($scores[$id] as $reviewer => $scored) {
-      $line = array($name_and_email['name'] . ' (' . $name_and_email['email'] . ')');
-      $line[] = $reviewers[$reviewer]["name"] . ' (' . $reviewers[$reviewer]["email"] . ')';
-      foreach ($topics as $topic_id => $question) {
-        $line[] = $scored[$topic_id];
-      }
-      $line[] = $normalized[$id][$reviewer];
-      $ret_val[] = $line;
+  foreach ($scores as $eval_id => $crit_scores) {
+    $row = array();
+    // Add the reviewer information
+    $row[] = $students[$eval_id][0] . ' (' . $students[$eval_id][1] . ')';
+    // Add the reviewee information
+    $row[] = $students[$eval_id][2] . ' (' . $students[$eval_id][3] . ')';
+    // Next loop through all of criterion scores for this eval
+    foreach (array_keys($column_names) as $topic_id) {
+      $row[] = $crit_scores[$topic_id];
     }
+    // Finally, add the normalized average for this review
+    $row[] = $normalized_total[$eval_id];
+    // Add this row to our results
+    $ret_val[] = $row;
   }
   return $ret_val;
 }
 
-function getNormalizedResults($teammates, $scores, $topics, $team_data, $views) {
-  // Finally, calculate the overall results for each student
-  $overall = calculateFinalNormalizedScore(array_keys($teammates), $scores, $topics, $team_data);
-
-  // Now generate the array of results to output
-  $ret_val = array();
-
-  // Create the header row
-  $header = array("Name", "Email", "Norm. Avg.", "Feedback Views");
-  $ret_val[] = $header;
-
-  // Then add one row per student who was reviewed
-  foreach ($teammates as $id => $name_and_email) {
-    if (!array_key_exists($name_and_email['email'], $views)) {
-      $counts = 0;
-    } else {
-      $counts = $views[$name_and_email['email']];
-    }
-    $line = array($name_and_email['name'], $name_and_email['email'], $overall[$id], $counts);
-    $ret_val[] = $line;
-  }
+function getEvalNormalizedScores($con, $survey_id) { 
+  // Get the data reuired to calculate the normalized scores for each evaluation
+  $eval_totals = getEvalsTotalPoints($con, $survey_id);
+  $reviewer_totals = getReviewersTotalPoints($con, $survey_id);
+  $validations = getValidEvalsOfStudentByTeam($con, $survey_id);
+  // Calculate the normalized averages for each evaluation
+  $ret_val = calculateEvalNormalizedScore($eval_totals, $validations['eval_normalized'], $reviewer_totals);
   return $ret_val;
 }
 
-function transposeArray($scores) {
-  $ret_val = array();
-  // Loop through each person who was reviewed
-  foreach ($scores as $reviewee => $reviewers_array) {
-    // Loop through each person who reviewed them
-    foreach ($reviewers_array as $reviewer => $review_data) {
-      // Update our results with the reviewer & reviewee locations swapped
-      if (!array_key_exists($reviewer, $ret_val)) {
-        $ret_val[$reviewer] = array($reviewee => $review_data);
-      } else {
-        $ret_val[$reviewer][$reviewee] = $review_data;
-      }
-    }
-  }
+function getNormalizedAverages($con, $survey_id) { 
+  // Get the data reuired to calculate the normalized scores for each evaluation
+  $eval_totals = getEvalsTotalPoints($con, $survey_id);
+  $reviewer_totals = getReviewersTotalPoints($con, $survey_id);
+  $validations = getValidEvalsOfStudentByTeam($con, $survey_id);
+  // Calculate the normalized averages for each evaluation
+  $ret_val = calculateEvalNormalizedScore($eval_totals, $validations['eval_normalized'], $reviewer_totals);
   return $ret_val;
 }
 
@@ -102,40 +99,6 @@ function sumDifferencesSquare($reviews, $averages, $topic_id) {
     $diff = ($review_data[$topic_id] - $averages[$reviewee][$topic_id]);
     // Add the square of the difference to our accumulator
     $ret_val += pow($diff, 2);
-  }
-  return $ret_val;
-}
-
-function getReviewerReviewResults($reviewers, $scores, $topics, $team_data) {
-  // Generate the array of results to output
-  $ret_val = array();
-
-  // Get the normalized scores and results that we will also need
-  $normals = calculateNormalizedSurveyResults(array_keys($scores), $scores, $topics, $team_data);
-  $avg_normal = calculateOverallResults(array_keys($scores), $scores, $normals);
-  // Transpose the results array so they are indexed as reviewer->reviewee rather than reviewee->reviewer
-  $invert_scores = transposeArray($scores);
-  $invert_normals = transposeArray($normals);
-
-  // Then add one row per student who was reviewed
-  foreach ($reviewers as $id => $name_and_email) {
-    $key = $name_and_email['name'] . ' (' . $name_and_email['email'] . ')';
-    $result = NO_SCORE_MARKER;
-    // Check if this person actually completed any reviews
-    if (array_key_exists($id, $invert_scores)) {
-      $count = 0;
-      $total = 0;
-      foreach ($invert_normals[$id] as $reviewee => $normal) {
-        if ($normal !== NO_SCORE_MARKER) {
-          $count++;
-          $total = $total + (pow($normal - $avg_normal[$reviewee], 2));
-        }
-      }
-      if ($count != 0) {
-        $result = round($total / $count, 3);
-      }
-    }
-    $ret_val[$key] = $result;
   }
   return $ret_val;
 }

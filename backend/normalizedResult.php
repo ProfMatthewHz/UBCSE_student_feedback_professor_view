@@ -8,7 +8,9 @@ require "lib/database.php";
 require "lib/surveyQueries.php";
 require "lib/reviewQueries.php";
 require "lib/scoreQueries.php";
+require "instructor/lib/scoreQueries.php";
 require "instructor/lib/surveyQueries.php";
+require "instructor/lib/reviewQueries.php";
 require "instructor/lib/resultsCalculations.php";
 require "lib/loginRoutine.php";
 
@@ -37,24 +39,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // Retrieves the ids, names, & emails of everyone who was reviewed in this survey.
-    $teammates = getReviewedData($con, $survey);
-
-    // Get the survey results organized by the student being reviewed since this is how we actually do our calculations
-    $scores = getSurveyScores($con, $survey, $teammates);
-
-    // Averages only exist for multiple-choice topics, so that is all we get for now
-    $topics = getSurveyMultipleChoiceTopics($con, $survey);
-
-    // Retrieves the per-team records organized by reviewer
-    $team_data = getReviewerPerTeamResults($con, $survey);
-
-    // Finally, calculate the overall results for each student
-    $overall = calculateFinalNormalizedScore(array_keys($teammates), $scores, $topics, $team_data);
+    // Get the scores from all of the evaluations that were completed in this survey
+    $eval_totals = getEvalsTotalPoints($con, $survey_id);
+    // Get the list of evaluations that should be included in the calculations
+    $eval_info = getValidEvalsOfStudentByTeam($con, $survey_id);
+    // Get reviewers' total points for each team
+    $reviewer_totals = getReviewersTotalPoints($con, $survey_id);
+    // Do the work needed to get the normalized score of each evaluation
+    $normalized_averages = calculateAllNormalizedAverages($eval_info['valid_evals'], $eval_totals, $reviewer_totals);
 
     // Now output the results
-    $ret_val = array("result" => "normalized", "data" => $overall[$id]);
+    $ret_val = array("result" => "normalized", "data" => $normalized_averages[$id]);
 
     // $results now contains your criteria as keys and [AvgScore, Median] as values
     echo json_encode($ret_val);
+    exit();
 }
+?>
