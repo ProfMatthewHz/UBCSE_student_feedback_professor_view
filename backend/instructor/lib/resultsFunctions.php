@@ -57,9 +57,9 @@ function createRawDataResult($students, $scores, $normalized_total, $column_name
   foreach ($scores as $eval_id => $crit_scores) {
     $row = array();
     // Add the reviewer information
-    $row[] = $students[$eval_id][0] . ' (' . $students[$eval_id][1] . ')';
+    $row[] = $students[$eval_id][0];
     // Add the reviewee information
-    $row[] = $students[$eval_id][2] . ' (' . $students[$eval_id][3] . ')';
+    $row[] = $students[$eval_id][1];
     // Next loop through all of criterion scores for this eval
     foreach (array_keys($column_names) as $topic_id) {
       $row[] = $crit_scores[$topic_id];

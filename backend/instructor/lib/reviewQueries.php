@@ -49,11 +49,41 @@ function getEvalStudentInformation($con, $survey_id) {
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    $eval_id = array_shift($row);
-    $retVal[$eval_id] = $row;
+    $eval_id = $row[0];
+    $retVal[$eval_id] = array($row[1].' ('.$row[2].')', $row[3].' ('.$row[4].')');
   }
   $stmt->close();
   return $retVal;
+}
+
+// This function is not used currently, but being kept for future use as it should be a huge improvement
+function getEvalTeamInformation($con, $survey_id) {
+  // Get the averages for each student in the course
+  $retVal = array();
+  // prepare SQL statements
+  $stmt = $con->prepare('SELECT collective_reviews.eval_id, reviewer.team_name, reviewed.team_name
+                         FROM collective_reviews
+                         INNER JOIN teams reviewer ON collective_reviews.reviewer_id = reviewer.id
+                         INNER JOIN teams reviewed ON collective_reviews.reviewed_id = reviewed.id
+                         WHERE collective_reviews.survey_id=?;');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $eval_id = $row[0];
+    $retVal[$eval_id] = array($row[1], $row[2]);
+  }
+  $stmt->close();
+  return $retVal;
+}
+
+// This function is not used currently, but being kept for future use as it should be a huge improvement
+function getEvalInformation($con, $survey_id, $use_team_evals) {
+  if ($use_team_evals) {
+    return getEvalTeamInformation($con, $survey_id);
+  } else {
+    return getEvalStudentInformation($con, $survey_id);
+  }
 }
 
 function addEvaluation($con, $eval_weight) {

@@ -42,8 +42,11 @@ function calculateSingleNormalizedAverage($evals, $eval_totals, $reviewer_totals
   foreach ($evals as $eval_id => $eval_weight) {
     // Increase the total weight of the evaluations by this amount
     $total_weight += $eval_weight;
-    // Get the normalized score from this evaluation
-    $total_score += ($eval_totals[$eval_id] / $reviewer_totals[$eval_id]) * $eval_weight;
+    // Only use the normalized score if it is not the degenerate case where everyone recevived a 0
+    if ($reviewer_totals[$eval_id] > 0) {
+      // Only include evaluations that have been completed by at least one reviewer
+      $total_score += ($eval_totals[$eval_id] / $reviewer_totals[$eval_id]) * $eval_weight;
+    }
   }
   
   // Handle the degenerate case where the only completed reviews had a weight of 0
@@ -71,7 +74,7 @@ function calculateEvalNormalizedScore($eval_totals, $eval_normalized, $reviewer_
   // Loop through each of the evaluations that were completed
   foreach ($eval_totals as $eval_id => $current_total) {
     // Check if this student has any valid evaluations we wish to calculate
-    if (array_key_exists($eval_id, $eval_normalized)) {
+    if (array_key_exists($eval_id, $eval_normalized) && $reviewer_totals[$eval_id] > 0) {
       $ret_val[$eval_id] = $current_total / $reviewer_totals[$eval_id];
     } else {
       // Handle the case where this evaluation was completed but cannot be normalized properly

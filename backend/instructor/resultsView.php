@@ -71,18 +71,16 @@ if ($results_wanted === 'completion') {
   echo $json_encode;
   exit();
 } else if ($results_wanted === 'raw-full') {
-  // MHZ TODO: Update to switch to team rosters when appropriate
-
   // Get the scores from all of the evaluations that were completed in this survey
   $scores = getEvalCriterionScores($con, $survey_id);
   // Do the work needed to get the normalized score of each evaluation
   $normalized_total = getEvalNormalizedScores($con, $survey_id, $use_team_scores);
   // Now get the student information for each eval
-  $students = getEvalStudentInformation($con, $survey_id);
+  $eval_data = getEvalInformation($con, $survey_id, $use_team_scores);
   // Get the names of the topics that were evaluated in this survey
   $topics = getSurveyMultipleChoiceTopics($con, $survey_id);
   // Zip all this data together as a single array ready for CSV output
-  $results = createRawDataResult($students, $scores, $normalized_total, $topics);
+  $results = createRawDataResult($eval_data, $scores, $normalized_total, $topics);
   // Now output the results
   $json_results = json_encode($results);
   echo $json_results;
