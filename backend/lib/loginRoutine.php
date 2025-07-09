@@ -10,7 +10,7 @@ function setSessionVariables($ubit) {
     $con = connectToDatabase();
     
     $email = $ubit . "@buffalo.edu";
-    $id = getInstructorId($con, $email);
+    $id = getInstructorIdForEmail($con, $email);
     $id_and_name = getStudentInfoFromEmail($con, $email);
 
     // Logic for when it is NOT an instructor BUT a student
