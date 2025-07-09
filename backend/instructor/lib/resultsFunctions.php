@@ -13,7 +13,7 @@ function createNormalizedAveragesResult($students, $averages, $views) {
       $row[] = NO_SCORE_MARKER;
     }
     // Add in the number of views by this student
-    $row[] = $views[$student_id];
+    $row[] = $views[$student_id] ?? 0;
     // And add this row to our results
     $ret_val[] = $row;
   }
@@ -72,20 +72,10 @@ function createRawDataResult($students, $scores, $normalized_total, $column_name
   return $ret_val;
 }
 
-function getEvalNormalizedScores($con, $survey_id) { 
+function getEvalNormalizedScores($con, $survey_id, $use_team_scores) { 
   // Get the data reuired to calculate the normalized scores for each evaluation
   $eval_totals = getEvalsTotalPoints($con, $survey_id);
-  $reviewer_totals = getReviewersTotalPoints($con, $survey_id);
-  $validations = getValidEvalsOfStudentByTeam($con, $survey_id);
-  // Calculate the normalized averages for each evaluation
-  $ret_val = calculateEvalNormalizedScore($eval_totals, $validations['eval_normalized'], $reviewer_totals);
-  return $ret_val;
-}
-
-function getNormalizedAverages($con, $survey_id) { 
-  // Get the data reuired to calculate the normalized scores for each evaluation
-  $eval_totals = getEvalsTotalPoints($con, $survey_id);
-  $reviewer_totals = getReviewersTotalPoints($con, $survey_id);
+  $reviewer_totals = getReviewersTotalPoints($con, $survey_id, $use_team_scores);
   $validations = getValidEvalsOfStudentByTeam($con, $survey_id);
   // Calculate the normalized averages for each evaluation
   $ret_val = calculateEvalNormalizedScore($eval_totals, $validations['eval_normalized'], $reviewer_totals);

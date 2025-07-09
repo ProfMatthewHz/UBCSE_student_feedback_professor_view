@@ -60,6 +60,7 @@ if (!isSurveyInstructor($con, $survey_id, $instructor_id)) {
   echo $json_out;
   exit();
 }
+$use_team_scores = ($survey_info['survey_type_id'] === 6);
 
 $results_wanted = $_POST['type'];
 
@@ -70,10 +71,12 @@ if ($results_wanted === 'completion') {
   echo $json_encode;
   exit();
 } else if ($results_wanted === 'raw-full') {
+  // MHZ TODO: Update to switch to team rosters when appropriate
+
   // Get the scores from all of the evaluations that were completed in this survey
   $scores = getEvalCriterionScores($con, $survey_id);
   // Do the work needed to get the normalized score of each evaluation
-  $normalized_total = getEvalNormalizedScores($con, $survey_id);
+  $normalized_total = getEvalNormalizedScores($con, $survey_id, $use_team_scores);
   // Now get the student information for each eval
   $students = getEvalStudentInformation($con, $survey_id);
   // Get the names of the topics that were evaluated in this survey
@@ -107,7 +110,7 @@ if ($results_wanted === 'completion') {
   // Get the list of evaluations that should be included in the calculations
   $eval_info = getValidEvalsOfStudentByTeam($con, $survey_id);
   // Get reviewers' total points for each team
-  $reviewer_totals = getReviewersTotalPoints($con, $survey_id);
+  $reviewer_totals = getReviewersTotalPoints($con, $survey_id, $use_team_scores);
   // Do the work needed to get the normalized score of each evaluation
   $normalized_averages = calculateAllNormalizedAverages($eval_info['valid_evals'], $eval_totals, $reviewer_totals);
   // Now get the student information for each eval

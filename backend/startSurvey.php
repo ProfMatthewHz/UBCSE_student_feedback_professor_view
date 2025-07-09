@@ -73,7 +73,8 @@
     'topics' => $topics,
     'freeform' => $ffTopics,
     'group_members' => $members,
-    'prompt' => $prompt
+    'prompt' => $prompt,
+    'id' => $student_id 
   );
   
   echo json_encode($data);

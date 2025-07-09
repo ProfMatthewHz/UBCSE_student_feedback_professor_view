@@ -65,7 +65,6 @@ function calculateAllNormalizedAverages($valid_evals, $eval_totals, $reviewer_to
   return $ret_val;
 }
 
-
 function calculateEvalNormalizedScore($eval_totals, $eval_normalized, $reviewer_totals) {
   $ret_val = array();
 

@@ -1,7 +1,7 @@
 <?php
 function getEvalSources($db_connection, $survey_id, $id) {
   $ret_val = array();
-  $stmt = $db_connection->prepare('SELECT evals.id, eval_weight
+  $stmt = $db_connection->prepare('SELECT DISTINCT evals.id, weight
                                    FROM reviews
                                    INNER JOIN evals ON evals.id = reviews.eval_id AND evals.completed = 1
                                    WHERE reviews.survey_id =? AND reviews.reviewed_id=?');
@@ -17,7 +17,7 @@ function getEvalSources($db_connection, $survey_id, $id) {
 
 function getTeamEvaluationTargets($db_connection, $survey_id, $id) {
   $ret_val = array();
-  $query_str = 'SELECT reviews.eval_id, teams.team_name 
+  $query_str = 'SELECT DISTINCT reviews.eval_id, teams.team_name 
                 FROM reviews
                 INNER JOIN collective_reviews ON reviews.eval_id = collective_reviews.eval_id
                 INNER JOIN teams ON collective_reviews.reviewed_id = teams.id 

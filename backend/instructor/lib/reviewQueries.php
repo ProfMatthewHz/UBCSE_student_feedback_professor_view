@@ -6,13 +6,14 @@ function getValidEvalsOfStudentByTeam($con, $survey_id) {
   // The other maps an eval id to if it should be included in the normalized average
   $eval_normalized = array();
   // Select all of the evaluations 
-  $stmt = $con->prepare('SELECT reviewed_id, eval_id, eval_weight
+  $stmt = $con->prepare('SELECT DISTINCT reviewed_id, eval_id, weight
                          FROM reviews
+                         INNER JOIN evals ON reviews.eval_id = evals.id
                          LEFT JOIN (SELECT survey_id `valid_survey`, reviewer_id `valid_reviewer`, team_id `valid_team`
                                     FROM reviews 
                                     INNER JOIN evals ON reviews.eval_id = evals.id
                                     WHERE completed = 0) validate ON survey_id=valid_survey AND reviewer_id=valid_reviewer AND team_id=valid_team 
-                         WHERE survey_id=? AND valid_reviewer is null AND eval_weight <> 0');
+                         WHERE survey_id=? AND valid_reviewer is null AND weight <> 0');
   $stmt->bind_param('i', $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -55,9 +56,10 @@ function getEvalStudentInformation($con, $survey_id) {
   return $retVal;
 }
 
-function addEvaluation($con) {
+function addEvaluation($con, $eval_weight) {
   // Add a new evaluation to the database
-  $stmt = $con->prepare('INSERT INTO evals (id) VALUES (NULL)');
+  $stmt = $con->prepare('INSERT INTO evals (weight) VALUES (?)');
+  $stmt->bind_param('i', $eval_weight);
   $stmt->execute();
   // Get the ID of the newly added evaluation
   $retVal = $stmt->insert_id;
@@ -82,7 +84,7 @@ function createOrRetrieveCollectiveEvaluation($con, $survey_id, $reviewing_id, $
     $retVal = $eval_info[0]['eval_id'];
   } else {
     // Create the evaluation
-    $retVal = addEvaluation($con); 
+    $retVal = addEvaluation($con, 1); 
     // Add the collective review to the database
     $stmt_add_coll_review->bind_param('iiii', $survey_id, $reviewing_id, $reviewed_id, $retVal);
     $result = $stmt_add_coll_review->execute();
@@ -165,7 +167,7 @@ function addReviewsToSurvey($con, $survey_id, $pairings) {
 
     // add the pairing if it does not exist
     if ($result->num_rows == 0) {
-      $eval_id = addEvaluation($con);
+      $eval_id = addEvaluation($con, $pairing[3]);
       if ($eval_id != 0) {
         // Get the ID of the newly added review
         $stmt_add_review->bind_param('iiiiii', $survey_id, $pairing[0], $pairing[1], $pairing[2], $pairing[3], $eval_id);
