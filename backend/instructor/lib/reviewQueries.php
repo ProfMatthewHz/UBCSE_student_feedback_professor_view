@@ -124,12 +124,12 @@ function createOrRetrieveCollectiveEvaluation($con, $survey_id, $reviewing_id, $
   return $retVal;
 }
 
-function ensureReviewExists($con, $survey_id, $eval_id, $team_id, $reviewer_id, $reviewed_id, $eval_weight) {
+function ensureReviewExists($con, $survey_id, $eval_id, $team_id, $reviewer_id, $reviewed_id) {
   $retVal = false;
   $stmt_check = $con->prepare('SELECT id 
                                FROM reviews
                                WHERE survey_id=? AND team_id=? AND reviewer_id=? AND reviewed_id=?');
-  $stmt_add = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_weight, eval_id) VALUES (?, ?, ?, ?, ?, ?)');
+  $stmt_add = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_id) VALUES (?, ?, ?, ?, ?)');
   $stmt_check->bind_param('iiii', $survey_id, $team_id, $reviewer_id, $reviewed_id);
   $stmt_check->execute();
   $result = $stmt_check->get_result();
@@ -137,7 +137,7 @@ function ensureReviewExists($con, $survey_id, $eval_id, $team_id, $reviewer_id, 
 
   // Check that there is not already a review with this combination pairing does not already exist
   if ($result->num_rows == 0) {
-    $stmt_add->bind_param('iiiiii', $survey_id, $reviewer_id, $reviewed_id, $team_id, $eval_weight, $eval_id);
+    $stmt_add->bind_param('iiiii', $survey_id, $reviewer_id, $reviewed_id, $team_id, $eval_id);
     $stmt_add->execute();
     $retVal = $stmt_add->insert_id;
   } else {
@@ -171,7 +171,7 @@ function addCollectiveReviewsToSurvey($con, $survey_id, $teams, $pairings) {
         // Get the reviewed ID
         $reviewed_id = $reviewed['id'];
         // Make the review as needed
-        $result = ensureReviewExists($con, $survey_id, $eval_id, $reviewing_team['id'], $reviewer_id, $reviewed_id, 1);
+        $result = ensureReviewExists($con, $survey_id, $eval_id, $reviewing_team['id'], $reviewer_id, $reviewed_id);
         $retVal = $retVal && ($result != 0);
       }
     }
@@ -186,7 +186,7 @@ function addReviewsToSurvey($con, $survey_id, $pairings) {
   $stmt_check = $con->prepare('SELECT id 
                                FROM reviews
                                WHERE survey_id=? AND team_id=? AND reviewer_id=? AND reviewed_id=?');
-  $stmt_add_review = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_weight, eval_id) VALUES (?, ?, ?, ?, ?, ?)');
+  $stmt_add_review = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_id) VALUES (?, ?, ?, ?, ?)');
   // loop over each pairing
   foreach ($pairings as $pairing) {
     // check if the pairing already exists
@@ -200,7 +200,7 @@ function addReviewsToSurvey($con, $survey_id, $pairings) {
       $eval_id = addEvaluation($con, $pairing[3]);
       if ($eval_id != 0) {
         // Get the ID of the newly added review
-        $stmt_add_review->bind_param('iiiiii', $survey_id, $pairing[0], $pairing[1], $pairing[2], $pairing[3], $eval_id);
+        $stmt_add_review->bind_param('iiiii', $survey_id, $pairing[0], $pairing[1], $pairing[2], $eval_id);
         $result = $stmt_add_review->execute();
       }
       $retVal = $retVal && $result;
