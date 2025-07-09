@@ -24,14 +24,14 @@ $responseArray = [];
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Verify that the survey exists
     if (isset($_POST['survey'])) {
-        $survey = $_POST['survey'];
+        $survey_id = $_POST['survey'];
     } else {
         http_response_code(400);
         echo ('{"error": "Should be using the frontend to access the endpoint."}');
         exit();
     }
     // Verify that the survey is a valid one for this student to view their results
-    $survey_info = getSurveyResultsInfo($con, $survey, $student_id);
+    $survey_info = getSurveyResultsInfo($con, $survey_id, $student_id);
     if (!isset($survey_info)) {
         // This is not a valid survey for this student
         http_response_code(400);
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    $use_team_scores = ($survey_info['survey_type_id'] === 6);
+    $use_team_scores = ($survey_info['survey_type'] === 6);
 
     // Get the scores from all of the evaluations that were completed in this survey
     $eval_totals = getEvalsTotalPoints($con, $survey_id);
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $normalized_averages = calculateAllNormalizedAverages($eval_info['valid_evals'], $eval_totals, $reviewer_totals);
 
     // Now output the results
-    $ret_val = array("result" => "normalized", "data" => $normalized_averages[$id]);
+    $ret_val = array("result" => "normalized", "data" => $normalized_averages[$student_id]);
 
     // $results now contains your criteria as keys and [AvgScore, Median] as values
     echo json_encode($ret_val);

@@ -129,7 +129,7 @@ const SurveyListing = (props) => {
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
   const updateFeedbackCount = (survey_id) => {
             // Send student_id and survey_id back to student
-            const url = process.env.REACT_APP_API_URL + "studentSurveyVisitData.php";
+            const url = process.env.REACT_APP_API_URL_STUDENT + "surveyVisitData.php";
         
             return fetch(url, {
                 method: "POST",
