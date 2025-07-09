@@ -6,7 +6,7 @@ function getValidEvalsOfStudentByTeam($con, $survey_id) {
   // The other maps an eval id to if it should be included in the normalized average
   $eval_normalized = array();
   // Select all of the evaluations 
-  $stmt = $con->prepare('SELECT DISTINCT reviewed_id, eval_id, weight
+  $stmt = $con->prepare('SELECT DISTINCT reviewed_id, eval_id, evals.weight
                          FROM reviews
                          INNER JOIN evals ON reviews.eval_id = evals.id
                          LEFT JOIN (SELECT survey_id `valid_survey`, reviewer_id `valid_reviewer`, team_id `valid_team`
