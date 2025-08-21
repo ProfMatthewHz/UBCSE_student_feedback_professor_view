@@ -152,9 +152,11 @@ CREATE TABLE `reviews` (
 -- each row defines a single peer- or self-evaluation. Rows are added/updated only as students complete their evaluations
 CREATE TABLE `evals` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
+ `weight` float NOT NULL DEFAULT 1,
  `completed` tinyint(1) NOT NULL DEFAULT 0,
  `last_update` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(), -- this should automatically update to the current time whenever the row is updated
  PRIMARY KEY (`id`),
+ KEY `evals_weight_idx` (`weight`)
 ) ENGINE=InnoDB;
 
 

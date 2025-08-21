@@ -136,10 +136,7 @@ const CourseAddModal = ({closeModal, updateCourseListing}) => {
         // Fetch all instructors
         fetch(process.env.REACT_APP_API_URL + "getInstructors.php", {
             method: "GET",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
+            credentials: "include"
         })
             .then((res) => res.json())
             .then((result) => {

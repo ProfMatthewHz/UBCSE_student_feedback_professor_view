@@ -24,10 +24,8 @@ const RosterUpdateModal = ({ modalClose, course }) => {
             credentials: "include",
             body: formData,
         })
-            .then((res) => res.json())
-            .then((result) => {
-                modalClose(result);
-            });
+            .then(res => res.json())
+            .then(modalClose);
     };
 
     const quitModal = () => {

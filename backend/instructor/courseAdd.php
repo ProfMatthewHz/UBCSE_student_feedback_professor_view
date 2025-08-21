@@ -142,7 +142,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         addInstructor($con, $course_id, $instructor_id);
         // Upload the course roster for later use
         addStudents($con, $course_id, $names_emails['ids']);
-        exit();
       }
     }
   }
@@ -150,5 +149,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $myJSON = json_encode($errorMsg);
   echo $myJSON;
 }
-
 ?>
