@@ -10,7 +10,7 @@ function setSessionVariables($ubit) {
     $con = connectToDatabase();
     
     $email = $ubit . "@buffalo.edu";
-    $id = getInstructorId($con, $email);
+    $id = getInstructorIdForEmail($con, $email);
     $id_and_name = getStudentInfoFromEmail($con, $email);
 
     // Logic for when it is NOT an instructor BUT a student
@@ -25,5 +25,18 @@ function setSessionVariables($ubit) {
         $_SESSION['redirect'] = 1;
     }
   }
+}
+
+function getStudentId() {
+  // Ensure the session is started since that is how we currently track logged-in users
+  session_start();
+  
+  if (!isset($_SESSION['student_id'])) {
+    http_response_code(511);
+    echo json_encode(array("Error" => "You must be logged in to access this page."));
+    exit();
+  }
+  $ret_val = $_SESSION['student_id'];
+  return $ret_val;
 }
 ?>

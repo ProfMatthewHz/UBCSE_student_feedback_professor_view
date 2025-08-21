@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import "../styles/rubricModal.css";
 
-const RubricModal = ({open,onClose,modalData}) => {
+const StudentSurveyFeedbackModal = ({onClose, modalData}) => {
    
     // eslint-disable-next-line no-unused-vars
     const { student_id, survey_id, survey_name } = modalData; //obtains the student_id, survey_id,and survey_name from modalData 
@@ -66,10 +66,8 @@ const RubricModal = ({open,onClose,modalData}) => {
     }
     */
 
-    // setFeedback({TEAMWORK : {average: 2.67, median: "Accepts all assigned team roles, always completes assigned work"}, LEADERSHIP: {average: 1.67, median: "Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates"}, PARTICIPATION: {average: 1.33, median: "Occasionally misses/doesn't participate in meeting…ared for meetings, offers unclear/unhelpful ideas"}, PROFESSIONALISM: {average: 1, median: "Often discourteous and/or openly critical of teammates, doesn't listen to alternative perspectives"}, QUALITY: {average: 1.67, median: "Occasionally commits to shared documents, others s…etimes needed to revise, debug, or fix their work"}})
-    
-  if (!open) return null
-  return (
+    // setFeedback({TEAMWORK : {average: 2.67, median: "Accepts all assigned team roles, always completes assigned work"}, LEADERSHIP: {average: 1.67, median: "Shows an ability to lead when necessary, willing to collaborate, willing to assist teammates"}, PARTICIPATION: {average: 1.33, median: "Occasionally misses/doesn't participate in meeting…ared for meetings, offers unclear/unhelpful ideas"}, PROFESSIONALISM: {average: 1, median: "Often discourteous and/or openly critical of teammates, doesn't listen to alternative perspectives"}, QUALITY: {average: 1.67, median: "Occasionally commits to shared documents, others s…etimes needed to revise, debug, or fix their work"}})    
+   return (
         <div className = "modal">
             <div className='styled-input'>
                 <div className = "feedback">
@@ -110,4 +108,4 @@ const RubricModal = ({open,onClose,modalData}) => {
   )
 }
 
-export default RubricModal;
+export default StudentSurveyFeedbackModal;

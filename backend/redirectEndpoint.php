@@ -25,7 +25,6 @@ if (empty($_SESSION['redirect'])) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $retArray = ['redirect' => $_SESSION['redirect']];
-    http_response_code(302);
     header('Content-Type: application/json');
     echo json_encode($retArray);
     exit();

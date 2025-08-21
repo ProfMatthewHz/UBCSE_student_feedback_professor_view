@@ -5,28 +5,18 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-//start the session variable
-session_start();
-
 //bring in required code
 require_once "../../lib/database.php";
 require_once "../../lib/constants.php";
 require_once "rubricQueries.php";
 require_once "rubricTable.php";
+require_once "lib/loginStatus.php";
+
+$instructor_id = getInstructorId();
 
 //query information about the requester
 $con = connectToDatabase();
 
-//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-if (!isset($_SESSION['id'])) {
-  http_response_code(403);
-  echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
-  exit();
-}
-$instructor_id = $_SESSION['id'];
-
-// In case of error, remove that we are reviewing a rubric
-unset($_SESSION['rubric_reviewed']);
 
 // Verify that we are handling a POST request
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -42,7 +32,6 @@ if (!isset($_POST["rubric"]) || !ctype_digit($_POST["rubric"])) {
 }
 $rubric_id = intval($_POST["rubric"]);
 $data = getRubricData($con, $rubric_id);
-$_SESSION['rubric_reviewed'] = $rubric_id;
 $json_data = json_encode($data);
 echo $json_data;
 ?>

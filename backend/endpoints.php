@@ -11,7 +11,7 @@ require "lib/surveyQueries.php";
 date_default_timezone_set('America/New_York');
 
 if(!isset($_SESSION['student_id']) && !isset($_SESSION['id'])) {
-    http_response_code(400);
+    http_response_code(511);
     echo json_encode(array('error' => 'Bad request: Request only valid from within app'));
     exit();
 }

@@ -148,11 +148,21 @@ function checkArrayForKey($array, $key, $value) {
   return false;
 }
 
-function updateTeamMembersAndPruneReviews($con, $survey_id, $teams) {
+function updateTeamMembersAndPruneReviews($con, $survey_id, $teams, $prune_evals) {
   // Optimistically assume everything works
   $retVal = true;
   $stmt_del_member = $con->prepare('DELETE FROM team_members WHERE team_id = ? AND student_id = ?');
-  $stmt_del_reviews = $con->prepare('DELETE FROM reviews WHERE survey_id = ? AND team_id = ? AND (? in (reviewer_id, reviewed_id))');
+  $stmt_del_responses = null;
+  // Prepare the delete statement which will delete either reviews or evals and reviews based on need
+  if ($prune_evals) {
+    // If we are pruning individual reviews, we need to delete the evals from this team
+    //  that include this student as either a reviewer or reviewed. This cannot be done
+    //  for collective reviews, however.
+    $stmt_del_responses = $con->prepare('DELETE evals FROM evals INNER JOIN reviews ON reviews.eval_id=evals.id WHERE survey_id = ? AND team_id = ? AND (? in (reviewer_id, reviewed_id))');
+  } else {
+    // If we are not pruning individual reviews, we just delete the reviews
+    $stmt_del_responses = $con->prepare('DELETE FROM reviews WHERE survey_id = ? AND team_id = ? AND (? in (reviewer_id, reviewed_id))');
+  }
   // Loop over each team and delete it from the database
   foreach ($teams as $team) {
     $team_id = $team['id'];
@@ -165,14 +175,17 @@ function updateTeamMembersAndPruneReviews($con, $survey_id, $teams) {
  
       // If the member was not found, they have been pruned and so we need to delete
       //  * the member but only for this specific team
-      //  * the reviews including that member associated with this team (which automatically results in the evals being deleted)
+      //  * the evals including that member associated with this team (which automatically results in the reviews & scores being deleted)
       if (!$found) {
         $stmt_del_member->bind_param('ii', $team_id, $student_id);
         if (!$stmt_del_member->execute()) {
           $retVal = false;
         }
-        $stmt_del_reviews->bind_param('iii', $survey_id, $team_id, $student_id);
-        if (!$stmt_del_reviews->execute()) {
+        // If we are pruning individual reviews, we need to delete the evals from this team
+        //  that include this student as either a reviewer or reviewed. This cannot be done
+        //  for collective reviews, however, and they will only prune reviews.
+        $stmt_del_responses->bind_param('iii', $survey_id, $team_id, $student_id);
+        if (!$stmt_del_responses->execute()) {
           $retVal = false;
         }
       }
@@ -180,7 +193,7 @@ function updateTeamMembersAndPruneReviews($con, $survey_id, $teams) {
   }
   // Clean up our database work
   $stmt_del_member->close();
-  $stmt_del_reviews->close();
+  $stmt_del_responses->close();
   // Return if we were successful
   return $retVal;
 }
@@ -194,28 +207,28 @@ function updateTeamsAndPruneReviews($con, $survey_id, &$teams) {
 
   $existing_ids = getSurveyTeamIds($con, $survey_id);
   $stmt_del_team = $con->prepare('DELETE FROM teams WHERE survey_id = ? AND id = ?');
-  $stmt_del_reviews = $con->prepare('DELETE FROM reviews WHERE survey_id = ? AND team_id = ?');
+  $stmt_del_evals = $con->prepare('DELETE evals FROM evals INNER JOIN reviews ON reviews.eval_id=evals.id WHERE survey_id = ? AND team_id = ?');
   // Loop over each team and delete it from the database
   foreach ($existing_ids as $team_id) {
     $found = checkArrayForKey($teams, 'id', $team_id);
 
     // If the team was not found, the team has been pruned and so we need to delete
     //  * the team (which automatically results in the team members being deleted)
-    //  * the reviews for the team (which automatically results in the evals being deleted)
+    //  * the evals for the team (which automatically results in the reviews & scores being deleted)
     if (!$found) {
       $stmt_del_team->bind_param('ii', $survey_id, $team_id);
       if (!$stmt_del_team->execute()) {
         $retVal = false;
       }
-      $stmt_del_reviews->bind_param('ii', $survey_id, $team_id);
-      if (!$stmt_del_reviews->execute()) {
+      $stmt_del_evals->bind_param('ii', $survey_id, $team_id);
+      if (!$stmt_del_evals->execute()) {
         $retVal = false;
      }
     }
   }
   // Clean up our database work
   $stmt_del_team->close();
-  $stmt_del_reviews->close();
+  $stmt_del_evals->close();
   // Return if we were successful
   return $retVal;
 }

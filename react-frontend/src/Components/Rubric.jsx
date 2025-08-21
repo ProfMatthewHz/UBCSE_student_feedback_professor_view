@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from "react";
-import AddRubric from "./AddRubric";
 import Modal from "./Modal";
 import "../styles/rubric.css";
+import RubricAdd from "./RubricAdd";
 
 const Rubric = ({rubric_id, updateRubrics}) => {
     // IMPORTANT: rubricData contains rubric name, levels, and criterions
@@ -68,7 +68,7 @@ const Rubric = ({rubric_id, updateRubrics}) => {
                         ×
                     </button>
                 </div>
-                <AddRubric
+                <RubricAdd
                     handleAddRubricModal={handleDuplicateRubricModal}
                     updateRubrics={updateRubrics}
                     duplicatedRubricData={duplicatedRubricData}

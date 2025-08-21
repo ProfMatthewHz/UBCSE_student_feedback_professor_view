@@ -20,7 +20,7 @@ function getAllOtherInstructorsFull($con, $instructor_id) {
   return $ret_val;
 }
 
-function getInstructorId($con, $email) {
+function getInstructorIdForEmail($con, $email) {
   // Pessimistically assume that this fails
   $retVal = 0;
   $stmt = $con->prepare('SELECT id 

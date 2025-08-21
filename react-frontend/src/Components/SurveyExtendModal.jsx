@@ -168,12 +168,11 @@ return (
             <h2 className="modal--main-title">
                 Extend Deadline {course.code}: {survey_name} 
             </h2>
-            <div className="extend-survey--boxes-container">
-                <div className="extend-survey--top-box-container">
+                <div className="modal--top-container">
                     <h3 className="form__item--info">Current Deadline: {originalEndDate}</h3>
                 </div>
-                <div className="extend-survey--bottom-box-container">
-                     <h3 className="extend-survey--bottom-label form__item--info">Extended Deadline</h3>
+                    <div className="modal-form--row-with-errors-container">
+                     <h3 className="extend-survey--bottom-label form__item--info">New Deadline</h3>
                     <div className="extend-survey--inputs-container">
                         <label className="form__item--label" htmlFor="new-endDate">
                             New Date
@@ -234,7 +233,6 @@ return (
           </div>
         </div>
       </div>
-    </div>
   );
 }
 

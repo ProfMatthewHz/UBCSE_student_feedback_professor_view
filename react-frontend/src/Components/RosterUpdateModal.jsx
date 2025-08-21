@@ -24,10 +24,8 @@ const RosterUpdateModal = ({ modalClose, course }) => {
             credentials: "include",
             body: formData,
         })
-            .then((res) => res.json())
-            .then((result) => {
-                modalClose(result);
-            });
+            .then(res => res.json())
+            .then(modalClose);
     };
 
     const quitModal = () => {
@@ -55,6 +53,7 @@ const RosterUpdateModal = ({ modalClose, course }) => {
                                 type="file"
                                 id="updateroster-file-input"
                                 className="form__item--file-input"
+                                accept="text/plain,text/csv"
                                 onChange={(e) => setRosterFile(e.target.files[0])}
                             />
                         {noRosterFileError && (

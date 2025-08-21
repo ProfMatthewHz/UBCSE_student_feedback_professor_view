@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import SurveyFormRow from "./SurveyFormRow";
+import SurveyFormRows from "./SurveyFormRows";
 import "../styles/modal.css";
 import "../styles/surveyForm.css";
 
@@ -28,7 +28,7 @@ const SurveyPreviewModal = ({modalClose, surveyData}) => {
           }),
       })
       .then((res) => res.json())
-      .then((response) => { console.log(response); setRubricData(response) })
+      .then((response) => setRubricData(response))
       .catch((err) => {
         console.log(err);
       });
@@ -48,8 +48,8 @@ const SurveyPreviewModal = ({modalClose, surveyData}) => {
                         <h2 className="Evaluation-Name">Evaluating: Matthew Hertz</h2>
                     </div>
                     <div>
-                        <SurveyFormRow
-                            rubricData={rubricData}
+                        <SurveyFormRows
+                            topicData={rubricData.topics}
                             surveyResults={surveyResults}
                             setSurveyResults={setSurveyResults}
                             survey_id={null}

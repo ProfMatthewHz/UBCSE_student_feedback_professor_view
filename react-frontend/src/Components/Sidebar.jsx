@@ -2,15 +2,15 @@ import "../styles/sidebar.css";
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import Dropdown from "./Dropdown";
+import CourseAddModal from "./CourseAddModal";
+import RubricAdd from "./RubricAdd";
 import Modal from "./Modal";
-import AddCourse from "../pages/AddCourse";
-import AddRubric from "./AddRubric";
 import SidebarList from "./SidebarList";
 
 /** Combining NavBar into Side Bar*/
 
 const SideBar = (props) => {
-  const [clicked, setClicked] = useState(false);
+  const [clicked, ] = useState(false);
   const [dropdown_value, setDropDownValue] = useState("");
   const [sidebar_items, setSidebarItems] = useState([])
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
@@ -19,8 +19,12 @@ const SideBar = (props) => {
   const [rubricState, setRubricState] = useState(false);
   const [historyState, setHistoryState] = useState(false);
 
-  const handleAddCourseModal = () => {
-    setShowAddCourseModal(prevState => !prevState);
+  const closeAddCourseModal = () => {
+    setShowAddCourseModal(false);
+  };
+
+  const openAddCourseModal = () => {
+    setShowAddCourseModal(true);
   };
 
   const handleAddRubricModal = () => {
@@ -28,9 +32,9 @@ const SideBar = (props) => {
   }
 
   // eslint-disable-next-line no-unused-vars
-  const handleClick = () => {
+  /*const handleClick = () => {
     setClicked(prevState => !prevState)
-  }
+  }*/
 
   useEffect(() => {
     if (props.content_dictionary["Courses"]) {
@@ -68,26 +72,12 @@ const SideBar = (props) => {
   return (
     <>
       {/* Add Course Modal Below */}
-      {courseState && (
-        <Modal
-          open={showAddCourseModal}
-          onRequestClose={handleAddCourseModal}
-          width={"750px"}
-          maxWidth={"90%"}
-        >
-
-          <div className="CancelContainer">
-            <button className="CancelButton" onClick={handleAddCourseModal}>
-              ×
-            </button>
-          </div>
-          <AddCourse
-            closeModal={handleAddCourseModal}
+      {courseState && showAddCourseModal && (
+           <CourseAddModal
+            closeModal={closeAddCourseModal}
             updateCourseListing={props.getCourses}
-          />
-        </Modal>)}
+          />)}
 
-      {/* Add Rubric Modal Below */}
       {(rubricState &&
         <Modal
           open={showAddRubricModal}
@@ -100,12 +90,11 @@ const SideBar = (props) => {
               ×
             </button>
           </div>
-          <AddRubric
+          <RubricAdd
             handleCloseModal={handleAddRubricModal}
             getRubrics={props.getRubrics}
           />
         </Modal>)}
-
 
       <div className="title">
         <h1>TEAMWORK</h1>
@@ -180,7 +169,7 @@ const SideBar = (props) => {
               <div className="button-container">
                 <button
                   className="add_course-btn"
-                  onClick={handleAddCourseModal}
+                  onClick={openAddCourseModal}
                 >
                   + Add Course
                 </button>

@@ -1,4 +1,7 @@
 <?php
+ini_set("display_errors", 1);
+ini_set("log_errors", 1);
+ini_set("error_log", "~/php-error.log");
 
 require_once "../lib/constants.php";
 require_once '../lib/studentQueries.php';
@@ -8,21 +11,12 @@ require_once "lib/enrollmentFunctions.php";
 require_once "lib/courseQueries.php";
 require_once "lib/instructorQueries.php";
 require_once "../lib/database.php";
+require_once "lib/loginStatus.php";
 
-session_start();
-ini_set("display_errors", 1);
-ini_set("log_errors", 1);
-ini_set("error_log", "~/php-error.log");
+$instructor_id = getInstructorId();
+
 $con = connectToDatabase();
 
-//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
-if (!isset($_SESSION['id'])) {
-    http_response_code(403);
-    echo json_encode(array("error" => "Forbidden: You must be logged in to access this page."));
-    exit();
-}
-
-$instructor_id = $_SESSION['id'];
 $instructors = getAllOtherInstructorsFull($con, $instructor_id);
 
 // Output the array of arrays for instructor details

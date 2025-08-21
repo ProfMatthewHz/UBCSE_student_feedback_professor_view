@@ -4,9 +4,8 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import History from "./pages/History";
 import Library from "./pages/Library";
-import StudentHome from "./pages/studentHome";
-import ProfStudentHome from "./pages/profStudentHome";
-import SurveyForm from "./pages/SurveyForm"
+import StudentHome from "./pages/StudentHome";
+import ProfStudentHome from "./pages/ProfStudentHome";
 
 function App() {
     const [userFlag, setUserFlag] = useState(1);  // userFlag = 1 -> prof    userFlag = 2 -> student
@@ -19,7 +18,12 @@ function App() {
           method: "GET",
           credentials: "include",
       })
-          .then((res) => res.json())
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
           .then((result) => {
             if ("error" in result) {
               setUserFlag(-1);
@@ -51,17 +55,15 @@ function App() {
                   <Route path="/history" element={<History />} />
                   <Route path="/student" element={<ProfStudentHome />} /> 
                   <Route path="/about" element={<About />} />
-                  <Route path ="/surveyForm" element={<SurveyForm />} />
                   </>
               )}
               {/* Student Paths */}
               {userFlag === 2 && (
                 <>
                   <Route path="/" element={<StudentHome />} /> 
-                  <Route path="/surveyForm" element={<SurveyForm />} />
                 </>
               )}
-              </Routes>    
+              </Routes>
         </div>
       </BrowserRouter>
     );

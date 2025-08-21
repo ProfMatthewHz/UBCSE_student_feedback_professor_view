@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/addrubric.css";
 
-const AddRubric = ({ updateRubrics, handleCloseModal, duplicatedRubricData }) => {
+const RubricAdd = ({ updateRubrics, handleCloseModal, duplicatedRubricData }) => {
 
   // IMPORTANT: rubricData contains all the data collected from each modal
   const [rubricData, setRubricData] = useState({});
@@ -707,4 +707,4 @@ const AddRubric = ({ updateRubrics, handleCloseModal, duplicatedRubricData }) =>
 
 }
 
-export default AddRubric;
+export default RubricAdd;

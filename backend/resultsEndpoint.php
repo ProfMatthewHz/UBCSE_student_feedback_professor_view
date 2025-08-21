@@ -2,22 +2,18 @@
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
-session_start();
 
 require "lib/constants.php";
 require "lib/database.php";
 require "lib/surveyQueries.php";
 require "lib/reviewQueries.php";
 require "lib/scoreQueries.php";
+require "lib/loginRoutine.php";
 
-if(!isset($_SESSION['student_id'])) {
-    header("Location: ".SITE_HOME."index.php"); // edit this header redirect to correct location //
-    exit();
-}
+$student_id = getStudentId();
 
 header('Content-Type: application/json');
 
-$id = $_SESSION['student_id'];
 $con = connectToDatabase();
 $responseArray = [];
 
@@ -31,15 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
     // Verify that the survey is a valid one for this student to view their results
-    $survey_info = getSurveyResultsInfo($con, $survey, $id);
+    $survey_info = getSurveyResultsInfo($con, $survey, $student_id);
     if (!isset($survey_info)) {
         // This is not a valid survey for this student
         http_response_code(400);
-        echo json_encode($responseArray);
+        echo ('{"error": "Improper access to the endpoint."}');
         exit();
     }
 
-    $evals = getEvalSources($con, $survey, $id);
+    $evals = getEvalSources($con, $survey, $student_id);
 
     // Get the multiple choice questions and responses for this survey.
     $mc_topics = getSurveyMultipleChoiceTopics($con, $survey);

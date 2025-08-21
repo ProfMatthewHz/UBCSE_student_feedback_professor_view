@@ -1,24 +1,95 @@
 <?php
-function getReviewsForSurvey($con, $survey_id) {
-  // Get the pairings used in the original survey 
-  $retVal = array();
-  // prepare SQL statements
-  $stmt = $con->prepare('SELECT reviewer_id, reviewed_id, team_id, eval_weight 
+function getValidEvalsOfStudentByTeam($con, $survey_id) {
+  // We calculate to related sets of results: 
+  // One array maps student id to array of all eval ids to include in the normalized average calc
+  $valid_evals = array();
+  // The other maps an eval id to if it should be included in the normalized average
+  $eval_normalized = array();
+  // Select all of the evaluations 
+  $stmt = $con->prepare('SELECT DISTINCT reviewed_id, eval_id, evals.weight
                          FROM reviews
-                         WHERE survey_id=?');
+                         INNER JOIN evals ON reviews.eval_id = evals.id
+                         LEFT JOIN (SELECT survey_id `valid_survey`, reviewer_id `valid_reviewer`, team_id `valid_team`
+                                    FROM reviews 
+                                    INNER JOIN evals ON reviews.eval_id = evals.id
+                                    WHERE completed = 0) validate ON survey_id=valid_survey AND reviewer_id=valid_reviewer AND team_id=valid_team 
+                         WHERE survey_id=? AND valid_reviewer is null AND weight <> 0');
   $stmt->bind_param('i', $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
-    $retVal[] = $row;
+    $student_id = $row[0];
+    $eval_id = $row[1];
+    $eval_weight = $row[2];
+    // Make certain we have an array in our results for this student
+    if (!array_key_exists($student_id, $valid_evals)) {
+      $valid_evals[$student_id] = array($eval_id => $eval_weight);
+    } else {
+      $valid_evals[$student_id][$eval_id] = $eval_weight;
+    }
+    // Now add that this evaluation will be inclued in the normalized average calculations
+    $eval_normalized[$eval_id] = true;
+  }
+  $stmt->close();
+  $retVal = array('valid_evals' => $valid_evals, 'eval_normalized' => $eval_normalized);
+  return $retVal;
+}
+
+// This function is not used currently, but being kept for future use as it should be a huge improvement
+function getEvalStudentInformation($con, $survey_id) {
+  // Get the averages for each student in the course
+  $retVal = array();
+  // prepare SQL statements
+  $stmt = $con->prepare('SELECT reviews.eval_id, reviewer.name, reviewer.email, reviewed.name, reviewed.email
+                         FROM reviews
+                         INNER JOIN students reviewer ON reviews.reviewer_id = reviewer.id
+                         INNER JOIN students reviewed ON reviews.reviewed_id = reviewed.id
+                         WHERE reviews.survey_id=?;');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $eval_id = $row[0];
+    $retVal[$eval_id] = array($row[1].' ('.$row[2].')', $row[3].' ('.$row[4].')');
   }
   $stmt->close();
   return $retVal;
 }
 
-function addEvaluation($con) {
+// This function is not used currently, but being kept for future use as it should be a huge improvement
+function getEvalTeamInformation($con, $survey_id) {
+  // Get the averages for each student in the course
+  $retVal = array();
+  // prepare SQL statements
+  $stmt = $con->prepare('SELECT collective_reviews.eval_id, reviewer.team_name, reviewed.team_name
+                         FROM collective_reviews
+                         INNER JOIN teams reviewer ON collective_reviews.reviewer_id = reviewer.id
+                         INNER JOIN teams reviewed ON collective_reviews.reviewed_id = reviewed.id
+                         WHERE collective_reviews.survey_id=?;');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $eval_id = $row[0];
+    $retVal[$eval_id] = array($row[1], $row[2]);
+  }
+  $stmt->close();
+  return $retVal;
+}
+
+// This function is not used currently, but being kept for future use as it should be a huge improvement
+function getEvalInformation($con, $survey_id, $use_team_evals) {
+  if ($use_team_evals) {
+    return getEvalTeamInformation($con, $survey_id);
+  } else {
+    return getEvalStudentInformation($con, $survey_id);
+  }
+}
+
+function addEvaluation($con, $eval_weight) {
   // Add a new evaluation to the database
-  $stmt = $con->prepare('INSERT INTO evals (id) VALUES (NULL)');
+  $stmt = $con->prepare('INSERT INTO evals (weight) VALUES (?)');
+  $stmt->bind_param('i', $eval_weight);
   $stmt->execute();
   // Get the ID of the newly added evaluation
   $retVal = $stmt->insert_id;
@@ -43,7 +114,7 @@ function createOrRetrieveCollectiveEvaluation($con, $survey_id, $reviewing_id, $
     $retVal = $eval_info[0]['eval_id'];
   } else {
     // Create the evaluation
-    $retVal = addEvaluation($con); 
+    $retVal = addEvaluation($con, 1); 
     // Add the collective review to the database
     $stmt_add_coll_review->bind_param('iiii', $survey_id, $reviewing_id, $reviewed_id, $retVal);
     $result = $stmt_add_coll_review->execute();
@@ -53,12 +124,12 @@ function createOrRetrieveCollectiveEvaluation($con, $survey_id, $reviewing_id, $
   return $retVal;
 }
 
-function ensureReviewExists($con, $survey_id, $eval_id, $team_id, $reviewer_id, $reviewed_id, $eval_weight) {
+function ensureReviewExists($con, $survey_id, $eval_id, $team_id, $reviewer_id, $reviewed_id) {
   $retVal = false;
   $stmt_check = $con->prepare('SELECT id 
                                FROM reviews
                                WHERE survey_id=? AND team_id=? AND reviewer_id=? AND reviewed_id=?');
-  $stmt_add = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_weight, eval_id) VALUES (?, ?, ?, ?, ?, ?)');
+  $stmt_add = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_id) VALUES (?, ?, ?, ?, ?)');
   $stmt_check->bind_param('iiii', $survey_id, $team_id, $reviewer_id, $reviewed_id);
   $stmt_check->execute();
   $result = $stmt_check->get_result();
@@ -66,7 +137,7 @@ function ensureReviewExists($con, $survey_id, $eval_id, $team_id, $reviewer_id, 
 
   // Check that there is not already a review with this combination pairing does not already exist
   if ($result->num_rows == 0) {
-    $stmt_add->bind_param('iiiiii', $survey_id, $reviewer_id, $reviewed_id, $team_id, $eval_weight, $eval_id);
+    $stmt_add->bind_param('iiiii', $survey_id, $reviewer_id, $reviewed_id, $team_id, $eval_id);
     $stmt_add->execute();
     $retVal = $stmt_add->insert_id;
   } else {
@@ -76,7 +147,6 @@ function ensureReviewExists($con, $survey_id, $eval_id, $team_id, $reviewer_id, 
   $stmt_add->close();
   return $retVal;
 }
-
 
 function addCollectiveReviewsToSurvey($con, $survey_id, $teams, $pairings) {
   // Optimistically assume everything works
@@ -101,15 +171,13 @@ function addCollectiveReviewsToSurvey($con, $survey_id, $teams, $pairings) {
         // Get the reviewed ID
         $reviewed_id = $reviewed['id'];
         // Make the review as needed
-        $result = ensureReviewExists($con, $survey_id, $eval_id, $reviewing_team['id'], $reviewer_id, $reviewed_id, 1);
+        $result = ensureReviewExists($con, $survey_id, $eval_id, $reviewing_team['id'], $reviewer_id, $reviewed_id);
         $retVal = $retVal && ($result != 0);
       }
     }
   }
   return $retVal;
 }
-
-
 
 function addReviewsToSurvey($con, $survey_id, $pairings) {
   // Optimistically assume everything works
@@ -118,7 +186,7 @@ function addReviewsToSurvey($con, $survey_id, $pairings) {
   $stmt_check = $con->prepare('SELECT id 
                                FROM reviews
                                WHERE survey_id=? AND team_id=? AND reviewer_id=? AND reviewed_id=?');
-  $stmt_add_review = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_weight, eval_id) VALUES (?, ?, ?, ?, ?, ?)');
+  $stmt_add_review = $con->prepare('INSERT INTO reviews (survey_id, reviewer_id, reviewed_id, team_id, eval_id) VALUES (?, ?, ?, ?, ?)');
   // loop over each pairing
   foreach ($pairings as $pairing) {
     // check if the pairing already exists
@@ -129,10 +197,10 @@ function addReviewsToSurvey($con, $survey_id, $pairings) {
 
     // add the pairing if it does not exist
     if ($result->num_rows == 0) {
-      $eval_id = addEvaluation($con);
+      $eval_id = addEvaluation($con, $pairing[3]);
       if ($eval_id != 0) {
         // Get the ID of the newly added review
-        $stmt_add_review->bind_param('iiiiii', $survey_id, $pairing[0], $pairing[1], $pairing[2], $pairing[3], $eval_id);
+        $stmt_add_review->bind_param('iiiii', $survey_id, $pairing[0], $pairing[1], $pairing[2], $eval_id);
         $result = $stmt_add_review->execute();
       }
       $retVal = $retVal && $result;

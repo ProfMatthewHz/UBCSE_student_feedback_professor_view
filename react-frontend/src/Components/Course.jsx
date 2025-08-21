@@ -1,10 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import "../styles/course.css";
 import "../styles/modal.css";
-import "../styles/duplicatesurvey.css";
 import "../styles/addsurvey.css";
 import Toast from "./Toast";
-import SurveyResultsView from "./SurveyResultsView";
+import SurveyResultsModal from "./SurveyResultsModal";
 import SurveyExtendModal from "./SurveyExtendModal";
 import SurveyDeleteModal from "./SurveyDeleteModal";
 import ErrorsModal from "./ErrorsModal";
@@ -13,7 +12,7 @@ import SurveyNewModal from "./SurveyNewModal";
 import RosterUpdateModal from "./RosterUpdateModal";
 import SurveyPreviewModal from "./SurveyPreviewModal";
 
-const Course = ({ course, page }) => {
+const Course = ({ course, page, rubricList, pairingModes }) => {
     const [surveys, setSurveys] = useState([]);
     const [extendModal, setExtendModal] = useState(false);
     const [duplicateModal, setDuplicateModal] = useState(false);
@@ -32,8 +31,8 @@ const Course = ({ course, page }) => {
     const [viewResultsModal, setViewResultsModal] = useState(false);
 
     const [showToast, setShowToast] = useState(false);
-    const [rubrics, setRubrics] = useState([]);
-    const [pairingModesFull, setPairingModesFull] = useState([]);
+    const [rubrics, ] = useState(rubricList);
+    const [pairingModesFull, ] = useState(pairingModes);
     const [survey_confirm_data, setSurveyConfirmData] = useState(null);
     const [survey_confirm_roster, setSurveyConfirmRoster] = useState(null);
     const [survey_new_data, setSurveyNewData] = useState(null);
@@ -84,44 +83,12 @@ const Course = ({ course, page }) => {
         updateAllSurveys();
     }, [updateAllSurveys]);
 
-    /**
-     * Create the effect which loads all of the potential rubrics from the system 
-     */
     useEffect(() => {
-        fetch(process.env.REACT_APP_API_URL + "getInstructorRubrics.php", {
-            method: "GET",
-            credentials: "include",
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                //this is an array of objects of example elements {id: 1, description: 'exampleDescription'}
-                let rubricIDandDescriptions = result.rubrics.map((element) => element);
-                // An array of just the descriptions of the rubrics
-                setRubrics(rubricIDandDescriptions);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
+        if (survey_confirm_roster != null) {
+            setSurveyConfirmModal(true);
+        }
+    }, [survey_confirm_roster]);
 
-    /**
-     * Get all of the pairing modes we might need to use
-     */
-    useEffect(() => {
-        // Fetch the survey types from the API
-        fetch(process.env.REACT_APP_API_URL + "getSurveyTypes.php", {
-            method: "GET",
-            credentials: "include"
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                setPairingModesFull(result.survey_types);
-            })
-            .catch((err) => {
-                console.log(err);
-                throw err;
-            });
-    }, []);
 
     function getSurveyAssignmentData(formData) {
         let fetchHTTP = process.env.REACT_APP_API_URL + "getSurveyRosterFromSurvey.php";
@@ -166,7 +133,6 @@ const Course = ({ course, page }) => {
                 setSurveyNewData(null);
                 setSurveyConfirmData(surveyData);
                 setSurveyConfirmRoster(dataObject);
-                setSurveyConfirmModal(true);
             } else {
                 let allErrorStrings = [];
                 for (let key in errorsObject) {
@@ -216,12 +182,10 @@ const Course = ({ course, page }) => {
             setCurrentSurvey(survey);
             setSurveyConfirmData({ course_code: course.code, course_name: course.name, course_id: course.id, survey_name: survey.name, survey_id: survey.id, pairing_mode: survey.survey_type, reason: "Review" });
             setRosterForConfirmation(course.id, survey.survey_type, survey.id);
-            setSurveyConfirmModal(true);
         } else if (e.target.value === "Team Update") {
             setCurrentSurvey(survey);
             setSurveyConfirmData({ course_code: course.code, course_name: course.name, course_id: course.id, survey_name: survey.name, survey_id: survey.id, pairing_mode: survey.survey_type, reason: "Update" });
             setRosterForConfirmation(course.id, survey.survey_type, survey.id);
-            setSurveyConfirmModal(true);
         } else if (e.target.value === "Delete") {
             setCurrentSurvey(survey);
             setDeleteModal(true);
@@ -235,7 +199,7 @@ const Course = ({ course, page }) => {
             setViewResultsModal(true);
         }
         else if (e.target.value === "Preview Survey") {
-            setCurrentSurvey(survey);
+            setCurrentSurvey({ ...survey, survey_name: survey['name'], course: course.name });
             setPreviewSurveyModal(true);
         }
     }
@@ -312,7 +276,7 @@ const Course = ({ course, page }) => {
             )}
             {/* View Results Modal*/}
             {viewResultsModal && (
-                <SurveyResultsView
+                <SurveyResultsModal
                     closeViewResultsModal={closeViewResults}
                     surveyToView={currentSurvey}
                     course={course}
@@ -353,7 +317,7 @@ const Course = ({ course, page }) => {
             {previewSurveyModal && (
                 <SurveyPreviewModal
                     modalClose={closePreviewModal}
-                    surveyData = {currentSurvey} />
+                    surveyData={currentSurvey} />
             )}
             <div className="courseContent">
                 <div className="courseHeader">

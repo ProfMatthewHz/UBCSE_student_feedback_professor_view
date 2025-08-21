@@ -7,18 +7,16 @@ import "primereact/resources/primereact.min.css";
 import BarChart from "./Barchart";
 import "../styles/viewresults.css";
 
-const SurveyResultsView = ({closeViewResultsModal, surveyToView, course}) => {
+const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
     /* Viewing Types of Survey Results */
-    const [rawSurveysHeaders, setRawSurveysHeaders] = useState(null); // For Raw Results
-    const [rawSurveys, setRawSurveys] = useState(null); // For Raw Results
-    const [showNormalizedSurveyResults, setShowNormalizedSurveyResults] = useState(null); // For Normalized Results
-    const [rawSurveyCSVData, setRawSurveyCSVData] = useState(); // For CSV download of the raw survey data
-    const [normalizedCSVData, setNormalizedCSVData] = useState(); // For CSV download of the raw survey data
-    const [normalizedTableHeaders, setNormalizedTableHeaders] = useState(null); // For Normalized Results
-    const [normalizedResults, setNormalizedResults] = useState(null); // For Normalized Results
+    const [rawSurveys, setRawSurveys] = useState([]); // For Raw Results
+    const [rawSurveyCSVData, setRawSurveyCSVData] = useState([]); // For CSV download of the raw survey data
+    const [normalizedBarChartData, setNormalizedBarChartData] = useState([]); // For Normalized Results
+    const [normalizedResultsCSVData, setNormalizedResultsCSVData] = useState([]); // For CSV download of the raw survey data
+    const [normalizedResults, setNormalizedResults] = useState([]); // For display of normalized Results
     const [completionCSVData, setCompletionCSVData] = useState([]); // For CSV Download for Completion Results
     const [individualAveragesCSVData, setIndividualAveragesCSVData] = useState([]); // For CSV Download for Completion Results
-    const [surveyType, setSurveyType] = useState(""); // For Survey Type
+    const [surveyType, setSurveyType] = useState("raw-full"); // For Survey Type
 
     /**
      * Maps headers to values
@@ -51,9 +49,7 @@ const SurveyResultsView = ({closeViewResultsModal, surveyToView, course}) => {
             })
                 .then((res) => res.json())
                 .then((result) => {
-                    const completedCSVLines = result.map((dict) => {return [dict["name"], dict["email"], dict["completed"]]});
-                    completedCSVLines.unshift(["Name", "Email", "Completion Status"]);
-                    setCompletionCSVData(completedCSVLines);
+                    setCompletionCSVData(result);
                 })
                 .catch((err) => {
                     console.error('There was a problem with your fetch operation:', err);
@@ -76,9 +72,7 @@ const SurveyResultsView = ({closeViewResultsModal, surveyToView, course}) => {
         })
             .then((res) => res.json())
             .then((result) => {
-                const csvLines = [];
-                csvLines.push(...result);
-                setIndividualAveragesCSVData(csvLines);
+                setIndividualAveragesCSVData(result);
             })
             .catch((err) => {
                 console.error('There was a problem with your fetch operation:', err);
@@ -101,18 +95,22 @@ const SurveyResultsView = ({closeViewResultsModal, surveyToView, course}) => {
         })
             .then((res) => res.json())
             .then((result) => {
-                setRawSurveysHeaders(result[0]);
-                const mappedResults = mapHeadersToValues(result[0], result.slice(1));
-                for (let result of mappedResults) {
-                    result["Norm. Avg."] = isNaN(result["Norm. Avg."]) ? result["Norm. Avg."] : parseFloat(result["Norm. Avg."]).toFixed(4);
-                }
-                setRawSurveys(mappedResults);
                 setRawSurveyCSVData(result);
             })
             .catch((err) => {
                 console.error('There was a problem with your fetch operation:', err);
             });
     }, []);
+
+    useEffect(() => {
+        if (rawSurveyCSVData.length > 1) {
+            const mappedResults = mapHeadersToValues(rawSurveyCSVData[0], rawSurveyCSVData.slice(1));
+            const finalResult = mappedResults.map((result) => {
+                return {...result, "Norm. Avg.": isNaN(result["Norm. Avg."]) ? result["Norm. Avg."] : parseFloat(result["Norm. Avg."]).toFixed(4)};
+            });
+            setRawSurveys(finalResult);
+        }
+    }, [rawSurveyCSVData]);
 
     //Fetches the data with the individual averages for students
     const fetchNormalizedResults = useCallback((surveyid) => {
@@ -130,52 +128,8 @@ const SurveyResultsView = ({closeViewResultsModal, surveyToView, course}) => {
         })
             .then((res) => res.json())
             .then((result) => {
-                const tableHeaders = result[0];
-                setNormalizedTableHeaders(tableHeaders)
                 if (result.length > 1) {
-                    const results_without_headers = result.slice(1);
-                    const maxValue = Math.max(
-                        ...results_without_headers.map((result) => isNaN(result[2])? 0 : result[2])
-                    );
-                    let labels = {'0.0-0.2' : 0};
-                    let startLabel = 0.01;
-                    let endLabel = 0.2;
-                    while (endLabel < maxValue) {
-                        startLabel += 0.2;
-                        endLabel += 0.2;
-                        labels[`${startLabel.toFixed(2)}-${endLabel.toFixed(1)}`] = 0;
-                    }
-                    for (let individual_data of results_without_headers) {
-                        for (let key of Object.keys(labels)) {
-                            const label_split = key.split("-");
-                            const current_min = parseFloat(label_split[0]);
-                            const current_max = parseFloat(label_split[1]);
-                            const current_normalized_average = individual_data[2];
-
-                            if (
-                                current_normalized_average >= current_min &&
-                                current_normalized_average <= current_max
-                            ) {
-                                labels[key] += 1;
-                            }
-                        }
-                    }
-
-                    labels = Object.entries(labels);
-                    labels.unshift(["Normalized Averages", "Number of Students"]);
-                    
-                    const mappedNormalizedResults = mapHeadersToValues(
-                        tableHeaders,
-                        results_without_headers
-                    );
-                    setNormalizedCSVData(result);
-                    setShowNormalizedSurveyResults(labels);
-                    for (let result of mappedNormalizedResults) {
-                        result["Norm. Avg."] = isNaN(result["Norm. Avg."]) ? result["Norm. Avg."] : parseFloat(result["Norm. Avg."]).toFixed(4);
-                    }
-                    setNormalizedResults(mappedNormalizedResults);
-                } else {
-                    setShowNormalizedSurveyResults([]);
+                    setNormalizedResultsCSVData(result);
                 }
             })
             .catch((err) => {
@@ -183,14 +137,48 @@ const SurveyResultsView = ({closeViewResultsModal, surveyToView, course}) => {
             });
     }, []);
 
+    useEffect(() => {
+        if (normalizedResultsCSVData.length > 1) {
+            const mappedNormalizedResults = mapHeadersToValues(normalizedResultsCSVData[0], normalizedResultsCSVData.slice(1));
+            const finalResults = mappedNormalizedResults.map((result) => ({
+                ...result,
+                "Norm. Avg.": isNaN(result["Norm. Avg."]) ? result["Norm. Avg."] : parseFloat(result["Norm. Avg."]).toFixed(4)
+            }));
+            setNormalizedResults(finalResults);
+        }
+    }, [normalizedResultsCSVData]);
 
-useEffect(() => {
+    useEffect(() => {
+        if (normalizedResultsCSVData.length > 1) {
+            const results = normalizedResultsCSVData.slice(1);
+            const maxValue = Math.max(
+                ...results.map((result) => isNaN(result.at(-2)) ? 0 : result.at(-2))
+            );
+            const lastIndex = Math.max(0, Math.floor((maxValue + 0.19999999) / 0.2) - 1);
+            let labels = [ ['0.0-0.2', 0 ] ];
+            while (labels.length <= lastIndex) {
+                let startLabel = 0.01 + 0.2 * labels.length;
+                let endLabel = startLabel + 0.19;
+                labels.push([`${startLabel.toFixed(2)} - ${endLabel.toFixed(1)}`, 0]);
+            }
+            for (let individual_data of results) {
+                const avg = individual_data.at(-2);
+                if (!isNaN(avg)) {
+                    let index = Math.max(0, Math.floor((avg + 0.19999999) / 0.2) - 1);
+                    labels[index][1] += 1;
+                }
+            }
+            labels.unshift(["Normalized Averages", "Number of Students"]);
+            setNormalizedBarChartData(labels);
+        }
+    }, [normalizedResultsCSVData]);
+
+    useEffect(() => {
         if (surveyToView) {
             fetchRawSurveys(surveyToView.id);
             fetchCompleted(surveyToView.id);
             fetchNormalizedResults(surveyToView.id);
             fetchIndividualAverages(surveyToView.id);
-            setSurveyType("raw-full");
         }
     }, [surveyToView, fetchRawSurveys, fetchNormalizedResults, fetchCompleted, fetchIndividualAverages]);
     
@@ -237,7 +225,7 @@ useEffect(() => {
                     Individual Results
                 </button>
             </div>
-            {surveyType === "raw-full" && rawSurveys && rawSurveysHeaders ? (
+            {surveyType === "raw-full" && rawSurveyCSVData.length > 0 ? (
                 <div>
                     <div className="viewresults-modal--other-button-container">
                         <div className="viewresults-modal--download-button">
@@ -277,7 +265,7 @@ useEffect(() => {
                             currentPageReportTemplate="{first} to {last} of {totalRecords}" 
                             emptyMessage="No results found"
                         >
-                            {rawSurveysHeaders.map((header) => {
+                            {rawSurveyCSVData[0].map((header) => {
                                 return header === "Reviewee" || header === "Reviewer" ? (
                                         <Column
                                             key={header}
@@ -300,11 +288,11 @@ useEffect(() => {
                         </DataTable>
                     </div>
                 </div>
-                ) : surveyType === "raw-full" && !rawSurveys && (
+                ) : surveyType === "raw-full" && (
                     <div className="viewresults-modal--no-options-selected-text">
                         No Results Found
                     </div>)}
-            {surveyType === "average" && normalizedResults ? (
+            {surveyType === "average" && normalizedResults.length > 0 ? (
                     <div>
                         <div className="viewresults-modal--other-button-container">
                             <div className="viewresults-modal--download-button">
@@ -315,7 +303,7 @@ useEffect(() => {
                                         surveyToView.id + 
                                         "-normalized-averages.csv"
                                     }
-                                    data={normalizedCSVData}
+                                    data={normalizedResultsCSVData}
                                 >
                                     Download Normalized Scores
                                 </CSVLink>
@@ -337,9 +325,7 @@ useEffect(() => {
                             </div>
                         </div>
                         <div className="viewresults-modal--barchart-container">
-                        {/* {updateNormalizeFlag === 0 && callFetchFeedbackCount(surveyToView.id)}
-                         */}
-                            <BarChart survey_data={showNormalizedSurveyResults}/>
+                            <BarChart survey_data={normalizedBarChartData}/>
                            
                             <DataTable
                                 value={normalizedResults}
@@ -351,7 +337,7 @@ useEffect(() => {
                                 currentPageReportTemplate="{first} to {last} of {totalRecords}" 
                                 emptyMessage="No results found"
                             >
-                                {normalizedTableHeaders.map((header) => {
+                                {normalizedResultsCSVData[0].map((header) => {
                                     return header === "Name" || header === "Email" ? (
                                         <Column
                                             key={header}
@@ -374,7 +360,7 @@ useEffect(() => {
                             </DataTable>
                         </div>
                     </div>
-                ) : surveyType === "average" && !normalizedResults && (
+                ) : surveyType === "average" && (
                     <div className="viewresults-modal--no-options-selected-text">
                         No Results Found
                     </div>)}
@@ -383,4 +369,4 @@ useEffect(() => {
     );
 };
 
-export default SurveyResultsView;
+export default SurveyResultsModal;

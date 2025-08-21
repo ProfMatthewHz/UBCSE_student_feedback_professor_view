@@ -321,10 +321,10 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
               </label>
             )}
           </label>
-          <div className="add-survey--row-with-errors-container">
-            <div className="add-survey--row-container">
-              <div className="add-survey--col-with-error-container">
-                <div className="add-survey--col-container">
+          <div className="modal-form--row-with-errors-container">
+            <div className="modal-form--row-container">
+              <div className="modal-form--col-with-error-container">
+                <div className="modal-form--col-container">
                   <label className="form__item--label" htmlFor="start-date">
                     Start Date
                     <input
@@ -371,8 +371,8 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
                   </label>)}
               </div>
 
-              <div className="add-survey--col-with-error-container">
-                <div className="add-survey--col-container">
+              <div className="modal-form--col-with-error-container">
+                <div className="modal-form--col-container">
                   <label className="form__item--label" htmlFor="end-date">
                     End Date
                     <input
@@ -461,7 +461,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
             </label>
           )}
           {(modalReason !== "Duplicate") && (pairingModeValue === 6) && <label className="form__item--file-label" htmlFor="team-file">
-            Team Roster Upload
+            Team Roster File
             <span className="form__item--file-label--optional">One row per team. The first column of each row is the team's name. Each of the following columns should the email addresses of its members separatived by commas. Blank columns are ignored</span>
             <input
               className={emptyCSVFileError ? "form__item-input-error" : undefined}
@@ -478,7 +478,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
               </label>)}
           </label>}
           {(modalReason !== "Duplicate") && <label className="form__item--file-label" htmlFor="csv-file">
-            Review Assignment File Upload
+            Review Assignment File
             <span className="form__item--file-label--optional">{CSVFileDescription}</span>
             <input
               className={emptyCSVFileError ? "form__item-input-error" : undefined}

@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import "../styles/surveyForm.css";
 
-const SurveyFormRow = ({rubricData, setSurveyResults, survey_id}) => {
+const SurveyFormRows = ({topicData, setSurveyResults, survey_id}) => {
     const [topicQuestionElements, setTopicQuestionElements] = useState([]);
     const [topicQuestionWidth, setTopicQuestionWidth] = useState(30);
     const [clickedButtons, setClickedButtons] = useState({});
@@ -22,8 +22,8 @@ const SurveyFormRow = ({rubricData, setSurveyResults, survey_id}) => {
     const clickHandler = (key, topic) => {
         const rowID = topic.topic_id !== undefined ? topic.topic_id : topic.question;
         // Set the clicked state for the clicked button in the corresponding row
-        if (clickedButtons[rowID] && clickedButtons[rowID].toString() === key) {
-            clickedButtons[rowID] = null;
+        if (clickedButtons[rowID] === key) {
+            delete clickedButtons[rowID];
             setClickedButtons({...clickedButtons});
         } else {
             clickedButtons[rowID] = key;
@@ -34,7 +34,7 @@ const SurveyFormRow = ({rubricData, setSurveyResults, survey_id}) => {
     const buttonClass = (key, topic) => {
         // Determine the class name based on whether the button is clicked or not in the corresponding row
         const rowID = topic.topic_id !== undefined ? topic.topic_id: topic.question;
-        return clickedButtons[rowID] && clickedButtons[rowID].toString() === key ? 'response clicked' : 'response unclicked';
+        return clickedButtons[rowID] === key ? 'response clicked' : 'response unclicked';
     };
 
     const verticalLineClass = (topic) => {
@@ -69,7 +69,7 @@ const SurveyFormRow = ({rubricData, setSurveyResults, survey_id}) => {
         }
     }, [fetchData, survey_id]);
 
-    const topics = rubricData.topics.map(topic => {
+    const topics = topicData.map(topic => {
         const length = Object.keys(topic.responses).length;
         if (topic.question.length > 60 && topicQuestionWidth !== 30 ) {
             const elements = document.getElementsByClassName('row-topic-question-container');
@@ -77,15 +77,16 @@ const SurveyFormRow = ({rubricData, setSurveyResults, survey_id}) => {
             setTopicQuestionWidth(60);
         }
         return (
-            <div className='row-container' id={topic.question}>
+            <div className='row-container' id={topic.question} key={topic.question}>
                 <div className={verticalLineClass(topic)} id={topic.question+"line"}>
                     <div className='row-topic-question-container'>    
                         <span className='topic-question'>{topic.question}</span>
                     </div>
                     <div className="response-container">
-                        {Object.keys(topic.responses).map((key, index) => {
+                        {Object.keys(topic.responses).map(key => {
+                            key = parseInt(key);
                             return (
-                                <div className='table-data-container' style={{flex: 100 / length +'%', 'fontSize': 100 - (length / 5) +'%'}}>
+                                <div key={topic.responses[key]} className='table-data-container' style={{flex: 100 / length +'%', 'fontSize': 100 - (length / 5) +'%'}}>
                                     <button onClick={() => clickHandler(key, topic) } className={buttonClass(key, topic)}>{topic.responses[key]}</button>
                                 </div>    
                             )})}
@@ -101,4 +102,4 @@ const SurveyFormRow = ({rubricData, setSurveyResults, survey_id}) => {
     )
 }
 
-export default SurveyFormRow
+export default SurveyFormRows;
