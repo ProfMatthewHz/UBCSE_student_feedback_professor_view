@@ -29,3 +29,4 @@ if (!isset($_POST) || !isset($_POST['reviewed'])) {
     echo json_encode($obj);
 }
 exit();
+?>
