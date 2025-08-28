@@ -12,7 +12,7 @@ require "instructor/lib/scoreQueries.php";
 require "instructor/lib/surveyQueries.php";
 require "instructor/lib/reviewQueries.php";
 require "instructor/lib/resultsCalculations.php";
-require "lib/loginRoutine.php";
+require "lib/loginStatus.php";
 
 $student_id = getStudentId();
 

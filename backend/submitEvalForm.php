@@ -9,7 +9,7 @@ require "lib/reviewQueries.php";
 require "lib/studentQueries.php";
 require "lib/surveyQueries.php";
 require "lib/scoreQueries.php";
-require "lib/loginRoutine.php";
+require "lib/loginStatus.php";
 
 $student_id = getStudentId();
 

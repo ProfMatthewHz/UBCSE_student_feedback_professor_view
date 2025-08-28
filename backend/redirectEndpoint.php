@@ -1,19 +1,17 @@
 <?php
-include_once 'lib/constants.php';
-include_once "lib/loginRoutine.php";
+require 'lib/constants.php';
+require "lib/loginRoutine.php";
 
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 
 session_start();
-#header("Access-Control-Allow-Origin: http://localhost:3000");
-#header('Access-Control-Allow-Headers: Content-Type');
-#header("Access-Control-Allow-Credentials: true");
 
 // Set the session variables when running in production and it is needed
 if (empty($_SESSION['redirect']) && !empty($_SERVER['uid'])) {
-  setSessionVariables($_SERVER['uid']);
+  $con = connectToDatabase();
+  setSessionVariables($con, $_SERVER['uid']);
 }
 
 if (empty($_SESSION['redirect'])) {
@@ -29,3 +27,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     echo json_encode($retArray);
     exit();
 }
+?>

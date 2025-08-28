@@ -1,16 +1,16 @@
 <?php
 // //bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once '../lib/studentQueries.php';
-require_once "lib/instructorQueries.php";
-require_once 'lib/rubricQueries.php';
-require_once 'lib/courseQueries.php';
-require_once 'lib/reviewQueries.php';
-require_once 'lib/surveyQueries.php';
-require_once 'lib/teamQueries.php';
-require_once 'lib/enrollmentFunctions.php';
-require_once "lib/loginStatus.php";
+require "../lib/database.php";
+require "../lib/constants.php";
+require '../lib/studentQueries.php';
+require "lib/instructorQueries.php";
+require 'lib/rubricQueries.php';
+require 'lib/courseQueries.php';
+require 'lib/reviewQueries.php';
+require 'lib/surveyQueries.php';
+require 'lib/teamQueries.php';
+require 'lib/enrollmentFunctions.php';
+require "lib/loginStatus.php";
 
 //error logging
 error_reporting(-1); // reports all errors

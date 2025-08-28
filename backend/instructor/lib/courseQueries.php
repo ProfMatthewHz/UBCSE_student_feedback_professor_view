@@ -1,6 +1,4 @@
 <?php
-require_once '../lib/constants.php';
-
 function addCourse($con, $course_code, $course_name, $semester, $course_year) {
   $stmt = $con->prepare('INSERT INTO courses (code, name, semester, year) VALUES (?, ?, ?, ?)');
   $stmt->bind_param('ssii', $course_code, $course_name, $semester, $course_year);
@@ -138,10 +136,10 @@ function getSurveysFromSingleCourse($con, $course_id){
   return $retVal;
 }
 
-function getInstructorHistoricalTerms($con, $instructor_id) {
+function getInstructorHistoricalTerms($con, $instructor_id, $month_map, $semester_map) {
   // Get the current semester and year
   $currentMonth = idate('m');
-  $currentSemester = MONTH_MAP_SEMESTER[$currentMonth];
+  $currentSemester = $month_map[$currentMonth];
   $currentYear = idate('Y');
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
@@ -161,7 +159,7 @@ function getInstructorHistoricalTerms($con, $instructor_id) {
 
   // Map numeric semesters to string values
   foreach ($terms as &$term) {
-    $term['semester'] = SEMESTER_MAP_REVERSE[$term['semester']];
+    $term['semester'] = $semester_map[$term['semester']];
   }
 
   return $terms;

@@ -4,10 +4,10 @@ ini_set("display_errors", "1");
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-require_once "lib/database.php";
-require_once "lib/surveyQueries.php";
-require_once "lib/visitCountQueries.php";
-require "lib/loginRoutine.php";
+require "lib/database.php";
+require "lib/surveyQueries.php";
+require "lib/visitCountQueries.php";
+require "lib/loginStatus.php";
 
 $student_id = getStudentId();
 

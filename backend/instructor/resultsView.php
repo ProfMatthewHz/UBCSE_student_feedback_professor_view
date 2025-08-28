@@ -6,16 +6,16 @@ ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
 // bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "../lib/surveyQueries.php";
-require_once "lib/courseQueries.php";
-require_once "lib/surveyQueries.php";
-require_once "lib/scoreQueries.php";
-require_once "lib/resultsCalculations.php";
-require_once "lib/resultsFunctions.php";
-require_once "lib/reviewQueries.php";
-require_once "lib/loginStatus.php";
+require "../lib/database.php";
+require "../lib/constants.php";
+require "../lib/surveyQueries.php";
+require "lib/courseQueries.php";
+require "lib/surveyQueries.php";
+require "lib/scoreQueries.php";
+require "lib/resultsCalculations.php";
+require "lib/resultsFunctions.php";
+require "lib/reviewQueries.php";
+require "lib/loginStatus.php";
 
 header("Content-Type: application/json; charset=UTF-8");
 

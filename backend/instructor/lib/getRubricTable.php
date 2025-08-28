@@ -6,11 +6,11 @@ ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
 //bring in required code
-require_once "../../lib/database.php";
-require_once "../../lib/constants.php";
-require_once "rubricQueries.php";
-require_once "rubricTable.php";
-require_once "lib/loginStatus.php";
+require "../../lib/database.php";
+require "../../lib/constants.php";
+require "rubricQueries.php";
+require "rubricTable.php";
+require "lib/loginStatus.php";
 
 $instructor_id = getInstructorId();
 
