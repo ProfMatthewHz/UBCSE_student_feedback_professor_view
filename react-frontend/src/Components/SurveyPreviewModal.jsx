@@ -40,9 +40,9 @@ const SurveyPreviewModal = ({modalClose, surveyData}) => {
 
     return (
         rubricData === null ? <div>No rubric to preview</div> :
-        (<div style={{ minHeight: "100vh" }} className="modal">
-            <div style={{ minHeight: "98vh", padding: "0px" }} className="modal-content modal-phone">
-                <div style={{ maxWidth: "100vw", maxHeight: "100vh" }} >
+        (<div className="modal">
+            <div style={{ minHeight: "98%", maxWidth: "100%" }} className="modal-content modal-phone">
+                <div>
                     <div className="Header">
                         <h1 className="Survey-Name">{surveyData.course} {surveyData.survey_name}</h1>
                         <h2 className="Evaluation-Name">Evaluating: Matthew Hertz</h2>
