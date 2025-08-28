@@ -57,8 +57,8 @@ function getIndividualReviewersTotalPoints($con, $survey_id) {
                                      INNER JOIN evals ON evals.id = reviews.eval_id
                                      INNER JOIN scores ON scores.eval_id = evals.id
                                      INNER JOIN rubric_scores ON rubric_scores.id = scores.rubric_score_id
-                                     GROUP BY survey_id, reviewer_id, team_id) AS totals ON totals.survey_id=reviews.survey_id AND totals.reviewer_id = reviews.reviewer_id AND totals.team_id = reviews.team_id
-                         WHERE reviews.survey_id=?;');
+                                     WHERE reviews.survey_id=?
+                                     GROUP BY survey_id, reviewer_id, team_id) AS totals ON totals.survey_id=reviews.survey_id AND totals.reviewer_id = reviews.reviewer_id AND totals.team_id = reviews.team_id');
   $stmt->bind_param('i', $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();
