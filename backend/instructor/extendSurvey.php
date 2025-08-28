@@ -20,9 +20,6 @@ require_once "lib/loginStatus.php";
 
 $instructor_id = getInstructorId();
 
-// set timezone
-date_default_timezone_set('America/New_York');
-
 // //query information about the requester
 $con = connectToDatabase();
 
