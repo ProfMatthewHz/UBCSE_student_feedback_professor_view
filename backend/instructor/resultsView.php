@@ -6,21 +6,16 @@ ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
 // bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "../lib/surveyQueries.php";
-require_once "lib/courseQueries.php";
-require_once "lib/surveyQueries.php";
-require_once "lib/scoreQueries.php";
-require_once "lib/resultsCalculations.php";
-require_once "lib/resultsFunctions.php";
-require_once "lib/reviewQueries.php";
-require_once "lib/loginStatus.php";
-
-$instructor_id = getInstructorId();
-
-// query information about the requester
-$con = connectToDatabase();
+require "../lib/database.php";
+require "../lib/constants.php";
+require "../lib/surveyQueries.php";
+require "lib/courseQueries.php";
+require "lib/surveyQueries.php";
+require "lib/scoreQueries.php";
+require "lib/resultsCalculations.php";
+require "lib/resultsFunctions.php";
+require "lib/reviewQueries.php";
+require "lib/loginStatus.php";
 
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -33,7 +28,6 @@ if ((!isset($_POST['survey'])) || (!isset($_POST['type']))) {
   exit();
 }
 
-
 // make sure the query string is an integer, reply 404 otherwise
 $survey_id = intval($_POST['survey']);
 
@@ -44,6 +38,9 @@ if ($survey_id === 0) {
   exit();
 }
 
+// Get a connection to the database
+$con = connectToDatabase();
+
 // Look up info about the requested survey
 $survey_info = getSurveyData($con, $survey_id);
 if (empty($survey_info)) {
@@ -52,6 +49,9 @@ if (empty($survey_info)) {
   echo $json_out;
   exit();
 }
+
+// Lookup the current user's instructor id
+$instructor_id = getInstructorId();
 
 // make sure the survey is for a course the current instructor actually teaches
 if (!isSurveyInstructor($con, $survey_id, $instructor_id)) {

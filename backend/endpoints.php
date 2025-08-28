@@ -1,14 +1,13 @@
 <?php
-error_reporting(-1); // reports all errors
-ini_set("display_errors", "1"); // shows all errors
-ini_set("log_errors", 1);
-session_start();
-
 require "lib/constants.php";
 require "lib/studentQueries.php";
 require "lib/database.php";
 require "lib/surveyQueries.php";
-date_default_timezone_set('America/New_York');
+
+error_reporting(-1); // reports all errors
+ini_set("display_errors", "1"); // shows all errors
+ini_set("log_errors", 1);
+session_start();
 
 if(!isset($_SESSION['student_id']) && !isset($_SESSION['id'])) {
     http_response_code(511);

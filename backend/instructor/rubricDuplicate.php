@@ -5,12 +5,11 @@ ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
 //bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "lib/instructorQueries.php";
-require_once "lib/rubricQueries.php";
-require_once "lib/rubricFormat.php";
-require_once "lib/loginStatus.php";
+require "../lib/database.php";
+require "../lib/constants.php";
+require "lib/rubricQueries.php";
+require "lib/rubricFormat.php";
+require "lib/loginStatus.php";
 
 $instructor_id = getInstructorId();
 
@@ -56,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $rubric_data = format_rubric_data($rubric_name, $rubric_scores, $rubric_topics);
 
     $response['data'] = $rubric_data;
-  
+
   }
 
   header("Content-Type: application/json; charset=UTF-8");
@@ -64,5 +63,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   echo $responseJSON;
   exit();
 }
-
 ?>

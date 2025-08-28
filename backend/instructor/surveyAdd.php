@@ -1,29 +1,26 @@
 <?php
+// //bring in required code
+require "../lib/database.php";
+require "../lib/constants.php";
+require '../lib/studentQueries.php';
+require "lib/enrollmentFunctions.php";
+require "lib/instructorQueries.php";
+require "lib/fileParse.php";
+require "lib/pairingFunctions.php";
+require "lib/rubricQueries.php";
+require "lib/surveyQueries.php";
+require "lib/courseQueries.php";
+require "lib/reviewQueries.php";
+require "lib/teamQueries.php";
+require "lib/loginStatus.php";
+
 //error logging
 error_reporting(-1); // reports all errors
 ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-// //bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once '../lib/studentQueries.php';
-require_once "lib/enrollmentFunctions.php";
-require_once "lib/instructorQueries.php";
-require_once "lib/fileParse.php";
-require_once "lib/pairingFunctions.php";
-require_once "lib/rubricQueries.php";
-require_once "lib/surveyQueries.php";
-require_once "lib/courseQueries.php";
-require_once "lib/reviewQueries.php";
-require_once "lib/teamQueries.php";
-require_once "lib/loginStatus.php";
-
 $instructor_id = getInstructorId();
-
-// set timezone
-date_default_timezone_set('America/New_York');
 
 // Verify that this is a proper request 
 if($_SERVER['REQUEST_METHOD'] !== 'POST') {

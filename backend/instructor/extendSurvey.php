@@ -6,22 +6,19 @@ ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
 // //bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once '../lib/studentQueries.php';
-require_once "lib/instructorQueries.php";
-require_once "lib/fileParse.php";
-require_once "lib/pairingFunctions.php";
-require_once "lib/rubricQueries.php";
-require_once "lib/surveyQueries.php";
-require_once "lib/courseQueries.php";
-require_once "lib/reviewQueries.php";
-require_once "lib/loginStatus.php";
+require "../lib/database.php";
+require "../lib/constants.php";
+require '../lib/studentQueries.php';
+require "lib/instructorQueries.php";
+require "lib/fileParse.php";
+require "lib/pairingFunctions.php";
+require "lib/rubricQueries.php";
+require "lib/surveyQueries.php";
+require "lib/courseQueries.php";
+require "lib/reviewQueries.php";
+require "lib/loginStatus.php";
 
 $instructor_id = getInstructorId();
-
-// set timezone
-date_default_timezone_set('America/New_York');
 
 // //query information about the requester
 $con = connectToDatabase();
@@ -86,7 +83,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
   $course_id = $survey_info['course_id'];
   // Get the info for the course that this instructor teaches 
-  $course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
+  $course_info = isCourseInstructor($con, $course_id, $instructor_id);
   if (empty($course_info)) {
     http_response_code(403);
     echo "403: Forbidden.";
@@ -96,11 +93,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $current_start_date = $survey_info['start_date'];
   $current_end_date = $survey_info['end_date'];
   $rubric_id = $survey_info['rubric_id'];
-  $course_name = $course_info['name'];
-  $course_code = $course_info['code'];
-  $course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
-  $course_year = $course_info['year'];
-  
   
   $s = new DateTime($current_start_date);
   $e = new DateTime($current_end_date);

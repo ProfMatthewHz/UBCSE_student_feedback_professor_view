@@ -1,6 +1,4 @@
 <?php
-require_once '../lib/constants.php';
-
 function addCourse($con, $course_code, $course_name, $semester, $course_year) {
   $stmt = $con->prepare('INSERT INTO courses (code, name, semester, year) VALUES (?, ?, ?, ?)');
   $stmt->bind_param('ssii', $course_code, $course_name, $semester, $course_year);
@@ -51,25 +49,6 @@ function isCourseInstructor($con, $course_id, $instructor_id) {
   return $retVal;
 }
 
-
-function getSingleCourseInfo($con, $course_id, $instructor_id) {
-  // Pessmisticaly assume that the course fails
-  $retVal = null;
-  $stmt = $con->prepare('SELECT code, name, semester, year 
-                         FROM courses
-                         INNER JOIN course_instructors ON courses.id=course_instructors.course_id
-                         WHERE id=? AND instructor_id=?');
-  $stmt->bind_param('ii', $course_id, $instructor_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $course_info = $result->fetch_all(MYSQLI_ASSOC);
-  if ($result->num_rows > 0) {
-    $retVal = $course_info[0];
-  }
-  $stmt->close();
-  return $retVal;
-}
-
 function getInstructorTermCourses($con, $instructor_id, $semester, $year){
   $retVal = array();
 
@@ -100,7 +79,7 @@ function getSurveysFromSingleCourse($con, $course_id){
   $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, surveys.survey_type_id, surveys.pm_weight, COUNT(eval_id) AS total, COUNT(evals.id) AS completed
                          FROM surveys
                          LEFT JOIN reviews ON reviews.survey_id=surveys.id
-                         LEFT JOIN evals ON evals.id=reviews.eval_id AND evals.completed=1
+                         LEFT JOIN evals ON evals.id=reviews.eval_id
                          WHERE course_id=?
                          GROUP BY name, start_date, end_date, rubric_id, surveys.id
                          ORDER BY start_date DESC, end_date DESC');
@@ -157,10 +136,10 @@ function getSurveysFromSingleCourse($con, $course_id){
   return $retVal;
 }
 
-function getInstructorHistoricalTerms($con, $instructor_id) {
+function getInstructorHistoricalTerms($con, $instructor_id, $month_map, $semester_map) {
   // Get the current semester and year
   $currentMonth = idate('m');
-  $currentSemester = MONTH_MAP_SEMESTER[$currentMonth];
+  $currentSemester = $month_map[$currentMonth];
   $currentYear = idate('Y');
   $stmt = $con->prepare('SELECT DISTINCT semester, year
                          FROM courses
@@ -180,7 +159,7 @@ function getInstructorHistoricalTerms($con, $instructor_id) {
 
   // Map numeric semesters to string values
   foreach ($terms as &$term) {
-    $term['semester'] = SEMESTER_MAP_REVERSE[$term['semester']];
+    $term['semester'] = $semester_map[$term['semester']];
   }
 
   return $terms;

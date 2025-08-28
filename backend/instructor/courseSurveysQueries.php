@@ -4,10 +4,10 @@ ini_set("display_errors", "1");
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "lib/courseQueries.php";
-require_once "lib/loginStatus.php";
+require "../lib/database.php";
+require "../lib/constants.php";
+require "lib/courseQueries.php";
+require "lib/loginStatus.php";
 
 $instructor_id = getInstructorId();
 

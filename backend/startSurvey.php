@@ -7,7 +7,7 @@
   require "lib/database.php";
   require "lib/reviewQueries.php";
   require "lib/surveyQueries.php";
-  require "lib/loginRoutine.php";
+  require "lib/loginStatus.php";
 
   $student_id = getStudentId();
 

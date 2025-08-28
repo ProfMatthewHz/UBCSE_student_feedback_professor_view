@@ -8,13 +8,12 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 // Bring in required code
-require_once "lib/random.php";
-require_once "lib/database.php";
-require_once "lib/constants.php";
-require_once "instructor/lib/pairingFunctions.php";
-require_once "instructor/lib/instructorQueries.php";
-require_once "lib/studentQueries.php";
-require_once "lib/loginRoutine.php";
+require "lib/database.php";
+require "lib/constants.php";
+require "instructor/lib/pairingFunctions.php";
+require "instructor/lib/instructorQueries.php";
+require "lib/studentQueries.php";
+require "lib/loginRoutine.php";
 
 // Sanity check that prevents this from being used on the production server
 if (!empty($_SERVER['uid'])) {
@@ -31,7 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Bad Request: Missing parameters.";
         exit();
     }
-    setSessionVariables($_POST["UBIT"]);
+    $con = connectToDatabase();
+    setSessionVariables($con, $_POST["UBIT"]);
     
     if (!empty($_SESSION['redirect'])) {
         http_response_code(302);

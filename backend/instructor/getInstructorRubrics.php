@@ -7,12 +7,12 @@ ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
 //bring in required code
-require_once "../lib/database.php";
-require_once "../lib/constants.php";
-require_once "lib/instructorQueries.php";
-require_once "lib/rubricQueries.php";
-require_once "lib/rubricFormat.php";
-require_once "lib/loginStatus.php";
+require "../lib/database.php";
+require "../lib/constants.php";
+require "lib/instructorQueries.php";
+require "lib/rubricQueries.php";
+require "lib/rubricFormat.php";
+require "lib/loginStatus.php";
 
 $instructor_id = getInstructorId();
 
