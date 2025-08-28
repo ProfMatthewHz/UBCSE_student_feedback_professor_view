@@ -831,12 +831,13 @@ INSERT INTO `surveys` (`id`, `course_id`, `start_date`, `end_date`, `name`, `rub
 (45, 42358, '2023-12-15 22:00:00', '2023-12-20 23:00:00', '71 - Survey', 1, 2, 1, 1),
 (46, 42358, '2023-12-15 23:00:00', '2023-12-20 23:00:00', 'Delete this survey 1', 1, 2, 1, 1);
 
-INSERT INTO `survey_types` (`id`, `description`, `file_organization`, `display_multiplier`, `review_class`) VALUES
-(5, 'TEAM', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0, 'peer'),
-(2, 'TEAM + SELF', 'One row per team. Each row contains the email addresses for all team members. Blank columns are ignored', 0, 'unmanaged'),
-(3, 'TEAM + SELF + MANAGER', 'One row per team. Each row contains the email addresses for all team members with the manager email address listed last. Blank columns are ignored', 1, 'managed'),
-(4, 'MANAGER', 'One row per individual being reviewed. Every row contains the email addresses of the reviewers and the person being reviewed. The person being reviewed MUST be in the final column in the row.', 0, 'managed'),
-(1, 'Single Pairs', 'One row per review. Each row has 2 columns: email of the reviewer, email of the person being reviewed.', 0, 'unmanaged');
+INSERT INTO `survey_types` (`id`, `text`, `description`, `file_organization`, `display_multiplier`, `review_class`) VALUES
+(1, 'Single Pairs', 'One person reviews another person', 'One row per review. Each row needs 2 columns: the email of the reviewer and then the email of the person being reviewed.', 0, 'peer'),
+(2, 'TEAM + SELF', 'Each member of the team is reviewed by all team members', 'One row per team. Each row contains the email addresses for all team members.', 0, 'unmanaged'),
+(3, 'TEAM + SELF + MANAGER', 'Each member of the team is reviewed by all team members and the manager', 'One row per team. Each row contains the email addresses for all team members with the manager email address\'s listed last.', 1, 'managed'),
+(4, 'MANAGER', 'Single individual reviewed by all other team members', 'One row per team. Each row contains the email addresses of the reviewers and the email address of the person being reviewed last', 0, 'managed'),
+(5, 'TEAM', 'Each member of the team reviewed by all other team members', 'One row per team. Each row contains the email addresses of all team members', 0, 'unmanaged'),
+(6, 'COLLECTIVE', 'Teams submit a single shared evaluation of another team. The evaluation is shared by all members of the reviewed team equally', 'One row per review. Each row has 2 columns: team name of the reviewers, team name being reviewed', 0, 'aggregate');
 
 INSERT INTO `student_visit_data` (`student_id`, `survey_id`, `visit_count`, `last_visit`) VALUES
 (50243490, 42, 11, '2024-02-29 14:30:06');
