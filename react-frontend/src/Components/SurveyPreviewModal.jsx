@@ -17,7 +17,7 @@ const SurveyPreviewModal = ({modalClose, surveyData}) => {
     }, [rubricData, surveyResults]);
 
     const getRubricData = useCallback((rubric_id) => {
-      fetch(process.env.REACT_APP_API_URL + "lib/getRubricTable.php", {
+      fetch(process.env.REACT_APP_API_URL + "getRubricTable.php", {
           method: 'POST',
           credentials: "include",
           headers: {

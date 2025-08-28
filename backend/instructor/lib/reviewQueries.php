@@ -5,16 +5,16 @@ function getValidEvalsOfStudentByTeam($con, $survey_id) {
   $valid_evals = array();
   // The other maps an eval id to if it should be included in the normalized average
   $eval_normalized = array();
-  // Select all of the evaluations 
-  $stmt = $con->prepare('SELECT DISTINCT reviewed_id, eval_id, evals.weight
+  // Select all of the evaluations  -- this is slower on postel? dropping the DISTINCT and eliminate the weight <> 0 does not help
+  $stmt = $con->prepare('SELECT DISTINCT reviews.reviewed_id, evals.eval_id, evals.weight
                          FROM reviews
                          INNER JOIN evals ON reviews.eval_id = evals.id
-                         LEFT JOIN (SELECT survey_id `valid_survey`, reviewer_id `valid_reviewer`, team_id `valid_team`
-                                    FROM reviews 
+                         LEFT JOIN (SELECT survey_id, reviewer_id, team_id
+                                    FROM reviews
                                     INNER JOIN evals ON reviews.eval_id = evals.id
-                                    WHERE completed = 0) validate ON survey_id=valid_survey AND reviewer_id=valid_reviewer AND team_id=valid_team 
-                         WHERE survey_id=? AND valid_reviewer is null AND weight <> 0');
-  $stmt->bind_param('i', $survey_id);
+                                    WHERE survey_id=? AND completed = 0) validate ON survey_id=validate.survey_id AND reviewer_id=validate.reviewer_id AND team_id=validate.team_id
+                         WHERE reviews.survey_id=? AND validate.reviewer_id is null AND evals.weight <> 0');
+  $stmt->bind_param('ii', $survey_id, $survey_id);
   $stmt->execute();
   $result = $stmt->get_result();
   while ($row = $result->fetch_array(MYSQLI_NUM)) {
