@@ -371,7 +371,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
 
     return (
         <div className="confirm-modal modal">
-            <div style={{ width: "1200px", maxWidth: "90%" }} className="modal-content modal-phone">
+            <div style={{ minWidth: "75vw", maxWidth: "90vw" }} className="modal-content modal-phone">
                 <ConfirmPopup />
                 <div className="CancelContainer">
                     <button className="CancelButton" onClick={quitModal}>
