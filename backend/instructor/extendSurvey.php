@@ -86,7 +86,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
   $course_id = $survey_info['course_id'];
   // Get the info for the course that this instructor teaches 
-  $course_info = getSingleCourseInfo($con, $course_id, $instructor_id);
+  $course_info = isCourseInstructor($con, $course_id, $instructor_id);
   if (empty($course_info)) {
     http_response_code(403);
     echo "403: Forbidden.";
@@ -96,11 +96,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   $current_start_date = $survey_info['start_date'];
   $current_end_date = $survey_info['end_date'];
   $rubric_id = $survey_info['rubric_id'];
-  $course_name = $course_info['name'];
-  $course_code = $course_info['code'];
-  $course_term = SEMESTER_MAP_REVERSE[$course_info['semester']];
-  $course_year = $course_info['year'];
-  
   
   $s = new DateTime($current_start_date);
   $e = new DateTime($current_end_date);
