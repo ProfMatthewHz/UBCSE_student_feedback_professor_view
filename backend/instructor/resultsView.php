@@ -17,11 +17,6 @@ require_once "lib/resultsFunctions.php";
 require_once "lib/reviewQueries.php";
 require_once "lib/loginStatus.php";
 
-$instructor_id = getInstructorId();
-
-// query information about the requester
-$con = connectToDatabase();
-
 header("Content-Type: application/json; charset=UTF-8");
 
 // respond not found on no query string parameters
@@ -33,7 +28,6 @@ if ((!isset($_POST['survey'])) || (!isset($_POST['type']))) {
   exit();
 }
 
-
 // make sure the query string is an integer, reply 404 otherwise
 $survey_id = intval($_POST['survey']);
 
@@ -44,6 +38,9 @@ if ($survey_id === 0) {
   exit();
 }
 
+// Get a connection to the database
+$con = connectToDatabase();
+
 // Look up info about the requested survey
 $survey_info = getSurveyData($con, $survey_id);
 if (empty($survey_info)) {
@@ -52,6 +49,9 @@ if (empty($survey_info)) {
   echo $json_out;
   exit();
 }
+
+// Lookup the current user's instructor id
+$instructor_id = getInstructorId();
 
 // make sure the survey is for a course the current instructor actually teaches
 if (!isSurveyInstructor($con, $survey_id, $instructor_id)) {
