@@ -127,9 +127,9 @@ const fetchData = useCallback((surveyid) => {
   }, [surveyID, fetchData]);
 
   return (
-    <div style={{ minHeight: "100vh" }} className="modal">
-      <div style={{ minHeight: "98vh", padding: "0px" }} className="modal-content modal-phone">
-        <div style={{ maxWidth: "100vw", maxHeight: "100vh" }} >
+    <div className="modal">
+      <div style={{ minHeight: "98&", maxWidth: "100%" }} className="modal-content modal-phone">
+        <div>
           {showToast && (
               <div className="top-error-bar">
                 Could not submit evaluation! Please try again later.

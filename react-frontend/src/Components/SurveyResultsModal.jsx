@@ -184,7 +184,7 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
     
     return (
         <div className="modal">
-            <div style={{ minWidth: "75vw", maxWidth: "90vw" }} className="modal-content modal-phone">
+            <div style={{ minWidth: "75%", maxWidth: "90%" }} className="modal-content modal-phone">
                 <div className="CancelContainer">
                     <button
                         className="CancelButton"
