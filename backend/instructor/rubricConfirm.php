@@ -9,7 +9,6 @@ ini_set("error_log", "~/php-error.log");
 require "../lib/database.php";
 require "../lib/constants.php";
 require "lib/rubricQueries.php";
-require "lib/rubricTable.php";
 require "lib/loginStatus.php";
 
 $instructor_id = getInstructorId();

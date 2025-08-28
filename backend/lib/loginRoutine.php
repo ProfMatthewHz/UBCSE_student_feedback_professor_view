@@ -1,7 +1,4 @@
 <?php
-require_once "instructor/lib/instructorQueries.php";
-require_once "studentQueries.php";
-
 function setSessionVariables($con, $ubit) {
   // Only do this when the connection is new
   if (empty($_SESSION['redirect'])) {

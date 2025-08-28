@@ -96,6 +96,7 @@ CREATE TABLE `surveys` (
  PRIMARY KEY (`id`),
  KEY `surveys_course_idx` (`course_id`),
  KEY `surveys_rubric_idx` (`rubric_id`),
+ KEY `surveys_survey_type_idx` (`survey_type_id`),
  CONSTRAINT `surveys_course_constraint` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
  CONSTRAINT `surveys_rubric_constraint` FOREIGN KEY (`rubric_id`) REFERENCES `rubrics` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
  CONSTRAINT `surveys_survey_type_constraint` FOREIGN KEY (`survey_type_id`) REFERENCES `survey_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -218,6 +219,8 @@ CREATE TABLE `student_visit_data` (
   `survey_id` int(11) NOT NULL,
   `visit_count` int(11) DEFAULT 1,
   `last_visit` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+   KEY `student_visit_data_student_idx` (`student_id`),
+   KEY `student_visit_data_survey_idx` (`survey_id`),
    CONSTRAINT `student_visit_data_student_constraint` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
    CONSTRAINT `student_visit_data_survey_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
@@ -246,8 +249,8 @@ CREATE TABLE `collective_reviews` (
  KEY `collective_reviews_reviewer_idx` (`reviewer_id`),
  KEY `collective_reviews_reviewed_idx` (`reviewed_id`),
  KEY `collective_reviews_eval_idx` (`eval_id`),
- CONSTRAINT `collective_reviews_eval_constraints` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
- CONSTRAINT `collective_reviews_reviewed_constraints` FOREIGN KEY (`reviewed_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
- CONSTRAINT `collective_reviews_reviewer_constraints` FOREIGN KEY (`reviewer_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
- CONSTRAINT `collective_reviews_survey_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+ CONSTRAINT `collective_reviews_eval_constraint` FOREIGN KEY (`eval_id`) REFERENCES `evals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `collective_reviews_reviewed_constraint` FOREIGN KEY (`reviewed_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `collective_reviews_reviewer_constraint` FOREIGN KEY (`reviewer_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `collective_reviews_survey_constrain` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
