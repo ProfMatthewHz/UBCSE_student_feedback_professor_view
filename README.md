@@ -1,5 +1,3 @@
-# Peer- and self-evaluation tool
+# Peer- and self-evaluation tool v 2.0
 
-# Authors include:
-# Justin Henderson
-# Matthew Hertz
+More text is needed here and will be added "soon"
