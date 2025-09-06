@@ -1,8 +1,6 @@
 <?php
 require 'lib/constants.php';
 require 'lib/database.php';
-require "instructor/lib/instructorQueries.php";
-require "lib/studentQueries.php";
 require "lib/loginRoutine.php";
 
 error_reporting(-1); // reports all errors

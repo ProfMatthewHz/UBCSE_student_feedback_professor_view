@@ -1,4 +1,33 @@
 <?php
+function getStudentInfoFromEmail($db_connection, $email) {
+  $ret_val = null;
+  $stmt = $db_connection->prepare('SELECT id, name FROM students WHERE email=?');
+  $stmt->bind_param('s',$email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $row = $result->fetch_array(MYSQLI_NUM);
+  $ret_val = $row;
+  $stmt->close();
+  return $ret_val;
+}
+
+function getInstructorIdForEmail($con, $email) {
+  // Pessimistically assume that this fails
+  $retVal = 0;
+  $stmt = $con->prepare('SELECT id 
+                         FROM instructors
+                         WHERE email=?');
+  $stmt->bind_param('s', $email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $data = $result->fetch_all(MYSQLI_ASSOC);
+  if ($result->num_rows > 0) {
+    $retVal = $data[0]['id'];
+  }
+  $stmt->close();
+  return $retVal;
+}
+
 function setSessionVariables($con, $ubit) {
   // Only do this when the connection is new
   if (empty($_SESSION['redirect'])) {

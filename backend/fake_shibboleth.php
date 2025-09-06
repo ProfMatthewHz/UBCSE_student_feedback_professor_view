@@ -10,8 +10,6 @@ session_start();
 // Bring in required code
 require "lib/database.php";
 require "lib/constants.php";
-require "instructor/lib/instructorQueries.php";
-require "lib/studentQueries.php";
 require "lib/loginRoutine.php";
 
 // Sanity check that prevents this from being used on the production server

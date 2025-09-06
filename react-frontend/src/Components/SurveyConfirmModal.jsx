@@ -432,7 +432,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                     Team Evaluation Assignments
                 </button>)}
             </div>
-            <h3 className="confirm--bottom-label form__item--info">{listingType==="individual"? "Survey Participants" : listingType==="individual" ? "Survey Teams" : "Evaluation Assignments"}</h3>
+            <h3 className="confirm--bottom-label form__item--info">{listingType==="individual"? "Survey Participants" : listingType==="team_roster" ? "Survey Teams" : "Evaluation Assignments"}</h3>
             {listingType === "individual" && (
                 <div className="confirm--bottom-container">
                     {roster_array && roster_array.length > 0 ? (
@@ -519,27 +519,27 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                                         )}
                                         <td>
                                             <div className="teammembers">
-                                            {team_data[teamKey]["roster"].map((member, memberIndex) => (
-                                                <label className={calculateLabelClass(member, team_data[teamKey]["roster"].length)} key={memberIndex}>
-                                                    <div className="name">
-                                                    {individual_data[member.email]["name"]}</div> <div className="close" onClick={() => removeMember(teamKey, memberIndex)}>x</div>
-                                                </label>
-                                            ))}
-                                            {pairing_mode !== 1 && reasonShown !== "Review" &&
-                                            (<div className="add-member-container">
-                                                <label className="string-list-item addition visible" onClick={allowAddMember}>
-                                                    + Add members
-                                                </label>
-                                                <select className="addition add-member-select" onChange={(e) => {addMember(e, teamKey)}} onBlur={(e) => hideStudentSelector(e)} >
-                                                    <option value="">Select a member</option>
-                                                    {unassigned_students.map((student, studentIndex) => (
-                                                        <option key={studentIndex} value={student.email}>
-                                                            {student.name} ({student.email})
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>)}
-                                            <label className="delete-team" onClick={(e) => verifyDeleteTeam(e, teamKey)}></label>
+                                                {team_data[teamKey]["roster"].map((member, memberIndex) => (
+                                                    <label className={calculateLabelClass(member, team_data[teamKey]["roster"].length)} key={memberIndex}>
+                                                        <div className="name">
+                                                        {individual_data[member.email]["name"]}</div> <div className="close" onClick={() => removeMember(teamKey, memberIndex)}>x</div>
+                                                    </label>
+                                                ))}
+                                                {pairing_mode !== 1 && reasonShown !== "Review" &&
+                                                (<div className="add-member-container">
+                                                    <label className="string-list-item addition visible" onClick={allowAddMember}>
+                                                        + Add members
+                                                    </label>
+                                                    <select className="addition add-member-select" onChange={(e) => {addMember(e, teamKey)}} onBlur={(e) => hideStudentSelector(e)} >
+                                                        <option value="">Select a member</option>
+                                                        {unassigned_students.map((student, studentIndex) => (
+                                                            <option key={studentIndex} value={student.email}>
+                                                                {student.name} ({student.email})
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>)}
+                                                <label className="delete-team" onClick={(e) => verifyDeleteTeam(e, teamKey)}></label>
                                             </div>
                                         </td>
                                     </tr>
