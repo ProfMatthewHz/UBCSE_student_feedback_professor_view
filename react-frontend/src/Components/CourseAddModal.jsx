@@ -336,7 +336,7 @@ const CourseAddModal = ({closeModal, updateCourseListing}) => {
                         <div className="modal-form--row-container">
                             <label className="form__item--file-label" htmlFor="addcourse-file-input">
                                 Roster File
-                                <span className="form__item--file-label--optional">One row per student. The columns in each row should be (in order): stuent's  email, first name, last name</span>
+                                <span className="form__item--file-label--optional">One row per student. The columns in each row should be (in order): student's email, first name, last name</span>
                                 <input
                                     type="file"
                                     id="addcourse-file-input"

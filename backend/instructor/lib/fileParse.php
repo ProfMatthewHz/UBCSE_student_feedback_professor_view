@@ -61,7 +61,7 @@ function parse_roster_file($file_handle) {
       $ret_val['error'][] = 'Line ' . $line_num . ' missing at least 1 of: email address, first name, and last name';
     } else if ($line_fields > 3) {
       $ret_val['error'][] = 'Line ' . $line_num . ' has more than just: email address, first name, and last name';
-    } else {
+    } else if ($line_fields == 3) {
       // Must have 3 fields on this line
       $error = '';
       if (!filter_var($line_text[0], FILTER_VALIDATE_EMAIL)) {

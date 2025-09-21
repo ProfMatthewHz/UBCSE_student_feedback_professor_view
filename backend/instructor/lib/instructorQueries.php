@@ -20,23 +20,6 @@ function getAllOtherInstructorsFull($con, $instructor_id) {
   return $ret_val;
 }
 
-function getInstructorIdForEmail($con, $email) {
-  // Pessimistically assume that this fails
-  $retVal = 0;
-  $stmt = $con->prepare('SELECT id 
-                         FROM instructors
-                         WHERE email=?');
-  $stmt->bind_param('s', $email);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = $result->fetch_all(MYSQLI_ASSOC);
-  if ($result->num_rows > 0) {
-    $retVal = $data[0]['id'];
-  }
-  $stmt->close();
-  return $retVal;
-}
-
 function getCSRFToken($con, $id) {
   // Pessimistically assume that this fails
   $retVal = 0;
