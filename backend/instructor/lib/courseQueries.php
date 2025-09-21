@@ -76,7 +76,7 @@ function getSurveysFromSingleCourse($con, $course_id){
   $retVal["active"] = array(); 
   $retVal["expired"] = array();
   
-  $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, surveys.survey_type_id, surveys.pm_weight, COUNT(eval_id) AS total, COUNT(evals.id) AS completed
+  $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, surveys.survey_type_id, surveys.pm_weight, COUNT(eval_id) AS total, COUNT(evals.completed) AS completed
                          FROM surveys
                          LEFT JOIN reviews ON reviews.survey_id=surveys.id
                          LEFT JOIN evals ON evals.id=reviews.eval_id
