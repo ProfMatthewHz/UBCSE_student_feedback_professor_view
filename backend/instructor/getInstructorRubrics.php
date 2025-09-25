@@ -14,12 +14,15 @@ require "lib/rubricQueries.php";
 require "lib/rubricFormat.php";
 require "lib/loginStatus.php";
 
-$instructor_id = getInstructorId();
-
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
 //query information about the requester
 $con = connectToDatabase();
 
 $ret_val = array();
+
+// This should eventually be fixed, but since it is not currently used....
+$instructor_id = 0;//getInstructorId();
 
 # get all rubrics and return json
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {

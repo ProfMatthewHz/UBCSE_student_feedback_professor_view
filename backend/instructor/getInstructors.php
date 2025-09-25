@@ -8,6 +8,7 @@ require "../lib/database.php";
 require "lib/loginStatus.php";
 require "lib/instructorQueries.php";
 
+
 $instructor_id = getInstructorId();
 
 $con = connectToDatabase();
@@ -15,6 +16,8 @@ $con = connectToDatabase();
 $instructors = getAllOtherInstructorsFull($con, $instructor_id);
 
 // Output the array of arrays for instructor details
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 echo json_encode($instructors);
 ?>

@@ -16,7 +16,6 @@ $instructor_id = getInstructorId();
 //query information about the requester
 $con = connectToDatabase();
 
-
 // Verify that we are handling a POST request
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
   http_response_code(504);
@@ -32,5 +31,8 @@ if (!isset($_POST["rubric"]) || !ctype_digit($_POST["rubric"])) {
 $rubric_id = intval($_POST["rubric"]);
 $data = getRubricData($con, $rubric_id);
 $json_data = json_encode($data);
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
 echo $json_data;
 ?>

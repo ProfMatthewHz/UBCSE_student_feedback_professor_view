@@ -76,6 +76,9 @@
     'prompt' => $prompt,
     'id' => $student_id 
   );
-  
+      
+  header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+  header('Access-Control-Allow-Credentials: true');
+  header('Content-Type: application/json');
   echo json_encode($data);
 ?>

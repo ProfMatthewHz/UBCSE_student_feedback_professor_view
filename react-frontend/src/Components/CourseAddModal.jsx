@@ -282,7 +282,7 @@ const CourseAddModal = ({closeModal, updateCourseListing}) => {
                                             type="text"
                                             id="course-code"
                                             value={courseCode}
-                                            onChange={(e) => setCourseCode(e.target.value.trim())}
+                                            onChange={(e) => setCourseCode(e.target.value)}
                                             placeholder="CSE 115"
                                             className={
                                                 (duplicateError || codeEmptyError) ? "form__item--input-error" : undefined
@@ -306,7 +306,7 @@ const CourseAddModal = ({closeModal, updateCourseListing}) => {
                                             type="text"
                                             id="course-name"
                                             value={courseName}
-                                            onChange={(e) => setCourseName(e.target.value.trim())}
+                                            onChange={(e) => setCourseName(e.target.value)}
                                             placeholder="Introduction to Computer Science"
                                             className={
                                                 (duplicateError || nameEmptyError) ? "form__item--input-error" : undefined

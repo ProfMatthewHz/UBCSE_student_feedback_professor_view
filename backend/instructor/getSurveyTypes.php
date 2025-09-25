@@ -11,6 +11,9 @@ require "../lib/constants.php";
 require "./lib/pairingFunctions.php";
 require "lib/loginStatus.php";
 
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
+
 $instructor_id = getInstructorId();
 
 //query information about the requester

@@ -17,8 +17,6 @@ require "lib/resultsFunctions.php";
 require "lib/reviewQueries.php";
 require "lib/loginStatus.php";
 
-header("Content-Type: application/json; charset=UTF-8");
-
 // respond not found on no query string parameters
 $survey_id = NULL;
 if ((!isset($_POST['survey'])) || (!isset($_POST['type']))) {
@@ -120,6 +118,10 @@ if ($results_wanted === 'completion') {
   $results = createNormalizedAveragesResult($teammates, $normalized_averages, $result_views);
   // Now output the results
   $json_results = json_encode($results);
+  header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+  header('Access-Control-Allow-Credentials: true');
+  header('Content-Type: application/json');
+
   echo $json_results;
   exit();
 } else {

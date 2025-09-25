@@ -12,6 +12,9 @@ require "lib/enrollmentFunctions.php";
 require "lib/instructorQueries.php";
 require "lib/loginStatus.php";
 
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
+
 $instructor_id = getInstructorId();
 
 $con = connectToDatabase();
@@ -29,24 +32,17 @@ if (!isset($_POST['semester']) || !isset($_POST['year'])) {
     echo json_encode(array("error" => "Bad Request: Missing parameters."));
     exit();
 }
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Assuming you are sending parameters in the POST request
    
-    $semester = $_POST['semester'];
-    $year = $_POST['year'];
-    
-    // Call the function and get the results
-    $result = getInstructorTermCourses($con, $instructor_id, $semester, $year);
-   
-    // Return the results as JSON
-    header('Content-Type: application/json');
-    echo json_encode($result);
-} else {
-    // Return an error message for unsupported request methods
-    http_response_code(405); // Method Not Allowed
-    echo "Only POST requests are allowed.";
-}
+$semester = $_POST['semester'];
+$year = $_POST['year'];
 
+// Call the function and get the results
+$result = getInstructorTermCourses($con, $instructor_id, $semester, $year);
 
+// Return the results as JSON
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
 
+echo json_encode($result);
 ?>

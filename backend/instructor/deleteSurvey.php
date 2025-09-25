@@ -46,8 +46,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   } else {
     $response = array('error' => "Server Error: Could not delete survey.");
   }
+  
+  header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+  header('Access-Control-Allow-Credentials: true');
+  header('Content-Type: application/json');
 
-  header("Content-Type: application/json; charset=UTF-8");
   $responseJSON = json_encode($response);
   echo $responseJSON;
 }

@@ -5,12 +5,13 @@ ini_set("display_errors", "1"); // Shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-session_start();
-
 // Bring in required code
 require "lib/database.php";
 require "lib/constants.php";
+require "lib/loginStatus.php";
 require "lib/loginRoutine.php";
+
+session_start();
 
 // Sanity check that prevents this from being used on the production server
 if (!empty($_SERVER['uid'])) {

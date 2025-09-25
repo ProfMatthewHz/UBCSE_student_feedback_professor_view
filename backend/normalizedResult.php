@@ -54,6 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $ret_val = array("result" => "normalized", "data" => $normalized_averages[$student_id]);
 
     // $results now contains your criteria as keys and [AvgScore, Median] as values
+    header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+    header('Access-Control-Allow-Credentials: true');
+    header('Content-Type: application/json');
     echo json_encode($ret_val);
     exit();
 }

@@ -8,6 +8,8 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 
 session_start();
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
 
 // Set the session variables when running in production and it is needed
 if (empty($_SESSION['redirect']) && !empty($_SERVER['uid'])) {

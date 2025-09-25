@@ -8,14 +8,16 @@ require "lib/database.php";
 require "lib/surveyQueries.php";
 require "lib/reviewQueries.php";
 require "lib/scoreQueries.php";
-require "lib/loginStatusphp";
+require "lib/loginStatus.php";
 
 $student_id = getStudentId();
 
-header('Content-Type: application/json');
-
 $con = connectToDatabase();
 $responseArray = [];
+
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Verify that the survey exists
@@ -121,6 +123,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // $results now contains your criteria as keys and [AvgScore, Median] as values
     echo json_encode($results);
 }
-
-
-
+?>

@@ -38,8 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $retVal["active"] = $courseSurveys["active"];
         $retVal["expired"] = $courseSurveys["expired"];
     }
-
-    header("Content-Type: application/json; charset=UTF-8");
+    
+    header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+    header('Access-Control-Allow-Credentials: true');
+    header("Content-Type: application/json");
     $myJSON = json_encode($retVal);
     echo $myJSON;
 }

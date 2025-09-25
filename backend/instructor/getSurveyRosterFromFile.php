@@ -182,7 +182,9 @@ if ($pairing_mode == 6) {
   $response = processIndividualSurvey($con, $course_id, $pairing_mode);
 }
 // Emit the response
-header("Content-Type: application/json; charset=UTF-8");
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
 $responseJSON = json_encode($response);
 echo $responseJSON;
 ?>

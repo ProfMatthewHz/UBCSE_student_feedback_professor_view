@@ -16,6 +16,8 @@ $con = connectToDatabase();
 $result = getInstructorHistoricalTerms($con, $instructor_id, MONTH_MAP_SEMESTER, SEMESTER_MAP_REVERSE);
     
 // Return the results as JSON
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 echo json_encode($result);
 ?>

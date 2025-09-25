@@ -20,8 +20,6 @@ $instructor_id = getInstructorId();
 
 //query information about the requester
 $con = connectToDatabase();
-header("Content-Type: application/json; charset=UTF-8");
-
 
 $instructor_ids = getAllInstructorIds($con);
 
@@ -147,6 +145,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
   // Now lets dump the data we found
   $myJSON = json_encode($errorMsg);
+  header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+  header('Access-Control-Allow-Credentials: true');
+  header('Content-Type: application/json');
   echo $myJSON;
 }
 ?>

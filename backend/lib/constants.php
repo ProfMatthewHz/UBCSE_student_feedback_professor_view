@@ -1,15 +1,19 @@
 <?php
 # Local development mode
 #define("FRONTEND_HOME","http://localhost:3000/teamwork/instructor");
+#define("FRONTEND_SERVER","http://localhost:3000");
 
 # Local testing mode
 #define("FRONTEND_HOME","http://localhost/StudentSurvey/react-frontend/build/");
+#define("FRONTEND_SERVER","http://localhost/");
 
 # Student testing mode
 #define("FRONTEND_HOME","http://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-302a/StudentSurvey/react-frontend/build/");
+#define("FRONTEND_SERVER","http://www-student.cse.buffalo.edu/");
 
 # Production mode
 define("FRONTEND_HOME","https://cse.buffalo.edu/teamwork/react-frontend/build/");
+define("FRONTEND_SERVER","https://cse.buffalo.edu");
 
 define("SESSIONS_SALT", "session-salt");
 define("PBKDF2_ITERS", 50000);

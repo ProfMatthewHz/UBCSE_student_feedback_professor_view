@@ -78,7 +78,9 @@ if ($survey_type == 6) {
 // Create the response
 $survey_info = array( 'individuals' => $individual_data, 'teams' => $team_info, 'pairings' => $team_pairings );
 $response = array( 'data' => $survey_info, 'errors' => $errorMsg );
-header("Content-Type: application/json; charset=UTF-8");
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
 $responseJSON = json_encode($response);
 echo $responseJSON;
 ?>

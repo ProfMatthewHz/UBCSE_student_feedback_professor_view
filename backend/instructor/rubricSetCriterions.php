@@ -137,7 +137,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errors_response['errors'] = $errorMsg;
   }
 
-  header("Content-Type: application/json; charset=UTF-8");
+  header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+  header('Access-Control-Allow-Credentials: true');
+  header('Content-Type: application/json');
   $errorsJSON = json_encode($errors_response, JSON_ENCODE_OPTIONS);
   echo $errorsJSON;
 

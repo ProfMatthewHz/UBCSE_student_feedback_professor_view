@@ -4,6 +4,7 @@ ini_set("display_errors", "1");
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
+require "lib/constants.php";
 require "lib/database.php";
 require "lib/surveyQueries.php";
 require "lib/visitCountQueries.php";
@@ -13,9 +14,6 @@ $student_id = getStudentId();
 
 // Ensure the database connection is established
 $con = connectToDatabase();
-if (!$con) {
-    die("Connection failed: " . mysqli_connect_error());
-}
 
 if (!isset($_POST['survey-id'])) {
     http_response_code(400);
@@ -43,6 +41,8 @@ $response = [
     "message" => "Student visit data updated successfully."
 ];
 
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 echo json_encode($response);
 ?>

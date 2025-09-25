@@ -106,7 +106,9 @@ if (empty($teams) || ($pairing_mode == 6 && (($collective_pairings == null) || e
 }
 // Create the response
 $response = array('errors' => $errorMsg );
-header("Content-Type: application/json; charset=UTF-8");
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
 $responseJSON = json_encode($response);
 echo $responseJSON;
 ?>

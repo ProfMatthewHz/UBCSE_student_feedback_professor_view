@@ -13,8 +13,6 @@ require "lib/loginStatus.php";
 
 $student_id = getStudentId();
 
-header('Content-Type: application/json');
-
 if(!isset($_SESSION['mc_answers'])) {
     http_response_code(400);
     echo json_encode(array('error' => 'Bad request: Request only valid from within app'));
@@ -91,5 +89,9 @@ foreach ($response as $topic_id => $score_id) {
 }
 // Update the evals table to mark it as completed
 $result = markEvaluationCompleted($con, $eval_id);
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
+
 echo json_encode(array("success" => $result));
 ?>

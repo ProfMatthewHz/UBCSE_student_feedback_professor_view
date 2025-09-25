@@ -15,6 +15,8 @@ if(!isset($_SESSION['student_id']) && !isset($_SESSION['id'])) {
     exit();
 }
 
+header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 $con = connectToDatabase();
