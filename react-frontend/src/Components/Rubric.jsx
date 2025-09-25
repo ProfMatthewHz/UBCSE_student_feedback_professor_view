@@ -23,16 +23,13 @@ const Rubric = ({rubric_id, updateRubrics}) => {
      * @param filename
      */
     const fetchRubricInfo = useCallback(() => {
+        let formData = new FormData();
+        formData.append("rubric-id", rubric_id);
         fetch(process.env.REACT_APP_API_URL + "getInstructorRubrics.php",
             {
                 method: "POST",
                 credentials: "include",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                    "rubric-id": rubric_id,
-                }),
+                body: formData
             }
         )
             .then((res) => res.json())

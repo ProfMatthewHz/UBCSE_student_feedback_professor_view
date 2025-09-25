@@ -127,6 +127,10 @@ const SurveyListing = (props) => {
               setSurveyFuture(sortByDate(result.future)); 
           })
           .catch((err) => {
+            if (err.name === 'TypeError') {
+              // If we get a TypeError, we have been logged out of shibboleth and need to redirect to the starting page
+              window.location.href = `${process.env.REACT_APP_API_START}`;
+            }
             console.error('There was a problem with your fetch operation:', err);
           });
   }, []);

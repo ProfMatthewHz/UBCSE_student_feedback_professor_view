@@ -67,6 +67,10 @@ const SurveyFormRows = ({topicData, setSurveyResults, survey_id}) => {
                     setClickedButtons(result);
                 })
                 .catch((error) => {
+                    if (error.name === 'TypeError') {
+                        // If we get a TypeError, we have been logged out of shibboleth and need to redirect to the starting page
+                        window.location.href = `${process.env.REACT_APP_API_START}`;
+                    }
                     console.error('Error:', error);
                 });
     }, []);
