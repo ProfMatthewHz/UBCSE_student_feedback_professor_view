@@ -16,7 +16,6 @@
   // Verify that the survey exists
   if (!empty($_POST) && isset($_POST['survey'])) {
     $survey = $_POST['survey'];
-    // $survey = '47';
   } else {
     echo "Bad Request: Missing POST parameters";
     http_response_code(400);
@@ -68,7 +67,6 @@
     $topics[] = $topic_data;
   }
   
-  
   $data = array(
     'topics' => $topics,
     'freeform' => $ffTopics,
@@ -76,7 +74,7 @@
     'prompt' => $prompt,
     'id' => $student_id 
   );
-      
+
   header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);
   header('Access-Control-Allow-Credentials: true');
   header('Content-Type: application/json');

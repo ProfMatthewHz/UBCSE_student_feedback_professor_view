@@ -53,7 +53,16 @@ const SurveyFormRows = ({topicData, setSurveyResults, survey_id}) => {
                 credentials: 'include',
                 body: body
             })
-                .then((res) => res.json())
+                .then((result) => {
+                    if (result.ok) {
+                      return result.json();
+                    } else if (result.status === 511) {
+                        // If we get a 511 error, we have been logged out of shibboleth and need to redirect to the starting page
+                        window.location.href = `${process.env.REACT_APP_API_START}`;
+                    } else {
+                      throw new Error('Network response was not ok');
+                    }
+                })
                 .then((result) => {
                     setClickedButtons(result);
                 })

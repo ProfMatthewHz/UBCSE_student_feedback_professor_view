@@ -97,16 +97,22 @@ const SurveyFormModal = ({surveyInfo, closeModal}) => {
   }, [groupMemberIndex, groupMembers, numberTopics, surveyResults]);
 
 const fetchData = useCallback((surveyid) => {
+  let formData = new FormData();
+  formData.append("survey", surveyid);
   fetch(process.env.REACT_APP_API_URL_STUDENT + 'startSurvey.php', {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          "survey": surveyid,
-        })
-    }).then((res) => res.json())
+        body: formData
+    }).then((result) => {
+      if (result.ok) {
+        return result.json();
+      } else if (result.status === 511) {
+          // If we get a 511 error, we have been logged out of shibboleth and need to redirect to the starting page
+          window.location.href = `${process.env.REACT_APP_API_START}`;
+      } else {
+        throw new Error('Network response was not ok');
+      }
+    })
     .then((jsonData) => {
         setSurveyTopics(jsonData.topics);
         setNumberTopics(Object.keys(jsonData.topics).length);
@@ -121,8 +127,8 @@ const fetchData = useCallback((surveyid) => {
 
   useEffect(() => {
     if (surveyID) {
-    // Fetch data when the component mounts or when surveyID changes
-    fetchData(surveyID);
+      // Fetch data when the component mounts or when surveyID changes
+      fetchData(surveyID);
     }
   }, [surveyID, fetchData]);
 

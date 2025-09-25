@@ -8,7 +8,7 @@ require "lib/constants.php";
 require "lib/database.php";
 require "lib/scoreQueries.php";
 require "lib/studentQueries.php";
-require "lib/loginStatis.php";
+require "lib/loginStatus.php";
 
 $student_id = getStudentId();
 

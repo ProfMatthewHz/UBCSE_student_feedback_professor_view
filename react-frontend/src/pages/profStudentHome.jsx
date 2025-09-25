@@ -8,7 +8,7 @@ import SurveyListing from "../Components/SurveyListing";
 /**
  * This will be rendered for profs when they click on Student View in side bar
  */
-const StudentHome = () => {
+const ProfStudentHome = () => {
   /**
    * The Home component renders a SideBar component and a list of Course components.
    */
@@ -20,4 +20,4 @@ const StudentHome = () => {
   );
 };
 
-export default StudentHome;
+export default ProfStudentHome;

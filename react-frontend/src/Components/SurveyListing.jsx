@@ -111,7 +111,16 @@ const SurveyListing = (props) => {
           method: "GET",
           credentials: "include",
       })
-          .then((res) => res.json())
+          .then((result) => {
+            if (result.ok) {
+              return result.json();
+            } else if (result.status === 511) {
+              // If we get a 511 error, we have been logged out of shibboleth and need to redirect to the starting page
+              window.location.href = `${process.env.REACT_APP_API_START}`;
+            } else {
+              throw new Error('Network response was not ok');
+            }
+          })
           .then((result) => {
               setSurveyCurrent(sortByDate(result.current)); 
               setSurveyPast(sortByDateReverse(result.past)); 
@@ -128,24 +137,22 @@ const SurveyListing = (props) => {
 
   //Send JSONIFY version of {"student_id":id, "survey_name":surveyName, "survey_id":surveyID} to api for feedback to be updated
   const updateFeedbackCount = (survey_id) => {
-            // Send student_id and survey_id back to student
-            const url = process.env.REACT_APP_API_URL_STUDENT + "surveyVisitData.php";
+        let formData = new FormData();
+        formData.append("survey-id", survey_id);
         
-            return fetch(url, {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                  "survey-id": survey_id,
-              }),
-            })
-            .catch((err) => {
-                console.error('There was a problem with your fetch operation:', err);
-                return "Not Available"; 
-            });
-        };
+        // Send student_id and survey_id back to student
+        const url = process.env.REACT_APP_API_URL_STUDENT + "surveyVisitData.php";
+    
+        return fetch(url, {
+            method: "POST",
+            credentials: "include",
+            body: formData
+        })
+        .catch((err) => {
+            console.error('There was a problem with your fetch operation:', err);
+            return "Not Available"; 
+        });
+    };
 
     const showSurveyFeedback = (postData) => { //updates feedback count and opens feedback modal
       updateFeedbackCount(postData["survey_id"])

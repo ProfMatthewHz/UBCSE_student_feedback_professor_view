@@ -48,21 +48,24 @@ const Home = () => {
   };
 
   const fetchCourses = useCallback(() => {
+    let formData = new FormData();
+    formData.append("semester", getCurrentSemester());
+    formData.append("year", getCurrentYear());
     fetch(
       process.env.REACT_APP_API_URL + "getInstructorCoursesInTerm.php",
       {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          semester: getCurrentSemester(),
-          year: getCurrentYear(),
-        }),
+        body: formData
       }
     )
-      .then((res) => res.json())
+      .then((result) => {
+          if (!result.ok) {
+            throw new Error('Network response was not ok');
+          } else {
+            return result.json();
+          }
+        })
       .then((result) => setCourses(result))
       .catch((err) => {
         console.log(err);
@@ -90,7 +93,13 @@ const Home = () => {
             method: "GET",
             credentials: "include",
         })
-            .then((res) => res.json())
+            .then((result) => {
+              if (result.ok) {
+                return result.json();
+              } else {
+                throw new Error('Network response was not ok');
+              }
+            })
             .then((result) => {
                 //this is an array of objects of example elements {id: 1, description: 'exampleDescription'}
                 let rubricIDandDescriptions = result.rubrics.map((element) => element);
@@ -111,7 +120,13 @@ const Home = () => {
             method: "GET",
             credentials: "include"
         })
-            .then((res) => res.json())
+            .then((result) => {
+              if (result.ok) {
+                return result.json();
+              } else {
+                throw new Error('Network response was not ok');
+              }
+            })
             .then((result) => {
                 setPairingModes(result.survey_types);
             })
