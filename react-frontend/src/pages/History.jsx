@@ -61,18 +61,15 @@ const History = () => {
                     const term_key = term.semester + " " + term.year
                     all_courses[term_key] = []
                     sidebar_data[term_key] = []
+                    const formData = new FormData();
+                    formData.append("semester", getSemesterAsInt(term.semester));
+                    formData.append("year", parseInt(term.year));
                     return fetch(
                         process.env.REACT_APP_API_URL + "getInstructorCoursesInTerm.php",
                         {
                             method: "POST",
                             credentials: "include",
-                            headers: {
-                                "Content-Type": "application/x-www-form-urlencoded",
-                            },
-                            body: new URLSearchParams({
-                                semester: getSemesterAsInt(term.semester),
-                                year: parseInt(term.year),
-                            }),
+                            body: formData
                         }
                     )
                         .then((res2) => res2.json())

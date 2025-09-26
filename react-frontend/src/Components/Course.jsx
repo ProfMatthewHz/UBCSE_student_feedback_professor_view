@@ -61,15 +61,12 @@ const Course = ({ course, page, rubricList, pairingModes }) => {
      * Perform a POST call to courseSurveysQueries 
      */
     const updateAllSurveys = useCallback(() => {
+        let formData = new FormData();
+        formData.append("course-id", course.id);
         fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
             method: "POST",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: new URLSearchParams({
-                "course-id": course.id,
-            }),
+            body: formData
         })
             .then((res) => res.json())
             .then(processSurveys)

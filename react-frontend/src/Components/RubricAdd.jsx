@@ -315,17 +315,14 @@ const RubricAdd = ({ updateRubrics, handleCloseModal, duplicatedRubricData }) =>
    */
   const fetchSaveRubric = async () => {
     try {
+      const formData = new FormData();
+      formData.append("save-rubric", 1);
       const response = fetch(
         process.env.REACT_APP_API_URL + "rubricConfirm.php",
         {
           method: "POST",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams({
-            "save-rubric": 1
-          }),
+          body: formData
         }
       );
       const result = await response.json();

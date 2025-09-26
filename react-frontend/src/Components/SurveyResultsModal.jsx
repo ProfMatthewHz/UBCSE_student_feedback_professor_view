@@ -35,17 +35,13 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
 
     //Fetches the data that tells use who completed surveys
     const fetchCompleted = useCallback((surveyid) => {
+            const formData = new FormData();
+            formData.append("survey", surveyid);
+            formData.append("type", "completion");
             fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
                 method: "POST",
                 credentials: "include",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-
-                body: new URLSearchParams({
-                    survey: surveyid,
-                    type: "completion",
-                }),
+                body: formData
             })
                 .then((res) => res.json())
                 .then((result) => {
@@ -58,17 +54,13 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
 
     //Fetches the data with the individual averages for students
     const fetchIndividualAverages = useCallback((surveyid) => {
+        const formData = new FormData();
+        formData.append("survey", surveyid);
+        formData.append("type", "individual");
         fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
             method: "POST",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-
-            body: new URLSearchParams({
-                survey: surveyid,
-                type: "individual",
-            }),
+            body: formData
         })
             .then((res) => res.json())
             .then((result) => {
@@ -81,17 +73,13 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
 
     //Fetches the data with the individual averages for students
     const fetchRawSurveys = useCallback((surveyid) => {
+        const formData = new FormData();
+        formData.append("survey", surveyid);
+        formData.append("type", "raw-full");
         fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
             method: "POST",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-
-            body: new URLSearchParams({
-                survey: surveyid,
-                type: "raw-full",
-            }),
+            body: formData
         })
             .then((res) => res.json())
             .then((result) => {
@@ -114,17 +102,13 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
 
     //Fetches the data with the individual averages for students
     const fetchNormalizedResults = useCallback((surveyid) => {
+        const formData = new FormData();
+        formData.append("survey", surveyid);
+        formData.append("type", "average");
         fetch(process.env.REACT_APP_API_URL + "resultsView.php", {
             method: "POST",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-
-            body: new URLSearchParams({
-                survey: surveyid,
-                type: "average",
-            }),
+            body: formData
         })
             .then((res) => res.json())
             .then((result) => {

@@ -13,12 +13,12 @@ const StudentSurveyFeedbackModal = ({onClose, modalData}) => {
 
     //GET request to backend to retrieve the feedback results using survey_id
     const fetchFeedback = useCallback(() => {
+        const formData = new FormData();
+        formData.append("survey", survey_id);
         fetch(process.env.REACT_APP_API_URL_STUDENT + "resultsEndpoint.php", {
             method: "POST",
             credentials: "include",
-            body: new URLSearchParams({
-                survey: survey_id,
-                }),            
+            body: formData,
         })
             .then((res) => res.json())
             .then((result) => {
@@ -31,12 +31,12 @@ const StudentSurveyFeedbackModal = ({onClose, modalData}) => {
 
     //POST request to backend to retrieve the feedback results using survey_id
     const fetchOverall = useCallback(() => {
+            const formData = new FormData();
+            formData.append("survey", survey_id);
             fetch(process.env.REACT_APP_API_URL_STUDENT + "normalizedResult.php", {
                 method: "POST",
                 credentials: "include",
-                body: new URLSearchParams({
-                    survey: survey_id,
-                }),
+                body: formData
             })
                 .then((res) => res.json())
                 .then((result) => {

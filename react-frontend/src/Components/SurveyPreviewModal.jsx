@@ -17,15 +17,12 @@ const SurveyPreviewModal = ({modalClose, surveyData}) => {
     }, [rubricData, surveyResults]);
 
     const getRubricData = useCallback((rubric_id) => {
+      const formData = new FormData();
+      formData.append("rubric", rubric_id);
       fetch(process.env.REACT_APP_API_URL + "getRubricTable.php", {
           method: 'POST',
           credentials: "include",
-          headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-              rubric: rubric_id,
-          }),
+          body: formData
       })
       .then((res) => res.json())
       .then((response) => setRubricData(response))
