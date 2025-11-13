@@ -12,7 +12,7 @@ const ErrorsModal = ({modalClose, error_type, errors}) => {
 
   return ( 
     <div className="modal">
-      <div style={{ width: "650px", maxWidth: "90%" }}className="delete-modal modal-content modal-phone">
+      <div style={{ width: "650px", maxWidth: "90%" }} className="delete-modal modal-content modal-phone">
         <div className="CancelContainer">
               <button className="CancelButton" onClick={modalClose}>
                   ×
