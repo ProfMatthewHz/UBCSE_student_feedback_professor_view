@@ -146,6 +146,10 @@ function processReviewFile($con, $require_pairs, $file_handle, $roster) {
     if ( $require_pairs && (count($line_text) !== 2) ) {
       $ret_val['error'][] = 'Line ' . $line_num . ' does not contain a proper review assignment';
     } else {
+      // Check that we have a properly formed team (at least 2 members)
+      if (count($line_text) == 1) {
+        $ret_val['error'][] = 'Line ' . $line_num . ' needs more than 1 member on that team';
+      }
       // Verify the entries on the current line
       $line_data = getIdsFromEmails($con, $line_num, $line_text, $roster);
       if (!empty($line_data['error'])) {

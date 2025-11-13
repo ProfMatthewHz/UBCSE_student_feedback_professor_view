@@ -16,12 +16,12 @@ function getTeamPairings($con, $survey_id) {
 
 function getIdsForRoster($con, $line_num, $roster) {
   // Otherwise we have a valid team and can try getting the ids
-  $retVal = array('error' => '', 'roster' => array());
+  $retVal = array('error' => array(), 'roster' => array());
   // Make sure the current line's data are valid
   foreach ($roster as $column => $member) {
     $id_and_name = getStudentInfoFromEmail($con, $member['email']);
     if (empty($id_and_name)) {
-      $retVal['error'] = $retVal['error'] . 'Line '. $line_num . '  column ' . $column . ' includes an unknown email (' . $member['email'] . ')<br>';
+      $retVal['error'][] = 'Line '. $line_num . '  column ' . $column . ' includes an unknown email (' . $member['email'] . ')<br>';
     } else {
       $id = $id_and_name[0];
       $retVal['roster'][] = array('email' => $member['email'], 'role' => $member['role'], 'id' => $id);
@@ -311,7 +311,7 @@ function getIdsForAllRosters($con, $teams) {
     // Verify the entries on the current line
     $line_data = getIdsForRoster($con, $name, $team_data['roster']);
     if (!empty($line_data['error'])) {
-      $ret_val['error'][] = $ret_val['error'] . $line_data['error'];
+      $ret_val['error'] = array_merge($ret_val['error'], $line_data['error']);
     } else {
       $ret_val['teams'][$name] = array('roster' => $line_data['roster']);
       // Add the row to our list of (valid) rows
