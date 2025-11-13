@@ -121,7 +121,7 @@
 }
 
 .notremovable {
-  border-color: #a04b4b;
+  background-color: lightgray;
   margin-top: 5px;
   margin-bottom: 5px;
 }
