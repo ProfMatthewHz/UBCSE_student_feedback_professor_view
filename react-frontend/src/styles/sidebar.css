@@ -38,8 +38,8 @@
   justify-content: center;
   align-items: center;
   height: 50px;
-  width: 180px;
   position: fixed;
+  width: 180px;
   bottom: 20px;
   left: 0;
 }
@@ -59,6 +59,22 @@
 
 .title .sidebar .add-btn:hover {
   background-color: #659743;
+}
+
+.title .sidebar .update-btn {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: normal;
+  background-color: #659743;
+  border-radius: 5px;
+  border-style: none;
+  transition: all .2s ease;
+  text-align: center;
+  cursor: pointer;
+}
+
+.title .sidebar .update-btn:hover {
+  background-color: #6DA04B;
 }
 
 .sidebar-content {
@@ -88,7 +104,7 @@
 .sidebar h1 {
   color: #ffffff;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: bold;
   padding-left: 15%;
   margin-bottom: 20px; 
 }
@@ -101,7 +117,7 @@
 .sidebar ul li a {
   color: #ffffff;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: bold;
   padding-left: 15%;
   margin-bottom: 15%;
   text-decoration: none;
@@ -110,15 +126,24 @@
 .sidebar-content a {  /*courses and rubric options*/
   color: #ffffff;
   font-size: 20px;
-  font-weight: 400;
+  font-weight: bold;
   padding-left: 4px;
+  text-decoration: none;
+}
+
+.sidebar-content .student-options {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
+  padding-left: 4px;
+  padding-bottom: 30px;
   text-decoration: none;
 }
 
 .sidebar-content a > div {
   padding: 10% 0% 10% 2%;
   font-size: 20px;
-  font-weight: 400;
+  font-weight: bold;
 }
 
 .sidebar-list > .dropdown {
@@ -141,103 +166,7 @@
 .sidebar-list .no-content {
   color: #ffffff;
   font-size: 20px;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.student-title{
-  width: 195px;
-  height: 100%; 
-  background: #225CB5;
-  top: 0;
-  left: 0;
-  position: fixed;
-  display: flex;
-  flex-direction: column;
-}
-
-.student-headerTitle{
-  padding-top:10px;
-}
-
-.student-title h1 { /*Evalutation Tool Title*/
-  color: #ffffff;
-  font-size: 28px;
-  font-weight: bold;
-  line-height: 1;
-  text-decoration: none;
-  text-align: center;
-}
-
-.student-title .student-sidebar {
-  width: 195px;
-  height: calc(100vh - 160px); 
-  background: #225CB5;
-  position: fixed;
-  top: 160px;
-  display: flex;
-  flex-direction: column;
-  padding-top: 2%;
-  text-align: center;
-
-}
-
-.student-title .student-sidebar > div {
-  margin: 5%;
-}
-
-.student-sidebar-list::-webkit-scrollbar {
-  width: 5px;
-}
-
-.student-sidebar-list::-webkit-scrollbar-thumb {
-  background-color: #ffffff;
-  border-radius: 15px;
-}
-
-.student-sidebar-content a {  /*courses and rubric options*/
-  color: #ffffff;
-  font-size: 20px;
-  font-weight: bold;
-  text-decoration: none;
-
-}
-
-.student-sidebar-content a > div {
-  align-items: center;
-  font-size: 20px;
-  padding: 6% 6%;
-  margin-right: 5%;
-  margin-left: 5%;
-  margin-bottom: 5%;
-}
-
-.student-sidebar-content a > div:hover {
-  background-color: #103876;
-  border-radius: 5px;
-  transition-duration: 0.4s;
-  padding: 6% 6%;
-  margin-right: 5%;
-  margin-left: 5%;
-  margin-bottom: 10%;
-
-}
-
-.student-sidebar-content a .active {
-  color: #154185;
-  background-color: #ffffff;
-  border-radius: 5px;
-  pointer-events: none;
-  padding: 6% 6%;
-  margin-right: 5%;
-  margin-left: 5%;
-  margin-bottom: 10%;
-}
-
-.student-sidebar-list .student-no-content {
-  color: #ffffff;
-  font-size: 20px;
-  font-weight: 400;
+  font-weight: normal;
   font-style: italic;
 }
 

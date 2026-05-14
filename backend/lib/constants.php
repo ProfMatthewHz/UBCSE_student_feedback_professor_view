@@ -15,6 +15,7 @@
 define("FRONTEND_HOME","https://cse.buffalo.edu/teamwork/react-frontend/build/");
 define("FRONTEND_SERVER","https://cse.buffalo.edu");
 
+define("ADMIN_EMAIL", "mhertz@buffalo.edu");
 define("SESSIONS_SALT", "session-salt");
 define("PBKDF2_ITERS", 50000);
 define("TOKEN_SIZE", 32);
