@@ -157,6 +157,16 @@ function processReviewFile($con, $require_pairs, $file_handle, $roster) {
       } else {
         // Add any new individuals to our tracking
         $ret_val['individuals'] = array_merge($ret_val['individuals'], $line_data['student_data']);
+        // Also add rostered individuals NOT included in the file
+        foreach ($roster as $email => $data) {
+          if (!array_key_exists($email, $ret_val['individuals'])) {
+            $ret_val['individuals'][$email] = array(
+              'name' => $data['name'],
+              'email' => $email,
+              'rostered' => true
+            );
+          }
+        }
         // Add the row to our list of (valid) rows
         $ret_val['rows'][] = $line_text;
       }
