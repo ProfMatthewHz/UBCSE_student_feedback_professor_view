@@ -387,6 +387,7 @@ const CourseAddModal = ({closeModal, updateCourseListing}) => {
                             </label>
                             <Select
                                 id="additional-instructors"
+                                defaultMsg={"Select an option to add additional instructor(s)"}
                                 multiple
                                 options={allInstructors}
                                 value={instructors}

@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import styles from "../styles/select.module.css";
 
-const Select = ({multiple, value, onChange, options}) => {
+const Select = ({multiple, defaultMsg, value, onChange, options}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
     const containerRef = useRef(null);
@@ -85,7 +85,7 @@ const Select = ({multiple, value, onChange, options}) => {
                     </button>
                 ))
             ) : (
-                <span>Select an option to add additional instructor(s)</span>
+                <span>{defaultMsg}</span>
             )
         ) : (
             value?.label
