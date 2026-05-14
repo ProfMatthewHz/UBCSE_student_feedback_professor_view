@@ -31,11 +31,6 @@ const SideBar = (props) => {
     setShowAddRubricModal(prevState => !prevState);
   }
 
-  // eslint-disable-next-line no-unused-vars
-  /*const handleClick = () => {
-    setClicked(prevState => !prevState)
-  }*/
-
   useEffect(() => {
     if (props.content_dictionary["Courses"]) {
       setSidebarItems(Object.values(props.content_dictionary["Courses"]));
@@ -168,7 +163,7 @@ const SideBar = (props) => {
             {(courseState &&
               <div className="button-container">
                 <button
-                  className="add_course-btn"
+                  className="add-btn"
                   onClick={openAddCourseModal}
                 >
                   + Add Course
@@ -178,7 +173,7 @@ const SideBar = (props) => {
             {rubricState && (
               <div className="button-container">
                 <button
-                  className="add_course-btn"
+                  className="add-btn"
                   onClick={handleAddRubricModal}
                 >
                   + Add Rubric

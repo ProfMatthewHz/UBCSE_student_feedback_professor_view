@@ -44,7 +44,7 @@
   left: 0;
 }
 
-.title .sidebar .add_course-btn {
+.title .sidebar .add-btn {
   color: #ffffff;
   font-size: 18px;
   font-weight: bold;
@@ -57,7 +57,7 @@
   cursor: pointer;
 }
 
-.title .sidebar .add_course-btn:hover {
+.title .sidebar .add-btn:hover {
   background-color: #659743;
 }
 
