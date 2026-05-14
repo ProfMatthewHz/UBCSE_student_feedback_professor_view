@@ -27,8 +27,12 @@ const SideBar = (props) => {
     setShowAddCourseModal(true);
   };
 
-  const handleAddRubricModal = () => {
-    setShowAddRubricModal(prevState => !prevState);
+  const closeAddRubricModal = () => {
+    setShowAddRubricModal(false);
+  }
+
+  const openAddRubricModal = () => {
+    setShowAddRubricModal(true);
   }
 
   useEffect(() => {
@@ -48,7 +52,7 @@ const SideBar = (props) => {
       setHistoryState(true);
     } else if (props.route === "/library") {
       setRubricState(true);
-    }
+    } 
   }, [props]);
 
   useEffect(() => {
@@ -76,17 +80,17 @@ const SideBar = (props) => {
       {(rubricState &&
         <Modal
           open={showAddRubricModal}
-          onRequestClose={handleAddRubricModal}
+          onRequestClose={closeAddRubricModal}
           width={"auto"}
           maxWidth={"90%"}
         >
           <div className="CancelContainer">
-            <button className="CancelButton" onClick={handleAddRubricModal}>
+            <button className="CancelButton" onClick={closeAddRubricModal}>
               ×
             </button>
           </div>
           <RubricAdd
-            handleCloseModal={handleAddRubricModal}
+            handleCloseModal={closeAddRubricModal}
             getRubrics={props.getRubrics}
           />
         </Modal>)}
@@ -96,6 +100,7 @@ const SideBar = (props) => {
         <h1>EVALUATION</h1>
         <div className="sidebar">
           <nav>
+            
             <ul className={`${clicked ? "open" : ""}`}>
               <li>
                 <NavLink to="/">Home</NavLink>
@@ -174,7 +179,7 @@ const SideBar = (props) => {
               <div className="button-container">
                 <button
                   className="add-btn"
-                  onClick={handleAddRubricModal}
+                  onClick={openAddRubricModal}
                 >
                   + Add Rubric
                 </button>
