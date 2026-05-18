@@ -6,3 +6,4 @@ react-frontend/yarn.lock
 .idea/
 .vscode/
 node_modules/
+.DS_Store
