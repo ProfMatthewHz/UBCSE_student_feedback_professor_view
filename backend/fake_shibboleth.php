@@ -28,6 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Bad Request: Missing parameters.";
         exit();
     }
+    // Clear any existing session and start a new one with the provided UBIT
+    session_destroy();
+    session_start();
     $con = connectToDatabase();
     setSessionVariables($con, $_POST["UBIT"]);
     
