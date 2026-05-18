@@ -9,7 +9,7 @@ import "../styles/modal.css";
 import "../styles/addsurvey.css";
 
 const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, rubrics_list }) => {
-  const [surveyName, setSurveyName] = useState(survey_data.survey_name);
+  const [surveyName, setSurveyName] = useState(survey_data.survey_name ? survey_data.survey_name : "");
   const [startTime, setStartTime] = useState(survey_data.start_time ? survey_data.start_time : "");
   const [endTime, setEndTime] = useState(survey_data.end_time ? survey_data.end_time : "");
   const [startDate, setStartDate] = useState(survey_data.start_date ? survey_data.start_date : "");
