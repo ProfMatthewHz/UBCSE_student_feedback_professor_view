@@ -84,7 +84,7 @@ function parse_roster_file($file_handle) {
   return $ret_val;
 }
 
-function processTeamFile($con, $file_handle, $roster) {
+function processTeamFile($con, $file_handle, $roster, $uses_team_names) {
   $ret_val = array('error' => array(), 'individuals' => array(), 'teams' => array());
 
   $line_num = -1;
@@ -125,7 +125,7 @@ function processTeamFile($con, $file_handle, $roster) {
   return $ret_val;
 }
 
-function processReviewFile($con, $require_pairs, $file_handle, $roster) {
+function processReviewFile($con, $require_pairs, $file_handle, $roster, $uses_team_names) {
   $ret_val = array('error' => array(), 'rows' => array(), 'individuals' => array());
 
   $line_num = -1;
@@ -147,8 +147,13 @@ function processReviewFile($con, $require_pairs, $file_handle, $roster) {
       $ret_val['error'][] = 'Line ' . $line_num . ' does not contain a proper review assignment';
     } else {
       // Check that we have a properly formed team (at least 2 members)
-      if (count($line_text) == 1) {
+      if ( (count($line_text) == 1) || ($uses_team_names && count($line_text) == 2) ) {
         $ret_val['error'][] = 'Line ' . $line_num . ' needs more than 1 member on that team';
+      }
+      if ($uses_team_names) {
+        $team_name = array_shift($line_text);
+      } else {
+        $team_name = 'team '.($line_num+1);
       }
       // Verify the entries on the current line
       $line_data = getIdsFromEmails($con, $line_num, $line_text, $roster);
@@ -167,8 +172,12 @@ function processReviewFile($con, $require_pairs, $file_handle, $roster) {
             );
           }
         }
-        // Add the row to our list of (valid) rows
-        $ret_val['rows'][] = $line_text;
+        if (array_key_exists($team_name, $ret_val['rows'])) {
+          $ret_val['error'][] = 'Line ' . $line_num . ' includes a duplicate team name (' . $team_name . ')';
+        } else {
+          // Add the row to our list of (valid) rows
+          $ret_val['rows'][$team_name] = $line_text;
+        }
       }
     }
   }

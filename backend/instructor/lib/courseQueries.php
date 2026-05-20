@@ -76,7 +76,7 @@ function getSurveysFromSingleCourse($con, $course_id){
   $retVal["active"] = array(); 
   $retVal["expired"] = array();
   
-  $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, surveys.survey_type_id, surveys.pm_weight, COUNT(eval_id) AS total, COUNT(evals.id) AS completed
+  $stmt = $con->prepare('SELECT name, start_date, end_date, rubric_id, surveys.id, surveys.survey_type_id, uses_team_names, surveys.pm_weight, COUNT(eval_id) AS total, COUNT(evals.id) AS completed
                          FROM surveys
                          LEFT JOIN reviews ON reviews.survey_id=surveys.id
                          LEFT JOIN evals ON evals.id=reviews.eval_id AND evals.completed=1
@@ -102,6 +102,7 @@ function getSurveysFromSingleCourse($con, $course_id){
       $survey_info['rubric_id'] = $s['rubric_id'];
       $survey_info['id'] = $s['id'];
       $survey_info['survey_type'] = $s['survey_type_id'];
+      $survey_info['uses_team_names'] = $s['uses_team_names'];
       $survey_info['pm_weight'] = $s['pm_weight'];
 
       // Generate and store that progress as text

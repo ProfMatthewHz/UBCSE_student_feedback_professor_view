@@ -91,6 +91,7 @@ CREATE TABLE `surveys` (
  `name` VARCHAR(90) NOT NULL,
  `rubric_id` int(11) NOT NULL,
  `survey_type_id` tinyint NOT NULL,
+ `uses_team_names` tinyint(1) NOT NULL DEFAULT 0,
  `default_weight` int(11) NOT NULL DEFAULT 1,
  `pm_weight` int(11) NOT NULL DEFAULT 1,
  PRIMARY KEY (`id`),

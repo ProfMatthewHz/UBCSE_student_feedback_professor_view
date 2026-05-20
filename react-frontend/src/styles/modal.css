@@ -434,6 +434,20 @@ button.form__item--confirm-btn {
   width: 100%;
 }
 
+.form__item--checkbox {
+  font-size: small;
+  border: none;
+}
+
+.form__item--checkbox-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.25em;
+  width: 100%;
+  font-size: small;
+  color: rgba(34, 92, 181, 0.7);
+}
+
 .form__item--file-label--optional {
   display: flex;
   flex-direction: row;

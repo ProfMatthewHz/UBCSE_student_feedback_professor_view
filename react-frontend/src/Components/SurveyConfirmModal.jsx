@@ -6,13 +6,8 @@ import "../styles/modal.css";
 import "../styles/confirmsurvey.css";
 
 const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
+    // Basic survey information to transmit to the server (and possibly display)
     const [survey_name,] = useState(survey_data.survey_name);
-    const [start_date,] = useState(survey_data.start_date);
-    const [start_time,] = useState(survey_data.start_time);
-    const [start_display,setStartDisplay ] = useState(null);
-    const [end_date,] = useState(survey_data.end_date);
-    const [end_time,] = useState(survey_data.end_time);
-    const [end_display,setEndDisplay ] = useState(null);
     const [course_code,] = useState(survey_data.course_code);
     const [course_name,] = useState(survey_data.course_name);
     const [rubric_name,] = useState(survey_data.rubric_name);
@@ -22,14 +17,41 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
     const [rubric_id,] = useState(survey_data.rubric_id);
     const [reasonShown,] = useState(survey_data.reason);
     const [survey_id,] = useState(survey_data.survey_id);
-    const [listingType, setListingType] = useState("team_roster");
+    const [uses_team_names,] = useState(survey_data.uses_team_names);
+ 
+    // Fields used to store the starting date & time (for transmitting) and how it will be displayed on the page
+    const [start_date,] = useState(survey_data.start_date);
+    const [start_time,] = useState(survey_data.start_time);
+    const [start_display,setStartDisplay ] = useState(null);
+
+    // Fields used to store the end date & time (for transmitting) and how it will be displayed on the page
+    const [end_date,] = useState(survey_data.end_date);
+    const [end_time,] = useState(survey_data.end_time);
+    const [end_display,setEndDisplay ] = useState(null);
+
+    // Specifies the daya thay will be displayed in the modal. This will be one of "team_roster", "individual", or "team_pairing"
+    const [display_mode, setDisplayMode] = useState("team_roster");
+
+    // This is where all of the data for the teams exist
     const [team_data, setTeamData] = useState(null);
-    const [individual_data, setIndividualData] = useState(null);
-    const [roster_array, setRosterArray] = useState([]);
-    const [nonroster_array, setNonRosterArray] = useState([]);
+
+    // Master list of all people involved in the survey
+    const [people_data, setPeopleData] = useState(null);
+
+    // List of rostered people that is the source for the rostered student table
+    const [roster_data_to_display, setRosterDataToDisplay] = useState([]);
+
+    // List of nonrostered people included in the survey that is the source for the rostered student table
+    const [nonroster_data_to_display, setNonRosterDataToDisplay] = useState([]);
+
+    // List of rostered students who have not yet been included in the survey 
     const [unassigned_students, setUnassignedStudents] = useState([]);
+
+    // List of teams that are reviewing others and being reviewed, respectively. This is used to calculate student status
     const [reviewing_teams, setReviewingTeams] = useState([]);
     const [reviewed_teams, setReviewedTeams] = useState([]);
+
+    // List of the pairings used when performing collective reviews.
     const [pairings, setPairings] = useState(survey_roster.pairings ? survey_roster.pairings : []);
 
     async function postSurvey() {
@@ -41,6 +63,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         formData.append("start-time", start_time);
         formData.append("end-date", end_date);
         formData.append("end-time", end_time);
+        formData.append("uses-team-names", uses_team_names);
         formData.append("team-data", JSON.stringify(team_data));
         if (pairing_mode === 6) {
             // If pairing mode is 6, we need to send the pairings as well
@@ -120,14 +143,14 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         return ret_val;
     };
 
-    const updateStatus = (email, mode, reviewed_teams, reviewing_teams) => {
+    const updateStatus = (email, mode, teams_reviewed, teams_reviewing) => {
          // Now recalculate if this student is a reviewer and/or being reviewed
         let role = calcReviewedRole(mode);
-        let reviewed = checkForRole(email, role, reviewed_teams);
-        let reviewing = calculateReviewing(email, mode, reviewing_teams);
-        individual_data[email].reviewed_unicode = reviewed ? "✅" : "❌";
-        individual_data[email].reviewing_unicode = reviewing ? "✅" : "❌";
-        return individual_data[email];
+        let reviewed = checkForRole(email, role, teams_reviewed);
+        let reviewing = calculateReviewing(email, mode, teams_reviewing);
+        people_data[email].reviewed_unicode = reviewed ? "✅" : "❌";
+        people_data[email].reviewing_unicode = reviewing ? "✅" : "❌";
+        return people_data[email];
     };
 
     useEffect(() => {
@@ -156,17 +179,17 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         let unassigned_students = [];
         let assigned_students = [];
         let mode = survey_data.pairing_mode;
-        let reviewed_teams = [];
-        let reviewing_teams = [];
+        let teams_reviewed = [];
+        let teams_reviewing = [];
         let role = calcReviewedRole(mode);
 
         if (survey_data.pairing_mode !== 6) {
-            reviewed_teams = survey_roster.teams;
-            reviewing_teams = survey_roster.teams;
+            teams_reviewed = survey_roster.teams;
+            teams_reviewing = survey_roster.teams;
         } else {
             for (let pairing of survey_roster.pairings) {
-                reviewing_teams.push(survey_roster.teams[pairing.reviewing]);
-                reviewed_teams.push(survey_roster.teams[pairing.reviewed]);
+                teams_reviewing.push(survey_roster.teams[pairing.reviewing]);
+                teams_reviewed.push(survey_roster.teams[pairing.reviewed]);
             }
         }
 
@@ -179,8 +202,8 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
             } else {
                 non_roster_students.push(student);
             }
-            let reviewed = checkForRole(email, role, reviewed_teams);
-            let reviewing = calculateReviewing(email, mode, reviewing_teams);
+            let reviewed = checkForRole(email, role, teams_reviewed);
+            let reviewing = calculateReviewing(email, mode, teams_reviewing);
             student.reviewed_unicode = reviewed ? "✅" : "❌" ;
             student.reviewing_unicode = reviewing ? "✅" : "❌" ;
             if (!reviewed && !reviewing) {
@@ -188,15 +211,15 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                 unassigned_students.push({email: email, name: student.name});
             }
         }
-        setRosterArray(roster_students);
-        setNonRosterArray(non_roster_students);
+        setRosterDataToDisplay(roster_students);
+        setNonRosterDataToDisplay(non_roster_students);
         unassigned_students.sort((a, b) => a.name.localeCompare(b.name));
         setUnassignedStudents(unassigned_students);
         assigned_students.sort((a, b) => a.name.localeCompare(b.name));
-        setIndividualData(survey_roster.individuals);
+        setPeopleData(survey_roster.individuals);
         setTeamData(survey_roster.teams);
-        setReviewedTeams(reviewed_teams);
-        setReviewingTeams(reviewing_teams);
+        setReviewedTeams(teams_reviewed);
+        setReviewingTeams(teams_reviewing);
     }, [survey_roster, survey_data]);
 
     useEffect(() => {
@@ -207,11 +230,15 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         setEndDisplay(end.toLocaleString('default', {month: 'short', day: 'numeric'}) + " at " + end.toLocaleString('default', {hour: 'numeric', minute: 'numeric'}));
     }, [start_date, start_time, end_date, end_time]);
 
-    function hideStudentSelector(event) {
+    function hideInputWidget(event) {
         // Hide the select widget when a student is selected
         let widget = event.target;
         widget.previousElementSibling.classList.remove("invisible");
         widget.previousElementSibling.classList.add("visible");
+    }
+
+    function clearWidgetValue(event) {
+        let widget = event.target;
         widget.value = ""; // Reset the select widget
         widget.blur();
     }
@@ -226,7 +253,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
             // Remove the student from unassigned_students
             setUnassignedStudents(prevStudents => prevStudents.filter(student => student.email !== selectedEmail));
             // Hide the select widget
-            hideStudentSelector(event);
+            hideInputWidget(event);
             // Record that the student will be reviewing someone but may also be a reviewer
             updateStatus(selectedEmail, pairing_mode, reviewed_teams, reviewing_teams);
         }
@@ -234,7 +261,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
 
     // Function adding a student to an array that is sorted by name
     function addStudentToOrderedArray(email, array) {
-        let name = individual_data[email].name;
+        let name = people_data[email].name;
         // Find the correct position to insert the student based on their name
         let index = array.findIndex(s => s.name.localeCompare(name) > 0);
         if (index === -1) {
@@ -319,11 +346,23 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
         });
     }
 
-    function allowAddMember(event) {
+    function allowInput(event) {
         event.target.classList.remove("visible");
         event.target.classList.add("invisible");
+        event.target.nextElementSibling.focus();
     }
 
+    function addTeamRow(event) {
+        let team_id = window.crypto.randomUUID();
+        team_data[team_id] = {"roster": [], name: team_id};
+        setTeamData({...team_data});
+        return team_id;
+    }
+
+    function updateTeamName(key, value) {
+        team_data[key].name = value;
+        setTeamData({...team_data});
+    }
     function calculateLabelClass(member, teamLength) {
         let className = "string-list-item";
         if (member.role !== "member") {
@@ -401,43 +440,43 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                 <div className="viewresults-modal--main-button-container">
                 <button
                     className={
-                        listingType === "individual"
+                        display_mode === "individual"
                             ? "survey-result--option-active"
                             : "survey-result--option"
                     }
-                    onClick={() => {setListingType("individual");}}
+                    onClick={() => {setDisplayMode("individual");}}
                 >
                     Individual Participants 
                 </button>
                 
                 <button
                     className={
-                        listingType === "team_roster"
+                        display_mode === "team_roster"
                             ? "survey-result--option-active"
                             : "survey-result--option"
                         }
-                        onClick={() => {setListingType("team_roster");}}
+                        onClick={() => {setDisplayMode("team_roster");}}
                 >
                     Team Rosters
                 </button>
                 { pairing_mode === 6 && (
                 <button
                     className={
-                        listingType === "team_pairing"
+                        display_mode === "team_pairing"
                             ? "survey-result--option-active"
                             : "survey-result--option"
                         }
-                        onClick={() => {setListingType("team_pairing");}}
+                        onClick={() => {setDisplayMode("team_pairing");}}
                 >
                     Team Evaluation Assignments
                 </button>)}
             </div>
-            <h3 className="confirm--bottom-label form__item--info">{listingType==="individual"? "Survey Participants" : listingType==="team_roster" ? "Survey Teams" : "Evaluation Assignments"}</h3>
-            {listingType === "individual" && (
+            <h3 className="confirm--bottom-label form__item--info">{display_mode==="individual"? "Survey Participants" : display_mode==="team_roster" ? "Survey Teams" : "Evaluation Assignments"}</h3>
+            {display_mode === "individual" && (
                 <div className="confirm--bottom-container">
-                    {roster_array && roster_array.length > 0 ? (
+                    {roster_data_to_display && roster_data_to_display.length > 0 ? (
                         <DataTable
-                            value={roster_array}
+                            value={roster_data_to_display}
                             name="roster"
                             header="Course Students"
                             showGridlines>
@@ -470,11 +509,11 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                         <div className="confirm--empty-text">No students on roster</div>
                     )}
 
-                    {nonroster_array && nonroster_array.length > 0 ? (
+                    {nonroster_data_to_display && nonroster_data_to_display.length > 0 ? (
                         <DataTable
                             name="nonroster"
                             header="Non-course Students"
-                            value={nonroster_array}
+                            value={nonroster_data_to_display}
                             showGridlines>
                             <Column
                                 field="email"
@@ -505,32 +544,35 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                         <div className="confirm--empty-text">Only includes roster students</div>
                     )}
                 </div>)}
-                { listingType === "team_roster" && (
+                { display_mode === "team_roster" && (
                 <div className="confirm--bottom-container">
                     {team_data && Object.keys(team_data).length > 0 ? (
                         <table>
                             <tbody>
                                 {Object.keys(team_data).map((teamKey, index) => (
                                     <tr key={teamKey}>
-                                        {pairing_mode === 6 && (
-                                            <td className="team-name">
-                                                {teamKey}
-                                            </td>
-                                        )}
+                                        {uses_team_names &&
+                                        (<td className="team-name-col">
+                                            <label className="string-list-item teamname visible" onClick={allowInput}>
+                                                {team_data[teamKey]["name"]}
+                                            </label>
+                                            <input className="teamname string-list-item" value={team_data[teamKey]["name"]} onChange={(e) => {updateTeamName(teamKey, e.target.value)}} onBlur={(e) => hideInputWidget(e)} >
+                                            </input>
+                                        </td>)}
                                         <td>
                                             <div className="teammembers">
                                                 {team_data[teamKey]["roster"].map((member, memberIndex) => (
                                                     <label className={calculateLabelClass(member, team_data[teamKey]["roster"].length)} key={memberIndex}>
                                                         <div className="name">
-                                                        {individual_data[member.email]["name"]}</div> <div className="close" onClick={() => removeMember(teamKey, memberIndex)}>x</div>
+                                                        {people_data[member.email]["name"]}</div> <div className="close" onClick={() => removeMember(teamKey, memberIndex)}>x</div>
                                                     </label>
                                                 ))}
-                                                {pairing_mode !== 1 && reasonShown !== "Review" &&
+                                                {((pairing_mode !== 1) || (team_data[teamKey]["roster"].length < 2)) &&
                                                 (<div className="add-member-container">
-                                                    <label className="string-list-item addition visible" onClick={allowAddMember}>
+                                                    <label className="string-list-item addition visible" onClick={allowInput}>
                                                         + Add members
                                                     </label>
-                                                    <select className="addition add-member-select" onChange={(e) => {addMember(e, teamKey)}} onBlur={(e) => hideStudentSelector(e)} >
+                                                    <select className="addition add-member-select" onChange={(e) => {addMember(e, teamKey)}} onBlur={(e) => {hideInputWidget(e);clearWidgetValue(e);}} >
                                                         <option value="">Select a member</option>
                                                         {unassigned_students.map((student, studentIndex) => (
                                                             <option key={studentIndex} value={student.email}>
@@ -544,14 +586,23 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                                         </td>
                                     </tr>
                                 ))}
+                                <tr key="add-team-row">
+                                    <td colSpan={2}>
+                                        <div className="add-team">
+                                            <label className="string-list-item addition visible" onClick={addTeamRow}>
+                                                {pairing_mode === 1 ? "+ Add pair" : "+ Add team"} 
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     ) : (
-                        <div className="confirm--empty-text">No teams available</div>
+                        <div className="confirm--empty-text"> {pairing_mode === 1 ? "No teams available" : "No pairs available"}</div>
                     )}
                 </div>
                 )}
-                { listingType === "team_pairing" && (
+                { display_mode === "team_pairing" && (
                 <div className="confirm--bottom-container">
                     {pairings && (pairings.length > 0) ? (
                         <table className="confirm--pairing-table">
@@ -566,7 +617,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                                                 <div className="teamlisting reviewing-team">
                                                 {team_data[pairing.reviewing]["roster"].map(member => (
                                                     <span key={member.email} className="string-list-item">
-                                                        {individual_data[member.email]["name"]}
+                                                        {people_data[member.email]["name"]}
                                                     </span>))}
                                                 </div>
                                             </div>
@@ -584,7 +635,7 @@ const SurveyConfirmModal = ({ modalClose, survey_data, survey_roster }) => {
                                                 <div className="teamlisting reviewed-team">
                                                 {team_data[pairing.reviewed]["roster"].map(member => (
                                                     <span key={member.email} className="string-list-item">
-                                                        {individual_data[member.email]["name"]}
+                                                        {people_data[member.email]["name"]}
                                                     </span>))}
                                                 </div>
                                             </div>

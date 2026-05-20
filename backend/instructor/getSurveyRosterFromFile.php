@@ -1,5 +1,5 @@
 <?php
-function processIndividualSurvey($con, $course_id, $pairing_mode) {
+function processIndividualSurvey($con, $course_id, $pairing_mode, $uses_team_names) {
   $retval = array( 'errors' => array() );
 
   // Process the pairing file and return the student and tean information
@@ -20,7 +20,7 @@ function processIndividualSurvey($con, $course_id, $pairing_mode) {
     } else {
 
       // Get the data from the review file 
-      $file_data = processReviewFile($con, ($pairing_mode == 1),  $file_handle, $roster);
+      $file_data = processReviewFile($con, ($pairing_mode == 1),  $file_handle, $roster, $uses_team_names);
       
       // Clean up our file handling
       fclose($file_handle);
@@ -40,7 +40,7 @@ function processIndividualSurvey($con, $course_id, $pairing_mode) {
   return $retval;
 }
 
-function processAggregatedSurvey($con, $course_id, $pairing_mode) {
+function processAggregatedSurvey($con, $course_id, $uses_team_names) {
   $retval = array( 'errors' => array() );
 
   // Check that we have the (otherwise unusued) file with team assignments
@@ -63,7 +63,7 @@ function processAggregatedSurvey($con, $course_id, $pairing_mode) {
     if (!$file_handle) {
       $retval['errors']['team-file'] = array('An error occured when uploading the team roster file. Please try again.');
     } else {
-      $team_data = processTeamFile($con, $file_handle, $roster);
+      $team_data = processTeamFile($con, $file_handle, $roster, $uses_team_names);
 
       // Clean up our file handling
       fclose($file_handle);
@@ -136,7 +136,7 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // make sure the required values exist
 if (!isset($_POST['pairing-mode']) || !isset($_FILES['pairing-file']) ||
-    !isset($_POST['course-id']) ) {
+    !isset($_POST['course-id']) || !isset($_POST['uses-team-names']) ) {
   http_response_code(400);
   echo "Bad Request: Missing parameters.";
   exit();
@@ -147,6 +147,9 @@ $con = connectToDatabase();
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
+
+// check if the files include a team name
+$uses_team_names = intval($_POST['uses-team-names']);
 
 // check course is not empty
 $course_id = intval($_POST['course-id']);
@@ -176,10 +179,10 @@ $response = null;
 
 // We split out when we have aggregated surveys and individual surveys.
 if ($pairing_mode == 6) {
-  $response = processAggregatedSurvey($con, $course_id, $pairing_mode);
+  $response = processAggregatedSurvey($con, $course_id, $uses_team_names);
 } else {
   // We are not in aggregated survey mode, so we only have the pairing file to process
-  $response = processIndividualSurvey($con, $course_id, $pairing_mode);
+  $response = processIndividualSurvey($con, $course_id, $pairing_mode, $uses_team_names);
 }
 // Emit the response
 header('Access-Control-Allow-Origin: '.FRONTEND_SERVER);

@@ -143,6 +143,45 @@
   color: #fff;
 }
 
+.team-name-col {
+  width: 10em;
+  padding-right: 0px !important;
+  border-right-width: 0px !important;
+}
+
+.team-name-col + td {
+  padding-left: 0px !important;
+  border-left-width: 0px !important;
+}
+
+.teamname {
+  background-color: #fff;
+  color: #225cb5 ;
+  border-width: 0px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 0px;
+  width: 10em;
+  font-size: 16px;
+  font-weight: bold;
+  padding-right: 0px;
+}
+
+.teamname:hover {
+  background-color: #225cb5;
+  color: #fff;
+}
+
+.edit-team-name {
+  font-size: 14px;
+}
+
+.add-team {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .confirm--bottom-container td:not(:has(.delete-team:hover)) {
   padding: 9px;
 }
@@ -170,6 +209,10 @@
 }
 
 .visible + select {
+  display: none;
+}
+
+.visible + input {
   display: none;
 }
 

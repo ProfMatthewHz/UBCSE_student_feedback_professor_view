@@ -25,6 +25,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
   const [useMultipler, setUseMultiplier] = useState(false);
   const [pairingImage, setPairingImage] = useState(Team);
   const [CSVFileDescription, setCSVFileDescription] = useState("");
+  const [uses_team_names, setUsesTeamNames] = useState(survey_data.uses_team_names ? survey_data.uses_team_names : false);
   const [surveyNameError, setSurveyNameError] = useState(false);
   const [emptyCSVFileError, setEmptyCSVFileError] = useState(false);
   const [emptyTeamFileError, setEmptyTeamFileError] = useState(false);
@@ -63,6 +64,12 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
     }
   }
 
+  const updateUsesTeamNames = (pairing) => {
+    if (pairing === "Single Pairs" || pairing === "Collective") {
+      setUsesTeamNames(false);
+    } 
+  }
+
   const findPairingData = (pairing, pairing_modes) => {
     for (let mode of pairing_modes) {
       if (mode.id === pairing) {
@@ -82,6 +89,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
     if (pairingMode != null) {
       setCSVFileDescription(pairingMode.file_organization);
       updateImage(pairingMode.text);
+      updateUsesTeamNames(pairingMode.text); 
       setUseMultiplier(pairingMode.usesMultiplier);
     }
   }, [pairingModeValue, pairingModes]);
@@ -259,6 +267,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
       end_date: endDate,
       end_time: endTime,
       pairing_mode: pairingModeValue,
+      uses_team_names: uses_team_names,
       pm_mult: multInt,
       reason: modalReason
     };
@@ -269,6 +278,7 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
       // Post the CSV file so that we get student and team information
       formData.append("pairing-file", csvFile);
       formData.append("team-file", teamFile);
+      formData.append("uses-team-names", uses_team_names);
       let response = await addSurveyBackend(formData);
       // Pass along all of the survey data the user entered so it can be used later
       modalClose(response, surveyData);
@@ -493,6 +503,12 @@ const SurveyNewModal = ({ modalClose, button_text, survey_data, pairing_modes, r
                 <div className="form__item--red-warning-sign" />
                 Select a file
               </label>)}
+            {pairingModeValue !== 6 && pairingModeValue !== 1 && (
+                <span htmlFor="team-names-checkbbox" className="form__item--checkbox-container">
+                  <input id="team-names-checkbox" className="form__item--checkbox" type="checkbox" checked={uses_team_names} onChange={(e) => setUsesTeamNames(e.target.checked)} />
+                    Each row starts with team name
+                </span>
+            )}
           </label>}
           <div className="form__item--confirm-btn-container">
             <button className="form__item--confirm-btn" onClick={verifyAndPostSurvey}>

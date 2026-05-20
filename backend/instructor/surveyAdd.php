@@ -33,7 +33,7 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST') {
 if (!isset($_POST['survey-name']) || !isset($_POST['pairing-mode']) || !isset($_POST['course-id']) || 
     !isset($_POST['start-date']) || !isset($_POST['start-time']) ||
     !isset($_POST['end-date']) || !isset($_POST['end-time']) || 
-    !isset($_POST['pm-mult']) || !isset($_POST['rubric-id']) ||
+    !isset($_POST['pm-mult']) || !isset($_POST['rubric-id']) || !isset($_POST['uses-team-names']) ||
     !isset($_POST['team-data'])) {
   http_response_code(400);
   echo "Bad Request: Missing parameters.";
@@ -144,6 +144,9 @@ if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset
   }
 }
 
+// Get if this is a survey where the team names are meaningful
+$uses_team_names = intval($_POST['uses-team-names']);
+
 // Get the multiplier used for pm evaluations
 $pm_mult = intval($_POST['pm-mult']);
 
@@ -165,7 +168,7 @@ if (empty($teams) || ($pairing_mode == 6 && (($collective_pairings == null) || e
   if (!empty($team_data["error"])) {
     $errorMsg['team-data'] = $team_data["error"];
   } else {
-    $survey_id = insertSurvey($con, $course_id, $survey_name, $survey_start, $survey_end, $rubric_id, $pairing_mode, $pm_mult);
+    $survey_id = insertSurvey($con, $course_id, $survey_name, $survey_start, $survey_end, $rubric_id, $pairing_mode, $pm_mult, $uses_team_names);
     $success = insertTeams($con, $survey_id, $team_data['teams']);
     $success = insertMembers($con, $team_data['teams']);
     if ($success && $pairing_mode != 6) {

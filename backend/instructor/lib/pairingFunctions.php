@@ -3,8 +3,7 @@ function processFileRows($rows, $pairing_mode) {
   $ret_val = array();
   $pure_pairs = ($pairing_mode == 1);
   $manager_mode = ( ($pairing_mode == 3) || ($pairing_mode == 4) );
-  $team_num = 1;
-  foreach ($rows as $emails) {
+  foreach ($rows as $teamname => $emails) {
     $team = array();
     $last_index = count($emails) - 1;
     foreach ($emails as $idx => $email) {
@@ -23,9 +22,6 @@ function processFileRows($rows, $pairing_mode) {
       }
       $team[] = array('email' => $email, 'role' => $role);
     }
-    // Create a team name which, for now, is based on the index
-    $teamname = 'team '.$team_num;
-    $team_num++;
     $ret_val[$teamname] = array("roster" => $team);
   }
   return $ret_val;
@@ -128,6 +124,7 @@ function validateCollectiveTeams($team_data) {
 }
  
 function validateTeams($pairing_mode, $team_data) {
+  $ret_val = null;
   switch ($pairing_mode) {
     case 1: // Pairs
       $ret_val = validatePairs($team_data);
