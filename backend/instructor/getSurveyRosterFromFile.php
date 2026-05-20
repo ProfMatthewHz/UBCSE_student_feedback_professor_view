@@ -49,6 +49,9 @@ function processAggregatedSurvey($con, $course_id, $uses_team_names) {
       echo "Bad Request: Missing parameters.";
       exit();
   }
+  // Prepare the variable that will stpre the team data (unless there are errors)
+  $team_data = null;
+
   // Process the file of teams' rosters
   if ($_FILES['team-file']['error'] == UPLOAD_ERR_INI_SIZE) {
     $retval['errors']['team-file'] = array('The team roster file is too large.');
