@@ -1,4 +1,25 @@
 <?php
+// This function is not used currently, but being kept for future use as it should be a huge improvement
+function getTeamForEvals($con, $survey_id) {
+  // Get the averages for each student in the course
+  $retVal = array();
+  // prepare SQL statements
+  $stmt = $con->prepare('SELECT evals.id, team_name
+                         FROM reviews
+                         INNER JOIN evals ON evals.id = reviews.eval_id
+                         LEFT JOIN teams ON teams.id = reviews.team_id
+                         WHERE reviews.survey_id=?');
+  $stmt->bind_param('i', $survey_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    $eval_id = $row[0];
+    $team_name = $row[1];
+    $retVal[$eval_id] = $team_name;
+  }
+  $stmt->close();
+  return $retVal;
+}
 function getTeamPairings($con, $survey_id) {
   $retVal = array();
   // Get the team pairings for the survey
@@ -11,6 +32,7 @@ function getTeamPairings($con, $survey_id) {
   $stmt->execute();
   $result = $stmt->get_result();
   $rows = $result->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
   return $rows;
 }
 

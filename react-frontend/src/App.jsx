@@ -20,7 +20,7 @@ function App() {
       })
           .then((response) => {
             if (!response.ok) {
-              throw new Error('Network response was not ok');
+              window.location.reload();
             }
             return response.json();
           })

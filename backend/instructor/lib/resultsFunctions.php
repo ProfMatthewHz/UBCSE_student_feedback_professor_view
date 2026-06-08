@@ -45,10 +45,13 @@ function createIndividualAverageResult($students, $averages, $column_names) {
   return $ret_val;
 }
 
-function createRawDataResult($students, $scores, $normalized_total, $column_names) {
+function createRawDataResult($students, $team_mapping, $scores, $normalized_total, $column_names, $uses_team_names) {
   $ret_val = array();
   // Create the header row for this data
   $header = array("Reviewer", "Reviewee");
+  if ($uses_team_names) {
+    $header[] = "Team";
+  }
   foreach ($column_names as $question) {
     $header[] = $question;
   }
@@ -60,6 +63,10 @@ function createRawDataResult($students, $scores, $normalized_total, $column_name
     $row[] = $students[$eval_id][0];
     // Add the reviewee information
     $row[] = $students[$eval_id][1];
+    // Add the team information when it is relevant
+    if ($uses_team_names) {
+      $row[] = $team_mapping[$eval_id];
+    }
     // Next loop through all of criterion scores for this eval
     foreach (array_keys($column_names) as $topic_id) {
       $row[] = $crit_scores[$topic_id];

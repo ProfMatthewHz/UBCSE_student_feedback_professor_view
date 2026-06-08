@@ -84,8 +84,8 @@
 }
 
 .normalized-barchart {
-    height: 400px;
-    width: 500px;
+    height: 50vh;
+    width: 40vw;
 }
 
 .rawresults--table-container {

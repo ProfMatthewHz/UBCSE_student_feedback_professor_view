@@ -1,23 +1,57 @@
-import React from 'react';
-import { Bar } from 'react-chartjs-2';
+import { React, useRef, useState, useEffect }  from 'react';
+import { Bar, getElementAtEvent } from 'react-chartjs-2';
 import { BarElement, LinearScale, CategoryScale, Chart } from 'chart.js';
-
+// Register the necessary components for Chart.js. This is required for Chart.js to work properly in React.
 Chart.register(BarElement, LinearScale, CategoryScale);
 
-const BarChart = (results) => {
-  const results_without_headers = results["survey_data"].slice(1); // Remove the headers
-  const result_labels = results_without_headers.map(item => item[0]); // Get the labels
-  const result_data = results_without_headers.map(item => item[1]); // Get the data
+const BarChart = ({axes, labels, values, filterView}) => {
+  const [activeBar, setActiveBar] = useState(-1);
+  const [colors, setColors] = useState([]);
+  const [activeBarColor,] = useState('rgba(34, 92, 181, 1)'); // Color for the active bar
+  const [defaultBarColor,] = useState('rgba(34, 92, 181, 0.8)'); // Color for the inactive bars
+  const [inactiveBarColor,] = useState('rgba(34, 92, 181, 0.4)'); // Color for the inactive bars
+  const barRef = useRef(null);
+
+  const handleClick = (event) => {
+    const { current } = barRef;
+    if (!current) return;
+    const element = getElementAtEvent(current, event);
+    // Update which bar is active based on the click event
+    if (element.length === 0) { 
+      setActiveBar(-1); // No bar is active
+    } else {
+      setActiveBar(element[0].index); // Set the active bar index
+    }
+  }
+
+  useEffect(() => {
+    filterView(activeBar);
+    if (activeBar !== -1) {
+      let newColors = values.map((_, index) => index === activeBar ? activeBarColor : inactiveBarColor);
+      setColors(newColors);
+    } else {
+      let newColors = values.map(() => defaultBarColor);
+      setColors(newColors);
+    }
+  }, [activeBar, filterView, activeBarColor, defaultBarColor, inactiveBarColor, values]);
+
+  useEffect(() => {
+    let newColors = values.map(() => 'rgba(34, 92, 181, 0.6)'); // Default color for all bars
+    setColors(newColors);
+  }, [labels, values]);
+  
 
   // The data for the bar chart
   const data = {
-    labels: result_labels,
+    labels: labels,
     datasets: [
       {
         label: '# of Students',
-        data: result_data,
-        backgroundColor: 'rgba(75, 192, 192, 0.6)', // Bar color
-        borderColor: 'rgba(75, 192, 192, 1)', // Border color
+        data: values,
+        backgroundColor: colors, // Bar color
+        borderColor: 'rgba(34, 92, 181, 0)', // Border color
+        hoverBorderColor: 'rgba(34, 92, 181, 0.8)', // Border color on hover
+        hoverBackgroundColor: 'rgba(34, 92, 181, 1)', // Border color on hover
         borderWidth: 1,
       },
     ],
@@ -30,17 +64,14 @@ const BarChart = (results) => {
         beginAtZero: true, // This is for the X-axis
         title: {
           display: true,
-          text: 'Normalized Averages'
+          text: axes[0]
         },
       },
       y: {
         beginAtZero: true,
         title: {
           display: true,
-          text: "Number of Students"
-        },
-        ticks: {
-          stepSize: 1,
+          text: axes[1]
         },
       },
     },
@@ -50,7 +81,7 @@ const BarChart = (results) => {
   return (
     <div>
      {/* <h2>Number of Students Per Normalized Averages</h2>*/}
-      <Bar data={data} options={options} className='normalized-barchart' />
+      <Bar ref={barRef} data={data} options={options} className="normalized-barchart" onClick={handleClick} />
     </div>
   );
 };

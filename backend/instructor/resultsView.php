@@ -12,6 +12,7 @@ require "../lib/surveyQueries.php";
 require "lib/courseQueries.php";
 require "lib/surveyQueries.php";
 require "lib/scoreQueries.php";
+require "lib/teamQueries.php";
 require "lib/resultsCalculations.php";
 require "lib/resultsFunctions.php";
 require "lib/reviewQueries.php";
@@ -59,6 +60,7 @@ if (!isSurveyInstructor($con, $survey_id, $instructor_id)) {
   exit();
 }
 $use_team_scores = ($survey_info['survey_type_id'] === 6);
+$uses_team_names = $survey_info['uses_team_names'];
 
 $results_wanted = $_POST['type'];
 
@@ -77,8 +79,10 @@ if ($results_wanted === 'completion') {
   $eval_data = getEvalInformation($con, $survey_id, $use_team_scores);
   // Get the names of the topics that were evaluated in this survey
   $topics = getSurveyMultipleChoiceTopics($con, $survey_id);
+  // Get the team name for each evaluation
+  $team_mapping = getTeamForEvals($con, $survey_id);
   // Zip all this data together as a single array ready for CSV output
-  $results = createRawDataResult($eval_data, $scores, $normalized_total, $topics);
+  $results = createRawDataResult($eval_data, $team_mapping, $scores, $normalized_total, $topics, $uses_team_names);
   // Now output the results
   $json_results = json_encode($results);
   echo $json_results;

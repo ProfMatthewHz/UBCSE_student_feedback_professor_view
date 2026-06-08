@@ -11,26 +11,29 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
     /* Viewing Types of Survey Results */
     const [rawSurveys, setRawSurveys] = useState([]); // For Raw Results
     const [rawSurveyCSVData, setRawSurveyCSVData] = useState([]); // For CSV download of the raw survey data
-    const [normalizedBarChartData, setNormalizedBarChartData] = useState([]); // For Normalized Results
-    const [normalizedResultsCSVData, setNormalizedResultsCSVData] = useState([]); // For CSV download of the raw survey data
-    const [normalizedResults, setNormalizedResults] = useState([]); // For display of normalized Results
+    const [barChartData, setBarChartData] = useState([]); // For Normalized Results
+    const [normalizedCSVData, setNormalizedCSVData] = useState([]); // For CSV download of the raw survey data
+    const [normalizedDisplayData, setNormalizedDisplayData] = useState([]); // For display of normalized Results
+    const [normalizedResults, setNormalizedResults] = useState([]); // For Normalized Results
+    const [normalizedIndex, setNormalizedIndex] = useState(-1); // The index to display (or -1 for all)
     const [completionCSVData, setCompletionCSVData] = useState([]); // For CSV Download for Completion Results
     const [individualAveragesCSVData, setIndividualAveragesCSVData] = useState([]); // For CSV Download for Completion Results
     const [surveyType, setSurveyType] = useState("raw-full"); // For Survey Type
 
-    /**
-     * Maps headers to values
-     * @param headers
-     * @param values
-     * @returns {*}
-     */
-    const mapHeadersToValues = (headers, values) => {
-          return values.map((row) => {
-            return row.reduce((obj, value, index) => {
-                obj[headers[index]] = value;
-                return obj;
-            }, {});
-        });
+    // Zips together the parallel arrays into a single object
+    const zipKeysAndValues = (keys, values) =>
+        // Initializes an empty object and then adds each key to the value which appears at the same index in the values array
+        keys.reduce((obj, key, index) => {
+            obj[key] = values[index];
+            return obj;
+        }, {});
+
+    // Given an table of data where the first row are the headers, create an array of objects with that data
+    const convertTableToArrayOfObjects = (table) => {
+        const headers = table[0];
+        const values = table.slice(1);
+        const retVal = values.map((row) => zipKeysAndValues(headers, row));
+        return retVal;
     };
 
     //Fetches the data that tells use who completed surveys
@@ -43,7 +46,14 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
                 credentials: "include",
                 body: formData
             })
-                .then((res) => res.json())
+                .then((res) => {
+                    if (res.ok) {
+                        return res.json();
+                    } else if (res.status === 511) {
+                        // If we get a 511 error, we have been logged out of shibboleth and need to redirect to the starting page
+                        window.location.href = `${process.env.REACT_APP_API_START}`;
+                    }
+                })
                 .then((result) => {
                     setCompletionCSVData(result);
                 })
@@ -92,7 +102,7 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
 
     useEffect(() => {
         if (rawSurveyCSVData.length > 1) {
-            const mappedResults = mapHeadersToValues(rawSurveyCSVData[0], rawSurveyCSVData.slice(1));
+            const mappedResults = convertTableToArrayOfObjects(rawSurveyCSVData);
             const finalResult = mappedResults.map((result) => {
                 return {...result, "Norm. Avg.": isNaN(result["Norm. Avg."]) ? result["Norm. Avg."] : parseFloat(result["Norm. Avg."]).toFixed(4)};
             });
@@ -113,7 +123,7 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
             .then((res) => res.json())
             .then((result) => {
                 if (result.length > 1) {
-                    setNormalizedResultsCSVData(result);
+                    setNormalizedCSVData(result);
                 }
             })
             .catch((err) => {
@@ -122,40 +132,58 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
     }, []);
 
     useEffect(() => {
-        if (normalizedResultsCSVData.length > 1) {
-            const mappedNormalizedResults = mapHeadersToValues(normalizedResultsCSVData[0], normalizedResultsCSVData.slice(1));
-            const finalResults = mappedNormalizedResults.map((result) => ({
-                ...result,
-                "Norm. Avg.": isNaN(result["Norm. Avg."]) ? result["Norm. Avg."] : parseFloat(result["Norm. Avg."]).toFixed(4)
-            }));
-            setNormalizedResults(finalResults);
-        }
-    }, [normalizedResultsCSVData]);
+        if (normalizedCSVData.length > 1) {
+            const mappedNormalizedResults = convertTableToArrayOfObjects(normalizedCSVData);
 
-    useEffect(() => {
-        if (normalizedResultsCSVData.length > 1) {
-            const results = normalizedResultsCSVData.slice(1);
-            const maxValue = Math.max(
-                ...results.map((result) => isNaN(result.at(-2)) ? 0 : result.at(-2))
-            );
+            const maxValue = Math.max(...mappedNormalizedResults.map((data) => isNaN(data["Norm. Avg."])? 0 : data["Norm. Avg."]));
             const lastIndex = Math.max(0, Math.floor((maxValue + 0.19999999) / 0.2) - 1);
-            let labels = [ ['0.0-0.2', 0 ] ];
-            while (labels.length <= lastIndex) {
-                let startLabel = 0.01 + 0.2 * labels.length;
-                let endLabel = startLabel + 0.19;
-                labels.push([`${startLabel.toFixed(2)} - ${endLabel.toFixed(1)}`, 0]);
+
+            // Create the array of arrays that will hold the normalized data 
+            const normData = [];
+            for (let i = 0; i <= lastIndex + 1; i++) {
+                normData.push([]);
             }
-            for (let individual_data of results) {
-                const avg = individual_data.at(-2);
-                if (!isNaN(avg)) {
-                    let index = Math.max(0, Math.floor((avg + 0.19999999) / 0.2) - 1);
-                    labels[index][1] += 1;
+            for (let result of mappedNormalizedResults) {
+                if (isNaN(result["Norm. Avg."])) {
+                    normData[lastIndex].push(result);
+                } else {
+                    const index = Math.max(0, Math.floor((result["Norm. Avg."] + 0.19999999) / 0.2) - 1);
+                    result["Norm. Avg."] = parseFloat(result["Norm. Avg."]).toFixed(4);
+                    normData[index].push(result);
                 }
             }
-            labels.unshift(["Normalized Averages", "Number of Students"]);
-            setNormalizedBarChartData(labels);
+            setNormalizedResults(normData);
         }
-    }, [normalizedResultsCSVData]);
+    }, [normalizedCSVData]);
+
+    useEffect(() => {
+        if (normalizedResults.length > 0) {
+            const labels = ['0.00 - 0.20'];
+            for (let i = 1; i < normalizedResults.length - 1; i++) {
+                const startLabel = (0.2 * i) + 0.01;
+                const endLabel = 0.2 * (i+1);
+                labels.push(`${startLabel.toFixed(2)} - ${endLabel.toFixed(2)}`);
+            }
+
+            let data = [];
+            for (let i = 0; i < normalizedResults.length - 1; i++) {
+                data.push(normalizedResults[i].length);
+            }
+            const axes = ["Normalized Averages", "Number of Students"];
+            setBarChartData([axes, labels, data]);
+        }
+    }, [normalizedResults]);
+
+    useEffect(() => {
+        if (normalizedResults.length > 1) {
+            if (normalizedIndex === -1) {
+                const displayResult = normalizedResults.flat();
+                setNormalizedDisplayData(displayResult);
+            } else {
+                setNormalizedDisplayData(normalizedResults[normalizedIndex]);
+            }
+        }
+    }, [normalizedResults, normalizedIndex]);
 
     useEffect(() => {
         if (surveyToView) {
@@ -250,7 +278,8 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
                             emptyMessage="No results found"
                         >
                             {rawSurveyCSVData[0].map((header) => {
-                                return header === "Reviewee" || header === "Reviewer" ? (
+                                if (header === "Reviewee" || header === "Reviewer") {
+                                    return (
                                         <Column
                                             key={header}
                                             field={header}
@@ -260,7 +289,21 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
                                             filterPlaceholder="Search by name or email"
                                             filterMatchMode="contains"
                                         ></Column>
-                                    ) : (
+                                    );
+                                } else if (header === "Team") {
+                                    return (
+                                        <Column
+                                            key={header}
+                                            field={header}
+                                            header={header}
+                                            sortable
+                                            filter
+                                            filterPlaceholder="Search by team name"
+                                            filterMatchMode="contains"
+                                        ></Column>
+                                    );
+                                } else {
+                                    return (
                                         <Column
                                             key={header}
                                             field={header}
@@ -268,6 +311,7 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
                                             sortable
                                         ></Column>
                                     );
+                                }
                             })}
                         </DataTable>
                     </div>
@@ -276,7 +320,7 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
                     <div className="viewresults-modal--no-options-selected-text">
                         No Results Found
                     </div>)}
-            {surveyType === "average" && normalizedResults.length > 0 ? (
+            {surveyType === "average" && normalizedDisplayData.length > 0 ? (
                     <div>
                         <div className="viewresults-modal--other-button-container">
                             <div className="viewresults-modal--download-button">
@@ -287,7 +331,7 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
                                         surveyToView.id + 
                                         "-normalized-averages.csv"
                                     }
-                                    data={normalizedResultsCSVData}
+                                    data={normalizedCSVData}
                                 >
                                     Download Normalized Scores
                                 </CSVLink>
@@ -309,10 +353,10 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
                             </div>
                         </div>
                         <div className="viewresults-modal--barchart-container">
-                            <BarChart survey_data={normalizedBarChartData}/>
+                            <BarChart axes={barChartData[0]} labels={barChartData[1]} values={barChartData[2]} filterView={setNormalizedIndex} />
                            
                             <DataTable
-                                value={normalizedResults}
+                                value={normalizedDisplayData}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 paginator
                                 rows={5}
@@ -321,7 +365,7 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
                                 currentPageReportTemplate="{first} to {last} of {totalRecords}" 
                                 emptyMessage="No results found"
                             >
-                                {normalizedResultsCSVData[0].map((header) => {
+                                {normalizedCSVData[0].map((header) => {
                                     return header === "Name" || header === "Email" ? (
                                         <Column
                                             key={header}

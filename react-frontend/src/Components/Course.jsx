@@ -58,12 +58,12 @@ const Course = ({ course, page, rubricList, pairingModes }) => {
 
 
     /**
-     * Perform a POST call to courseSurveysQueries 
+     * Request information on the surveys used for this course 
      */
     const updateAllSurveys = useCallback(() => {
         let formData = new FormData();
         formData.append("course-id", course.id);
-        fetch(process.env.REACT_APP_API_URL + "courseSurveysQueries.php", {
+        fetch(process.env.REACT_APP_API_URL + "getCourseSurveys.php", {
             method: "POST",
             credentials: "include",
             body: formData
@@ -192,6 +192,7 @@ const Course = ({ course, page, rubricList, pairingModes }) => {
             setExtendModal(true);
         }
         else if (e.target.value === "View Results") {
+            console.log("Viewing results for survey: ", survey);
             setCurrentSurvey(survey);
             setViewResultsModal(true);
         }
