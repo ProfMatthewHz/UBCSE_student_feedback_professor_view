@@ -1,6 +1,6 @@
 {
   "name": "react-frontend",
-  "homepage": "/teamwork/react-frontend/build",
+  "homepage": "/teamwork/instructor",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -43,6 +43,6 @@
     ]
   },
   "devDependencies": {
-        "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }
