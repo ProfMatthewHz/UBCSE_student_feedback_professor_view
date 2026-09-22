@@ -1,7 +1,7 @@
 <?php
 # Local development mode
-define("FRONTEND_HOME","http://localhost:3000/teamwork/instructor");
-define("FRONTEND_SERVER","http://localhost:3000");
+#define("FRONTEND_HOME","http://localhost:3000/teamwork/instructor");
+#define("FRONTEND_SERVER","http://localhost:3000");
 
 # Local testing mode
 #define("FRONTEND_HOME","http://localhost/StudentSurvey/react-frontend/build/");
@@ -12,8 +12,8 @@ define("FRONTEND_SERVER","http://localhost:3000");
 #define("FRONTEND_SERVER","http://www-student.cse.buffalo.edu/");
 
 # Production mode
-#define("FRONTEND_HOME","https://cse.buffalo.edu/teamwork/react-frontend/build/");
-#define("FRONTEND_SERVER","https://cse.buffalo.edu");
+define("FRONTEND_HOME","https://cse.buffalo.edu/teamwork/react-frontend/build/");
+define("FRONTEND_SERVER","https://cse.buffalo.edu");
 
 define("ADMIN_EMAIL", "mhertz@buffalo.edu");
 define("INIT_AUTH_TOKEN_EXPIRATION_SECONDS", 60 * 60);
