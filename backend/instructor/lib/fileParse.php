@@ -4,6 +4,8 @@ function getIdsFromEmails($con, $line_num, $emails, $roster) {
   $retVal = array('error' => array(), 'student_data' => array());
   // Make sure the current line's data are valid
   foreach ($emails as $column => $email) {
+    // Avoid problems with emails being case-sensitive
+    $email = strtolower($email);
     $id_and_name = getStudentInfoFromEmail($con, $email);
     if (empty($id_and_name)) {
       $retVal['error'][] = 'Line '. $line_num . '  column ' . $column . ' includes an unknown email (' . $email . ')';
