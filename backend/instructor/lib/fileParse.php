@@ -74,6 +74,8 @@ function parse_roster_file($file_handle) {
         $error = 'Line '. $line_num . ' includes a last name with unprintable characters (' . $line_text[2] . ')';
       }
       if (empty($error)) {
+        // Make emails all lowercase to avoid double-entries for a student
+        $email = strtolower($line_text[0]);
         // add the fields to the array
         $ret_val['ids'][$line_text[0]] = $line_text[1] . " " . $line_text[2];
       } else {
