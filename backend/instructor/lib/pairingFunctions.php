@@ -83,11 +83,11 @@ function validateUnmanagedTeams($team_data) {
 
 function validateManagedTeams($team_data) {
   $ret_val = array();
-  // Check that each team has exactly two members
+  // Loop through each team in the array
   foreach ($team_data as $name => $team) {
     // Get the team's roster 
     $roster = $team['roster'];
-    // Check that the team has exactly two members
+    // Check that the team has at least two members
     if (count($roster) < 2) {
       $ret_val[] = 'Team '.$name.' must have at least two members.';
     }
@@ -109,7 +109,7 @@ function validateManagedTeams($team_data) {
 
 function validateCollectiveTeams($team_data) {
   $ret_val = array();
-  // Check that each team has exactly two members
+  // Loop through each team in the array
   foreach ($team_data as $name => $team) {
     // Get the team's roster
     $roster = $team['roster'];

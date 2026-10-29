@@ -169,6 +169,8 @@ if (empty($teams) || ($pairing_mode == 6 && (($collective_pairings == null) || e
     $errorMsg['team-data'] = $team_data["error"];
   } else {
     $survey_id = insertSurvey($con, $course_id, $survey_name, $survey_start, $survey_end, $rubric_id, $pairing_mode, $pm_mult, $uses_team_names);
+    // Reset any team id numbers so that we recreate the team in the new survey
+    $success = resetTeamIds($team_data['teams']);
     $success = insertTeams($con, $survey_id, $team_data['teams']);
     $success = insertMembers($con, $team_data['teams']);
     if ($success && $pairing_mode != 6) {

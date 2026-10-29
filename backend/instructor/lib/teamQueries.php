@@ -390,4 +390,17 @@ function getIdsForAllRosters($con, $teams) {
   }
   return $ret_val;
 }
+
+function resetTeamIds(&$teams) {
+  // Loop through each team in the teams array
+  foreach ($teams as $name => &$team_data) {
+    // Remove the id from the team data so that we can recreate the team in the new survey
+    if (array_key_exists('id', $team_data)) {
+      unset($team_data['id']);
+    }
+  }
+  // Release the reference to the array element (needed since it is being updated)
+  unset($team_data);
+  return true;
+}
 ?>
