@@ -144,6 +144,10 @@ if (!isset($errorMsg['start-date']) && !isset($errorMsg['start-time']) && !isset
   }
 }
 
+if (strlen($survey_name) > 89) {
+  $errorMsg['survey-name'] = "Survey name must be less than 90 characters.";
+}
+
 // Get if this is a survey where the team names are meaningful
 $uses_team_names = intval($_POST['uses-team-names']);
 
