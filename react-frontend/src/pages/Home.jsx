@@ -69,7 +69,11 @@ const Home = () => {
       .then((result) => setCourses(result))
       .catch((err) => {
         console.log(err);
-      });
+        if (err.name === 'TypeError') {
+          // If we get a TypeError, we have been logged out of shibboleth and need to redirect to the starting page
+          window.location.href = `${process.env.REACT_APP_API_START}`;
+        }
+       });
   }, []);
 
   useEffect(() => {
