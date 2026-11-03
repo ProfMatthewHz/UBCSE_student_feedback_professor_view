@@ -145,7 +145,7 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
             }
             for (let result of mappedNormalizedResults) {
                 if (isNaN(result["Norm. Avg."])) {
-                    const index = Math.max(0, Math.floor((1.19999999) / 0.2) - 1);
+                    const index = Math.max(0, Math.floor(1.19999999 / 0.2) - 1);
                     normData[index].push(result);
                 } else {
                     const index = Math.max(0, Math.floor((result["Norm. Avg."] + 0.19999999) / 0.2) - 1);
