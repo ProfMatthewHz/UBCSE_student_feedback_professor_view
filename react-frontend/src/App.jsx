@@ -51,6 +51,8 @@ function App() {
     .then((response) => {
       if (!response.ok) {
         console.error('Keep-alive request failed with status:', response.status);
+        // If we get a TypeError, we have been logged out of shibboleth and need to redirect to the starting page
+        window.location.href = `${process.env.REACT_APP_API_START}`;
       }
     })
     .catch((err) => {
