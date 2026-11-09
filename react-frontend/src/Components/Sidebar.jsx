@@ -1,5 +1,5 @@
 import "../styles/sidebar.css";
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import CourseAddModal from "./CourseAddModal";

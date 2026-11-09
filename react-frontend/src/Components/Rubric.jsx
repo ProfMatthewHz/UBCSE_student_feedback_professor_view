@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import  {useCallback, useEffect, useState} from "react";
 import Modal from "./Modal";
 import "../styles/rubric.css";
 import RubricAdd from "./RubricAdd";

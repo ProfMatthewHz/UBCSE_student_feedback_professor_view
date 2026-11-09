@@ -24,12 +24,6 @@
     "eject": "react-scripts eject",
     "generate-docs": "jsdoc -c jsdoc.json"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",

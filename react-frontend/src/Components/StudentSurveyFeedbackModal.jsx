@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import  {useCallback, useEffect, useState} from 'react'
 import "../styles/rubricModal.css";
 
 const StudentSurveyFeedbackModal = ({onClose, modalData}) => {

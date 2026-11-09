@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from "react";
+import  {useEffect, useState, useCallback} from "react";
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
 import "../styles/sidebar.css";

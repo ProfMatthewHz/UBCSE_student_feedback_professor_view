@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import  {useCallback, useEffect, useState} from "react";
 import {CSVLink} from "react-csv";
 import {DataTable} from "primereact/datatable";
 import {Column} from "primereact/column";
@@ -145,7 +145,7 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
             }
             for (let result of mappedNormalizedResults) {
                 if (isNaN(result["Norm. Avg."])) {
-                    const index = Math.max(0, Math.floor(1.19999999 / 0.2) - 1);
+                    const index = Math.floor(1.19999999 / 0.2) - 1;
                     normData[index].push(result);
                 } else {
                     const index = Math.max(0, Math.floor((result["Norm. Avg."] + 0.19999999) / 0.2) - 1);
@@ -159,7 +159,7 @@ const SurveyResultsModal = ({closeViewResultsModal, surveyToView, course}) => {
 
     useEffect(() => {
         if (normalizedResults.length > 0) {
-            const labels = ['N/A', '0.00 - 0.20'];
+            const labels = ['0.00 - 0.20'];
             for (let i = 1; i < normalizedResults.length - 1; i++) {
                 const startLabel = (0.2 * i) + 0.01;
                 const endLabel = 0.2 * (i+1);

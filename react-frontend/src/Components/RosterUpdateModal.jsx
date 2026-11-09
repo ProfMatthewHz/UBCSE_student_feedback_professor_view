@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { RadioButton } from "primereact/radiobutton";
 import "../styles/modal.css";
 import "../styles/addsurvey.css";
