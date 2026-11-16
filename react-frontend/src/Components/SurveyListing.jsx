@@ -42,7 +42,7 @@ const SurveyListing = (props) => {
   const reformatDate = (data) => {
     const reformattedDate = new Date(data);
     // Use the toLocaleDateString method to format the date as MM/DD/YYYY
-    const formattedDateString = reformattedDate.toLocaleDateString('en-US',{month:'short', day: '2-digit'});
+    const formattedDateString = reformattedDate.toLocaleDateString('en-US',{month:'long', day: '2-digit'});
 
     return formattedDateString;
   }
