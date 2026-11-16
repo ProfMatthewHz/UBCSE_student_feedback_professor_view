@@ -1,4 +1,4 @@
-import StudentSideBar from "../Components/StudentSidebar";
+import StudentSideBar from "../Components/studentSidebar";
 import "../styles/home.css";
 import "../styles/rubricCourse.css";
 import "../styles/sidebar.css";

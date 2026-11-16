@@ -33,29 +33,22 @@ const SurveyListing = (props) => {
 
   //reformat time to 00:00:00 PM/AM
   const reformatTime = (data) => {
-    const dataList = data.split(' ');
-    const timeString = dataList[1];
-    const date = new Date(`1970-01-01T${timeString}Z`);
-    const formattedTime = date.toLocaleTimeString('en-US', {
-      hour12: true,
-      hour: 'numeric',
-      minute: '2-digit',
-      second: '2-digit',
-    });
-
+    const reformattedTime = new Date(data);
+    const formattedTime = reformattedTime.toLocaleTimeString('en-US');
     return formattedTime;
   };
 
   //reformat date to month/day/yr
   const reformatDate = (data) => {
-    const dataList = data.split(' ');
-    const originalDate= dataList[0];
-    const dateParts = originalDate.split('-');
-    const year = dateParts[0];
-    const month = dateParts[1];
-    const day = dateParts[2];
-    // Create a new Date object with the parts
-    const reformattedDate = new Date(`${month}/${day}/${year}`);
+    const reformattedDate = new Date(data);
+    // const dataList = data.split(' ');
+    // const originalDate= dataList[0];
+    // const dateParts = originalDate.split('-');
+    // const year = dateParts[0];
+    // const month = dateParts[1];
+    // const day = dateParts[2];
+    // // Create a new Date object with the parts
+    // const reformattedDate = Date(year, month, day);
 
     // Use the toLocaleDateString method to format the date as MM/DD/YYYY
     const formattedDateString = reformattedDate.toLocaleDateString('en-US');
@@ -237,8 +230,6 @@ const SurveyListing = (props) => {
                           </thead>
                           </table>
                         )}
-                  
-                  
               </div>
             </div>
   
