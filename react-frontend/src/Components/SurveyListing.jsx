@@ -34,24 +34,15 @@ const SurveyListing = (props) => {
   //reformat time to 00:00:00 PM/AM
   const reformatTime = (data) => {
     const reformattedTime = new Date(data);
-    const formattedTime = reformattedTime.toLocaleTimeString('en-US');
+    const formattedTime = reformattedTime.toLocaleTimeString('en-US',{hour: 'numeric',minute: '2-digit'});
     return formattedTime;
   };
 
   //reformat date to month/day/yr
   const reformatDate = (data) => {
     const reformattedDate = new Date(data);
-    // const dataList = data.split(' ');
-    // const originalDate= dataList[0];
-    // const dateParts = originalDate.split('-');
-    // const year = dateParts[0];
-    // const month = dateParts[1];
-    // const day = dateParts[2];
-    // // Create a new Date object with the parts
-    // const reformattedDate = Date(year, month, day);
-
     // Use the toLocaleDateString method to format the date as MM/DD/YYYY
-    const formattedDateString = reformattedDate.toLocaleDateString('en-US');
+    const formattedDateString = reformattedDate.toLocaleDateString('en-US',{month:'short', day: '2-digit'});
 
     return formattedDateString;
   }
