@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import  { useCallback, useEffect, useState } from "react";
 import SideBar from "../Components/Sidebar";
 import "../styles/home.css";
 import Course from "../Components/Course";
@@ -69,7 +69,11 @@ const Home = () => {
       .then((result) => setCourses(result))
       .catch((err) => {
         console.log(err);
-      });
+        if (err.name === 'TypeError') {
+          // If we get a TypeError, we have been logged out of shibboleth and need to redirect to the starting page
+          window.location.href = `${process.env.REACT_APP_API_START}`;
+        }
+       });
   }, []);
 
   useEffect(() => {
@@ -135,7 +139,11 @@ const Home = () => {
                 setPairingModes(result.survey_types);
             })
             .catch((err) => {
-                console.log(err);
+              if (err.name === 'TypeError') {
+                // If we get a TypeError, we have been logged out of shibboleth and need to redirect to the starting page
+                window.location.href = `${process.env.REACT_APP_API_START}`;
+              }
+              console.log(err);
             });
     }, []);
   

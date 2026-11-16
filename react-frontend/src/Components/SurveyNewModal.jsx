@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import Team from "../assets/pairingmodes/TEAM.png"
 import TeamSelf from "../assets/pairingmodes/TEAM+SELF.png"
 import TeamSelfManager from "../assets/pairingmodes/TEAM+SELF+MANAGER.png"

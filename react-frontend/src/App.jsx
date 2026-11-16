@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import React, {useState, useEffect, useCallback} from "react";
+import {useState, useEffect, useCallback} from "react";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import History from "./pages/History";
@@ -30,9 +30,11 @@ function App() {
           }
         })
         .catch((err) => {
+          if (err.name === 'TypeError') {
+            // If we get a TypeError, we have been logged out of shibboleth and need to redirect to the starting page
+            window.location.href = `${process.env.REACT_APP_API_START}`;
+          } 
           console.error('There was a problem with your fetch operation:', err);
-          // If we fail to get the user flag, redirect to the starting page
-          window.location.href = process.env.REACT_APP_API_START;
         });
   }, []);
 
@@ -42,19 +44,23 @@ function App() {
   }, [fetchFlag]);
 
   function keepAlive() {
-    console.error("Sending keep-alive request to the server..." + new Date().toLocaleTimeString());
     fetch(process.env.REACT_APP_API_URL_STUDENT + 'keepAlive.php', {
       method: "GET",
       credentials: "include",
     })
     .then((response) => {
       if (!response.ok) {
-        //window.location.reload();
         console.error('Keep-alive request failed with status:', response.status);
+        // If we cannot make the conection, we lack the shibboleth token and need to redirect to the starting page
+        window.location.href = `${process.env.REACT_APP_API_START}`;
       }
     })
     .catch((err) => {
       console.error('There was a problem with your fetch operation:', err);
+      if (err.name === 'TypeError') {
+          // If we get a TypeError, we have been logged out of shibboleth and need to redirect to the starting page
+          window.location.href = `${process.env.REACT_APP_API_START}`;
+      }
     })
   }
 

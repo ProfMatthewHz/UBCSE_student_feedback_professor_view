@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import "../styles/modal.css";
 
 /* Todo: Update the onchange method to enable the delete survey button if (and only if) it is a perfect match */

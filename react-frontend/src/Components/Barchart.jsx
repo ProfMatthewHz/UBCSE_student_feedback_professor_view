@@ -1,4 +1,4 @@
-import { React, useRef, useState, useEffect }  from 'react';
+import { useRef, useState, useEffect }  from 'react';
 import { Bar, getElementAtEvent } from 'react-chartjs-2';
 import { BarElement, LinearScale, CategoryScale, Chart } from 'chart.js';
 // Register the necessary components for Chart.js. This is required for Chart.js to work properly in React.

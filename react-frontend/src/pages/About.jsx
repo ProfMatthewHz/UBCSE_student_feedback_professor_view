@@ -1,4 +1,3 @@
-import React from "react";
 import "../styles/about.css";
 import SideBar from "../Components/Sidebar";
 import AriannaPFP from "../assets/fall2023team/ariannaescobarreyes.jpg";
